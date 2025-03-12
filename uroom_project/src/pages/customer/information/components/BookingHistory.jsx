@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Container, 
   Row, 
@@ -11,12 +11,12 @@ import {
 import '../../../../css/customer/BookingHistory.css';
 
 const BookingHistory = () => {
-  const [activeFilter, setActiveFilter] = useState('Feedbacked');
+  const [activeFilter, setActiveFilter] = useState(0);
   const [activePage, setActivePage] = useState(1);
   
   // Filter options
   const filters = ['Feedbacked', 'Finished', 'Processing', 'Paid', 'NoPaid', 'Cancel'];
-  
+  const colors= ['#00BBFF', '#00611D', '#EB8C08', '#54BDB1', '#FFB4B4', '#FF1717']
   // Sample reservation data
   const reservations = [
     {
@@ -66,38 +66,91 @@ const BookingHistory = () => {
       checkOut: '12/03/2024',
       totalPrice: '$12,230',
       status: 'Feedbacked'
-    }
-  ];
+    },
 
-  const handleFilterClick = (filter) => {
-    setActiveFilter(filter);
+    {
+      id: '07',
+      hotelName: 'Ha Noi Note',
+      checkIn: '12/03/2024',
+      checkOut: '12/03/2024',
+      totalPrice: '$12,230',
+      status: 'Finished'
+    },
+    {
+      id: '08',
+      hotelName: 'Ha Noi Note',
+      checkIn: '12/03/2024',
+      checkOut: '12/03/2024',
+      totalPrice: '$12,230',
+      status: 'Processing'
+    },
+    {
+      id: '09',
+      hotelName: 'Ha Noi Note',
+      checkIn: '12/03/2024',
+      checkOut: '12/03/2024',
+      totalPrice: '$12,230',
+      status: 'Paid'
+    },
+    {
+      id: '10',
+      hotelName: 'Ha Noi Note',
+      checkIn: '12/03/2024',
+      checkOut: '12/03/2024',
+      totalPrice: '$12,230',
+      status: 'NoPaid'
+    },
+    {
+      id: '12',
+      hotelName: 'Ha Noi Note',
+      checkIn: '12/03/2024',
+      checkOut: '12/03/2024',
+      totalPrice: '$12,230',
+      status: 'Cancel'
+    },
+  ];
+  const [filterBill, setFilterBill]= useState([]);
+  useEffect(() => {
+    const newList= reservations.filter((e,i) => e.status === filters[activeFilter]);
+    setFilterBill(newList);
+  },[activeFilter])
+
+  const handleFilterClick = (index) => {
+    setActiveFilter(index);
   };
 
   const handlePageClick = (page) => {
     setActivePage(page);
   };
-
+  
   return (
     <Container className='py-4' >
       <h2 className="fw-bold mb-4">Booking History</h2>
       {/* Filter buttons */}
       <div className="filter-buttons mb-4" style={{justifyContent: 'space-between'}}>
-        {filters.map((filter) => (
+        {filters.map((filter, index) => (
           <Button
-            key={filter}
-            variant={activeFilter === filter ? 'primary' : 'outline-secondary'}
-            className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
-            style={{width: '130px', borderRadius: 10}}
-            onClick={() => handleFilterClick(filter)}
-          >
-            {filter}
-          </Button>
+          key={filter}
+          className={`filter-btn ${activeFilter === index ? 'active' : ''}`}
+          style={{
+            width: '130px',
+            borderRadius: 10,
+            color: activeFilter === index ? 'white' : 'black', // Màu chữ
+            backgroundColor: activeFilter === index ? colors[activeFilter] : 'transparent',
+            borderColor: activeFilter === index ? colors[activeFilter] : 'white',
+            borderWidth: 1,
+            borderStyle: 'solid'
+          }}
+          onClick={() => handleFilterClick(index)}
+        >
+          {filter}
+        </Button>
         ))}
       </div>
       
       {/* Reservation cards */}
       <Row>
-        {reservations.map((reservation) => (
+        {filterBill.map((reservation) => (
           <Col key={reservation.id} lg={4} md={6} sm={12} className="mb-4">
             <Card className="reservation-card">
               <Card.Body>
@@ -111,15 +164,37 @@ const BookingHistory = () => {
                   <p><strong>Total price:</strong> {reservation.totalPrice}</p>
                   <p>
                     <strong>Status:</strong> 
-                    <Badge bg="info" className="status-badge" style={{paddingTop: 10, paddingBottom: 10, paddingLeft: 10, paddingRight: 10, borderRadius: 10}}>{reservation.status}</Badge>
+                    <b style={{ 
+                      marginLeft: 10,
+                      paddingTop: 5, 
+                      paddingBottom: 5, 
+                      paddingLeft: 5, 
+                      paddingRight: 5, 
+                      borderRadius: 10, 
+                      backgroundColor: colors[activeFilter], 
+                      color: 'white',
+                      fontWeight: 400
+                    }}>{reservation.status}</b>
                   </p>
                 </div>
                 <Button variant="outline-primary" style={{width: '100%', marginTop: '10px'}} href='/bookingbill_customer'>
                   View Details
                 </Button>
+                {activeFilter == 1 &&
                 <Button variant="outline-success" style={{width: '100%', marginTop: '10px'}} href='/createfeedback_customer'>
                   Create Feedback
                 </Button>
+                }
+                {activeFilter == 3 &&
+                <Button variant="outline-danger" style={{width: '100%', marginTop: '10px'}} href='/createfeedback_customer'>
+                  Cancel Booking
+                </Button>
+                }
+                {activeFilter == 4 &&
+                <Button variant="outline-warning" style={{width: '100%', marginTop: '10px'}} href='/createfeedback_customer'>
+                  Pay money
+                </Button>
+                }
               </Card.Body>
             </Card>
           </Col>

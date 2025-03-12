@@ -2,8 +2,8 @@ import { Container, Row, Col, Button, Card, Form, InputGroup } from "react-boots
 import { FaStar, FaWifi, FaSwimmingPool, FaParking, FaUtensils, FaSearch,FaCalendarAlt,FaChild,FaUser,FaQuoteLeft,FaThumbsUp,FaThumbsDown } from "react-icons/fa"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../../../../src/css/customer/Home_detail.css"
-import NavigationBar from "../header"; 
-import Footer from "../footer"; 
+import NavigationBar from "../Header"; 
+import Footer from "../Footer"; 
 import main_room from "../../../images/image_3.png";
 import room1 from "../../../images/room1.png";
 import room2 from "../../../images/room2.png";
@@ -16,6 +16,7 @@ import image5 from "../../../images/image-1.png";
 import image6 from "../../../images/unsplash_7uXn7nudorc_1.png";
 import image7 from "../../../images/Ellipse_3_(1).png";
 import image8 from "../../../images/Ellipse_3.png";
+import * as Routers from "../../../utils/Routes";
 
 const imageList = [room1, room2, room3];
 
@@ -220,7 +221,7 @@ function HotelRooms() {
         ))}
       </Row>
       <div className="text-center mt-4">
-        <Button variant="primary" size="lg" className="book-now-btn">
+        <Button variant="primary" size="lg" className="book-now-btn" href={Routers.BookingCheckPage}>
           Book Now
         </Button>
       </div>

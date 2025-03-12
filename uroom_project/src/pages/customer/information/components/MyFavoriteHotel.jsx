@@ -20,7 +20,7 @@ const MyFavoriteHotel = () => {
       name: "Novotel Hotel Da Nang",
       image: "/placeholder.svg?height=200&width=300",
       address: "70 Ho Huy Tap, Thanh Khe Dong, Thanh Khe, Da Nang",
-      rating: 4.0,
+      rating: 4.1,
       feedbacks: 12,
       stars: 5,
     },

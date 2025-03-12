@@ -1,5 +1,8 @@
 import { Container, Navbar, Nav, Button } from "react-bootstrap"
 import "../../css/customer/NavigationBar.css"
+import * as Routers from "../../utils/Routes";
+import { LoginPage } from "utils/Routes";
+
 function NavigationBar() {
     return (
       <Navbar expand="lg" className="navbar-dark fixed-top">
@@ -26,7 +29,7 @@ function NavigationBar() {
                 Favorite hotels
               </Nav.Link>
             </Nav>
-            <Button variant="light" className="login-btn">
+            <Button variant="light" className="login-btn" href={LoginPage}>
               Login
             </Button>
           </Navbar.Collapse>

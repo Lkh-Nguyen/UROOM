@@ -6,14 +6,14 @@ const VerifyCodePage= '/verifycode_customer';
 const ResetPasswordPage= '/resetpassword_customer';
 const MyAccountPage= '/myaccount_customer';
 const Home_detail= '/Home_detail';
-const Home= '/Home';
-
-
-
+const Home= '/';
 const BookingBill= '/bookingbill_customer';
 const CreateFeedback= '/createfeedback_customer';
 const BannedPage= '/banned';
 const ErrorPage= '/error';
+const BookingCheckPage= '/bookingcheck_customer';
+const PaymentPage= '/payment_customer';
+const PaymentSuccessPage= '/paymentsuccess_customer'
 
 export {
   LoginPage,
@@ -22,11 +22,13 @@ export {
   VerifyCodePage,
   ResetPasswordPage,
   MyAccountPage,
-
   Home_detail,
   Home,
-
   BookingBill,
   CreateFeedback,
   BannedPage,
-  ErrorPage,}
+  ErrorPage,
+  BookingCheckPage,
+  PaymentPage,
+  PaymentSuccessPage
+}

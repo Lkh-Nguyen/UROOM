@@ -1,7 +1,7 @@
 import { Container, Row, Col, Button, Card, Form, InputGroup } from "react-bootstrap"
 import {FaMapMarkerAlt,FaHotel,FaSearch,FaCalendarAlt,FaChild,FaUser,FaStar} from "react-icons/fa"
-import NavigationBar  from "../header";
-import Footer  from "../footer";
+import NavigationBar  from "../Header";
+import Footer  from "../Footer";
 import "../../../css/customer/home.css"
 import image4 from "../../../images/image_3.png";
 import image5 from "../../../images/image-1.png";
