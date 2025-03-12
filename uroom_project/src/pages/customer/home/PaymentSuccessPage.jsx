@@ -4,6 +4,8 @@ import { CheckCircle, ArrowLeft, ArrowRight } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Banner from '../../../images/banner.jpg';
 import { useNavigate } from "react-router-dom";
+import Footer from '../Footer';
+import Header from '../Header';
 
 const PaymentSuccessPage = () => {
     const navigate = useNavigate();
@@ -13,16 +15,16 @@ const PaymentSuccessPage = () => {
         });
     };
     return (
-        <div className="payment-success-page" style={{
-            backgroundImage: `url(${Banner})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-        }}>
+    <div 
+      className="d-flex flex-column min-vh-100"
+      style={{
+        backgroundImage: `url(${Banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header/>
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: "50px", paddingBottom: "50px"}}>
             <Card className="text-center" style={{
                 maxWidth: '800px',
                 height: '500px',
@@ -87,6 +89,8 @@ const PaymentSuccessPage = () => {
                 </Card.Body>
             </Card>
         </div>
+        <Footer/>
+    </div>
     );
 };
 

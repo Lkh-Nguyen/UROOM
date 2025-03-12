@@ -137,7 +137,7 @@ const BookingHistory = () => {
             borderRadius: 10,
             color: activeFilter === index ? 'white' : 'black', // Màu chữ
             backgroundColor: activeFilter === index ? colors[activeFilter] : 'transparent',
-            borderColor: activeFilter === index ? colors[activeFilter] : 'gray',
+            borderColor: activeFilter === index ? colors[activeFilter] : 'white',
             borderWidth: 1,
             borderStyle: 'solid'
           }}
@@ -164,7 +164,17 @@ const BookingHistory = () => {
                   <p><strong>Total price:</strong> {reservation.totalPrice}</p>
                   <p>
                     <strong>Status:</strong> 
-                    <b style={{ paddingTop: 10, paddingBottom: 10, paddingLeft: 10, paddingRight: 10, borderRadius: 10, backgroundColor: colors[activeFilter]}}>{reservation.status}</b>
+                    <b style={{ 
+                      marginLeft: 10,
+                      paddingTop: 5, 
+                      paddingBottom: 5, 
+                      paddingLeft: 5, 
+                      paddingRight: 5, 
+                      borderRadius: 10, 
+                      backgroundColor: colors[activeFilter], 
+                      color: 'white',
+                      fontWeight: 400
+                    }}>{reservation.status}</b>
                   </p>
                 </div>
                 <Button variant="outline-primary" style={{width: '100%', marginTop: '10px'}} href='/bookingbill_customer'>

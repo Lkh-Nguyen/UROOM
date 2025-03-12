@@ -2,19 +2,21 @@ import React from 'react';
 import { Card, Row, Col, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Banner from '../../../images/banner.jpg';
+import Footer from '../Footer';
+import Header from '../Header';
 
 const PaymentPage = () => {
     return (
-        <div className="payment-page" style={{
-            backgroundImage: `url(${Banner})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
-        }}>
+    <div 
+      className="d-flex flex-column min-vh-100"
+      style={{
+        backgroundImage: `url(${Banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header/>
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: "50px", paddingBottom: "50px"}}>
             <Card className="payment-card" style={{
                 maxWidth: '800px',
                 width: '100%',
@@ -73,6 +75,8 @@ const PaymentPage = () => {
                 </Card.Body>
             </Card>
         </div>
+        <Footer/>
+    </div>
     );
 };
 

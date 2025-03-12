@@ -11,7 +11,8 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaStar, FaRegStar } from 'react-icons/fa';
 import Banner from '../../../images/banner.jpg';
-
+import Header from '../Header';
+import Footer from '../Footer';
 const BookingCheckPage = () => {
     const [bookingFor, setBookingFor] = useState('mainGuest');
     // Star rating component
@@ -27,14 +28,17 @@ const BookingCheckPage = () => {
         );
     };
     return (
-        <div className="booking-page" style={{
-            backgroundImage: `url(${Banner})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '100vh',
-            padding: '50px 0'
-        }}>
-            <Container>
+    <div 
+      className="d-flex flex-column min-vh-100"
+      style={{
+        backgroundImage: `url(${Banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header/>
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: "50px", paddingBottom: "50px"}}>
+          <Container className="mt-4">
                 <Row className="justify-content-center">
                     {/* Left Card - Booking Details */}
                     <Col md={5} lg={4}>
@@ -217,6 +221,8 @@ const BookingCheckPage = () => {
                 </Row>
             </Container>
         </div>
+        <Footer/>
+    </div>
     );
 };
 
