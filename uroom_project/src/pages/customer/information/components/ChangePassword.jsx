@@ -41,7 +41,7 @@ const ChangePassword= () => {
     };
     return (
         <Card.Body>
-            <Card.Title className="mb-4">Change Password</Card.Title>
+            <h2 className="fw-bold mb-4">Change Password</h2>
             <Form onSubmit={handleSubmit}>
             <Row className="mb-3">
                 <Col md={6}>

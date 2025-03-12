@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Form, Button, Card } from 'react-bootstrap';
-import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
+import { FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
+import Banner from '../../../images/banner.jpg';
 
 const ForgetPasswordPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +36,7 @@ const ForgetPasswordPage = () => {
     <div 
       className="min-vh-100 d-flex align-items-center justify-content-center py-5"
       style={{
-        backgroundImage: 'url(https://cdn1.123job.vn/123job/uploads/2020/03/26/2020_03_26______460d841b279b2a6a56b4ce8e7f2f1e40.jpg)',
+        backgroundImage: `url(${Banner})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center'
       }}

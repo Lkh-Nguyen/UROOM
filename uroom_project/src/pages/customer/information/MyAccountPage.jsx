@@ -5,18 +5,13 @@ import {
   Col, 
   Card, 
   ListGroup, 
-  Form, 
-  Button, 
-  InputGroup 
 } from 'react-bootstrap';
 import { 
-  FaUser, 
   FaKey, 
   FaImage, 
   FaHistory, 
   FaHeart, 
   FaComment,
-  FaCalendarAlt
 } from 'react-icons/fa';
 import { IoSettingsSharp } from 'react-icons/io5';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -24,7 +19,10 @@ import '../../../css/customer/MyAccountPage.css'
 import ChangePassword from './components/ChangePassword';
 import ViewInformation from './components/ViewInformation';
 import ViewAvatar from './components/ViewAvatar';
-
+import MyFeedback from './components/MyFeedback';
+import FavoriteHotel from './components/MyFavoriteHotel';
+import Banner from '../../../images/banner.jpg';
+import BookingHistory from './components/BookingHistory';
 function MyAccountPage() {
     const [indexActive, setIndexActive] = useState(0);
     const handleMenuClick = (index) => {
@@ -40,13 +38,26 @@ function MyAccountPage() {
     ];
 
   return (
+    <div 
+      className="min-vh-100 d-flex py-5"
+      style={{
+        backgroundImage: `url(${Banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
     <Container className="mt-4">
       <Row>
-        <Col md={4} className="mb-4">
+        <Col md={3} className="mb-4">
           <Card className="sidebar">
-            <div className="user-profile text-center p-3 border-bottom">
+            <div className="user-profile text-center p-3 border-bottom" >
               <div className="avatar-circle">
-                <FaUser className="avatar-icon" />
+                <img
+                  src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                  className="rounded-circle mb-2"
+                  style={{width: '80px', height: '80px'}}
+                  alt="avatar"
+                />              
               </div>
               <h5 className="mt-2 mb-0">Nguyễn Văn Nam</h5>
               <small className="text-muted">Google</small>
@@ -65,15 +76,19 @@ function MyAccountPage() {
             </ListGroup>
           </Card>
         </Col>
-        <Col md={8}>
-          <Card>
+        <Col md={9}>
+          <Card style={{ backgroundColor: "rgba(255, 255, 255,0.9)"}}>
             {indexActive == 0 && <ViewInformation/>}
             {indexActive == 1 && <ChangePassword/>}
             {indexActive == 2 && <ViewAvatar/>}
+            {indexActive == 3 && <BookingHistory/>}
+            {indexActive == 4 && <FavoriteHotel/>}
+            {indexActive == 5 && <MyFeedback/>}
           </Card>
         </Col>
       </Row>
     </Container>
+    </div>
   );
 }
 
