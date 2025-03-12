@@ -1,0 +1,80 @@
+import React, { useState } from 'react';
+import { 
+  Container, 
+  Row, 
+  Col, 
+  Card, 
+  ListGroup, 
+  Form, 
+  Button, 
+  InputGroup 
+} from 'react-bootstrap';
+import { 
+  FaUser, 
+  FaKey, 
+  FaImage, 
+  FaHistory, 
+  FaHeart, 
+  FaComment,
+  FaCalendarAlt
+} from 'react-icons/fa';
+import { IoSettingsSharp } from 'react-icons/io5';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '../../../css/customer/MyAccountPage.css'
+import ChangePassword from './components/ChangePassword';
+import ViewInformation from './components/ViewInformation';
+import ViewAvatar from './components/ViewAvatar';
+
+function MyAccountPage() {
+    const [indexActive, setIndexActive] = useState(0);
+    const handleMenuClick = (index) => {
+        setIndexActive(index);
+    };
+    const menuItems = [
+        { name: 'My Account', icon: <IoSettingsSharp /> },
+        { name: 'Change Password', icon: <FaKey /> },
+        { name: 'View Avatar', icon: <FaImage /> },
+        { name: 'Booking History', icon: <FaHistory /> },
+        { name: 'Favorite Hotel', icon: <FaHeart /> },
+        { name: 'My Feedback', icon: <FaComment /> }
+    ];
+
+  return (
+    <Container className="mt-4">
+      <Row>
+        <Col md={4} className="mb-4">
+          <Card className="sidebar">
+            <div className="user-profile text-center p-3 border-bottom">
+              <div className="avatar-circle">
+                <FaUser className="avatar-icon" />
+              </div>
+              <h5 className="mt-2 mb-0">Nguyễn Văn Nam</h5>
+              <small className="text-muted">Google</small>
+            </div>
+            <ListGroup variant="flush">
+              {menuItems.map((item, index) => (
+                <ListGroup.Item 
+                  key={item.name}
+                  className={`menu-item ${index === indexActive ? 'active' : ''}`}
+                  onClick={() => handleMenuClick(index)}
+                >
+                  <span className="menu-icon">{item.icon}</span>
+                  <span className="menu-text">{item.name}</span>
+                </ListGroup.Item>
+              ))}
+            </ListGroup>
+          </Card>
+        </Col>
+        <Col md={8}>
+          <Card>
+            {indexActive == 0 && <ViewInformation/>}
+            {indexActive == 1 && <ChangePassword/>}
+            {indexActive == 2 && <ViewAvatar/>}
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
+}
+
+export default MyAccountPage;
