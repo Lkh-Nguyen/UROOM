@@ -5,6 +5,9 @@ const ForgetPasswordPage= '/forgetpassword_customer';
 const VerifyCodePage= '/verifycode_customer';
 const ResetPasswordPage= '/resetpassword_customer';
 const MyAccountPage= '/myaccount_customer';
+const Home_detail= '/Home_detail';
+const Home= '/Home';
+
 
 
 export {
@@ -13,5 +16,7 @@ export {
   ForgetPasswordPage,
   VerifyCodePage,
   ResetPasswordPage,
-  MyAccountPage
+  MyAccountPage,
+  Home_detail,
+  Home
 }
