@@ -10,6 +10,9 @@ import BookingBill from "./pages/customer/information/BookingBill";
 import CreateFeedback from "./pages/customer/information/CreateFeedback";
 import BannedPage from "./pages/BannedPage";
 import ErrorPage from "./pages/ErrorPage";
+import BookingCheckPage from "pages/customer/home/BookingCheckPage";
+import PaymentPage from "pages/customer/home/PaymentPage";
+import PaymentSuccessPage from "pages/customer/home/PaymentSuccessPage";
 
 function App() {
   return (
@@ -28,8 +31,14 @@ function App() {
         <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage/>} />
         {/*Infomation, Avatar */}
         <Route path={Routers.MyAccountPage} element={<MyAccountPage/>} />
-        <Route path={Routers.BookingBill} element={<BookingBill/>} />
+        <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill/>} />
         <Route path={Routers.CreateFeedback} element={<CreateFeedback/>} />
+
+        {/*Home*/}
+        <Route path={Routers.BookingCheckPage} element={<BookingCheckPage/>} />
+        <Route path={Routers.PaymentPage} element={<PaymentPage/>} />
+        <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>} />
+
       </Routes>
     </Router>
   );

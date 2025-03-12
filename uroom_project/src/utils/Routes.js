@@ -9,6 +9,9 @@ const BookingBill= '/bookingbill_customer';
 const CreateFeedback= '/createfeedback_customer';
 const BannedPage= '/banned';
 const ErrorPage= '/error';
+const BookingCheckPage= '/bookingcheck_customer';
+const PaymentPage= '/payment_customer';
+const PaymentSuccessPage= '/paymentsuccess_customer'
 export {
   LoginPage,
   RegisterPage,
@@ -20,4 +23,7 @@ export {
   CreateFeedback,
   BannedPage,
   ErrorPage,
+  BookingCheckPage,
+  PaymentPage,
+  PaymentSuccessPage
 }

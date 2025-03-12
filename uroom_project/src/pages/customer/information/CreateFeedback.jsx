@@ -91,7 +91,7 @@ const CreateFeedback = () => {
                         <Form.Group className="position-relative">
                         <Form.Control
                             as="textarea"
-                            rows={4}
+                            rows={6}
                             placeholder="Enter your feedback in herre"
                             value={description}
                             onChange={handleDescriptionChange}

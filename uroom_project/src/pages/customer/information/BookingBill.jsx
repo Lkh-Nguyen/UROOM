@@ -13,8 +13,11 @@ import { FaStar, FaRegStar } from 'react-icons/fa';
 import { FaArrowLeft } from 'react-icons/fa';
 import Banner from '../../../images/banner.jpg';
 import '../../../css/customer/BookingBill.css';
+import { useParams } from "react-router-dom";
 
 const BookingBill = () => {
+    const { id } = useParams(); // Lấy id từ URL
+    console.log('id: ', id);
   // Star rating component
   const StarRating = ({ rating }) => {
     return (

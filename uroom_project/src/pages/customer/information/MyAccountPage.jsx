@@ -23,8 +23,12 @@ import MyFeedback from './components/MyFeedback';
 import FavoriteHotel from './components/MyFavoriteHotel';
 import Banner from '../../../images/banner.jpg';
 import BookingHistory from './components/BookingHistory';
+import { useLocation, useParams } from "react-router-dom";
+
 function MyAccountPage() {
-    const [indexActive, setIndexActive] = useState(0);
+  const location = useLocation();
+  const { id } = location.state || {}; // Lấy dữ liệu từ state
+    const [indexActive, setIndexActive] = useState(id ?? 0);
     const handleMenuClick = (index) => {
         setIndexActive(index);
     };
