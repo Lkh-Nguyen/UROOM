@@ -37,7 +37,7 @@ const ViewInformation= () => {
     };
     return (
         <Card.Body>
-            <Card.Title className="mb-4">Personal Information</Card.Title>
+            <h2 className="fw-bold mb-4">View Information</h2>
             <Form onSubmit={handleSubmit}>
             <Row className="mb-3">
                 <Col md={6}>

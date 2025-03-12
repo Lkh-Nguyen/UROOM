@@ -9,11 +9,18 @@ import MyAccountPage from "./pages/customer/information/MyAccountPage";
 import Home_detail from "./pages/customer/home/home_detail";
 import Home from "./pages/customer/home/home.jsx";
 
+import BookingBill from "./pages/customer/information/BookingBill";
+import CreateFeedback from "./pages/customer/information/CreateFeedback";
+import BannedPage from "./pages/BannedPage";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   return (
     <Router>
       <Routes>
+        
+        <Route path={Routers.BannedPage} element={<BannedPage/>} />
+        <Route path={Routers.ErrorPage} element={<ErrorPage/>} />
 
         {/*Customer And Guest */}
         {/*Login, Register, Forget Password */}
@@ -27,6 +34,8 @@ function App() {
         <Route path={Routers.Home_detail} element={<Home_detail/>} />
         <Route path={Routers.Home} element={<Home/>} />
 
+        <Route path={Routers.BookingBill} element={<BookingBill/>} />
+        <Route path={Routers.CreateFeedback} element={<CreateFeedback/>} />
       </Routes>
     </Router>
   );

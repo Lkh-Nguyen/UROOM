@@ -6,7 +6,7 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 function ViewAvatar() {
     return (
       <Card.Body>
-        <Card.Title className="mb-4">Personal Information</Card.Title>
+        <h2 className="fw-bold mb-4">View Avatar</h2>
         <div className="text-center">
           <img
             src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"

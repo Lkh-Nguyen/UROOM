@@ -10,6 +10,11 @@ const Home= '/Home';
 
 
 
+const BookingBill= '/bookingbill_customer';
+const CreateFeedback= '/createfeedback_customer';
+const BannedPage= '/banned';
+const ErrorPage= '/error';
+
 export {
   LoginPage,
   RegisterPage,
@@ -17,6 +22,11 @@ export {
   VerifyCodePage,
   ResetPasswordPage,
   MyAccountPage,
+
   Home_detail,
-  Home
-}
+  Home,
+
+  BookingBill,
+  CreateFeedback,
+  BannedPage,
+  ErrorPage,}
