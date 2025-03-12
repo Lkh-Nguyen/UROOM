@@ -6,6 +6,9 @@ import ForgetPasswordPage from "./pages/customer/login_register/ForgetPasswordPa
 import VerifyCodePage from "./pages/customer/login_register/VerifyCodePage";
 import ResetPasswordPage from "./pages/customer/login_register/ResetPasswordPage";
 import MyAccountPage from "./pages/customer/information/MyAccountPage";
+import Home_detail from "./pages/customer/home/home_detail";
+import Home from "./pages/customer/home/home.jsx";
+
 import BookingBill from "./pages/customer/information/BookingBill";
 import CreateFeedback from "./pages/customer/information/CreateFeedback";
 import BannedPage from "./pages/BannedPage";
@@ -28,6 +31,9 @@ function App() {
         <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage/>} />
         {/*Infomation, Avatar */}
         <Route path={Routers.MyAccountPage} element={<MyAccountPage/>} />
+        <Route path={Routers.Home_detail} element={<Home_detail/>} />
+        <Route path={Routers.Home} element={<Home/>} />
+
         <Route path={Routers.BookingBill} element={<BookingBill/>} />
         <Route path={Routers.CreateFeedback} element={<CreateFeedback/>} />
       </Routes>
