@@ -13,7 +13,8 @@ const BannedPage= '/banned';
 const ErrorPage= '/error';
 const BookingCheckPage= '/bookingcheck_customer';
 const PaymentPage= '/payment_customer';
-const PaymentSuccessPage= '/paymentsuccess_customer'
+const PaymentSuccessPage= '/paymentsuccess_customer';
+const RoomDetailPage= '/RoomDetailPage';
 
 export {
   LoginPage,
@@ -30,5 +31,6 @@ export {
   ErrorPage,
   BookingCheckPage,
   PaymentPage,
-  PaymentSuccessPage
+  PaymentSuccessPage,
+  RoomDetailPage
 }

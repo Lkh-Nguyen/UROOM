@@ -16,6 +16,7 @@ import ErrorPage from "./pages/ErrorPage";
 import BookingCheckPage from "pages/customer/home/BookingCheckPage";
 import PaymentPage from "pages/customer/home/PaymentPage";
 import PaymentSuccessPage from "pages/customer/home/PaymentSuccessPage";
+import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
         <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>} />
         <Route path={Routers.Home} element={<Home/>} />
         <Route path={Routers.Home_detail} element={<Home_detail/>} />
+        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage/>} />
 
       </Routes>
     </Router>
