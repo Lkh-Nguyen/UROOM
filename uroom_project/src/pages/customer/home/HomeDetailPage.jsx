@@ -1,4 +1,4 @@
-import { Container, Row, Col, Button, Card, Form, InputGroup } from "react-bootstrap"
+import { Container, Row, Col, Button, Card, Form, InputGroup,Image } from "react-bootstrap"
 import { FaStar, FaWifi, FaSwimmingPool, FaParking, FaUtensils, FaSearch,FaCalendarAlt,FaChild,FaUser,FaQuoteLeft,FaThumbsUp,FaThumbsDown } from "react-icons/fa"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../../../../src/css/customer/Home_detail.css"
@@ -15,7 +15,8 @@ import image4 from "../../../images/image_3.png";
 import image5 from "../../../images/image-1.png";
 import image6 from "../../../images/unsplash_7uXn7nudorc_1.png";
 import image7 from "../../../images/Ellipse_3_(1).png";
-import image8 from "../../../images/Ellipse_3.png";
+import image9 from "../../../images/Ellipse_3.png";
+import image10 from "../../../images/Ellipse_3_(1).png";
 import * as Routers from "../../../utils/Routes";
 
 const imageList = [room1, room2, room3];
@@ -193,7 +194,7 @@ function HotelRooms() {
 
   return (
     <Container className="rooms-section">
-      <h2 className="section-title">Hotel rooms</h2>
+      <h2 className="section-title" style={{textAlign:"center",fontSize:"2rem",fontWeight:"bold",marginBottom:"3rem",color:"#1a2b49"}}>Hotel rooms</h2>
       <Row>
         {rooms.map((room) => (
           <Col md={4} key={room.id}>
@@ -205,15 +206,24 @@ function HotelRooms() {
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <Card.Title className="room-title">{room.type}</Card.Title>
                   <div className="guests-count">
-                    <i className="fas fa-user"></i> {room.guests}
+                  <FaUser />{room.guests}
                   </div>
                 </div>
                 <div className="price-container">
                   <span className="price">{room.price}$</span>
                   <span className="per-day">/Day</span>
                   <div className="amount-container">
-                    Amount <span className="amount">0</span>
-                  </div>
+    <span className="label">Amount</span>
+    <select className="amount-dropdown">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+</div>
+                  
                 </div>
               </Card.Body>
             </Card>
@@ -221,9 +231,12 @@ function HotelRooms() {
         ))}
       </Row>
       <div className="text-center mt-4">
-        <Button variant="primary" size="lg" className="book-now-btn" href={Routers.BookingCheckPage}>
-          Book Now
-        </Button>
+      <Button
+                    variant="outline-primary"
+                    style={{ padding:"0.7rem 4.5rem",fontWeight:"500"}}
+                  >
+                    Book Now
+                  </Button>
       </div>
     </Container>
   )
@@ -238,6 +251,7 @@ function OtherHotels() {
       price: 300,
       guests: 2,
       image: image4,
+      sale:"Sale 30%"
     },
     {
       id: 2,
@@ -246,6 +260,7 @@ function OtherHotels() {
       price: 700,
       guests: 2,
       image: image5,
+      sale:"Sale 40%"
     },
     {
       id: 3,
@@ -254,36 +269,56 @@ function OtherHotels() {
       price: 340,
       guests: 2,
       image: image6,
+      sale:"Sale 50%"
     },
-  ]
+  ];
 
   return (
-    <Container className="other-hotels-section">
-      <h2 className="section-title">Other hotels in the area</h2>
-      <Row>
+    <Container className="other-hotels-section" >
+      <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
+        Special Offers Just For You
+      </h1>
+      <Row className="mt-5">
         {hotels.map((hotel) => (
           <Col md={4} key={hotel.id}>
             <Card className="hotel-card">
-              <div className="hotel-image-container">
-                <Card.Img variant="top" src={hotel.image} className="hotel-image" />
-                <div className="rating-overlay">
+              <div style={{ padding: '20px', height: '250px', paddingRight: '40px'}}>
+                <Image md={4}
+                  variant="top"
+                  src={hotel.image}
+                  className="hotel-image"
+                  style={{borderRadius: '20px'}}
+                />
+                
+                <div className="rating-overlay" style={{paddingRight: '30px', paddingTop: "10px"}}>
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className="star-icon" />
                   ))}
                 </div>
+                <span className="price" style={{
+                  color:"gray", 
+                  position: 'absolute',
+                  transform: 'rotate(90deg)', 
+                  transformOrigin: 'left bottom',
+                  width:"1000px",
+                  letterSpacing: '6px' // Điều chỉnh điểm xoay nếu cần
+                }}>{hotel.sale}</span>
               </div>
-              <Card.Body>
+              <Card.Body style={{marginLeft:"10px"}}>
                 <Card.Title className="hotel-name">{hotel.name}</Card.Title>
                 <div className="room-info">
                   <span className="room-type">{hotel.roomType}</span>
                   <span className="guests-count">
-                    <i className="fas fa-user"></i> {hotel.guests}
+                    <FaUser /> {hotel.guests}
                   </span>
                 </div>
-                <div className="price-container_1">
+                <div className="price-container">
                   <span className="price">{hotel.price}$</span>
                   <span className="per-day">/Day</span>
-                  <Button  className="book-now-btn " style={{marginLeft:"18%"}}>
+                  <Button
+                    variant="outline-primary"
+                    style={{   marginLeft: "auto",padding:"0.7rem 4.5rem",fontWeight:"500"}}
+                  >
                     Book Now
                   </Button>
                 </div>
@@ -293,7 +328,7 @@ function OtherHotels() {
         ))}
       </Row>
     </Container>
-  )
+  );
 }
 function CustomerReviews() {
   const reviews = [
@@ -302,20 +337,20 @@ function CustomerReviews() {
       text: "Great experience! Professional service, clean and modern room.",
       author: "Vand D",
       rating: 4.5,
-      image: "/placeholder.svg?height=60&width=60&text=VD",
+      image: image9,
     },
     {
       id: 2,
       text: "Quick booking process, many attractive offers",
       author: "Tru Vio",
       rating: 4.8,
-      image: "/placeholder.svg?height=60&width=60&text=TV",
+      image: image10,
     },
   ]
 
   return (
     <Container className="reviews-section">
-      <h2 className="reviews-title">Customer Reviews</h2>
+      <h2 className="reviews-title" style={{textAlign:"center",fontSize:"2rem",fontWeight:"bold",marginBottom:"3rem",color:"#1a2b49"}}>Customer Reviews</h2>
       <Row>
         {reviews.map((review) => (
           <Col md={6} key={review.id}>
