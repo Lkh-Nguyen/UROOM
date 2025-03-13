@@ -14,6 +14,11 @@ const ErrorPage= '/error';
 const BookingCheckPage= '/bookingcheck_customer';
 const PaymentPage= '/payment_customer';
 const PaymentSuccessPage= '/paymentsuccess_customer'
+const HotelSearchPage= '/hotelsearch_customer'
+
+
+//tác nhân HotelHost
+const LoginHotelHostPage= '/login_hotelhost'
 
 export {
   LoginPage,
@@ -30,5 +35,7 @@ export {
   ErrorPage,
   BookingCheckPage,
   PaymentPage,
-  PaymentSuccessPage
+  PaymentSuccessPage,
+  HotelSearchPage,
+  LoginHotelHostPage
 }
