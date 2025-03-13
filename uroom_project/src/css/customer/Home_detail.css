@@ -19,7 +19,7 @@ body {
 /* Hero Section */
 .hero-section {
   background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("https://i.pinimg.com/736x/8b/a3/e4/8ba3e4974350ea7a98b5d43d25b1ac1f.jpg");
+    url("../../images/788a690f45e8afb211df217987d0ac56.jpg");
   background-size: cover;
   background-position: center;
   height: 400px;
@@ -222,10 +222,10 @@ body {
   align-items: center;
   margin-top: 1rem;
 }
-.price-container_1 {
+/* .price-container_1 {
   display: flex;
   margin-top: 1rem;
-}
+} */
 
 .price {
   font-size: 1.5rem;
@@ -239,15 +239,44 @@ body {
 }
 
 .amount-container {
+  display: flex;
+  align-items: center;
+  background-color: #f5f8ff; /* Màu nền xanh nhạt */
+  padding: 10px 15px;
+  border-radius: 10px;
+  width: fit-content;
   margin-left: auto;
-  color: #0d6efd;
-  font-size: 0.9rem;
 }
 
-.amount {
+.label {
   font-weight: bold;
-  margin-left: 0.5rem;
+  color: #2374e1; /* Màu xanh */
+  margin-right: 8px;
+  font-size: 16px;
 }
+
+.amount-dropdown {
+  border: none;
+  background: white;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  outline: none;
+}
+
+/* Tùy chỉnh mũi tên dropdown */
+.amount-dropdown::-ms-expand {
+  display: none;
+}
+
+.amount-dropdown:focus {
+  outline: none;
+}
+
 
 /* Other Hotels Section */
 /* .other-hotels-section {
@@ -274,6 +303,8 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+
 
 .rating-overlay {
   position: absolute;
@@ -306,12 +337,12 @@ body {
   font-size: 0.9rem;
 }
 
-.book-now-btn {
+/* .book-now-btn {
   padding: 0.7rem 4.5rem;
   font-weight: 500;
   background-color: white;
   color: #0d6efd;
-}
+} */
 .reviews-section {
   text-align: center;
   padding: 40px 0;

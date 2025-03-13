@@ -13,12 +13,17 @@ const BannedPage= '/banned';
 const ErrorPage= '/error';
 const BookingCheckPage= '/bookingcheck_customer';
 const PaymentPage= '/payment_customer';
+<<<<<<< HEAD
 const PaymentSuccessPage= '/paymentsuccess_customer'
 const HotelSearchPage= '/hotelsearch_customer'
 
 
 //tác nhân HotelHost
 const LoginHotelHostPage= '/login_hotelhost'
+=======
+const PaymentSuccessPage= '/paymentsuccess_customer';
+const RoomDetailPage= '/RoomDetailPage';
+>>>>>>> 578ecedc679795771fd9b2e4d2cd9f5932e653b7
 
 export {
   LoginPage,
@@ -36,6 +41,10 @@ export {
   BookingCheckPage,
   PaymentPage,
   PaymentSuccessPage,
+<<<<<<< HEAD
   HotelSearchPage,
   LoginHotelHostPage
+=======
+  RoomDetailPage
+>>>>>>> 578ecedc679795771fd9b2e4d2cd9f5932e653b7
 }
