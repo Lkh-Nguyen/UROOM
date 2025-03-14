@@ -4,6 +4,7 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -66,7 +67,7 @@ const RegisterPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter your phone number"
-                  name="username"
+                  name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   className="py-2"
@@ -78,7 +79,7 @@ const RegisterPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter your email"
-                  name="username"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
                   className="py-2"
@@ -122,6 +123,9 @@ const RegisterPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mb-4"
+                onClick={() => {
+                  
+                }}
               >
                 Register Account
               </Button>

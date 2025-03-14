@@ -3,9 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
+import { Route, useNavigate } from "react-router-dom";
 import Banner from '../../../images/banner.jpg';
 
 const ResetPasswordPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     again_password: '',
@@ -92,6 +94,9 @@ const ResetPasswordPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mt-2"
+                onClick={() => {
+                  navigate(Routers.Home)
+                }}
               >
                 Reset Password
               </Button>

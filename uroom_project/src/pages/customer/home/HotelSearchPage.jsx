@@ -1,13 +1,18 @@
 
 import { useState } from "react"
 import { Container, Row, Col, Form, Button, Card, InputGroup, Badge, Alert } from "react-bootstrap"
-import { FaMapMarkerAlt, FaCalendarAlt, FaUserFriends, FaBed, FaStar, FaCheck, FaSearch } from "react-icons/fa"
+import { FaMapMarkerAlt, FaCalendarAlt, FaStar, FaCheck, FaSearch, FaHotel} from "react-icons/fa"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "../../../css/customer/HotelSearchPage.css"
 import Footer from '../Footer';
 import Header from '../Header';
 import Banner from '../../../images/banner.jpg';
-
+import {
+  FaChild,
+  FaUser,
+} from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import * as Routers from "../../../utils/Routes";
 
 const hotelData = [
   {
@@ -43,21 +48,11 @@ const hotelData = [
     feedbacks: 4,
     image: "https://cf.bstatic.com/xdata/images/hotel/max500/531742767.jpg?k=1ba12672d85a3117cd06ba6428159756a32fe585c68830c9e5260600e1512aae&o=",
     features: ["Free cancellation", "No prepayment needed - pay at property"],
-  },
-  {
-    id: 4,
-    name: "Bay Capital Danang",
-    location: "Đà Nẵng",
-    address: "Đia điểm: 06 10 Đỗ Bá, Đại Biển T20, Phường Mỹ An, Mỹ An, Ngũ Hành Sơn, Đà Nẵng, Việt Nam",
-    star: 2,
-    rating: 4.5,
-    feedbacks: 4,
-    image: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/43888647.jpg?k=16f396d5316c15a6404b8e2c8654a7d62fca55dd2d7cebe08b30bdc5167b5bf7&o=",
-    features: ["Free cancellation", "No prepayment needed - pay at property"],
-  },
+  }
 ]
 
 const HotelSearchPage = () => {
+    const navigate = useNavigate();
   const [location, setLocation] = useState("Đà Nẵng")
   const [people, setPeople] = useState("5")
   const [rooms, setRooms] = useState("2")
@@ -97,109 +92,121 @@ const HotelSearchPage = () => {
     >
       <Header/>
       <div className="flex-grow-1 d-flex align-items-center justify-content-center" style={{paddingTop: "50px", paddingBottom: "50px"}}>
-        <Container style={{paddingTop: '50px', paddingBottom: '50px'}}>
-        {/* Search Form */}
-        <Card className="shadow-sm mb-4">
-            <Card.Body className="p-4">
-            <Form onSubmit={handleSearch}>
-                <Row className="align-items-end g-3">
+        <Container style={{paddingTop: '50px', paddingBottom: '50px', marginTop: '50px'}}>
+        <div style={{ maxWidth: "100%", margin: "0 auto", marginTop: "-4.5%" }}>
+            {/* Khối chứa cả Hotel và Search Bar */}
+            <div
+                style={{
+                borderRadius: "20%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+                }}
+            >
+                {/* Hotel Title */}
+                <div
+                className="px-5 py-2 bg-white d-flex align-items-center pt-3"
+                style={{
+                    paddingRight: "40px",
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                    borderBottomRightRadius: "5px",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    width: "fit-content",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    paddingLeft: "20px",
+                    marginBottom: "-1%",
+                    marginLeft: "-0.9%",
+                }}
+                >
+                <FaHotel style={{ color: "#2D74FF", fontSize: "24px" }} />
+                <span style={{ color: "black", marginLeft: "10px" }}>Hotel</span>
+                </div>
+        
+                {/* Search Bar */}
+                <Row
+                className="d-flex align-items-center bg-white px-4 py-4 mb-5"
+                style={{
+                    borderBottomRightRadius: "20px",
+                    borderBottomLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                }}
+                >
+                {/* Search location */}
                 <Col md={3}>
-                    <Form.Group>
-                    <Form.Label className="small text-muted">Where are you going?</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text className="bg-white">
-                        <FaMapMarkerAlt className="text-primary" />
-                        </InputGroup.Text>
-                        <Form.Select value={location} onChange={(e) => setLocation(e.target.value)}>
-                        <option>Đà Nẵng</option>
-                        <option>Hà Nội</option>
-                        <option>Hồ Chí Minh</option>
-                        </Form.Select>
-                    </InputGroup>
-                    </Form.Group>
-                </Col>
-
-                <Col md={2}>
-                    <Form.Group>
-                    <Form.Label className="small text-muted">No. of people</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text className="bg-white">
-                        <FaUserFriends className="text-primary" />
-                        </InputGroup.Text>
-                        <Form.Control
-                        type="number"
-                        placeholder="Add guests"
-                        value={people}
-                        onChange={(e) => setPeople(e.target.value)}
-                        />
-                    </InputGroup>
-                    </Form.Group>
-                </Col>
-
-                <Col md={2}>
-                    <Form.Group>
-                    <Form.Label className="small text-muted">Departure</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text className="bg-white">
-                        <FaCalendarAlt className="text-primary" />
-                        </InputGroup.Text>
-                        <Form.Control
+                    <InputGroup className="border" style={{borderRadius: "10px"}}>
+                    <InputGroup.Text className="bg-transparent border-0">
+                        <FaMapMarkerAlt />
+                    </InputGroup.Text>
+                    <Form.Control
                         type="text"
-                        placeholder="Add date"
-                        value={departureDate}
-                        onChange={(e) => setDepartureDate(e.target.value)}
-                        />
+                        placeholder="Search location"
+                        className="border-0 bg-transparent"
+                    />
+                    <InputGroup.Text className="bg-transparent border-0">
+                        <FaSearch />
+                    </InputGroup.Text>
                     </InputGroup>
-                    </Form.Group>
                 </Col>
-
-                <Col md={2}>
-                    <Form.Group>
-                    <Form.Label className="small text-muted">Return</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text className="bg-white">
-                        <FaCalendarAlt className="text-primary" />
-                        </InputGroup.Text>
-                        <Form.Control
-                        type="text"
-                        placeholder="Add date"
-                        value={returnDate}
-                        onChange={(e) => setReturnDate(e.target.value)}
-                        />
+        
+                {/* Date */}
+                <Col md={3} className="px-2">
+                    <InputGroup className="border"style={{borderRadius: "10px"}}>
+                    <InputGroup.Text className="bg-transparent border-0">
+                        <FaCalendarAlt />
+                    </InputGroup.Text>
+                    <Form.Control type="date" className="border-0 bg-transparent" />
                     </InputGroup>
-                    </Form.Group>
                 </Col>
-
-                <Col md={2}>
-                    <Form.Group>
-                    <Form.Label className="small text-muted">Rooms</Form.Label>
-                    <InputGroup>
-                        <InputGroup.Text className="bg-white">
-                        <FaBed className="text-primary" />
-                        </InputGroup.Text>
-                        <Form.Control
-                            type="number"
-                            placeholder="Number of rooms"
-                            value={rooms}
-                            onChange={(e) => setRooms(e.target.value)}
-                        />
+        
+                {/* Ô chọn số lượng Adults và Children */}
+                <Col md={5} className="px-3 ">
+                    <InputGroup className="border" style={{borderRadius: "10px",padding:"2px"}}>
+                    <InputGroup.Text className="bg-transparent border-0">
+                        <FaUser />
+                    </InputGroup.Text>
+                    <Form.Select className="border-0 bg-transparent">
+                        <option>1 Adult</option>
+                        <option>2 Adults</option>
+                        <option>3 Adults</option>
+                        <option>4 Adults</option>
+                        <option>5 Adults</option>
+                        <option>6 Adults</option>
+                    </Form.Select>
+        
+                    <InputGroup.Text className="bg-transparent border-0">
+                        <FaChild />
+                    </InputGroup.Text>
+                    <Form.Select className="border-0 bg-transparent">
+                        <option>0 Children</option>
+                        <option>1 Child</option>
+                        <option>2 Children</option>
+                        <option>3 Children</option>
+                        <option>4 Children</option>
+                        <option>5 Children</option>
+                    </Form.Select>
                     </InputGroup>
-                    </Form.Group>
                 </Col>
-
-                <Col md={1}>
+        
+                {/* Search Button */}
+                <Col xs="auto" className="px-2">
                     <Button
                     variant="primary"
-                    type="submit"
-                    className="w-100 d-flex align-items-center justify-content-center"
+                    // className="rounded-circl"
+                    style={{ width: "60px", height: "45px", borderRadius: "15px" }}
+                    onClick={() => {
+                        navigate(Routers.HotelSearchPage, {
+                        // state: { id: 1}
+                        });
+                    }}
                     >
-                    <FaSearch className="me-1" /> Search
+                    <FaSearch />
                     </Button>
                 </Col>
                 </Row>
-            </Form>
-            </Card.Body>
-        </Card>
+            </div>
+            </div>
 
         {/* Main Content */}
         <Row>
@@ -316,7 +323,12 @@ const HotelSearchPage = () => {
                         </div>
                         
                         <div className="text-end mt-3">
-                            <Button variant="primary">Đặt Phòng</Button>
+                            <Button 
+                                variant="primary"
+                                onClick={() => {
+                                    navigate(Routers.Home_detail)
+                                }}
+                            >Đặt Phòng</Button>
                         </div>
                         </Card.Body>
                     </Col>

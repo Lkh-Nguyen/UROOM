@@ -8,7 +8,6 @@ import ResetPasswordPage from "./pages/customer/login_register/ResetPasswordPage
 import MyAccountPage from "./pages/customer/information/MyAccountPage";
 import Home_detail from "./pages/customer/home/HomeDetailPage";
 import Home from "./pages/customer/home/HomePage.jsx";
-
 import BookingBill from "./pages/customer/information/BookingBill";
 import CreateFeedback from "./pages/customer/information/CreateFeedback";
 import BannedPage from "./pages/BannedPage";
@@ -16,12 +15,9 @@ import ErrorPage from "./pages/ErrorPage";
 import BookingCheckPage from "pages/customer/home/BookingCheckPage";
 import PaymentPage from "pages/customer/home/PaymentPage";
 import PaymentSuccessPage from "pages/customer/home/PaymentSuccessPage";
-<<<<<<< HEAD
 import HotelSearchPage from "pages/customer/home/HotelSearchPage";
 import LoginHotelHostPage from "pages/hotel_host/login_register/LoginHotelHostPage";
-=======
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
->>>>>>> 578ecedc679795771fd9b2e4d2cd9f5932e653b7
 
 function App() {
   return (
@@ -51,16 +47,13 @@ function App() {
         <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>} />
         <Route path={Routers.Home} element={<Home/>} />
         <Route path={Routers.Home_detail} element={<Home_detail/>} />
-<<<<<<< HEAD
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage/>} />
+        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage/>} />
 
         {/*|Hotel Host */}
         <Route path={Routers.LoginHotelHostPage} element={<LoginHotelHostPage/>} />
 
 
-=======
-        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage/>} />
->>>>>>> 578ecedc679795771fd9b2e4d2cd9f5932e653b7
 
       </Routes>
     </Router>

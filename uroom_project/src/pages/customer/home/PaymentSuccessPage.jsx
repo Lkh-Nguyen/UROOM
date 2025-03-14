@@ -6,6 +6,7 @@ import Banner from '../../../images/banner.jpg';
 import { useNavigate } from "react-router-dom";
 import Footer from '../Footer';
 import Header from '../Header';
+import * as Routers from "../../../utils/Routes";
 
 const PaymentSuccessPage = () => {
     const navigate = useNavigate();
@@ -60,24 +61,27 @@ const PaymentSuccessPage = () => {
                     <div className="d-flex justify-content-between gap-3 mt-5">
                         <Button 
                             variant="dark" 
-                            className="px-4 py-2 d-flex align-items-center justify-content-center"
+                            className="px-4 py-3 d-flex align-items-center justify-content-center"
                             style={{
                                 flex: 1,
                                 borderRadius: '8px',
                                 backgroundColor: '#000',
                                 border: 'none',
                             }}
+                            onClick={() => {
+                                navigate(Routers.Home)
+                            }}
                         >
                             <ArrowLeft size={20} className="me-2" />
                             Go to home page
                         </Button>
 
-                        <Button 
+                        <Button
+                            variant='success'
                             className="px-4 py-2 d-flex align-items-center justify-content-center"
                             style={{
                                 flex: 1,
                                 borderRadius: '8px',
-                                backgroundColor: '#2ecc71',
                                 border: 'none',
                             }}
                            onClick={goToMyAccount}

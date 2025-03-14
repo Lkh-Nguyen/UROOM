@@ -73,7 +73,7 @@ const LoginHotelHostPage = () => {
                   <Button
                     variant="link"
                     className="position-absolute text-decoration-none text-muted h-100 d-flex align-items-center pe-3"
-                    style={{right: 0, top: -20}}
+                    style={{right: 0, top: 0}}
                     onClick={togglePasswordVisibility}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}

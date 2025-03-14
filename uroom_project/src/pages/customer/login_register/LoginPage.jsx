@@ -4,8 +4,10 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -73,7 +75,7 @@ const LoginPage = () => {
                   <Button
                     variant="link"
                     className="position-absolute text-decoration-none text-muted h-100 d-flex align-items-center pe-3"
-                    style={{right: 0, top: -20}}
+                    style={{right: 0, top: 0}}
                     onClick={togglePasswordVisibility}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -109,6 +111,9 @@ const LoginPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mb-4"
+                onClick={() => {
+                  navigate(Routers.Home)
+                }}
               >
                 Login Account
               </Button>
