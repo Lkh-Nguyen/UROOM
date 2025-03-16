@@ -125,7 +125,7 @@ const RegisterPage = () => {
                 type="submit" 
                 className="w-100 py-2 mb-4"
                 onClick={()=> {
-                  navigate(Routers.Home)
+                  navigate(Routers.VerifyCodeRegisterPage,{state: {message: "Code is sent in your email, verify in here!"}})
                 }}
               >
                 Register Account

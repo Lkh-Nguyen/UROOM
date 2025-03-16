@@ -4,8 +4,10 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
+import { useNavigate } from 'react-router-dom';
 
 const ForgetPasswordPage = () => {
+  const navigate= useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -66,7 +68,9 @@ const ForgetPasswordPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2"
-                href={Routers.VerifyCodePage}
+                onClick={() => {
+                  navigate(Routers.VerifyCodePage, {state: {message: "Code is sent in your email, verify in here!"}})
+                }}
               >
                 Reset Password
               </Button>

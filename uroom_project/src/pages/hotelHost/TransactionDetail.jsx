@@ -44,7 +44,7 @@ const BookingBill = () => {
      
     >
     
-      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" >
+      <div className="col-md-10 d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
         <Container fluid className="booking-bill-container">
           <Card className="booking-bill-card">
             <Row className="g-0">

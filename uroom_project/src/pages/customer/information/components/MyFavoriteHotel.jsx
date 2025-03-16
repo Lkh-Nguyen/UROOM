@@ -1,10 +1,20 @@
-import { Card, Row, Col, Form, Button, Pagination, Container} from "react-bootstrap"
-import { FaStar, FaMapMarkerAlt, FaEye } from "react-icons/fa"
-import "../../../../css/customer/MyFavoriteHotel.css"
-import { useState } from "react"
-import { Star, StarFill, X } from 'react-bootstrap-icons';
+import {
+  Card,
+  Row,
+  Col,
+  Form,
+  Button,
+  Pagination,
+  Container,
+} from "react-bootstrap";
+import { FaMapMarkerAlt, FaEye } from "react-icons/fa";
+import "../../../../css/customer/MyFavoriteHotel.css";
+import { useState } from "react";
+import { Star, StarFill, X } from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 import * as Routers from "../../../../utils/Routes";
+import { showToast, ToastProvider } from "components/ToastContainer";
+import ConfirmationModal from "components/ConfirmationModal";
 
 const MyFavoriteHotel = () => {
   const navigate = useNavigate();
@@ -27,19 +37,20 @@ const MyFavoriteHotel = () => {
       feedbacks: 12,
       stars: 5,
     },
-  ]
-  const[activePage, setActivePage] = useState(1);
+  ];
+  const [activePage, setActivePage] = useState(1);
   const renderStars = (count) => {
-      const stars = [];
-      for (let i = 0; i < 5; i++) {
-        if (i < count) {
-          stars.push(<StarFill key={i} className="text-warning" />);
-        } else {
-          stars.push(<Star key={i} className="text-warning" />);
-        }
+    const stars = [];
+    for (let i = 0; i < 5; i++) {
+      if (i < count) {
+        stars.push(<StarFill key={i} className="text-warning" />);
+      } else {
+        stars.push(<Star key={i} className="text-warning" />);
       }
-      return stars;
-    };
+    }
+    return stars;
+  };
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
   return (
     <Container fluid className="bg-light py-4">
       <h2 className="fw-bold mb-4">My Favorite Hotels</h2>
@@ -48,7 +59,7 @@ const MyFavoriteHotel = () => {
           <span className="me-2">Filter:</span>
         </Col>
         <Col xs="auto">
-          <Form.Select className="border-primary" style={{ width: '200px' }}>
+          <Form.Select className="border-primary" style={{ width: "200px" }}>
             <option>Score(High to low)</option>
             <option>Score(Low to high)</option>
             <option>Date(Newest first)</option>
@@ -56,7 +67,7 @@ const MyFavoriteHotel = () => {
           </Form.Select>
         </Col>
         <Col xs="auto">
-          <Form.Select className="border-primary" style={{ width: '120px' }}>
+          <Form.Select className="border-primary" style={{ width: "120px" }}>
             <option>1 star</option>
             <option>2 stars</option>
             <option>3 stars</option>
@@ -65,7 +76,7 @@ const MyFavoriteHotel = () => {
           </Form.Select>
         </Col>
         <Col xs="auto">
-          <Form.Select className="border-primary" style={{ width: '140px' }}>
+          <Form.Select className="border-primary" style={{ width: "140px" }}>
             <option>Đà Nẵng</option>
             <option>Huế</option>
             <option>Hải Phòng</option>
@@ -80,7 +91,11 @@ const MyFavoriteHotel = () => {
             <Card key={hotel.id} className="mb-4 hotel-card">
               <Row className="g-0">
                 <Col md={4}>
-                  <Card.Img variant="top" src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/629251764.jpg?k=050e0b7a57991869eb2c714c9191d7eea3a712e3a37b66f665be9816c9a87b6c&o=&hp=1" className="hotel-image" />
+                  <Card.Img
+                    variant="top"
+                    src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/629251764.jpg?k=050e0b7a57991869eb2c714c9191d7eea3a712e3a37b66f665be9816c9a87b6c&o=&hp=1"
+                    className="hotel-image"
+                  />
                 </Col>
                 <Col md={8}>
                   <Card.Body>
@@ -91,51 +106,72 @@ const MyFavoriteHotel = () => {
                       <small>{hotel.address}</small>
                     </div>
                     <div className="d-flex align-items-center mb-2">
-                      <span className="rating-box me-2">{hotel.rating}</span>
-                      <span className="text-muted">{hotel.feedbacks} feedbacks</span>
+                      <span className="rating-box1 me-2">{hotel.rating}</span>
+                      <span className="text-muted">
+                        {hotel.feedbacks} feedbacks
+                      </span>
                     </div>
-                    <Button 
-                      variant="link" 
-                      className="view-detail p-0" 
-                      style={{fontSize: 16}}
+                    <Button
+                      variant="link"
+                      className="view-detail p-0"
+                      style={{ fontSize: 16 }}
                       onClick={() => {
-                        navigate(Routers.Home_detail)
+                        navigate(Routers.Home_detail);
                       }}
                     >
                       <FaEye className="me-1" />
                       View Detail Hotel
                     </Button>
-                    <Button 
-                      variant="link" 
+                    <Button
+                      variant="link"
                       className="text-dark p-0"
-                      style={{position: 'absolute', top: 5, right: 5}}
+                      style={{ position: "absolute", top: 5, right: 5 }}
+                      onClick={() => {setShowAcceptModal(true)}}
                     >
                       <X size={20} />
                     </Button>
                   </Card.Body>
                 </Col>
               </Row>
+              {/* Accept Confirmation Modal */}
+              <ConfirmationModal
+                show={showAcceptModal}
+                onHide={() => setShowAcceptModal(false)}
+                onConfirm={() =>{
+                  showToast.warning("Delete Hotel Successfully!");
+                }}
+                title="Confirm Delete"
+                message="Are you sure you want to delete hotel in list favorite hotels ?"
+                confirmButtonText="Accept"
+                type="danger"
+              />
+
             </Card>
           ))}
-      <div className="d-flex justify-content-center mt-4">
-          <Pagination>
-          {[1, 2, 3, 4].map(number => (
-              <Pagination.Item 
-              key={number} 
-              active={number === activePage}
-              onClick={() => setActivePage(number)}
-            >
-              <b style={{color: number === activePage ? "white" : "#0d6efd"}}>{number}</b>
-            </Pagination.Item>
-          ))}
-          </Pagination>
-      </div>
+          <div className="d-flex justify-content-center mt-4">
+            <Pagination>
+              {[1, 2, 3, 4].map((number) => (
+                <Pagination.Item
+                  key={number}
+                  active={number === activePage}
+                  onClick={() => setActivePage(number)}
+                >
+                  <b
+                    style={{
+                      color: number === activePage ? "white" : "#0d6efd",
+                    }}
+                  >
+                    {number}
+                  </b>
+                </Pagination.Item>
+              ))}
+            </Pagination>
+          </div>
+          <ToastProvider/>
         </Col>
       </Row>
     </Container>
+  );
+};
 
-  )
-}
-
-export default MyFavoriteHotel
-
+export default MyFavoriteHotel;

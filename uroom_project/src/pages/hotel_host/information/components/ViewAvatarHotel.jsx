@@ -1,15 +1,31 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Modal, Card, Form, Button } from "react-bootstrap";
+import {
+  FaCog,
+  FaLock,
+  FaUser,
+  FaHistory,
+  FaHeart,
+  FaPen,
+} from "react-icons/fa";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Modal,
+} from "react-bootstrap";
 
 function ViewAvatar() {
-  // State để điều khiển modal
+  // State to control the avatar modal
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  
-  // State lưu ảnh upload
-  const [selectedImage, setSelectedImage] = useState("https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg");
 
-  // Xử lý mở modal
+  // State lưu ảnh upload
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  // Functions to handle modal open/close
   const handleOpenModal = () => setShowAvatarModal(true);
   const handleCloseModal = () => setShowAvatarModal(false);
 
@@ -21,26 +37,29 @@ function ViewAvatar() {
       setSelectedImage(imageUrl);
     }
   };
-
   return (
     <Card.Body>
       <h2 className="fw-bold mb-4">View Avatar</h2>
       <div className="text-center">
-        <img
-          src={selectedImage}
+      <img
+          src={selectedImage || "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"}
           className="rounded-circle mb-2"
           style={{ width: "150px", height: "150px", objectFit: "cover" }}
           alt="avatar"
         />
         <br />
-        <Button 
-          className="fw-bold mb-4" 
+        <Button
+          className="fw-bold mb-4"
           variant="outline-primary"
           onClick={handleOpenModal}
-        >View Avatar</Button>
+        >
+          View Avatar
+        </Button>
       </div>
       <p className="text-center text-muted">
-        Maximum file size is 1 MB<br />Format JPEG, PNG, JPG, ...
+        Maximum file size in 1 MB
+        <br />
+        Format JPEG, PNG, JPG, ...
       </p>
       <Form>
         <Form.Group controlId="formFile" className="mb-3 text-center">
@@ -52,19 +71,25 @@ function ViewAvatar() {
           />
         </Form.Group>
         <div className="d-flex justify-content-end">
-          <Button variant="danger" className="me-2">CANCEL</Button>
+          <Button variant="danger" className="me-2">
+            CANCEL
+          </Button>
           <Button variant="primary">Upload</Button>
         </div>
       </Form>
-
       {/* Avatar Modal */}
-      <Modal show={showAvatarModal} onHide={handleCloseModal} centered size="lg">
+      <Modal
+        show={showAvatarModal}
+        onHide={handleCloseModal}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Customer Avatar</Modal.Title>
         </Modal.Header>
         <Modal.Body className="text-center p-4">
           <img
-            src={selectedImage}
+            src={selectedImage || "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"}
             alt="Customer avatar"
             className="img-fluid"
             style={{ maxHeight: "70vh" }}

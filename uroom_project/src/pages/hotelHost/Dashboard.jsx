@@ -16,6 +16,10 @@ import {
 import "../../css/hotelHost/Dashboard.css";
 import Sidebar from "../hotelHost/Sidebar";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { Image, Dropdown } from "react-bootstrap"; //
+import * as Routers from "../../utils/Routes";
+import { useNavigate } from "react-router-dom";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,7 +31,8 @@ ChartJS.register(
   Legend
 );
 
-function App() {
+function HotelHostDashboard() {
+  const navigate = useNavigate();
   // Data for line chart
   const lineData = {
     labels: ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
@@ -67,15 +72,39 @@ function App() {
             <div className="container-fluid mt-5">
               <h2 className="fw-bold text-secondary mb-4">DASHBOARD</h2>
               <div className="d-flex align-items-center">
-                <div className="profile-container">
-                  <span className="text-black me-2">con bò</span>
-                  <img
-                    src="https://i.pinimg.com/474x/88/76/9b/88769bfce341b1599e844828ea08da87.jpg"
-                    className="rounded-circle profile-img"
-                    alt="profile"
-                    style={{ width: "40px" }}
-                  />
-                </div>
+                <Dropdown align="end">
+                  <Dropdown.Toggle
+                    variant="light"
+                    className="login-btn d-flex align-items-center"
+                  >
+                    <span className="text-black me-2">con bò</span>
+                    <Image
+                      src="https://i.pinimg.com/474x/88/76/9b/88769bfce341b1599e844828ea08da87.jpg"
+                      roundedCircle
+                      width="30"
+                      height="30"
+                      className="ms-2 me-2"
+                    />
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item
+                      onClick={() =>
+                        navigate(Routers.MyAccountHotelPage, { state: { id: 0 } })
+                      }
+                    >
+                      View Information
+                    </Dropdown.Item>
+                    <Dropdown.Divider />
+                    <Dropdown.Item
+                      onClick={() => {
+                        console.log("User logged out");
+                        navigate(Routers.LoginHotelPage);
+                      }}
+                    >
+                      Logout
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
             </div>
           </nav>
@@ -338,4 +367,4 @@ function App() {
   );
 }
 
-export default App;
+export default HotelHostDashboard;

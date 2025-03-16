@@ -4,8 +4,10 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
+import { useNavigate } from "react-router-dom";
 
-const LoginHotelHostPage = () => {
+const LoginHotelPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -90,7 +92,7 @@ const LoginHotelHostPage = () => {
                   onChange={handleChange}
                   className="text-muted"
                 />
-                <a href={Routers.ForgetPasswordPage} className="text-decoration-none">Forgot Password?</a>
+                <a onClick={() => {navigate(Routers.ForgetPasswordHotelPage)}} className="text-decoration-none">Forgot Password?</a>
               </div>
 
               <Button 
@@ -109,13 +111,16 @@ const LoginHotelHostPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mb-4"
+                onClick={() => {
+                  navigate(Routers.HotelHostDashboard)
+                }}
               >
                 Login Account
               </Button>
 
               <div className="text-center">
                 <span className="text-muted">Not a hotel host? </span>
-                <a href={Routers.RegisterPage} className="text-decoration-none">Register now</a>
+                <a onClick={() => {navigate(Routers.RegisterHotelPage)}} className="text-decoration-none">Register now</a>
               </div>
             </Form>
           </Card.Body>
@@ -125,4 +130,4 @@ const LoginHotelHostPage = () => {
   );
 };
 
-export default LoginHotelHostPage;
+export default LoginHotelPage;

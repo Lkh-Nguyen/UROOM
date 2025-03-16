@@ -21,6 +21,15 @@ import {
   FaQuoteLeft,
   FaThumbsUp,
   FaThumbsDown,
+  FaShuttleVan,
+  FaCoffee,
+  FaConciergeBell,
+  FaSnowflake,
+  FaTv,
+  FaCocktail,
+  FaSpa,
+  FaDumbbell,
+  FaArrowRight,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/css/customer/Home_detail.css";
@@ -41,10 +50,13 @@ import image9 from "../../../images/Ellipse_3.png";
 import image10 from "../../../images/Ellipse_3_(1).png";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
-
-const imageList = [room1, room2, room3];
+import { ExclamationTriangleFill } from "react-bootstrap-icons";
+import { useEffect, useState } from "react";
 
 function App() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="app-container">
       <NavigationBar />
@@ -75,20 +87,37 @@ function HeroSection() {
 }
 
 function MainContent() {
+  const imageList = [room1, room2, room3];
+  const [mainImage, setMainImage] = useState(imageList[0]); // Ảnh chính ban đầu
+
   return (
     <Container className="main-content">
       <Card className="content-card">
         <Row>
           <Col lg={6}>
             <div className="main-image-container">
-              <img src={main_room} alt="Main Room" className="main-image" />
+              {/* Ảnh lớn */}
+              <img src={mainImage} alt="Main Room" className="main-image" />
+
+              {/* Danh sách ảnh nhỏ */}
               <div className="thumbnail-container">
                 {imageList.map((image, index) => (
                   <img
                     key={index}
                     src={image}
                     alt={`Room ${index + 1}`}
-                    className="thumbnail"
+                    className={`thumbnail ${
+                      mainImage === image ? "active" : ""
+                    }`}
+                    onClick={() => setMainImage(image)} // Khi click, ảnh lớn thay đổi
+                    style={{
+                      cursor: "pointer",
+                      border:
+                        mainImage === image
+                          ? "2px solid blue"
+                          : "2px solid transparent",
+                      borderRadius: "5px",
+                    }}
                   />
                 ))}
               </div>
@@ -128,7 +157,7 @@ function MainContent() {
                 </div>
                 <div className="amenity-item">
                   <FaSwimmingPool />
-                  <span>Swimming pool</span>
+                  <span>Swimming Pool</span>
                 </div>
                 <div className="amenity-item">
                   <FaParking />
@@ -137,6 +166,38 @@ function MainContent() {
                 <div className="amenity-item">
                   <FaUtensils />
                   <span>Restaurant</span>
+                </div>
+                <div className="amenity-item">
+                  <FaDumbbell />
+                  <span>Fitness Center</span>
+                </div>
+                <div className="amenity-item">
+                  <FaSpa />
+                  <span>Spa & Wellness</span>
+                </div>
+                <div className="amenity-item">
+                  <FaCocktail />
+                  <span>Bar</span>
+                </div>
+                <div className="amenity-item">
+                  <FaTv />
+                  <span>Flat-screen TV</span>
+                </div>
+                <div className="amenity-item">
+                  <FaSnowflake />
+                  <span>Air Conditioning</span>
+                </div>
+                <div className="amenity-item">
+                  <FaConciergeBell />
+                  <span>24/7 Concierge Service</span>
+                </div>
+                <div className="amenity-item">
+                  <FaCoffee />
+                  <span>Free Breakfast</span>
+                </div>
+                <div className="amenity-item">
+                  <FaShuttleVan />
+                  <span>Airport Shuttle</span>
                 </div>
               </div>
             </div>
@@ -153,37 +214,69 @@ const SearchBar = () => {
         className="search-section d-flex align-items-center justify-content-center rounded shadow-sm bg-white  pt-5 pb-5"
         style={{ maxWidth: "1000px", margin: "0 auto" }}
       >
-        {/* Ô chọn ngày */}
-        <Col md={3} className="text-center px-2">
-          <InputGroup className="border rounded-pill px-2">
-            <InputGroup.Text className="bg-transparent border-0">
-              <FaCalendarAlt />
-            </InputGroup.Text>
-            <Form.Control type="date" className="border-0 bg-transparent" />
-          </InputGroup>
+        <Col md={6}>
+          <Row className="align-items-center">
+            {/* Ngày bắt đầu */}
+            <Col className="d-flex flex-grow-1">
+              <InputGroup
+                className="border w-100"
+                style={{ borderRadius: "10px" }}
+              >
+                <InputGroup.Text className="bg-transparent border-0">
+                  <FaCalendarAlt />
+                </InputGroup.Text>
+                <Form.Control type="date" className="border-0 bg-transparent" />
+              </InputGroup>
+            </Col>
+
+            {/* Icon mũi tên */}
+            <Col
+              xs="auto"
+              className="d-flex align-items-center justify-content-center"
+            >
+              <FaArrowRight style={{ fontSize: "1.2rem", color: "#555" }} />
+            </Col>
+
+            {/* Ngày kết thúc */}
+            <Col className="d-flex flex-grow-1">
+              <InputGroup
+                className="border w-100"
+                style={{ borderRadius: "10px" }}
+              >
+                <InputGroup.Text className="bg-transparent border-0">
+                  <FaCalendarAlt />
+                </InputGroup.Text>
+                <Form.Control type="date" className="border-0 bg-transparent" />
+              </InputGroup>
+            </Col>
+          </Row>
         </Col>
 
         {/* Ô chọn số lượng Adults và Children */}
-        <Col md={4} className="text-center px-2">
+        <Col md={5} className="text-center px-2">
           <InputGroup className="border rounded-pill px-2">
             <InputGroup.Text className="bg-transparent border-0">
               <FaUser />
             </InputGroup.Text>
             <Form.Select className="border-0 bg-transparent">
-              <option>Adults 2</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3+</option>
+              <option>1 Adult</option>
+              <option>2 Adults</option>
+              <option>3 Adults</option>
+              <option>4 Adults</option>
+              <option>5 Adults</option>
+              <option>6 Adults</option>
             </Form.Select>
 
             <InputGroup.Text className="bg-transparent border-0">
               <FaChild />
             </InputGroup.Text>
             <Form.Select className="border-0 bg-transparent">
-              <option>Children 0</option>
-              <option>0</option>
-              <option>1</option>
-              <option>2+</option>
+              <option>0 Children</option>
+              <option>1 Children</option>
+              <option>2 Children</option>
+              <option>3 Children</option>
+              <option>4 Children</option>
+              <option>5 Children</option>
             </Form.Select>
           </InputGroup>
         </Col>
@@ -256,13 +349,15 @@ function HotelRooms() {
               </div>
               <Card.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Card.Title 
+                  <Card.Title
                     className="room-title"
                     onClick={() => {
                       navigate(Routers.RoomDetailPage);
                     }}
                     style={{ cursor: "pointer" }} // Hiển thị dấu tay khi hover
-                  >{room.type}</Card.Title>
+                  >
+                    {room.type}
+                  </Card.Title>
                   <div className="guests-count">
                     <FaUser />
                     {room.guests}
@@ -343,9 +438,7 @@ function OtherHotels() {
       <Row className="mt-5">
         {hotels.map((hotel) => (
           <Col md={4} key={hotel.id}>
-            <Card className="hotel-card"
-              
-            >
+            <Card className="hotel-card">
               <div
                 style={{
                   padding: "20px",
@@ -417,6 +510,7 @@ function OtherHotels() {
   );
 }
 function CustomerReviews() {
+  const navigate = useNavigate();
   const reviews = [
     {
       id: 1,
@@ -452,6 +546,16 @@ function CustomerReviews() {
         {reviews.map((review) => (
           <Col md={6} key={review.id}>
             <div className="review-card">
+              <Button
+                variant="link"
+                className="text-dark p-0"
+                style={{ position: "absolute", top: 15, right: 15 }}
+                onClick={() => {
+                  navigate(Routers.ReportedFeedback);
+                }}
+              >
+                <ExclamationTriangleFill size={20} color="red" />
+              </Button>
               <FaQuoteLeft
                 className="quote-icon"
                 style={{ alignItems: "center" }}
