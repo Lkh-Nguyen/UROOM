@@ -3,9 +3,11 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
+import { useNavigate } from "react-router-dom";
 import Banner from '../../../images/banner.jpg';
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -41,13 +43,6 @@ const RegisterPage = () => {
         backgroundPosition: 'center'
       }}
     >
-        <Button 
-          variant="light" 
-          className="position-absolute start-0 top-0 rounded-pill d-flex align-items-center ms-3 mt-3" 
-          style={{ zIndex: 100 }}
-        >
-          <FaArrowLeft className="me-2" /> Back
-        </Button>
       <Container className="position-relative">
        
         
@@ -73,7 +68,7 @@ const RegisterPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter your phone number"
-                  name="username"
+                  name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   className="py-2"
@@ -85,7 +80,7 @@ const RegisterPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter your email"
-                  name="username"
+                  name="email"
                   value={formData.email}
                   onChange={handleChange}
                   className="py-2"
@@ -129,6 +124,9 @@ const RegisterPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mb-4"
+                onClick={()=> {
+                  navigate(Routers.Home)
+                }}
               >
                 Register Account
               </Button>

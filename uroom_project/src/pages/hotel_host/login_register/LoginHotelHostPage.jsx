@@ -4,10 +4,8 @@ import { Container, Form, Button, Card } from 'react-bootstrap';
 import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
-import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {
-  const navigate = useNavigate();
+const LoginHotelHostPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
@@ -46,7 +44,7 @@ const LoginPage = () => {
         
         <Card className="mx-auto shadow" style={{ maxWidth: '800px' }}>
           <Card.Body className="p-4 p-md-5">
-            <h2 className="text-center mb-4">Login Account</h2>
+            <h2 className="text-center mb-4">Login Hotel Host</h2>
             
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-4">
@@ -111,15 +109,12 @@ const LoginPage = () => {
                 variant="primary" 
                 type="submit" 
                 className="w-100 py-2 mb-4"
-                onClick={() => {
-                  navigate(Routers.Home)
-                }}
               >
                 Login Account
               </Button>
 
               <div className="text-center">
-                <span className="text-muted">Not a member? </span>
+                <span className="text-muted">Not a hotel host? </span>
                 <a href={Routers.RegisterPage} className="text-decoration-none">Register now</a>
               </div>
             </Form>
@@ -130,4 +125,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default LoginHotelHostPage;

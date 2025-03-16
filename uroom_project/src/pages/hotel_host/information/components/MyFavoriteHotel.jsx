@@ -3,11 +3,8 @@ import { FaStar, FaMapMarkerAlt, FaEye } from "react-icons/fa"
 import "../../../../css/customer/MyFavoriteHotel.css"
 import { useState } from "react"
 import { Star, StarFill, X } from 'react-bootstrap-icons';
-import { useNavigate } from "react-router-dom";
-import * as Routers from "../../../../utils/Routes";
 
 const MyFavoriteHotel = () => {
-  const navigate = useNavigate();
   const hotels = [
     {
       id: 1,
@@ -94,14 +91,7 @@ const MyFavoriteHotel = () => {
                       <span className="rating-box me-2">{hotel.rating}</span>
                       <span className="text-muted">{hotel.feedbacks} feedbacks</span>
                     </div>
-                    <Button 
-                      variant="link" 
-                      className="view-detail p-0" 
-                      style={{fontSize: 16}}
-                      onClick={() => {
-                        navigate(Routers.Home_detail)
-                      }}
-                    >
+                    <Button variant="link" className="view-detail p-0" style={{fontSize: 16}}>
                       <FaEye className="me-1" />
                       View Detail Hotel
                     </Button>

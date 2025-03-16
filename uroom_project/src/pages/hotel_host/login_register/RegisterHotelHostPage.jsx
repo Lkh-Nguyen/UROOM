@@ -6,11 +6,12 @@ import * as Routers from "../../../utils/Routes";
 import Banner from '../../../images/banner.jpg';
 import { useNavigate } from "react-router-dom";
 
-const LoginPage = () => {
-  const navigate = useNavigate();
+const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
+    phone: '',
+    email: '',
     password: '',
     rememberMe: false
   });
@@ -46,7 +47,7 @@ const LoginPage = () => {
         
         <Card className="mx-auto shadow" style={{ maxWidth: '800px' }}>
           <Card.Body className="p-4 p-md-5">
-            <h2 className="text-center mb-4">Login Account</h2>
+            <h2 className="text-center mb-4">Register Account</h2>
             
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-4">
@@ -56,6 +57,30 @@ const LoginPage = () => {
                   placeholder="Enter your username"
                   name="username"
                   value={formData.username}
+                  onChange={handleChange}
+                  className="py-2"
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-4">
+                <Form.Label style={{fontWeight: 500}}>Phone </Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your phone number"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="py-2"
+                />
+              </Form.Group>
+              
+              <Form.Group className="mb-4">
+                <Form.Label style={{fontWeight: 500}}>Email</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter your email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   className="py-2"
                 />
@@ -74,26 +99,13 @@ const LoginPage = () => {
                   />
                   <Button
                     variant="link"
-                    className="position-absolute text-decoration-none text-muted h-100 d-flex align-items-center pe-3"
-                    style={{right: 0, top: 0}}
+                    className="position-absolute end-0 top-0 text-decoration-none text-muted h-100 d-flex align-items-center pe-3"
                     onClick={togglePasswordVisibility}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </Button>
                 </div>
               </Form.Group>
-
-              <div className="d-flex justify-content-between mb-4">
-                <Form.Check
-                  type="checkbox"
-                  label="Remember me"
-                  name="rememberMe"
-                  checked={formData.rememberMe}
-                  onChange={handleChange}
-                  className="text-muted"
-                />
-                <a href={Routers.ForgetPasswordPage} className="text-decoration-none">Forgot Password?</a>
-              </div>
 
               <Button 
                 variant="outline-success" 
@@ -112,15 +124,15 @@ const LoginPage = () => {
                 type="submit" 
                 className="w-100 py-2 mb-4"
                 onClick={() => {
-                  navigate(Routers.Home)
+                  
                 }}
               >
-                Login Account
+                Register Account
               </Button>
 
               <div className="text-center">
-                <span className="text-muted">Not a member? </span>
-                <a href={Routers.RegisterPage} className="text-decoration-none">Register now</a>
+                <span className="text-muted">You have a account? </span>
+                <a href={Routers.LoginPage} className="text-decoration-none">Sign in here</a>
               </div>
             </Form>
           </Card.Body>
@@ -130,4 +142,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default RegisterPage;

@@ -13,8 +13,14 @@ const BannedPage= '/banned';
 const ErrorPage= '/error';
 const BookingCheckPage= '/bookingcheck_customer';
 const PaymentPage= '/payment_customer';
-const PaymentSuccessPage= '/paymentsuccess_customer';
+const PaymentSuccessPage= '/paymentsuccess_customer'
+const HotelSearchPage= '/hotelsearch_customer'
+const LoginHotelHostPage= '/login_hotelhost'
 const RoomDetailPage= '/RoomDetailPage';
+const HotelHostDashboard= '/HotelHostDashboard';
+const Transaction= '/Transaction';
+const BookingSchedule= '/BookingSchedule';
+const TransactionDetail= '/TransactionDetail';
 
 export {
   LoginPage,
@@ -32,5 +38,11 @@ export {
   BookingCheckPage,
   PaymentPage,
   PaymentSuccessPage,
-  RoomDetailPage
+  HotelSearchPage,
+  LoginHotelHostPage,
+  RoomDetailPage,
+  HotelHostDashboard,
+  Transaction,
+  BookingSchedule,
+  TransactionDetail,
 }

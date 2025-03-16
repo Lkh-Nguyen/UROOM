@@ -11,11 +11,10 @@ import {
 } from "react-bootstrap";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa";
-import Banner from "../../../images/banner.jpg";
-import "../../../css/customer/BookingBill.css";
+// import Banner from "../../images/banner.jpg";
+import "../../css/customer/BookingBill.css";
 import { useParams } from "react-router-dom";
-import Header from "../Header";
-import Footer from "../Footer";
+import Sidebar from "../hotelHost/Sidebar";
 
 const BookingBill = () => {
   const { id } = useParams(); // Lấy id từ URL
@@ -36,16 +35,16 @@ const BookingBill = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100"
-      style={{
-        backgroundImage: `url(${Banner})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+    <div className="d-flex">
+        <div className="col-md-2">
+            <Sidebar/>
+        </div>
+        <div
+      className="col-md-10 "
+     
     >
-      <Header />
-      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: "50px", paddingBottom: "50px"}}>
+    
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" >
         <Container fluid className="booking-bill-container">
           <Card className="booking-bill-card">
             <Row className="g-0">
@@ -202,8 +201,10 @@ const BookingBill = () => {
           </Card>
         </Container>
       </div>
-      <Footer />
+    
     </div>
+    </div>
+    
   );
 };
 

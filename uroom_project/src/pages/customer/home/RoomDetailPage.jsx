@@ -9,29 +9,32 @@ import room1 from "../../../images/room1.png";
 import room2 from "../../../images/room2.png";
 import room3 from "../../../images/room3.png";
 import { useState,useEffect } from "react";
+import Banner from '../../../images/banner.jpg';
+import { useNavigate } from "react-router-dom";
+import * as Routers from "../../../utils/Routes";
+
 const imageList = [room1, room2, room3];
 
 
 function App() {
   return (
-    <div className="app-container">
-     <NavigationBar className="custom-navbar" />
-
-      
+    <div 
+      className="d-flex flex-column min-vh-100"
+      style={{
+        backgroundImage: `url(${Banner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >     
+      <NavigationBar className="custom-navbar" />
       <MainContent />
-     
       <Footer />
-      
-    
     </div>
   )
 }
-
-
-
-
 function MainContent() {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -42,7 +45,7 @@ function MainContent() {
   }, []);
   return (
     <Container className="main-content_1">
-        <h1 style={{textAlign:"center",marginTop:"10%",marginBottom:"-3%"}}>
+        <h1 style={{textAlign:"center",marginTop:"10%",marginBottom:"-3%", color: 'white'}}>
         Standard Room
         </h1>
       <Card className="content-card_1">
@@ -93,6 +96,9 @@ function MainContent() {
                   <Button
                     variant="outline-primary"
                     style={{   marginLeft: "auto",padding:"0.7rem 4.5rem",fontWeight:"500"}}
+                    onClick={() => {
+                      navigate(Routers.BookingCheckPage)
+                    }}
                   >
                     Book Now
                   </Button>

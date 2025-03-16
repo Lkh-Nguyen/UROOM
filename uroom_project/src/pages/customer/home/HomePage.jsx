@@ -37,7 +37,11 @@ import travel5 from "../../../images/nhatrang.jpg";
 import travel6 from "../../../images/hanoi.jpg";
 import travel7 from "../../../images/phuquoc.jpg";
 import chatbox from "../../../images/chatbox.png";
+import {useNavigate } from "react-router-dom";
+import * as Routers from "../../../utils/Routes";
+
 function Home() {
+
   return (
     <div className="app-container_1">
       <NavigationBar />
@@ -72,6 +76,7 @@ function HeroSection() {
 }
 
 const SearchBar = () => {
+  const navigate = useNavigate();
   return (
     <div style={{ maxWidth: "1000px", margin: "0 auto", marginTop: "-4.5%" }}>
       {/* Khối chứa cả Hotel và Search Bar */}
@@ -176,6 +181,11 @@ const SearchBar = () => {
               variant="primary"
               // className="rounded-circl"
               style={{ width: "60px", height: "45px", borderRadius: "15px" }}
+              onClick={() => {
+                navigate(Routers.HotelSearchPage, {
+                  // state: { id: 1}
+                });
+              }}
             >
               <FaSearch />
             </Button>
@@ -187,6 +197,7 @@ const SearchBar = () => {
 };
 
 function OtherHotels() {
+  const navigate = useNavigate();
   const hotels = [
     {
       id: 1,
@@ -262,6 +273,9 @@ function OtherHotels() {
                   <Button
                     variant="outline-primary"
                     style={{ marginLeft: "auto",padding:"0.7rem 4.5rem",fontWeight:"500"}}
+                    onClick={() => {
+                      navigate(Routers.Home_detail)
+                    }}
                   >
                     Book Now
                   </Button>
