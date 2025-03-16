@@ -17,6 +17,10 @@ const PaymentSuccessPage= '/paymentsuccess_customer'
 const HotelSearchPage= '/hotelsearch_customer'
 const LoginHotelHostPage= '/login_hotelhost'
 const RoomDetailPage= '/RoomDetailPage';
+const HotelHostDashboard= '/HotelHostDashboard';
+const Transaction= '/Transaction';
+const BookingSchedule= '/BookingSchedule';
+const TransactionDetail= '/TransactionDetail';
 
 export {
   LoginPage,
@@ -36,5 +40,9 @@ export {
   PaymentSuccessPage,
   HotelSearchPage,
   LoginHotelHostPage,
-  RoomDetailPage
+  RoomDetailPage,
+  HotelHostDashboard,
+  Transaction,
+  BookingSchedule,
+  TransactionDetail,
 }
