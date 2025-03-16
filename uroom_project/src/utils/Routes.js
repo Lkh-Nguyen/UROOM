@@ -20,6 +20,7 @@ const ReportedFeedback= '/reportedfeedback_customer';
 const DocumentUpload= '/documentupload_customer';
 const PaymentFailedPage= '/paymentfailed_customer';
 const VerifyCodeRegisterPage= '/verifyregiter_customer';
+
 //hotel host
 const LoginHotelPage= '/login_hotelhost';
 const RegisterHotelPage= '/register_hotelhost';
@@ -41,6 +42,10 @@ const DetailCustomerAdmin= '/detailcustomer_admin';
 //example
 const ExmapleConfirmationModal= 'confirmmodal_example';
 const HomeNotLogin= '/notlogin';
+const HotelHostDashboard= '/HotelHostDashboard';
+const Transaction= '/Transaction';
+const BookingSchedule= '/BookingSchedule';
+const TransactionDetail= '/TransactionDetail';
 
 export {
   LoginPage,
@@ -85,4 +90,10 @@ export {
   //example 
   ExmapleConfirmationModal,
   HomeNotLogin,
+  LoginHotelHostPage,
+  RoomDetailPage,
+  HotelHostDashboard,
+  Transaction,
+  BookingSchedule,
+  TransactionDetail,
 }

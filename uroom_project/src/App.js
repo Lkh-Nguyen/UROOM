@@ -41,14 +41,17 @@ import ExmapleConfirmationModal from "components/css/ExmapleConfirmationModal";
 import HomeNotLogin from "pages/customer/home/HomePageNotLogin";
 import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import VerifyCodeRegisterPage from "pages/customer/login_register/VerifyCodeRegisterPage";
+import HotelHostDashboard from "pages/hotelHost/Dashboard";
+import Transaction from "pages/hotelHost/Transaction";
+import BookingSchedule from "pages/hotelHost/BookingSchedule";
+import TransactionDetail from "pages/hotelHost/TransactionDetail";
 
 function App() {
   return (
     <Router>
       <Routes>
-        
-        <Route path={Routers.BannedPage} element={<BannedPage/>} />
-        <Route path={Routers.ErrorPage} element={<ErrorPage/>} />
+        <Route path={Routers.BannedPage} element={<BannedPage />} />
+        <Route path={Routers.ErrorPage} element={<ErrorPage />} />
 
         {/*Customer And Guest */}
         {/*Login, Register, Forget Password */}
@@ -58,14 +61,47 @@ function App() {
         <Route path={Routers.ForgetPasswordPage} element={<ForgetPasswordPage/>} />
         <Route path={Routers.VerifyCodePage} element={<VerifyCodePage/>} />
         <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage/>} />
-
+        <Route path={Routers.LoginPage} element={<LoginPage />} />
+        <Route path={Routers.RegisterPage} element={<RegisterPage />} />
+        <Route
+          path={Routers.ForgetPasswordPage}
+          element={<ForgetPasswordPage />}
+        />
+        <Route path={Routers.VerifyCodePage} element={<VerifyCodePage />} />
+        <Route
+          path={Routers.ResetPasswordPage}
+          element={<ResetPasswordPage />}
+        />
         {/*Infomation, Avatar */}
-        <Route path={Routers.MyAccountPage} element={<MyAccountPage/>} />
-        <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill/>} />
-        <Route path={Routers.BookingBill} element={<BookingBill/>} />
-        <Route path={Routers.CreateFeedback} element={<CreateFeedback/>} />
+        <Route path={Routers.MyAccountPage} element={<MyAccountPage />} />
+        <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
+        <Route path={Routers.BookingBill} element={<BookingBill />} />
+        <Route path={Routers.CreateFeedback} element={<CreateFeedback />} />
 
         {/*Home*/}
+        <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
+        <Route path={Routers.PaymentPage} element={<PaymentPage />} />
+        <Route
+          path={Routers.PaymentSuccessPage}
+          element={<PaymentSuccessPage />}
+        />
+        <Route path={Routers.Home} element={<Home />} />
+        <Route path={Routers.Home_detail} element={<Home_detail />} />
+        <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
+        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
+
+        {/*|Hotel Host */}
+        <Route
+          path={Routers.LoginHotelHostPage}
+          element={<LoginHotelHostPage />}
+        />
+        <Route
+          path={Routers.HotelHostDashboard}
+          element={<HotelHostDashboard />}
+        />
+        <Route path={Routers.Transaction} element={<Transaction />} />
+        <Route path={Routers.BookingSchedule} element={<BookingSchedule />} />
+        <Route path={Routers.TransactionDetail} element={<TransactionDetail />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage/>} />
         <Route path={Routers.PaymentPage} element={<PaymentPage/>} />
         <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>} />

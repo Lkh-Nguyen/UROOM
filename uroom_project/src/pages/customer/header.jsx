@@ -1,25 +1,39 @@
-import {
-  Container,
-  Navbar,
-  Nav,
-  Button,
-  Image,
-  Dropdown,
-} from "react-bootstrap";
+
+import { Container, Navbar, Nav, Button, Image } from "react-bootstrap";
 import "../../css/customer/NavigationBar.css";
 import * as Routers from "../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
-function NavigationBar({ header = 1 }) {
+function NavigationBar() {
   const navigate = useNavigate();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Lắng nghe sự kiện cuộn trang
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <Navbar expand="lg" className="navbar-dark fixed-top">
+    <Navbar
+      expand="lg"
+      className={`fixed-top ${scrolled ? "navbar-scrolled" : "navbar-dark"}`}
+      style={{
+        backgroundColor: scrolled ? "rgba(26, 43, 73, 0.9)" : "transparent",
+        transition: "background-color 0.3s ease",
+      }}
+    >
       <Container>
         <Navbar.Brand
-          style={{ cursor: "pointer" }} // Hiển thị dấu tay khi hover
-          onClick={() => {
-            navigate(Routers.Home);
-          }}
+          style={{ cursor: "pointer" }}
+          onClick={() => navigate(Routers.Home)}
           className="brand"
         >
           UR<span style={{ color: "#f8e71c" }}>OO</span>M
@@ -60,6 +74,7 @@ function NavigationBar({ header = 1 }) {
               onClick={() =>
                 navigate(Routers.MyAccountPage, { state: { id: 4 } })
               }
+
             >
               Favorite hotels
             </Nav.Link>
@@ -129,15 +144,5 @@ function NavigationBar({ header = 1 }) {
     </Navbar>
   );
 }
-
-// Xử lý hiệu ứng navbar khi scroll
-window.addEventListener("scroll", function () {
-  const navbar = document.querySelector(".navbar");
-  if (window.scrollY > 50) {
-    navbar.classList.add("scrolled");
-  } else {
-    navbar.classList.remove("scrolled");
-  }
-});
 
 export default NavigationBar;
