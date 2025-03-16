@@ -51,6 +51,7 @@ function App() {
         <Route path={Routers.CreateFeedback} element={<CreateFeedback />} />
 
         {/*Home*/}
+<<<<<<< HEAD
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.PaymentPage} element={<PaymentPage />} />
         <Route
@@ -74,6 +75,21 @@ function App() {
         <Route path={Routers.Transaction} element={<Transaction />} />
         <Route path={Routers.BookingSchedule} element={<BookingSchedule />} />
         <Route path={Routers.TransactionDetail} element={<TransactionDetail />} />
+=======
+        <Route path={Routers.BookingCheckPage} element={<BookingCheckPage/>} />
+        <Route path={Routers.PaymentPage} element={<PaymentPage/>} />
+        <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>} />
+        <Route path={Routers.Home} element={<Home/>} />
+        <Route path={Routers.Home_detail} element={<Home_detail/>} />
+        <Route path={Routers.HotelSearchPage} element={<HotelSearchPage/>} />
+        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage/>} />
+
+        {/*|Hotel Host */}
+        <Route path={Routers.LoginHotelHostPage} element={<LoginHotelHostPage/>} />
+
+
+
+>>>>>>> 8e125424ba5354dc8ab7d86b78a62b16ff936f31
       </Routes>
     </Router>
   );
