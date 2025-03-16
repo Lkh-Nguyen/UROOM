@@ -11,15 +11,16 @@ import Banner from "../../../images/banner.jpg";
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../../customer/Header";
 import Footer from "../../customer/Footer";
+import Sidebar from "pages/hotelHost/Sidebar";
 
 function MyAccountHotelPage() {
   const location = useLocation();
   const { id } = location.state || {}; // Lấy dữ liệu từ state
   useEffect(() => {
-    if(id){
-      setIndexActive(id)
+    if (id) {
+      setIndexActive(id);
     }
-  }, [location.state?.id])
+  }, [location.state?.id]);
   const [indexActive, setIndexActive] = useState(0);
   const handleMenuClick = (index) => {
     setIndexActive(index);
@@ -31,19 +32,14 @@ function MyAccountHotelPage() {
   ];
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100"
-      style={{
-        backgroundImage: `url(${Banner})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Header />
-      <div
-        className="flex-grow-1 d-flex justify-content-center content-wrapper"
-        style={{ paddingTop: "100px", paddingBottom: "50px" }}
-      >
+    <div className="d-flex ">
+      {/* Sidebar */}
+      <div className="col-md-2">
+        <Sidebar/>
+      </div>
+
+      {/* Main content */}
+      <div className="col-md-10" style={{height: '100vh', alignItems: "center"}}>
         <Container className="mt-4">
           <Row>
             <Col md={3} className="mb-4">
@@ -86,7 +82,6 @@ function MyAccountHotelPage() {
           </Row>
         </Container>
       </div>
-      <Footer />
     </div>
   );
 }

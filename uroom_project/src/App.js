@@ -88,13 +88,8 @@ function App() {
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.Home_detail} element={<Home_detail />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
-        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
 
         {/*|Hotel Host */}
-        <Route
-          path={Routers.LoginHotelHostPage}
-          element={<LoginHotelHostPage />}
-        />
         <Route
           path={Routers.HotelHostDashboard}
           element={<HotelHostDashboard />}

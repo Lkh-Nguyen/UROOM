@@ -3,11 +3,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Alert, Button, Card, Container, Form } from "react-bootstrap";
 import { Image, Pagination } from "react-bootstrap";
 import { CheckCircle, TriangleIcon as ExclamationTriangle } from "lucide-react";
-import Header from "../../customer/Header";
-import Footer from "../../customer/Footer";
 import { Star, StarFill, X } from "react-bootstrap-icons";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "pages/hotelHost/Sidebar";
 
 const ReportedFeedbackHotel = () => {
   const navigate = useNavigate();
@@ -87,23 +86,17 @@ const ReportedFeedbackHotel = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100"
-      style={{
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Header />
-      <div
-        className="flex-grow-1 d-flex align-items-center justify-content-center"
-        style={{ paddingTop: "50px", paddingBottom: "50px" }}
-      >
+    <div className="d-flex">
+      <div className="col-md-2">
+        <Sidebar />
+      </div>
+      <div className="col-md-10 ">
         <Container className="py-5">
-          <Card className="shadow-sm">
-            <Card.Header className="bg-primary text-white">
-              <h2 className="mb-0 fs-4">Report Inappropriate Feedback</h2>
-            </Card.Header>
+            <h2
+              className="fw-bold text-secondary mb-4"
+            >
+              Report Inappropriate Feedback
+            </h2>
             <Card.Body>
               <p className="text-muted mb-4">
                 Use this form to report feedback that contains incorrect
@@ -220,7 +213,7 @@ const ReportedFeedbackHotel = () => {
                     className="me-md-2"
                     style={{ width: "140px" }}
                     onClick={() => {
-                        navigate(-1)
+                      navigate(-1);
                     }}
                   >
                     Cancel
@@ -235,10 +228,8 @@ const ReportedFeedbackHotel = () => {
                 </div>
               </Form>
             </Card.Body>
-          </Card>
         </Container>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -112,7 +112,7 @@ const LoginHotelPage = () => {
                 type="submit" 
                 className="w-100 py-2 mb-4"
                 onClick={() => {
-                  navigate(Routers.Home)
+                  navigate(Routers.HotelHostDashboard)
                 }}
               >
                 Login Account

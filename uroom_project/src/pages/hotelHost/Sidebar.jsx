@@ -65,7 +65,11 @@ export default function Sidebar() {
           </a>
         </li>
         <li className="nav-item_1">
-          <a className="nav-link_1" href="#">
+          <a className="nav-link_1"
+            onClick={() => {
+              navigate(Routers.ListFeedbackHotelPage);
+            }}
+          >
             <i className="bi bi-book me-2"></i> Feedback
           </a>
         </li>

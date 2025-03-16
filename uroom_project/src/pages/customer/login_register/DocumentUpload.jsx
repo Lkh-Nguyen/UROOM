@@ -15,8 +15,11 @@ import "../../../css/customer/DocumentUpload.css";
 import Header from "../Header";
 import Footer from "../Footer";
 import Banner from "../../../images/banner.jpg";
+import * as Routers from "../../../utils/Routes";
+import { useNavigate } from "react-router-dom";
 
 function DocumentUpload() {
+  const navigate= useNavigate();
   const [documents, setDocuments] = useState({
     businessLicense: null,
     fireSafety: null,
@@ -259,7 +262,11 @@ function DocumentUpload() {
                 </Row>
 
                 <div className="d-flex justify-content-end mt-4">
-                  <Button type="submit" variant="primary">
+                  <Button type="submit" variant="primary"
+                    onClick={() => {
+                      navigate(Routers.HotelHostDashboard);
+                    }}
+                  >
                     Submit Documents
                   </Button>
                 </div>

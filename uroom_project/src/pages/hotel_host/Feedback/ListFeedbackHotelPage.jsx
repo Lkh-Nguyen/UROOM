@@ -15,11 +15,10 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Star, StarFill } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/hotel_host/ListFeedbackHotelPage.css";
-import Header from "../../customer/Header";
-import Footer from "../../customer/Footer";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
+import Sidebar from "pages/hotelHost/Sidebar";
 
 const ListFeedbackHotelPage = () => {
   const navigate = useNavigate();
@@ -82,22 +81,19 @@ const ListFeedbackHotelPage = () => {
   };
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100"
-      style={{
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Header />
-      <div
-        className="flex-grow-1 d-flex justify-content-center content-wrapper"
-        style={{ paddingTop: "100px", paddingBottom: "50px" }}
-      >
+    <div className="d-flex">
+      <div className="col-md-2">
+        <Sidebar />
+      </div>
+      <div className="col-md-10 ">
         <Container className="py-4">
-          <h4 className="mb-3">
+          <h2
+            className="fw-bold text-secondary mb-4"
+            style={{ marginTop: "2.5%" }}
+          >
+            {" "}
             Những review khách của du khách về Tobu Hotel Levant Tokyo
-          </h4>
+          </h2>
           <p className="text-muted mb-4">
             Xếp hạng và đánh giá tổng thể Tobu Hotel Levant Tokyo
           </p>
@@ -290,7 +286,6 @@ const ListFeedbackHotelPage = () => {
           </div>
         </Container>
       </div>
-      <Footer />
     </div>
   );
 };

@@ -64,7 +64,6 @@ export {
   PaymentPage,
   PaymentSuccessPage,
   HotelSearchPage,
-  RoomDetailPage,
   ReportedFeedback,
   PaymentFailedPage,
   VerifyCodeRegisterPage,
@@ -90,7 +89,6 @@ export {
   //example 
   ExmapleConfirmationModal,
   HomeNotLogin,
-  LoginHotelHostPage,
   RoomDetailPage,
   HotelHostDashboard,
   Transaction,
