@@ -126,7 +126,7 @@ const ViewInformation= () => {
                 </Col>
                 <Col md={6}>
                 <Form.Group>
-                    <Form.Label>Number phone</Form.Label>
+                    <Form.Label>Email</Form.Label>
                     <Form.Control
                     type="text"
                     placeholder="Enter your number phone in here"

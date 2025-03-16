@@ -3,16 +3,25 @@ import React, { useState, useRef, useEffect } from "react"
 import { Container, Form, Button, Card } from "react-bootstrap"
 import { FaArrowLeft } from "react-icons/fa"
 import * as Routers from "../../../utils/Routes"
+import { useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg"
+import { showToast, ToastProvider } from "components/ToastContainer"
+import { useLocation } from "react-router-dom"
 
-const VerifyCodePage = () => {
+const VerifyCodeRegisterPage = () => {
+  const navigate= useNavigate();
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""])
   const inputRefs = useRef([])
+  const location = useLocation();
 
   // Initialize refs array
   useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, 6)
-  }, [])
+    inputRefs.current = inputRefs.current.slice(0, 6);
+    // Kiểm tra nếu có thông báo từ LoginPage
+    if (location.state?.message) {
+      showToast.warning(location.state.message);
+    }
+  }, [location])
 
   const handleChange = (index, value) => {
     // Only allow numbers
@@ -71,7 +80,7 @@ const VerifyCodePage = () => {
 
     // Navigate to reset password page if code is complete
     if (code.length === 6) {
-      window.location.href = Routers.ResetPasswordPage
+      navigate(Routers.Home, { state: { message: "Register account successfully!" }})
     }
   }
 
@@ -85,6 +94,7 @@ const VerifyCodePage = () => {
       }}
     >
       <Container className="position-relative">
+        <ToastProvider/>
         <Card className="mx-auto shadow" style={{ maxWidth: "800px" }}>
           <Card.Body className="p-4 p-md-5">
             <h2 className="text-center mb-2">Verify Code</h2>
@@ -124,7 +134,13 @@ const VerifyCodePage = () => {
 
               <div className="text-center mb-3">
                 <span className="text-muted">Didn't receive the code? </span>
-                <a href="#" className="text-decoration-none">
+                <a 
+                  className="text-decoration-none"
+                  style={{cursor: "pointer"}}
+                  onClick={() => {
+                    showToast.warning("Code is sent again! Checking your email")
+                  }}
+                >
                   Resend code
                 </a>
               </div>
@@ -145,5 +161,5 @@ const VerifyCodePage = () => {
   )
 }
 
-export default VerifyCodePage
+export default VerifyCodeRegisterPage
 

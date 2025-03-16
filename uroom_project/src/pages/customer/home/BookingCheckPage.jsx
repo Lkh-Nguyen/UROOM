@@ -15,6 +15,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import ConfirmationModal from "components/ConfirmationModal";
 
 const BookingCheckPage = () => {
   const navigate = useNavigate();
@@ -32,6 +33,15 @@ const BookingCheckPage = () => {
         )}
       </div>
     );
+  };
+
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const handleAccept = () => {
+    navigate(Routers.PaymentPage);
+  };
+
+  const handleConfirmBooking = () => {
+    setShowAcceptModal(true);
   };
   return (
     <div
@@ -246,7 +256,6 @@ const BookingCheckPage = () => {
 
                   <div className="text-center">
                     <Button
-                      type="submit"
                       className="px-4 py-2"
                       style={{
                         borderRadius: "10px",
@@ -255,12 +264,20 @@ const BookingCheckPage = () => {
                         border: "none",
                         fontWeight: "bold",
                       }}
-                      onClick={() => {
-                        navigate(Routers.PaymentPage);
-                      }}
+                      onClick={handleConfirmBooking}
                     >
                       Booking
                     </Button>
+                    {/* Accept Confirmation Modal */}
+                    <ConfirmationModal
+                      show={showAcceptModal}
+                      onHide={() => setShowAcceptModal(false)}
+                      onConfirm={handleAccept}
+                      title="Confirm Acceptance"
+                      message="Do you want to proceed with this booking confirmation?"
+                      confirmButtonText="Accept"
+                      type="accept"
+                    />
                   </div>
                 </Form>
               </Card>

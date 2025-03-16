@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { FaLock } from 'react-icons/fa';
 import '../css/BannedPage.css'
 
 const BannedPage = () => {
+
+  
   return (
     <Container fluid className="banned-container">
-      
+      x
       <div className="banned-content text-center">
         <div className="lock-icon">
           <FaLock size={250}/>

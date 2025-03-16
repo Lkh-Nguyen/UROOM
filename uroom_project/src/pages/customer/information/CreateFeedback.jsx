@@ -4,10 +4,15 @@ import { FaStar, FaChevronLeft } from "react-icons/fa";
 import "../../../css/customer/CreateFeedback.css";
 import { FaArrowLeft } from "react-icons/fa";
 import Banner from "../../../images/banner.jpg";
-import Header from '../Header';
-import Footer from '../Footer';
+import Header from "../Header";
+import Footer from "../Footer";
+import ConfirmationModal from "components/ConfirmationModal";
+import * as Routers from "../../../utils/Routes";
+import { useNavigate } from "react-router-dom";
+import { showToast, ToastProvider } from "components/ToastContainer";
 
 const CreateFeedback = () => {
+  const navigate= useNavigate();
   const [rating, setRating] = useState(4);
   const [description, setDescription] = useState("");
   const [hover, setHover] = useState(null);
@@ -17,6 +22,19 @@ const CreateFeedback = () => {
     if (text.length <= 150) {
       setDescription(text);
     }
+  };
+
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const handleCancel = () => {
+    navigate(Routers.MyAccountPage,  { state: { id: 3} })
+  };
+
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const handleSave = () => {
+    showToast.success("Create feedback successfully");
+    setTimeout(()=>{
+      navigate(Routers.MyAccountPage,  { state: { id: 3} })
+    },3000)
   };
 
   return (
@@ -116,10 +134,16 @@ const CreateFeedback = () => {
                 </Row>
 
                 <div className="d-flex justify-content-center gap-3">
-                  <Button variant="danger" className="px-4">
+                  <Button
+                    variant="danger"
+                    className="px-4"
+                    onClick={() => {setShowUpdateModal(true)}}
+                  >
                     CANCEL
                   </Button>
-                  <Button variant="primary" className="px-4">
+                  <Button variant="primary" className="px-4"
+                    onClick={() => {setShowAcceptModal(true)}}
+                  >
                     CREATE
                   </Button>
                 </div>
@@ -127,6 +151,28 @@ const CreateFeedback = () => {
             </Card.Body>
           </Card>
         </Container>
+        {/* Update Confirmation Modal */}
+        <ConfirmationModal
+          show={showUpdateModal}
+          onHide={() => setShowUpdateModal(false)}
+          onConfirm={handleCancel}
+          title="Confirm Cancel"
+          message="Are you sure you want to cancel Create Feedback ?"
+          confirmButtonText="Confirm"
+          type="warning"
+        />
+
+        {/* Accept Confirmation Modal */}
+        <ConfirmationModal
+          show={showAcceptModal}
+          onHide={() => setShowAcceptModal(false)}
+          onConfirm={handleSave}
+          title="Confirm Create"
+          message="Are you sure you want to create this new feedback ?"
+          confirmButtonText="Accept"
+          type="accept"
+        />
+        <ToastProvider />
       </div>
       <Footer />
     </div>

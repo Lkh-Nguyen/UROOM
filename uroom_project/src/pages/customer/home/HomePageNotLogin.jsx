@@ -16,16 +16,9 @@ import {
   FaChild,
   FaUser,
   FaStar,
-  FaThumbsDown,
-  FaThumbsUp,
-  FaQuoteLeft,
-  FaComments,
-  FaPaperPlane,
-  FaTimes,
-  FaRobot,
-  FaArrowRight,
+  FaThumbsDown,FaThumbsUp,FaQuoteLeft,FaComments,FaPaperPlane,FaTimes,FaRobot 
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NavigationBar from "../Header";
 import Footer from "../Footer";
 import "../../../css/customer/home.css";
@@ -44,25 +37,14 @@ import travel5 from "../../../images/nhatrang.jpg";
 import travel6 from "../../../images/hanoi.jpg";
 import travel7 from "../../../images/phuquoc.jpg";
 import chatbox from "../../../images/chatbox.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import Select from "react-select";
 
-function Home() {
-  const location = useLocation();
-  useEffect(() => {
-    window.scrollTo(0, 0);
+function HomeNotLogin() {
 
-    // Kiểm tra nếu có thông báo từ LoginPage
-    if (location.state?.message) {
-      showToast.success(location.state.message);
-    }
-  }, [location]);
   return (
     <div className="app-container_1">
-      <NavigationBar />
-      <ToastProvider />
+      <NavigationBar header={2}/>
       <HeroSection />
       <SearchBar />
       <OtherHotels />
@@ -93,18 +75,10 @@ function HeroSection() {
   );
 }
 
-export const SearchBar = () => {
+const SearchBar = () => {
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState(null);
-  const cityOptions = [
-    { value: "hanoi", label: "Hà Nội" },
-    { value: "hochiminh", label: "Hồ Chí Minh" },
-    { value: "danang", label: "Đà Nẵng" },
-    { value: "hue", label: "Huế" },
-    { value: "haiphong", label: "Hải Phòng" },
-  ];
   return (
-    <div style={{ maxWidth: "1300px", margin: "0 auto", marginTop: "-4.5%" }}>
+    <div style={{ maxWidth: "1000px", margin: "0 auto", marginTop: "-4.5%" }}>
       {/* Khối chứa cả Hotel và Search Bar */}
       <div
         style={{
@@ -129,7 +103,7 @@ export const SearchBar = () => {
             paddingLeft: "20px",
             marginBottom: "-1%",
 
-            marginLeft: "-0.9%",
+            marginLeft: "-1.2%",
           }}
         >
           <FaHotel style={{ color: "#2D74FF", fontSize: "24px" }} />
@@ -145,85 +119,36 @@ export const SearchBar = () => {
             borderTopRightRadius: "20px",
           }}
         >
+          {/* Search location */}
           <Col md={3}>
-            <InputGroup className="border" style={{ borderRadius: "10px" }}>
+            <InputGroup className="border" style={{borderRadius: "10px"}}>
               <InputGroup.Text className="bg-transparent border-0">
                 <FaMapMarkerAlt />
               </InputGroup.Text>
-              <div style={{ flex: 1 }}>
-                <Select
-                  options={cityOptions}
-                  value={selectedCity}
-                  onChange={setSelectedCity}
-                  placeholder="Search location"
-                  isSearchable
-                  styles={{
-                    control: (provided) => ({
-                      ...provided,
-                      border: "none",
-                      background: "transparent",
-                      boxShadow: "none",
-                      width: "100%", // Đảm bảo full chiều rộng
-                    }),
-                  }}
-                />
-              </div>
+              <Form.Control
+                type="text"
+                placeholder="Search location"
+                className="border-0 bg-transparent"
+              />
               <InputGroup.Text className="bg-transparent border-0">
                 <FaSearch />
               </InputGroup.Text>
             </InputGroup>
           </Col>
 
-          <Col md={4}>
-            <Row className="align-items-center">
-              {/* Ngày bắt đầu */}
-              <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
-                  <InputGroup.Text className="bg-transparent border-0">
-                    <FaCalendarAlt />
-                  </InputGroup.Text>
-                  <Form.Control
-                    type="date"
-                    className="border-0 bg-transparent"
-                  />
-                </InputGroup>
-              </Col>
-
-              {/* Icon mũi tên */}
-              <Col
-                xs="auto"
-                className="d-flex align-items-center justify-content-center"
-              >
-                <FaArrowRight style={{ fontSize: "1.2rem", color: "#555" }} />
-              </Col>
-
-              {/* Ngày kết thúc */}
-              <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
-                  <InputGroup.Text className="bg-transparent border-0">
-                    <FaCalendarAlt />
-                  </InputGroup.Text>
-                  <Form.Control
-                    type="date"
-                    className="border-0 bg-transparent"
-                  />
-                </InputGroup>
-              </Col>
-            </Row>
+          {/* Date */}
+          <Col md={3} className="px-2">
+            <InputGroup className="border"style={{borderRadius: "10px"}}>
+              <InputGroup.Text className="bg-transparent border-0">
+                <FaCalendarAlt />
+              </InputGroup.Text>
+              <Form.Control type="date" className="border-0 bg-transparent" />
+            </InputGroup>
           </Col>
 
           {/* Ô chọn số lượng Adults và Children */}
-          <Col md={4} className="px-3 ">
-            <InputGroup
-              className="border"
-              style={{ borderRadius: "10px", padding: "2px" }}
-            >
+          <Col md={5} className="px-3 ">
+            <InputGroup className="border" style={{borderRadius: "10px",padding:"2px"}}>
               <InputGroup.Text className="bg-transparent border-0">
                 <FaUser />
               </InputGroup.Text>
@@ -241,7 +166,7 @@ export const SearchBar = () => {
               </InputGroup.Text>
               <Form.Select className="border-0 bg-transparent">
                 <option>0 Children</option>
-                <option>1 Children</option>
+                <option>1 Child</option>
                 <option>2 Children</option>
                 <option>3 Children</option>
                 <option>4 Children</option>
@@ -281,7 +206,7 @@ function OtherHotels() {
       price: 300,
       guests: 2,
       image: image4,
-      sale: "Sale 30%",
+      sale:"Sale 30%"
     },
     {
       id: 2,
@@ -290,7 +215,7 @@ function OtherHotels() {
       price: 700,
       guests: 2,
       image: image5,
-      sale: "Sale 40%",
+      sale:"Sale 40%"
     },
     {
       id: 3,
@@ -299,7 +224,7 @@ function OtherHotels() {
       price: 340,
       guests: 2,
       image: image6,
-      sale: "Sale 50%",
+      sale:"Sale 50%"
     },
   ];
 
@@ -312,44 +237,29 @@ function OtherHotels() {
         {hotels.map((hotel) => (
           <Col md={4} key={hotel.id}>
             <Card className="hotel-card">
-              <div
-                style={{
-                  padding: "20px",
-                  height: "250px",
-                  paddingRight: "40px",
-                }}
-              >
-                <Image
-                  md={4}
+              <div style={{ padding: '20px', height: '250px', paddingRight: '40px'}}>
+                <Image md={4}
                   variant="top"
                   src={hotel.image}
                   className="hotel-image"
-                  style={{ borderRadius: "20px" }}
+                  style={{borderRadius: '20px'}}
                 />
-
-                <div
-                  className="rating-overlay"
-                  style={{ paddingRight: "30px", paddingTop: "10px" }}
-                >
+                
+                <div className="rating-overlay" style={{paddingRight: '30px', paddingTop: "10px"}}>
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className="star-icon" />
                   ))}
                 </div>
-                <span
-                  className="price"
-                  style={{
-                    color: "gray",
-                    position: "absolute",
-                    transform: "rotate(90deg)",
-                    transformOrigin: "left bottom",
-                    width: "1000px",
-                    letterSpacing: "6px", // Điều chỉnh điểm xoay nếu cần
-                  }}
-                >
-                  {hotel.sale}
-                </span>
+                <span className="price" style={{
+                  color:"gray", 
+                  position: 'absolute',
+                  transform: 'rotate(90deg)', 
+                  transformOrigin: 'left bottom',
+                  width:"1000px",
+                  letterSpacing: '6px' // Điều chỉnh điểm xoay nếu cần
+                }}>{hotel.sale}</span>
               </div>
-              <Card.Body style={{ marginLeft: "10px" }}>
+              <Card.Body style={{marginLeft:"10px"}}>
                 <Card.Title className="hotel-name">{hotel.name}</Card.Title>
                 <div className="room-info">
                   <span className="room-type">{hotel.roomType}</span>
@@ -362,13 +272,9 @@ function OtherHotels() {
                   <span className="per-day">/Day</span>
                   <Button
                     variant="outline-primary"
-                    style={{
-                      marginLeft: "auto",
-                      padding: "0.7rem 4.5rem",
-                      fontWeight: "500",
-                    }}
+                    style={{ marginLeft: "auto",padding:"0.7rem 4.5rem",fontWeight:"500"}}
                     onClick={() => {
-                      navigate(Routers.Home_detail);
+                      navigate(Routers.Home_detail)
                     }}
                   >
                     Book Now
@@ -384,7 +290,7 @@ function OtherHotels() {
 }
 const AboutUs = () => {
   return (
-    <Container className="about-us-container_1" style={{ marginTop: "8%" }}>
+    <Container className="about-us-container_1"style={{ marginTop: "8%" }}>
       <Row className="justify-content-center text-center">
         <Col md={8}>
           <h2 className="about-title_1">About Us</h2>
@@ -492,57 +398,41 @@ function RecommendHotels() {
       id: 1,
       name: "Novotel Saigon Centre",
       roomType: "Sai gon",
-
+  
       image: travel4,
     },
     {
       id: 2,
       name: "Vinpearl Resort Nha Trang",
       roomType: "Nha trang",
-
+      
       image: travel5,
     },
     {
       id: 3,
       name: "Sofitel Legend Metropole",
       roomType: "Ha Noi",
-
+    
       image: travel6,
     },
     {
       id: 4,
       name: "Fusion Resort",
       roomType: "Phu Quoc",
-
+    
       image: travel7,
     },
-  ];
+  ]
 
   return (
-    <Container className="other-hotels-section_2" style={{ marginTop: "8%" }}>
-      <h2
-        className="section-title"
-        style={{
-          textAlign: "center",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "3rem",
-          color: "#1a2b49",
-        }}
-      >
-        Recommended Hotels
-      </h2>
+    <Container className="other-hotels-section_2"style={{ marginTop: "8%" }}>
+      <h2 className="section-title"style={{textAlign:"center",fontSize:"2rem",fontWeight:"bold",marginBottom:"3rem",color:"#1a2b49"}}>Recommended Hotels</h2>
       <Row>
         {hotels.map((hotel) => (
           <Col md={3} key={hotel.id}>
             <Card className="hotel-card">
               <div className="hotel-image-container">
-                <Card.Img
-                  variant="top"
-                  src={hotel.image}
-                  className="hotel-image"
-                  style={{ height: "250px" }}
-                />
+                <Card.Img variant="top" src={hotel.image} className="hotel-image"  style={{height:"250px"}} />
                 <div className="rating-overlay">
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className="star-icon" />
@@ -553,14 +443,16 @@ function RecommendHotels() {
                 <Card.Title className="hotel-name">{hotel.name}</Card.Title>
                 <div className="room-info">
                   <span className="room-type">{hotel.roomType}</span>
+                
                 </div>
+                
               </Card.Body>
             </Card>
           </Col>
         ))}
       </Row>
     </Container>
-  );
+  )
 }
 function CustomerReviews() {
   const reviews = [
@@ -578,30 +470,16 @@ function CustomerReviews() {
       rating: 4.8,
       image: image10,
     },
-  ];
+  ]
 
   return (
-    <Container className="reviews-section" style={{ marginTop: "8%" }}>
-      <h2
-        className="reviews-title"
-        style={{
-          textAlign: "center",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "3rem",
-          color: "#1a2b49",
-        }}
-      >
-        Customer Reviews
-      </h2>
+    <Container className="reviews-section"style={{ marginTop: "8%" }}>
+      <h2 className="reviews-title" style={{textAlign:"center",fontSize:"2rem",fontWeight:"bold",marginBottom:"3rem",color:"#1a2b49"}}>Customer Reviews</h2>
       <Row>
         {reviews.map((review) => (
           <Col md={6} key={review.id}>
             <div className="review-card">
-              <FaQuoteLeft
-                className="quote-icon"
-                style={{ alignItems: "center" }}
-              />
+              <FaQuoteLeft className="quote-icon" style={{alignItems:"center"}} />
               <p className="review-text">{review.text}</p>
               <div className="review-actions">
                 <button className="action-btn">
@@ -615,11 +493,7 @@ function CustomerReviews() {
                 <div className="reviewer-name">-{review.author}</div>
                 <div className="reviewer-status">Happy Treloo</div>
                 <div className="reviewer-profile">
-                  <img
-                    src={review.image || image7}
-                    alt={review.author}
-                    className="reviewer-image"
-                  />
+                  <img src={review.image || image7} alt={review.author} className="reviewer-image" />
                   <div className="rating">
                     <FaStar className="star-icon" />
                     <span>{review.rating}</span>
@@ -631,7 +505,7 @@ function CustomerReviews() {
         ))}
       </Row>
     </Container>
-  );
+  )
 }
 
 const ChatBox = () => {
@@ -662,6 +536,7 @@ const ChatBox = () => {
       {!isOpen && (
         <button className="chatbox-toggle" onClick={toggleChat}>
           <img src={chatbox} alt="AI Chat" width="50" height="50" />
+
         </button>
       )}
 
@@ -696,4 +571,6 @@ const ChatBox = () => {
   );
 };
 
-export default Home;
+
+
+export default HomeNotLogin;
