@@ -48,6 +48,11 @@ const Transaction= '/Transaction';
 const BookingSchedule= '/BookingSchedule';
 const TransactionDetail= '/TransactionDetail';
 const HomeHotel= '/home_hotelhost';
+const DashboardAdmin= '/DashboardAdmin';
+const HotelManagement= '/HotelManagement';
+const DetailHotelHostAdmin= '/DetailHotelHostAdmin';
+const TransactionHotelhost= '/TransactionHotelhost';
+const ApprovalAccountHotelhost= '/ApprovalAccountHotelhost';
 
 export {
   LoginPage,
@@ -89,7 +94,11 @@ export {
   ListCustomerAdmin,
   DetailCustomerAdmin,
   ListPaymentHotel,
-
+  DashboardAdmin,
+  HotelManagement,
+  DetailHotelHostAdmin,
+  TransactionHotelhost,
+  ApprovalAccountHotelhost,
   //example 
   ExmapleConfirmationModal,
   HomeNotLogin,

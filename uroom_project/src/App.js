@@ -55,6 +55,11 @@ import BookingPropertyFacility from "pages/hotel_host/create_hotel/BookingProper
 import BookingPropertyCheckInOut from "pages/hotel_host/create_hotel/BookingPropertyCheckInOut";
 import BookingPropertyDescription from "pages/hotel_host/create_hotel/BookingPropertyDescription";
 import BookingPropertyChecklist from "pages/hotel_host/create_hotel/BookingPropertyChecklist";
+import DashboardAdmin from "pages/admin/DashboardAdmin";
+import HotelManagement from "pages/admin/hotelHost/HotelManagement";
+import DetailHotelHostAdmin from "pages/admin/hotelHost/DetailHotelHostAdmin";
+import TransactionHotelhost from "pages/admin/hotelHost/TransactionHotelhost";
+import ApprovalAccountHotelhost from "pages/admin/hotelHost/ApprovalAccountHotelhost";
 
 function App() {
   return (
@@ -66,12 +71,21 @@ function App() {
 
         {/*Customer And Guest */}
         {/*Login, Register, Forget Password */}
-        <Route path={Routers.LoginPage} element={<LoginPage/>} />
-        <Route path={Routers.RegisterPage} element={<RegisterPage/>} />
-        <Route path={Routers.VerifyCodeRegisterPage} element={<VerifyCodeRegisterPage/>} />
-        <Route path={Routers.ForgetPasswordPage} element={<ForgetPasswordPage/>} />
-        <Route path={Routers.VerifyCodePage} element={<VerifyCodePage/>} />
-        <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage/>} />
+        <Route path={Routers.LoginPage} element={<LoginPage />} />
+        <Route path={Routers.RegisterPage} element={<RegisterPage />} />
+        <Route
+          path={Routers.VerifyCodeRegisterPage}
+          element={<VerifyCodeRegisterPage />}
+        />
+        <Route
+          path={Routers.ForgetPasswordPage}
+          element={<ForgetPasswordPage />}
+        />
+        <Route path={Routers.VerifyCodePage} element={<VerifyCodePage />} />
+        <Route
+          path={Routers.ResetPasswordPage}
+          element={<ResetPasswordPage />}
+        />
         <Route path={Routers.LoginPage} element={<LoginPage />} />
         <Route path={Routers.RegisterPage} element={<RegisterPage />} />
         <Route
@@ -124,6 +138,25 @@ function App() {
         <Route path={"/BookingPropertyCheckInOut"} element={<BookingPropertyCheckInOut/>} />
         <Route path={"/BookingPropertyDescription"} element={<BookingPropertyDescription/>} />
         <Route path={"/BookingPropertyChecklist"} element={<BookingPropertyChecklist/>} />
+        <Route
+          path={Routers.TransactionDetail}
+          element={<TransactionDetail />}
+        />
+        <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
+        <Route path={Routers.PaymentPage} element={<PaymentPage />} />
+        <Route
+          path={Routers.PaymentSuccessPage}
+          element={<PaymentSuccessPage />}
+        />
+        <Route
+          path={Routers.PaymentFailedPage}
+          element={<PaymentFailedPage />}
+        />
+        <Route path={Routers.Home} element={<Home />} />
+        <Route path={Routers.Home_detail} element={<Home_detail />} />
+        <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
+        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
+        <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />
 
         
         {/*|Hotel Host */}
@@ -147,10 +180,78 @@ function App() {
         <Route path={Routers.ListCustomerAdmin} element={<ListCustomerAdmin/>} />
         <Route path={Routers.DetailCustomerAdmin} element={<DetailCustomerAdmin/>} />
         <Route path={Routers.ListPaymentHotel} element={<ListPaymentHotel/>} />
+        <Route path={Routers.LoginHotelPage} element={<LoginHotelPage />} />
+        <Route
+          path={Routers.RegisterHotelPage}
+          element={<RegisterHotelPage />}
+        />
+        <Route
+          path={Routers.ForgetPasswordHotelPage}
+          element={<ForgetPasswordHotelPage />}
+        />
+        <Route
+          path={Routers.VerifyCodeHotelPage}
+          element={<VerifyCodeHotelPage />}
+        />
+        <Route
+          path={Routers.ResetPasswordHotelPage}
+          element={<ResetPasswordHotelPage />}
+        />
+        <Route
+          path={Routers.MyAccountHotelPage}
+          element={<MyAccountHotelPage />}
+        />
+        <Route
+          path={Routers.ListFeedbackHotelPage}
+          element={<ListFeedbackHotelPage />}
+        />
+        <Route
+          path={Routers.ReportedFeedbackHotel}
+          element={<ReportedFeedbackHotel />}
+        />
+        <Route path={Routers.DocumentUpload} element={<DocumentUpload />} />
+
+        {/*Admin */}
+
+        <Route
+          path={Routers.ListFeedbackAdminPage}
+          element={<ListFeedbackAdminPage />}
+        />
+        <Route
+          path={Routers.ReportedFeedbackAdmin}
+          element={<ReportedFeedbackAdmin />}
+        />
+        <Route
+          path={Routers.DetailReportedAdmin}
+          element={<DetailReportedAdmin />}
+        />
+        <Route
+          path={Routers.ListCustomerAdmin}
+          element={<ListCustomerAdmin />}
+        />
+        <Route
+          path={Routers.ListCustomerAdmin}
+          element={<ListCustomerAdmin />}
+        />
+        <Route
+          path={Routers.DetailCustomerAdmin}
+          element={<DetailCustomerAdmin />}
+        />
 
         {/*Example Components */}
-        <Route path={Routers.ExmapleConfirmationModal} element={<ExmapleConfirmationModal/>} />
-        <Route path={Routers.HomeNotLogin} element={<HomeNotLogin/>} />
+        <Route
+          path={Routers.ExmapleConfirmationModal}
+          element={<ExmapleConfirmationModal />}
+        />
+        <Route path={Routers.HomeNotLogin} element={<HomeNotLogin />} />
+        <Route path={Routers.DashboardAdmin} element={<DashboardAdmin />} />
+        <Route
+          path={Routers.HotelManagement}
+          element={<HotelManagement />}
+        />
+      <Route path={Routers.DetailHotelHostAdmin} element={<DetailHotelHostAdmin />} />
+      <Route path={Routers.TransactionHotelhost} element={<TransactionHotelhost />} />
+      <Route path={Routers.ApprovalAccountHotelhost} element={<ApprovalAccountHotelhost />} />
 
       </Routes>
     </Router>

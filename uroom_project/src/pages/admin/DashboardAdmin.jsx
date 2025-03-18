@@ -1,6 +1,5 @@
 import React from "react";
-import { Line } from "react-chartjs-2";
-import { Bar } from "react-chartjs-2";
+import { Line, Pie } from "react-chartjs-2";
 
 import {
   Chart as ChartJS,
@@ -12,9 +11,10 @@ import {
   Title,
   Tooltip,
   Legend,
+  ArcElement,
 } from "chart.js";
 import "../../css/hotelHost/Dashboard.css";
-import Sidebar from "../hotelHost/Sidebar";
+import Sidebar from "../admin/SidebarAdmin";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Image, Dropdown } from "react-bootstrap"; //
 import * as Routers from "../../utils/Routes";
@@ -28,6 +28,7 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
+  ArcElement,
   Legend
 );
 
@@ -47,12 +48,14 @@ function HotelHostDashboard() {
   };
 
   // Data for bar chart
-  const barData = {
-    labels: ["Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  const pieData = {
+    labels: ["Direct", "Social", "Referral"],
     datasets: [
       {
-        data: [25, 20, 30, 22, 17, 29],
-        backgroundColor: "#3E86F5",
+        data: [70, 20, 10],
+        backgroundColor: ["#3E86F5", "#FF6384", "#FFC107"],
+
+        hoverOffset: 4,
       },
     ],
   };
@@ -89,7 +92,9 @@ function HotelHostDashboard() {
                   <Dropdown.Menu>
                     <Dropdown.Item
                       onClick={() =>
-                        navigate(Routers.MyAccountHotelPage, { state: { id: 0 } })
+                        navigate(Routers.MyAccountHotelPage, {
+                          state: { id: 0 },
+                        })
                       }
                     >
                       View Information
@@ -98,7 +103,7 @@ function HotelHostDashboard() {
                     <Dropdown.Item
                       onClick={() => {
                         console.log("User logged out");
-                        navigate(Routers.HomeHotel);
+                        navigate(Routers.LoginHotelPage);
                       }}
                     >
                       Logout
@@ -112,87 +117,75 @@ function HotelHostDashboard() {
           {/* Stats Cards */}
           <div className="container-fluid p-4">
             <div className="container-fluid p-4">
-              <div className="row">
-                {/* Total Invoices */}
-                <div className="col-md-3">
-                  <div className="card stat-card">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between">
-                        <div>
-                          <h6 className="text-muted">Total invoices</h6>
-                          <h3>350,897</h3>
-                          <small className="text-success">
-                            <i className="bi bi-arrow-up"></i> 3.48% Since last
-                            month
-                          </small>
-                        </div>
-                        <div className="stat-icon bg-primary text-white">
-                          <i className="bi bi-receipt"></i> {/* Icon hóa đơn */}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Paid Invoices */}
-                <div className="col-md-3">
-                  <div className="card stat-card">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between">
-                        <div>
-                          <h6 className="text-muted">Paid invoices</h6>
-                          <h3>2,356</h3>
-                          <small className="text-danger">
-                            <i className="bi bi-arrow-down"></i> 3.48% Since
-                            last week
-                          </small>
-                        </div>
-                        <div className="stat-icon bg-success text-white">
-                          <i className="bi bi-cash"></i> {/* Icon thanh toán */}
+              <div className="container-fluid p-4">
+                <div className="row">
+                  {/* Total Bookings */}
+                  <div className="col-md-3">
+                    <div className="card stat-card">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <h6 className="text-muted">Booking(Monthly)</h6>
+                            <h3>1000</h3>
+                          </div>
+                          <div className="stat-icon bg-primary text-white">
+                            <i className="bi bi-calendar-check"></i>{" "}
+                            {/* Icon đặt phòng */}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Unpaid Invoices */}
-                <div className="col-md-3">
-                  <div className="card stat-card">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between">
-                        <div>
-                          <h6 className="text-muted">Unpaid invoices</h6>
-                          <h3>924</h3>
-                          <small className="text-danger">
-                            <i className="bi bi-arrow-down"></i> 1.10% Since
-                            yesterday
-                          </small>
-                        </div>
-                        <div className="stat-icon bg-warning text-white">
-                          <i className="bi bi-exclamation-circle"></i>{" "}
-                          {/* Icon cảnh báo */}
+                  {/* Earnings */}
+                  <div className="col-md-3">
+                    <div className="card stat-card">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <h6 className="text-muted">Earnings(Monthly)</h6>
+                            <h3>$215,000</h3>
+                          </div>
+                          <div className="stat-icon bg-success text-white">
+                            <i className="bi bi-piggy-bank"></i>{" "}
+                            {/* Icon doanh thu */}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Invoices Sent */}
-                <div className="col-md-3">
-                  <div className="card stat-card">
-                    <div className="card-body">
-                      <div className="d-flex justify-content-between">
-                        <div>
-                          <h6 className="text-muted">Invoices sent</h6>
-                          <h3>49.65%</h3>
-                          <small className="text-success">
-                            <i className="bi bi-arrow-up"></i> 12% Since last
-                            month
-                          </small>
+                  {/* Hotel Partners */}
+                  <div className="col-md-3">
+                    <div className="card stat-card">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <h6 className="text-muted">Hotel partners</h6>
+                            <h3>50</h3>
+                          </div>
+                          <div className="stat-icon bg-warning text-white">
+                            <i className="bi bi-building"></i>{" "}
+                            {/* Icon khách sạn */}
+                          </div>
                         </div>
-                        <div className="stat-icon bg-info text-white">
-                          <i className="bi bi-send"></i>{" "}
-                          {/* Icon gửi hóa đơn */}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Pending Requests */}
+                  <div className="col-md-3">
+                    <div className="card stat-card">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between">
+                          <div>
+                            <h6 className="text-muted">Pending requests</h6>
+                            <h3>18</h3>
+                          </div>
+                          <div className="stat-icon bg-info text-white">
+                            <i className="bi bi-hourglass-split"></i>{" "}
+                            {/* Icon chờ duyệt */}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -209,7 +202,7 @@ function HotelHostDashboard() {
                     <div className="d-flex justify-content-between align-items-center mb-4">
                       <div>
                         <h6 className="text-muted">OVERVIEW</h6>
-                        <h5>Sales value</h5>
+                        <h5>Earnings</h5>
                       </div>
                       <div className="btn-group">
                         <button className="btn btn-primary btn-sm">
@@ -245,15 +238,20 @@ function HotelHostDashboard() {
               <div className="col-md-4">
                 <div className="card chart-card">
                   <div className="card-body">
-                    <h6 className="text-muted">PERFORMANCE</h6>
-                    <h5>Total booking</h5>
-                    <Bar
-                      data={barData}
-                      options={{ plugins: { legend: { display: false } } }}
+                    <h6 className="text-muted">Revenues Sources</h6>
+
+                    <Pie
+                      data={pieData}
+                      options={{
+                        plugins: {
+                          legend: { display: true, position: "bottom" },
+                        },
+                      }}
                     />
                   </div>
                 </div>
               </div>
+              ;
             </div>
 
             {/* Tables */}
@@ -317,7 +315,53 @@ function HotelHostDashboard() {
                   </div>
                 </div>
               </div>
-             
+              <div className="col-md-4">
+                <div className="card table-card">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                      <h5>Approve request</h5>
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => {
+                          navigate(Routers.ApprovalAccountHotelhost);
+                        }}
+                      >
+                        See all
+                      </button>
+                    </div>
+                    <div className="table-responsive">
+                      <table className="table">
+                        <thead>
+                          <tr>
+                            <th>Hotel</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Hilton Hotel</td>
+                            <td>
+                              <button class="btn btn-warning">pendding</button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Sofitel Hotel</td>
+                            <td>
+                              <button class="btn btn-warning">pendding</button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Marriott Hotel</td>
+                            <td>
+                              <button class="btn btn-warning">pendding</button>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
