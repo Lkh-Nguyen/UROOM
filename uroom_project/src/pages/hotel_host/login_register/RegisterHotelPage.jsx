@@ -125,15 +125,16 @@ const RegisterHotelPage = () => {
                 type="submit" 
                 className="w-100 py-2 mb-4"
                 onClick={()=> {
-                  navigate(Routers.DocumentUpload)
+                  navigate(Routers.VerifyCodeHotelPage, {state: {status: "REGISTER"}})
                 }}
+                
               >
                 Register Account
               </Button>
 
               <div className="text-center">
                 <span className="text-muted">You have a account? </span>
-                <a onClick={() => {navigate(Routers.LoginHotelPage)}} className="text-decoration-none">Sign in here</a>
+                <a onClick={() => {navigate(Routers.LoginHotelPage)}} className="text-decoration-none" style={{cursor: 'pointer'}}>Sign in here</a>
               </div>
             </Form>
           </Card.Body>

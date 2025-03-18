@@ -14,10 +14,7 @@
   }
   
   .upload-placeholder {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    margin-top: 20px;
     color: #6c757d;
   }
   
@@ -26,13 +23,6 @@
     font-size: 0.875rem;
   }
   
-  .form-control[type="file"] {
-    position: relative;
-    z-index: 2;
-    height: 100px;
-    opacity: 0;
-    cursor: pointer;
-  }
   
   .progress {
     height: 0.5rem;

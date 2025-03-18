@@ -92,7 +92,12 @@ const LoginHotelPage = () => {
                   onChange={handleChange}
                   className="text-muted"
                 />
-                <a onClick={() => {navigate(Routers.ForgetPasswordHotelPage)}} className="text-decoration-none">Forgot Password?</a>
+                <a 
+                  onClick={() => {navigate(Routers.ForgetPasswordHotelPage)}} 
+                  className="text-decoration-none" 
+                  style={{cursor: 'pointer'}}>
+                    Forgot Password?
+                </a>
               </div>
 
               <Button 
@@ -120,7 +125,7 @@ const LoginHotelPage = () => {
 
               <div className="text-center">
                 <span className="text-muted">Not a hotel host? </span>
-                <a onClick={() => {navigate(Routers.RegisterHotelPage)}} className="text-decoration-none">Register now</a>
+                <a onClick={() => {navigate(Routers.RegisterHotelPage)}} className="text-decoration-none" style={{cursor: 'pointer'}}>Register now</a>
               </div>
             </Form>
           </Card.Body>

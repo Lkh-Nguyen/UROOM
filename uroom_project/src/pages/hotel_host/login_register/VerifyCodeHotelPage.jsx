@@ -3,9 +3,12 @@ import React, { useState, useRef, useEffect } from "react"
 import { Container, Form, Button, Card } from "react-bootstrap"
 import * as Routers from "../../../utils/Routes"
 import Banner from "../../../images/banner.jpg"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 const VerifyCodeHotelPage = () => {
+  const location= useLocation();
+  const {status}= location.state
+  console.log(status)
   const navigate= useNavigate();
   const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""])
   const inputRefs = useRef([])
@@ -72,7 +75,11 @@ const VerifyCodeHotelPage = () => {
 
     // Navigate to reset password page if code is complete
     if (code.length === 6) {
-      window.location.href = Routers.ResetPasswordHotelPage
+      if(status == "REGISTER"){
+        navigate('/BookingRegistration');
+      }else{
+        navigate(Routers.ResetPasswordHotelPage)
+      }
     }
   }
 
@@ -136,7 +143,7 @@ const VerifyCodeHotelPage = () => {
                 className="w-100 py-2 mt-2"
                 disabled={verificationCode.some((digit) => !digit)}
               >
-                Reset Password
+                {status == "REGISTER" ? "Verify Code" : "Reset Password"}
               </Button>
             </Form>
           </Card.Body>

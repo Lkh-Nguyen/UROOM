@@ -1,8 +1,6 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #F2F6FF;
   }
   
   .app-container {
@@ -19,7 +17,7 @@ body {
  
   
   /* Main Content */
-  .main-content_1 {
+  .main-content_2 {
     margin-top: -2rem;
     margin-bottom: 3rem;
     position: relative;

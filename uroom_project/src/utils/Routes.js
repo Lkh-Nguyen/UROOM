@@ -30,6 +30,7 @@ const ResetPasswordHotelPage= '/resetpassword_hotelhost';
 const MyAccountHotelPage= '/myaccount_hotelhost';
 const ListFeedbackHotelPage= '/feedback_hotelhost';
 const ReportedFeedbackHotel= '/reportedfeedback_hotelhost';
+const WaitPendingPage= '/waitpending'
 
 //admin
 const ListFeedbackAdminPage= '/feedback_admin';
@@ -37,7 +38,7 @@ const ReportedFeedbackAdmin= '/reportedfeedback_admin';
 const DetailReportedAdmin= '/detailreported_admin';
 const ListCustomerAdmin= '/listcustomer_admin';
 const DetailCustomerAdmin= '/detailcustomer_admin';
-
+const ListPaymentHotel= '/ListPayment_admin';
 
 //example
 const ExmapleConfirmationModal= 'confirmmodal_example';
@@ -46,6 +47,7 @@ const HotelHostDashboard= '/HotelHostDashboard';
 const Transaction= '/Transaction';
 const BookingSchedule= '/BookingSchedule';
 const TransactionDetail= '/TransactionDetail';
+const HomeHotel= '/home_hotelhost';
 
 export {
   LoginPage,
@@ -78,6 +80,7 @@ export {
   ListFeedbackHotelPage,
   ReportedFeedbackHotel,
   DocumentUpload,
+  HomeHotel,
 
   //admin
   ListFeedbackAdminPage,
@@ -85,6 +88,7 @@ export {
   DetailReportedAdmin,
   ListCustomerAdmin,
   DetailCustomerAdmin,
+  ListPaymentHotel,
 
   //example 
   ExmapleConfirmationModal,
@@ -94,4 +98,5 @@ export {
   Transaction,
   BookingSchedule,
   TransactionDetail,
+  WaitPendingPage
 }

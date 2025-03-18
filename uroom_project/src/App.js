@@ -45,6 +45,16 @@ import HotelHostDashboard from "pages/hotelHost/Dashboard";
 import Transaction from "pages/hotelHost/Transaction";
 import BookingSchedule from "pages/hotelHost/BookingSchedule";
 import TransactionDetail from "pages/hotelHost/TransactionDetail";
+import WaitPendingPage from "pages/WaitPendingPage";
+import HomeHotel from "pages/hotel_host/create_hotel/HomeHotel";
+import ListPaymentHotel from "pages/admin/payment/ListPaymentHotel";
+import BookingRegistration from "pages/hotel_host/create_hotel/BookingRegistration";
+import BookingPropertyName from "pages/hotel_host/create_hotel/BookingPropertyName";
+import BookingPropertyLocation from "pages/hotel_host/create_hotel/BookingPropertyLocation";
+import BookingPropertyFacility from "pages/hotel_host/create_hotel/BookingPropertyFacility";
+import BookingPropertyCheckInOut from "pages/hotel_host/create_hotel/BookingPropertyCheckInOut";
+import BookingPropertyDescription from "pages/hotel_host/create_hotel/BookingPropertyDescription";
+import BookingPropertyChecklist from "pages/hotel_host/create_hotel/BookingPropertyChecklist";
 
 function App() {
   return (
@@ -52,6 +62,7 @@ function App() {
       <Routes>
         <Route path={Routers.BannedPage} element={<BannedPage />} />
         <Route path={Routers.ErrorPage} element={<ErrorPage />} />
+        <Route path={Routers.WaitPendingPage} element={<WaitPendingPage />} />
 
         {/*Customer And Guest */}
         {/*Login, Register, Forget Password */}
@@ -106,8 +117,17 @@ function App() {
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage/>} />
         <Route path={Routers.RoomDetailPage} element={<RoomDetailPage/>} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback/>} />
+        <Route path={"/BookingRegistration"} element={<BookingRegistration/>} />
+        <Route path={"/BookingPropertyName"} element={<BookingPropertyName/>} />
+        <Route path={"/BookingPropertyLocation"} element={<BookingPropertyLocation/>} />
+        <Route path={"/BookingPropertyFacility"} element={<BookingPropertyFacility/>} />
+        <Route path={"/BookingPropertyCheckInOut"} element={<BookingPropertyCheckInOut/>} />
+        <Route path={"/BookingPropertyDescription"} element={<BookingPropertyDescription/>} />
+        <Route path={"/BookingPropertyChecklist"} element={<BookingPropertyChecklist/>} />
 
+        
         {/*|Hotel Host */}
+        <Route path={Routers.HomeHotel} element={<HomeHotel/>} />
         <Route path={Routers.LoginHotelPage} element={<LoginHotelPage/>} />
         <Route path={Routers.RegisterHotelPage} element={<RegisterHotelPage/>} />
         <Route path={Routers.ForgetPasswordHotelPage} element={<ForgetPasswordHotelPage/>} />
@@ -126,6 +146,7 @@ function App() {
         <Route path={Routers.ListCustomerAdmin} element={<ListCustomerAdmin/>} />
         <Route path={Routers.ListCustomerAdmin} element={<ListCustomerAdmin/>} />
         <Route path={Routers.DetailCustomerAdmin} element={<DetailCustomerAdmin/>} />
+        <Route path={Routers.ListPaymentHotel} element={<ListPaymentHotel/>} />
 
         {/*Example Components */}
         <Route path={Routers.ExmapleConfirmationModal} element={<ExmapleConfirmationModal/>} />

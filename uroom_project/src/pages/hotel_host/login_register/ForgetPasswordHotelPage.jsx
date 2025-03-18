@@ -69,7 +69,7 @@ const ForgetPasswordHotelPage = () => {
                 type="submit" 
                 className="w-100 py-2"
                 onClick={() => {
-                  navigate(Routers.VerifyCodeHotelPage)
+                  navigate(Routers.VerifyCodeHotelPage, {state: {status: "FORGET_PASSWORD"}})
                 }}
               >
                 Reset Password
