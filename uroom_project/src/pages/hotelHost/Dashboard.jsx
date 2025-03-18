@@ -98,7 +98,7 @@ function HotelHostDashboard() {
                     <Dropdown.Item
                       onClick={() => {
                         console.log("User logged out");
-                        navigate(Routers.LoginHotelPage);
+                        navigate(Routers.HomeHotel);
                       }}
                     >
                       Logout

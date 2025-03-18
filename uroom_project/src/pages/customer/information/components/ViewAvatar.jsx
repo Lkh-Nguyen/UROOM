@@ -44,7 +44,7 @@ function ViewAvatar() {
       </p>
       <Form>
         <Form.Group controlId="formFile" className="mb-3 text-center">
-          <input
+          <Form.Control
             type="file"
             className="d-inline-block w-auto"
             onChange={handleFileChange}

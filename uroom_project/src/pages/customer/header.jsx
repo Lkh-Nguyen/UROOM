@@ -86,18 +86,11 @@ function NavigationBar({ header = 1}) { // ✅ Nhận `header` từ props (hoặ
           ) : (
             <div className="d-flex gap-3">
               <Button
-                variant="primary"
-                className="px-4 py-2 fw-bold rounded-pill"
+                className="px-4 py-2 fw-bold"
+                style={{borderRadius: 8, backgroundColor: 'white', color: "#2E9AED"}}
                 onClick={() => navigate(Routers.LoginPage)}
               >
                 Login
-              </Button>
-              <Button
-                variant="warning"
-                className="px-4 py-2 fw-bold rounded-pill text-dark"
-                onClick={() => navigate(Routers.LoginHotelPage  )} // ✅ Thêm điều hướng cho nút này
-              >
-                Become Hotel Host
               </Button>
             </div>
           )}

@@ -81,7 +81,7 @@ function ListCustomerAdmin() {
             <td className="text-center">duyenttt@gmail.com</td>
             <td className="text-center">Inactive</td>
             <td className="text-center" style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <Button variant="outline-success" style={{ width: '80px', marginRight: '10px' }}>Unlock</Button>
+              <Button variant="outline-success" style={{ width: '80px', marginRight: '10px'}}>Unlock</Button>
               <Button 
                 variant="outline-warning" 
                 style={{ width: '80px' }}
@@ -97,7 +97,7 @@ function ListCustomerAdmin() {
       </Table>
 
       {/* Table Footer */}
-      <Row className="align-items-center">
+      <Row className="align-items-center mt-3">
         <Col>
           <p className="mb-0">Showing 0 to 0 of 0 entries</p>
         </Col>

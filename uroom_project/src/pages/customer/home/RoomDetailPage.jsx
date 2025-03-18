@@ -44,7 +44,7 @@ function MainContent() {
     return () => clearInterval(interval);
   }, []);
   return (
-    <Container className="main-content_1">
+    <Container className="main-content_2" style={{marginTop: '50px'}}>
         <h1 style={{textAlign:"center",marginTop:"10%",marginBottom:"-3%", color: 'white'}}>
         Standard Room
         </h1>

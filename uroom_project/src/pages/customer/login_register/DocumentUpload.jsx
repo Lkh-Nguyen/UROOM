@@ -8,6 +8,7 @@ import {
   Alert,
   Row,
   Col,
+  Navbar,
 } from "react-bootstrap";
 import { Upload, CheckCircle, XCircle } from "react-bootstrap-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -89,19 +90,17 @@ function DocumentUpload() {
   };
 
   return (
-    <div
-      className="d-flex flex-column min-vh-100"
-      style={{
-        backgroundImage: `url(${Banner})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      <Header />
-      <div
-        className="flex-grow-1 d-flex justify-content-center content-wrapper"
-        style={{ paddingTop: "100px", paddingBottom: "50px" }}
-      >
+    <div style={styles.bookingApp}>
+      {/* Navigation Bar */}
+      <Navbar style={styles.navbarCustom}>
+        <Container>
+            <Navbar.Brand href="#home" className="text-white fw-bold">
+                <b style={{ fontSize: 30 }}>
+                UR<span style={{ color: "#f8e71c" }}>OO</span>M
+                </b>
+            </Navbar.Brand>
+        </Container>
+      </Navbar>
         <Container className="py-5">
           <Card className="shadow-sm">
             <Card.Header className="bg-secondary text-white">
@@ -264,7 +263,7 @@ function DocumentUpload() {
                 <div className="d-flex justify-content-end mt-4">
                   <Button type="submit" variant="primary"
                     onClick={() => {
-                      navigate(Routers.HotelHostDashboard);
+                      navigate('/BookingPropertyChecklist');
                     }}
                   >
                     Submit Documents
@@ -275,9 +274,25 @@ function DocumentUpload() {
           </Card>
         </Container>
       </div>
-      <Footer />
-    </div>
+
   );
 }
 
+const styles = {
+  // Main container styles
+  bookingApp: {
+    minHeight: "100vh"
+  },
+  
+  // Navbar styles
+  navbarCustom: {
+    backgroundColor: "#003580",
+    padding: "10px 0"
+  },
+  navbarBrand: {
+    color: "#fff",
+    fontWeight: "bold"
+  },
+}
 export default DocumentUpload;
+

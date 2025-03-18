@@ -8,7 +8,6 @@ const BannedPage = () => {
   
   return (
     <Container fluid className="banned-container">
-      x
       <div className="banned-content text-center">
         <div className="lock-icon">
           <FaLock size={250}/>
@@ -19,13 +18,13 @@ const BannedPage = () => {
         
         <div className="banned-details">
           <div className="detail-item">
-            <span className="detail-label" style={{fontSize: 20}}>Reason: </span>
-            <span className="detail-value" style={{fontSize: 20, color: 'red'}}>Violation of standards</span>
+            <span className="detail-label">Reason: </span>
+            <span className="detail-value" style={{color: 'red'}}>Violation of standards</span>
           </div>
           
           <div className="detail-item">
-            <span className="detail-label" style={{fontSize: 20}}>Date locked: </span>
-            <span className="detail-value" style={{fontSize: 20}}>12:03:01 20/10/2025</span>
+            <span className="detail-label">Date locked: </span>
+            <span className="detail-value">12:03:01 20/10/2025</span>
           </div>
         </div>
         

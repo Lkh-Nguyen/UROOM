@@ -95,7 +95,7 @@ const ResetPasswordHotelPage = () => {
                 type="submit" 
                 className="w-100 py-2 mt-2"
                 onClick={() => {
-                  navigate(Routers.Home)
+                  navigate(Routers.HotelHostDashboard)
                 }}
               >
                 Reset Password
