@@ -76,11 +76,7 @@ export default function Sidebar() {
       </ul>
 
       {/* Upgrade Link */}
-      <div className="mt-auto">
-        <a className="nav-link_1 upgrade-link_1" href="#">
-          <i className="bi bi-arrow-up-circle me-2"></i> Upgrade to PRO
-        </a>
-      </div>
+    
     </div>
   );
 }
