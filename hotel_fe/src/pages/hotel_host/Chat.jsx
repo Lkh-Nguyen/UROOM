@@ -435,14 +435,12 @@ function Chat() {
           body {
             margin: 0;
             font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-           
             overflow-x: hidden;
           }
           
           .hotel-chat-container {
             display: flex;
-            height: 100vh;
-           
+            height: 97vh;
           }
           
           .hotel-chat-sidebar {

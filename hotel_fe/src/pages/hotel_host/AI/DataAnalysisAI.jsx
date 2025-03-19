@@ -1,7 +1,7 @@
 // import DataAnalysisAI from "pages/hotel_host/RoomAvailabilityCalendar"
 
-import { useState } from "react"
-import { Line, Bar, Pie, Doughnut } from "react-chartjs-2"
+import { useState } from "react";
+import { Line, Bar, Pie, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,9 +14,18 @@ import {
   Tooltip,
   Legend,
   Filler,
-} from "chart.js"
-import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar"
-import Transaction from "pages/hotel_host/Transaction"
+} from "chart.js";
+import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar";
+import Transaction from "pages/hotel_host/Transaction";
+import AdditionalServicesPage from "../service/AdditionalServicesPage";
+import RoomListingPage from "../create_hotel/RoomListingPage";
+import { useNavigate } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min";
+import * as Routers from "../../../utils/Routes";
+import MyAccountHotelPage from "../information/MyAccountHotelPage";
+import HotelManagement from "../hotel/HotelManagement";
+import ListFeedbackHotelPage from "../Feedback/ListFeedbackHotelPage";
 import  Chat  from "../Chat"
 
 ChartJS.register(
@@ -29,19 +38,35 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler,
-)
+  Filler
+);
 
 function App() {
-  const [activeTab, setActiveTab] = useState("dashboard")
-
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const navigate = useNavigate();
   // Dữ liệu biểu đồ doanh thu
   const revenueData = {
-    labels: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+    labels: [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T11",
+      "T12",
+    ],
     datasets: [
       {
         label: "Doanh thu thực tế",
-        data: [12500, 13200, 15400, 18900, 21500, 25800, 28900, 27600, 24300, 19800, 16500, 22100],
+        data: [
+          12500, 13200, 15400, 18900, 21500, 25800, 28900, 27600, 24300, 19800,
+          16500, 22100,
+        ],
         borderColor: "#4361ee",
         backgroundColor: "rgba(67, 97, 238, 0.1)",
         tension: 0.4,
@@ -49,18 +74,34 @@ function App() {
       },
       {
         label: "Dự đoán (AI)",
-        data: [12000, 13000, 15000, 19000, 22000, 26000, 29000, 28000, 24000, 20000, 17000, 23000],
+        data: [
+          12000, 13000, 15000, 19000, 22000, 26000, 29000, 28000, 24000, 20000,
+          17000, 23000,
+        ],
         borderColor: "#f72585",
         borderDash: [5, 5],
         tension: 0.4,
         fill: false,
       },
     ],
-  }
+  };
 
   // Dữ liệu biểu đồ tỷ lệ lấp đầy
   const occupancyData = {
-    labels: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+    labels: [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T11",
+      "T12",
+    ],
     datasets: [
       {
         label: "Tỷ lệ lấp đầy (%)",
@@ -70,70 +111,99 @@ function App() {
         borderWidth: 1,
       },
     ],
-  }
+  };
 
   // Dữ liệu biểu đồ phân khúc khách hàng
   const customerSegmentData = {
-    labels: ["Doanh nhân", "Gia đình", "Cặp đôi", "Du lịch một mình", "Đoàn du lịch"],
+    labels: [
+      "Doanh nhân",
+      "Gia đình",
+      "Cặp đôi",
+      "Du lịch một mình",
+      "Đoàn du lịch",
+    ],
     datasets: [
       {
         data: [35, 25, 20, 10, 10],
-        backgroundColor: ["#4361ee", "#3a0ca3", "#4cc9f0", "#f72585", "#7209b7"],
+        backgroundColor: [
+          "#4361ee",
+          "#3a0ca3",
+          "#4cc9f0",
+          "#f72585",
+          "#7209b7",
+        ],
         borderWidth: 1,
       },
     ],
-  }
+  };
 
   // Dữ liệu biểu đồ kênh đặt phòng
   const bookingChannelData = {
-    labels: ["Website khách sạn", "OTAs", "Đại lý du lịch", "Trực tiếp", "Khác"],
+    labels: [
+      "Website khách sạn",
+      "OTAs",
+      "Đại lý du lịch",
+      "Trực tiếp",
+      "Khác",
+    ],
     datasets: [
       {
         data: [30, 40, 15, 10, 5],
-        backgroundColor: ["#4cc9f0", "#4361ee", "#3a0ca3", "#7209b7", "#f72585"],
+        backgroundColor: [
+          "#4cc9f0",
+          "#4361ee",
+          "#3a0ca3",
+          "#7209b7",
+          "#f72585",
+        ],
         borderWidth: 1,
       },
     ],
-  }
+  };
 
   // Dữ liệu AI Insights
   const aiInsights = [
     {
       id: 1,
       title: "Dự đoán nhu cầu cao điểm",
-      description: "Dự kiến nhu cầu tăng 23% vào tháng 7-8. Cân nhắc tăng giá phòng và chuẩn bị nhân sự.",
+      description:
+        "Dự kiến nhu cầu tăng 23% vào tháng 7-8. Cân nhắc tăng giá phòng và chuẩn bị nhân sự.",
       impact: "high",
       category: "demand",
     },
     {
       id: 2,
       title: "Phân tích tỷ lệ hoàn trả",
-      description: "Tỷ lệ hoàn trả giảm 5% so với quý trước. Chính sách hủy linh hoạt đang phát huy hiệu quả.",
+      description:
+        "Tỷ lệ hoàn trả giảm 5% so với quý trước. Chính sách hủy linh hoạt đang phát huy hiệu quả.",
       impact: "medium",
       category: "operations",
     },
     {
       id: 3,
       title: "Phân khúc khách hàng mới nổi",
-      description: "Phát hiện sự gia tăng 15% khách du lịch một mình. Cân nhắc tạo gói dịch vụ đặc biệt.",
+      description:
+        "Phát hiện sự gia tăng 15% khách du lịch một mình. Cân nhắc tạo gói dịch vụ đặc biệt.",
       impact: "medium",
       category: "customers",
     },
     {
       id: 4,
       title: "Cơ hội tăng doanh thu",
-      description: "Phân tích cho thấy tiềm năng tăng 18% doanh thu từ dịch vụ spa nếu có gói combo với phòng.",
+      description:
+        "Phân tích cho thấy tiềm năng tăng 18% doanh thu từ dịch vụ spa nếu có gói combo với phòng.",
       impact: "high",
       category: "revenue",
     },
     {
       id: 5,
       title: "Tối ưu hóa nhân sự",
-      description: "Mô hình dự đoán cho thấy có thể giảm 7% chi phí nhân sự bằng cách điều chỉnh lịch làm việc.",
+      description:
+        "Mô hình dự đoán cho thấy có thể giảm 7% chi phí nhân sự bằng cách điều chỉnh lịch làm việc.",
       impact: "medium",
       category: "operations",
     },
-  ]
+  ];
 
   // Dữ liệu đặt phòng gần đây
   const recentBookings = [
@@ -182,7 +252,7 @@ function App() {
       status: "Đã thanh toán",
       amount: "18,900,000 VND",
     },
-  ]
+  ];
 
   return (
     <>
@@ -373,7 +443,9 @@ function App() {
           <ul className="nav flex-column">
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "dashboard" ? "active" : ""}`}
+                className={`nav-link ${
+                  activeTab === "dashboard" ? "active" : ""
+                }`}
                 href="#"
                 onClick={() => setActiveTab("dashboard")}
               >
@@ -383,7 +455,9 @@ function App() {
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "bookings" ? "active" : ""}`}
+                className={`nav-link ${
+                  activeTab === "bookings" ? "active" : ""
+                }`}
                 href="#"
                 onClick={() => setActiveTab("bookings")}
               >
@@ -393,7 +467,9 @@ function App() {
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "transaction" ? "active" : ""}`}
+                className={`nav-link ${
+                  activeTab === "transaction" ? "active" : ""
+                }`}
                 href="#"
                 onClick={() => setActiveTab("transaction")}
               >
@@ -403,17 +479,41 @@ function App() {
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "customers" ? "active" : ""}`}
+                className={`nav-link ${activeTab === "hotels" ? "active" : ""}`}
                 href="#"
-                onClick={() => setActiveTab("customers")}
+                onClick={() => setActiveTab("hotels")}
               >
                 <i className="bi bi-people nav-icon"></i>
-                <span>Khách hàng</span>
+                <span>Quản lý khách sạn</span>
               </a>
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "revenue" ? "active" : ""}`}
+                className={`nav-link ${activeTab === "rooms" ? "active" : ""}`}
+                href="#"
+                onClick={() => setActiveTab("rooms")}
+              >
+                <i className="bi bi-people nav-icon"></i>
+                <span>Quản lý phòng</span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className={`nav-link ${
+                  activeTab === "services" ? "active" : ""
+                }`}
+                href="#"
+                onClick={() => setActiveTab("services")}
+              >
+                <i className="bi bi-people nav-icon"></i>
+                <span>Quản lý dịch vụ</span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className={`nav-link ${
+                  activeTab === "revenue" ? "active" : ""
+                }`}
                 href="#"
                 onClick={() => setActiveTab("revenue")}
               >
@@ -423,12 +523,27 @@ function App() {
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "ai-insights" ? "active" : ""}`}
+                className={`nav-link ${
+                  activeTab === "ai-insights" ? "active" : ""
+                }`}
                 href="#"
                 onClick={() => setActiveTab("ai-insights")}
               >
                 <i className="bi bi-robot nav-icon"></i>
                 <span>AI Insights</span>
+              </a>
+            </li>
+
+            <li className="nav-item">
+              <a
+                className={`nav-link ${
+                  activeTab === "feedbacks" ? "active" : ""
+                }`}
+                href="#"
+                onClick={() => setActiveTab("feedbacks")}
+              >
+                <i className="bi bi-gear nav-icon"></i>
+                <span>Đánh giá khách sạn</span>
               </a>
             </li>
             <li className="nav-item">
@@ -450,9 +565,15 @@ function App() {
                 <i className="bi bi-robot fs-3 me-2"></i>
                 <h6 className="mb-0">Trợ lý AI</h6>
               </div>
-              <p className="small mb-2">Hỏi tôi bất cứ điều gì về khách sạn của bạn</p>
+              <p className="small mb-2">
+                Hỏi tôi bất cứ điều gì về khách sạn của bạn
+              </p>
               <div className="input-group">
-                <input type="text" className="form-control form-control-sm" placeholder="Nhập câu hỏi..." />
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  placeholder="Nhập câu hỏi..."
+                />
                 <button className="btn btn-primary btn-sm">
                   <i className="bi bi-send"></i>
                 </button>
@@ -471,7 +592,10 @@ function App() {
               </button>
               <div className="d-flex align-items-center">
                 <div className="dropdown me-3">
-                  <button className="btn btn-sm position-relative" type="button">
+                  <button
+                    className="btn btn-sm position-relative"
+                    type="button"
+                  >
                     <i className="bi bi-bell fs-5"></i>
                     <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                       3
@@ -486,12 +610,55 @@ function App() {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    <img src="https://via.placeholder.com/40" className="rounded-circle me-2" alt="Admin" />
+                    <img
+                      src="https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/481223386_649334790801725_8801908443559005726_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=e99d92&_nc_ohc=ZChh7VAqW_IQ7kNvgGKtXUC&_nc_oc=AdlCt8np4tl2lUIo3dnp-dIz3OXB-51ZihOgTZhg_xhyOPDZYMRcRwWg6FOpN1Dzyfc&_nc_zt=24&_nc_ht=scontent.fhan20-1.fna&_nc_gid=8FSVh04MreKDnt1haXp86A&oh=00_AYE612vGKDzzuC7keL_GPC9ej8kSnY6I-gyYMBP9oewOcA&oe=67E018D6"
+                      className="rounded-circle me-2"
+                      alt="Admin"
+                      style={{ width: "50px", height: "50px" }}
+                    />
                     <div>
-                      <div className="fw-bold">Nguyễn Quản Lý</div>
-                      <div className="small text-muted">Quản lý khách sạn</div>
+                      <div className="fw-bold" style={{ fontSize: "16px" }}>
+                        Nguyễn Quản Lý
+                      </div>
+                      <div
+                        className="small text-muted"
+                        style={{ fontSize: "14px" }}
+                      >
+                        Quản lý khách sạn
+                      </div>
                     </div>
                   </a>
+
+                  {/* Dropdown Menu */}
+                  <ul
+                    className="dropdown-menu dropdown-menu-end"
+                    aria-labelledby="userDropdown"
+                  >
+                    {/* <li>
+                      <a 
+                        className="dropdown-item"
+                        onClick={() => {
+                          navigate(Routers.MyAccountHotelPage)
+                        }}
+                      >
+                        <i className="bi bi-person-circle me-2"></i> Thông tin
+                        cá nhân
+                      </a>
+                    </li>
+                    <li>
+                      <hr className="dropdown-divider" />
+                    </li> */}
+                    <li>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={() => {
+                          navigate(Routers.HomeHotel);
+                        }}
+                      >
+                        <i className="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                      </button>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -527,7 +694,8 @@ function App() {
                             <h6 className="text-muted">Tỷ lệ lấp đầy</h6>
                             <h3 className="mb-0">82.5%</h3>
                             <small className="text-success">
-                              <i className="bi bi-arrow-up"></i> 4.2% so với tháng trước
+                              <i className="bi bi-arrow-up"></i> 4.2% so với
+                              tháng trước
                             </small>
                           </div>
                           <div className="stat-icon light-primary">
@@ -542,10 +710,13 @@ function App() {
                       <div className="card-body">
                         <div className="d-flex justify-content-between">
                           <div>
-                            <h6 className="text-muted">Doanh thu trung bình/phòng</h6>
+                            <h6 className="text-muted">
+                              Doanh thu trung bình/phòng
+                            </h6>
                             <h3 className="mb-0">2.4M</h3>
                             <small className="text-success">
-                              <i className="bi bi-arrow-up"></i> 6.8% so với tháng trước
+                              <i className="bi bi-arrow-up"></i> 6.8% so với
+                              tháng trước
                             </small>
                           </div>
                           <div className="stat-icon light-success">
@@ -563,7 +734,8 @@ function App() {
                             <h6 className="text-muted">Đánh giá trung bình</h6>
                             <h3 className="mb-0">4.7/5</h3>
                             <small className="text-success">
-                              <i className="bi bi-arrow-up"></i> 0.2 so với tháng trước
+                              <i className="bi bi-arrow-up"></i> 0.2 so với
+                              tháng trước
                             </small>
                           </div>
                           <div className="stat-icon light-warning">
@@ -581,7 +753,8 @@ function App() {
                             <h6 className="text-muted">Tỷ lệ khách quay lại</h6>
                             <h3 className="mb-0">28.3%</h3>
                             <small className="text-danger">
-                              <i className="bi bi-arrow-down"></i> 1.5% so với tháng trước
+                              <i className="bi bi-arrow-down"></i> 1.5% so với
+                              tháng trước
                             </small>
                           </div>
                           <div className="stat-icon light-info">
@@ -601,13 +774,23 @@ function App() {
                         <div className="d-flex justify-content-between align-items-center mb-4">
                           <div>
                             <h5 className="card-title">Phân tích doanh thu</h5>
-                            <p className="text-muted small mb-0">So sánh doanh thu thực tế với dự đoán AI</p>
+                            <p className="text-muted small mb-0">
+                              So sánh doanh thu thực tế với dự đoán AI
+                            </p>
                           </div>
                           <div className="btn-group">
-                            <button className="btn btn-sm btn-outline-secondary">Ngày</button>
-                            <button className="btn btn-sm btn-outline-secondary">Tuần</button>
-                            <button className="btn btn-sm btn-primary">Tháng</button>
-                            <button className="btn btn-sm btn-outline-secondary">Năm</button>
+                            <button className="btn btn-sm btn-outline-secondary">
+                              Ngày
+                            </button>
+                            <button className="btn btn-sm btn-outline-secondary">
+                              Tuần
+                            </button>
+                            <button className="btn btn-sm btn-primary">
+                              Tháng
+                            </button>
+                            <button className="btn btn-sm btn-outline-secondary">
+                              Năm
+                            </button>
                           </div>
                         </div>
                         <Line
@@ -644,7 +827,9 @@ function App() {
                     <div className="card h-100">
                       <div className="card-body">
                         <h5 className="card-title">Phân khúc khách hàng</h5>
-                        <p className="text-muted small mb-4">Phân tích theo loại khách hàng</p>
+                        <p className="text-muted small mb-4">
+                          Phân tích theo loại khách hàng
+                        </p>
                         <div className="chart-container">
                           <Doughnut
                             data={customerSegmentData}
@@ -685,13 +870,21 @@ function App() {
                             <div key={insight.id} className="ai-insight-item">
                               <div className="d-flex align-items-center mb-2">
                                 <span
-                                  className={`badge ${insight.impact === "high" ? "bg-danger" : "bg-warning"} me-2`}
+                                  className={`badge ${
+                                    insight.impact === "high"
+                                      ? "bg-danger"
+                                      : "bg-warning"
+                                  } me-2`}
                                 >
-                                  {insight.impact === "high" ? "Quan trọng" : "Trung bình"}
+                                  {insight.impact === "high"
+                                    ? "Quan trọng"
+                                    : "Trung bình"}
                                 </span>
                                 <h6 className="mb-0">{insight.title}</h6>
                               </div>
-                              <p className="mb-0 small">{insight.description}</p>
+                              <p className="mb-0 small">
+                                {insight.description}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -734,8 +927,8 @@ function App() {
                                         booking.status === "Đã xác nhận"
                                           ? "bg-success"
                                           : booking.status === "Đã thanh toán"
-                                            ? "bg-primary"
-                                            : "bg-warning"
+                                          ? "bg-primary"
+                                          : "bg-warning"
                                       }`}
                                     >
                                       {booking.status}
@@ -759,7 +952,9 @@ function App() {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <div>
                     <h4>AI Insights</h4>
-                    <p className="text-muted">Phân tích thông minh và dự đoán từ AI</p>
+                    <p className="text-muted">
+                      Phân tích thông minh và dự đoán từ AI
+                    </p>
                   </div>
                   <div className="d-flex">
                     <select className="form-select form-select-sm me-2">
@@ -789,10 +984,10 @@ function App() {
                                 insight.category === "demand"
                                   ? "light-primary"
                                   : insight.category === "revenue"
-                                    ? "light-success"
-                                    : insight.category === "customers"
-                                      ? "light-info"
-                                      : "light-warning"
+                                  ? "light-success"
+                                  : insight.category === "customers"
+                                  ? "light-info"
+                                  : "light-warning"
                               }`}
                             >
                               <i
@@ -800,16 +995,24 @@ function App() {
                                   insight.category === "demand"
                                     ? "bi-graph-up"
                                     : insight.category === "revenue"
-                                      ? "bi-cash-coin"
-                                      : insight.category === "customers"
-                                        ? "bi-people"
-                                        : "bi-gear"
+                                    ? "bi-cash-coin"
+                                    : insight.category === "customers"
+                                    ? "bi-people"
+                                    : "bi-gear"
                                 } fs-4`}
                               ></i>
                             </div>
                             <div>
-                              <span className={`badge ${insight.impact === "high" ? "bg-danger" : "bg-warning"} mb-1`}>
-                                {insight.impact === "high" ? "Quan trọng" : "Trung bình"}
+                              <span
+                                className={`badge ${
+                                  insight.impact === "high"
+                                    ? "bg-danger"
+                                    : "bg-warning"
+                                } mb-1`}
+                              >
+                                {insight.impact === "high"
+                                  ? "Quan trọng"
+                                  : "Trung bình"}
                               </span>
                               <h5 className="mb-0">{insight.title}</h5>
                             </div>
@@ -820,12 +1023,14 @@ function App() {
                               {insight.category === "demand"
                                 ? "Nhu cầu"
                                 : insight.category === "revenue"
-                                  ? "Doanh thu"
-                                  : insight.category === "customers"
-                                    ? "Khách hàng"
-                                    : "Vận hành"}
+                                ? "Doanh thu"
+                                : insight.category === "customers"
+                                ? "Khách hàng"
+                                : "Vận hành"}
                             </span>
-                            <button className="btn btn-sm btn-outline-primary">Xem chi tiết</button>
+                            <button className="btn btn-sm btn-outline-primary">
+                              Xem chi tiết
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -835,19 +1040,39 @@ function App() {
 
                 <div className="card mb-4">
                   <div className="card-body">
-                    <h5 className="card-title mb-4">Dự đoán nhu cầu theo mùa</h5>
+                    <h5 className="card-title mb-4">
+                      Dự đoán nhu cầu theo mùa
+                    </h5>
                     <Bar
                       data={{
-                        labels: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"],
+                        labels: [
+                          "T1",
+                          "T2",
+                          "T3",
+                          "T4",
+                          "T5",
+                          "T6",
+                          "T7",
+                          "T8",
+                          "T9",
+                          "T10",
+                          "T11",
+                          "T12",
+                        ],
                         datasets: [
                           {
                             label: "Tỷ lệ lấp đầy dự kiến (%)",
-                            data: [65, 68, 72, 78, 82, 88, 92, 90, 85, 76, 70, 80],
+                            data: [
+                              65, 68, 72, 78, 82, 88, 92, 90, 85, 76, 70, 80,
+                            ],
                             backgroundColor: "#4cc9f0",
                           },
                           {
                             label: "Giá phòng trung bình dự kiến (triệu VND)",
-                            data: [1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 2.0, 2.0, 1.7, 1.5, 1.4, 1.6],
+                            data: [
+                              1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 2.0, 2.0, 1.7, 1.5,
+                              1.4, 1.6,
+                            ],
                             backgroundColor: "#f72585",
                           },
                         ],
@@ -873,15 +1098,43 @@ function App() {
 
             {activeTab === "bookings" && (
               <>
-              <RoomAvailabilityCalendar/>
-                
+                <RoomAvailabilityCalendar />
               </>
             )}
-            
+
             {activeTab === "transaction" && (
               <>
-              <Transaction/>
-                
+                <Transaction />
+              </>
+            )}
+
+            {activeTab === "hotels" && (
+              <>
+                <HotelManagement />
+              </>
+            )}
+
+            {activeTab === "rooms" && (
+              <>
+                <RoomListingPage />
+              </>
+            )}
+
+            {activeTab === "services" && (
+              <>
+                <AdditionalServicesPage />
+              </>
+            )}
+
+            {activeTab === "settings" && (
+              <>
+                <MyAccountHotelPage />
+              </>
+            )}
+
+            {activeTab === "feedbacks" && (
+              <>
+                <ListFeedbackHotelPage />
               </>
             )}
               {activeTab === "mess" && (
@@ -896,7 +1149,9 @@ function App() {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                   <div>
                     <h4>Phân tích doanh thu</h4>
-                    <p className="text-muted">Theo dõi và phân tích doanh thu của khách sạn</p>
+                    <p className="text-muted">
+                      Theo dõi và phân tích doanh thu của khách sạn
+                    </p>
                   </div>
                   <div className="d-flex">
                     <select className="form-select form-select-sm me-2">
@@ -918,7 +1173,8 @@ function App() {
                         <h6 className="text-muted">Tổng doanh thu</h6>
                         <h3 className="mb-0">1.25 Tỷ</h3>
                         <small className="text-success">
-                          <i className="bi bi-arrow-up"></i> 12.5% so với kỳ trước
+                          <i className="bi bi-arrow-up"></i> 12.5% so với kỳ
+                          trước
                         </small>
                       </div>
                     </div>
@@ -929,7 +1185,8 @@ function App() {
                         <h6 className="text-muted">RevPAR</h6>
                         <h3 className="mb-0">1.8M</h3>
                         <small className="text-success">
-                          <i className="bi bi-arrow-up"></i> 8.3% so với kỳ trước
+                          <i className="bi bi-arrow-up"></i> 8.3% so với kỳ
+                          trước
                         </small>
                       </div>
                     </div>
@@ -940,7 +1197,8 @@ function App() {
                         <h6 className="text-muted">ADR</h6>
                         <h3 className="mb-0">2.2M</h3>
                         <small className="text-success">
-                          <i className="bi bi-arrow-up"></i> 5.2% so với kỳ trước
+                          <i className="bi bi-arrow-up"></i> 5.2% so với kỳ
+                          trước
                         </small>
                       </div>
                     </div>
@@ -951,7 +1209,8 @@ function App() {
                         <h6 className="text-muted">Lợi nhuận</h6>
                         <h3 className="mb-0">420M</h3>
                         <small className="text-success">
-                          <i className="bi bi-arrow-up"></i> 15.8% so với kỳ trước
+                          <i className="bi bi-arrow-up"></i> 15.8% so với kỳ
+                          trước
                         </small>
                       </div>
                     </div>
@@ -1018,7 +1277,9 @@ function App() {
 
                 <div className="card mb-4">
                   <div className="card-body">
-                    <h5 className="card-title mb-4">Phân tích doanh thu theo loại phòng</h5>
+                    <h5 className="card-title mb-4">
+                      Phân tích doanh thu theo loại phòng
+                    </h5>
                     <div className="table-responsive">
                       <table className="table">
                         <thead className="table-light">
@@ -1075,8 +1336,7 @@ function App() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
-export default App
-
+export default App;

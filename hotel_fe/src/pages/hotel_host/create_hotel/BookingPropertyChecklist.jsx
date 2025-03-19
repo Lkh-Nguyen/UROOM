@@ -56,7 +56,12 @@ function BookingPropertyChecklist() {
               <div style={styles.stepDescription}>Hãy cho chúng tôi biết về phòng đầu tiên của Quý vị. Sau khi đã thiết lập xong một căn, Quý vị có thể thêm nhiều căn nữa.</div>
             </Col>
             <Col xs="auto">
-              <Button style={styles.actionButton}>Thêm phòng</Button>
+              <Button 
+                style={styles.actionButton}
+                onClick={() => {
+                  navigate('/CreateRoom')
+                }}
+              >Thêm phòng</Button>
             </Col>
           </Row>
         </div>
@@ -71,11 +76,11 @@ function BookingPropertyChecklist() {
             </Col>
             <Col>
               <div style={styles.stepNumber}>Bước 3</div>
-              <div style={styles.stepTitle}>Ảnh</div>
-              <div style={styles.stepDescription}>Chia sẻ một số hình ảnh chỗ nghỉ của Quý vị để khách biết mình nên có những kỳ vọng gì.</div>
+              <div style={styles.stepTitle}>Dịch vụ đi kèm</div>
+              <div style={styles.stepDescription}>Những dịch vụ đi kèm với phòng của quý vị. Sau khi đã thiết lập xong tối thiểu 1 phòng.</div>
             </Col>
             <Col xs="auto">
-              <Button style={styles.actionButton}>Thêm ảnh</Button>
+              <Button style={styles.actionButton}>Thêm dịch vụ</Button>
             </Col>
           </Row>
         </div>
@@ -103,7 +108,19 @@ function BookingPropertyChecklist() {
             </Col>
           </Row>
         </div>
+         {/* Confirmation Button */}
+         <div style={{ textAlign: "right", marginTop: 20 }}>
+          <Button 
+            style={styles.confirmButton} 
+            onClick={() => {
+              navigate(Routers.WaitPendingPage)
+            }}
+          >
+            Xác nhận hoàn tất
+          </Button>
+        </div>
       </Container>
+      
     </div>
   );
 }

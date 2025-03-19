@@ -1,146 +1,223 @@
 import { useState } from "react";
-import {
-  Container,
-  Table,
-  Form,
-  Row,
-  Col,
-  Pagination,
-  InputGroup,
-  Button,
-} from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import * as Routers from "../../../utils/Routes";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "../SidebarAdmin";
+import DetailReportedAdmin from "./DetailReportedAdmin";
 
 function ReportedFeedbackAdmin() {
-  const navigate = useNavigate();
-  const [entriesPerPage, setEntriesPerPage] = useState("10");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  // Dữ liệu báo cáo feedback gần đây
+  const recentReports = [
+    {
+      id: "1",
+      customerName: "Nguyễn Văn X",
+      hotelName: "Luxury Palace Hotel",
+      reportType: "Vi phạm chính sách",
+      submittedDate: "15/06/2025",
+      status: "Chưa xử lý",
+      severity: "Cao",
+    },
+    {
+      id: "2",
+      customerName: "Trần Thị Y",
+      hotelName: "Seaside Resort & Spa",
+      reportType: "Chất lượng dịch vụ",
+      submittedDate: "16/06/2025",
+      status: "Đang xử lý",
+      severity: "Trung bình",
+    },
+    {
+      id: "2",
+      customerName: "Lê Văn Z",
+      hotelName: "City Center Hotel",
+      reportType: "Sai thông tin",
+      submittedDate: "16/06/2025",
+      status: "Chưa xử lý",
+      severity: "Thấp",
+    },
+    {
+      id: "2",
+      customerName: "Phạm Thị K",
+      hotelName: "Mountain View Lodge",
+      reportType: "Vi phạm chính sách",
+      submittedDate: "17/06/2025",
+      status: "Đang xử lý",
+      severity: "Cao",
+    },
+  ];
+
+  // Lấy màu cho mức độ nghiêm trọng
+  const getSeverityColor = (severity) => {
+    switch (severity) {
+      case "Cao":
+        return "danger";
+      case "Trung bình":
+        return "warning";
+      case "Thấp":
+        return "info";
+      default:
+        return "secondary";
+    }
+  };
+  // Lấy màu cho trạng thái
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Đã thanh toán":
+      case "Hoạt động":
+        return "success";
+      case "Đang xử lý":
+      case "Đang xem xét":
+      case "Đang chờ":
+        return "warning";
+      case "Tạm khóa":
+      case "Chưa xử lý":
+        return "danger";
+      default:
+        return "secondary";
+    }
+  };
 
   return (
-    <div className="d-flex">
-      <div className="col-md-2">
-        <Sidebar />
+    <div className="reports-content">
+      <div className="page-header">
+        <h1>Báo cáo vi phạm</h1>
+        <div className="page-actions">
+          <button className="btn btn-outline-primary">
+            <i className="bi bi-filter"></i> Lọc
+          </button>
+          <button className="btn btn-primary">
+            <i className="bi bi-download"></i> Xuất báo cáo
+          </button>
+        </div>
       </div>
-      <div className="col-md-10">
-        <div className="main-content_1 p-3">
-          <h2 className="text-secondary mb-4">Report Feedback List</h2>
 
-          {/* Table Controls */}
-          <Row className="mb-3 align-items-center">
-            <Col xs={12} md={6} className="mb-3 mb-md-0">
-              <div className="d-flex align-items-center">
-                <span className="me-2">Show</span>
-                <Form.Select
-                  style={{ width: "80px" }}
-                  value={entriesPerPage}
-                  onChange={(e) => setEntriesPerPage(e.target.value)}
-                  className="me-2"
-                >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                </Form.Select>
-                <span>entries</span>
-              </div>
-            </Col>
-            <Col xs={12} md={6}>
-              <InputGroup>
-                <InputGroup.Text className="bg-white">Search:</InputGroup.Text>
-                <Form.Control
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search by Id Feedback"
-                />
-              </InputGroup>
-            </Col>
-          </Row>
+      <div className="content-container">
+        <div className="filters-bar">
+          <div className="search-box">
+            <i className="bi bi-search"></i>
+            <input type="text" placeholder="Tìm kiếm báo cáo..." />
+          </div>
+          <div className="filters">
+            <select className="form-select">
+              <option>Tất cả trạng thái</option>
+              <option>Chưa xử lý</option>
+              <option>Đang xử lý</option>
+              <option>Đã xử lý</option>
+            </select>
+            <select className="form-select">
+              <option>Tất cả mức độ</option>
+              <option>Cao</option>
+              <option>Trung bình</option>
+              <option>Thấp</option>
+            </select>
+            <select className="form-select">
+              <option>Tất cả loại</option>
+              <option>Vi phạm chính sách</option>
+              <option>Chất lượng dịch vụ</option>
+              <option>Sai thông tin</option>
+            </select>
+          </div>
+        </div>
 
-          {/* Table */}
-          <Table className="bg-white">
+        <div className="table-responsive">
+          <table className="table table-hover">
             <thead>
               <tr>
-                <th className="text-center" style={{ width: "30px" }}>
-                  ID
-                </th>
-                <th>Description</th>
-                <th className="text-center" style={{ width: "30px" }}>
-                  Rating
-                </th>
-                <th className="text-center" style={{ width: "180px" }}>
-                  Date
-                </th>
-                <th className="text-center" style={{ width: "30px" }}>
-                  Likes
-                </th>
-                <th className="text-center" style={{ width: "30px" }}>
-                  Dislike
-                </th>
-                <th className="text-center" style={{ width: "30px" }}>
-                  Reports
-                </th>
-                <th className="text-center" style={{ width: "100px" }}>
-                  Actions
-                </th>
+                <th>ID</th>
+                <th>Khách hàng</th>
+                <th>Khách sạn</th>
+                <th>Loại báo cáo</th>
+                <th>Ngày gửi</th>
+                <th>Mức độ</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className="text-center">1</td>
-                <td>
-                  The hotel offers great service, clean rooms, and a relaxing
-                  atmosphere, but breakfast options could improve.
-                </td>
-                <td className="text-center">4</td>
-                <td className="text-center">12:03:12 20/10/2003</td>
-                <td className="text-center">12</td>
-                <td className="text-center">36</td>
-                <td className="text-center">4</td>
-                <td style={{ display: "flex" }}>
-                  <Button
-                    variant="outline-warning"
-                    style={{ width: "80px", marginRight: "10px" }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    style={{ width: "80px", marginRight: "10px" }}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant="outline-success"
-                    style={{ width: "80px" }}
-                    onClick={() => {
-                      navigate(Routers.DetailReportedAdmin);
-                    }}
-                  >
-                    View
-                  </Button>
-                </td>
-              </tr>
+              {recentReports.map((report) => (
+                <tr key={report.id}>
+                  <td>{report.id}</td>
+                  <td>{report.customerName}</td>
+                  <td>{report.hotelName}</td>
+                  <td>{report.reportType}</td>
+                  <td>{report.submittedDate}</td>
+                  <td>
+                    <span
+                      className={`badge bg-${getSeverityColor(
+                        report.severity
+                      )}`}
+                    >
+                      {report.severity}
+                    </span>
+                  </td>
+                  <td>
+                    <span
+                      className={`badge bg-${getStatusColor(report.status)}`}
+                    >
+                      {report.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-sm btn-primary"
+                        title="Xem chi tiết"
+                        onClick={() =>{
+                          setShowModal(true);
+                        }}
+                      >
+                        <i className="bi bi-eye"></i>
+                      </button>
+                      <button className="btn btn-sm btn-warning" title="Xử lý">
+                        <i className="bi bi-pencil"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-success"
+                        title="Đánh dấu đã xử lý"
+                      >
+                        <i className="bi bi-check-lg"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
-          </Table>
+          </table>
+        </div>
 
-          {/* Table Footer */}
-          <Row className="align-items-center mt-3">
-            <Col>
-              <p className="mb-0">Showing 0 to 0 of 0 entries</p>
-            </Col>
-            <Col className="d-flex justify-content-end">
-              <Pagination className="mb-0">
-                <Pagination.Item disabled>Previous</Pagination.Item>
-                <Pagination.Item disabled>Next</Pagination.Item>
-              </Pagination>
-            </Col>
-          </Row>
+        <div className="pagination-container">
+          <div className="pagination-info">Hiển thị 1-4 của 12 kết quả</div>
+          <ul className="pagination">
+            <li className="page-item disabled">
+              <a className="page-link" href="#">
+                Trước
+              </a>
+            </li>
+            <li className="page-item active">
+              <a className="page-link" href="#">
+                1
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                2
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                3
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                Sau
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
+      <DetailReportedAdmin
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        handleClose={() => setShowModal(false)}
+      />
     </div>
   );
 }

@@ -1,17 +1,15 @@
 import { useState } from "react"
-import { Container, Table, Form, Row, Col, Pagination, InputGroup, Button } from "react-bootstrap"
+import { Container, Table, Form, Row, Col, Pagination, InputGroup, Button, Modal } from "react-bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
-import * as Routers from "../../../utils/Routes";
-import { useNavigate } from "react-router-dom";
 
-function DetailReportedAdmin() {
-  const navigate= useNavigate();
+function DetailReportedAdmin({ show, handleClose }) {
   const [entriesPerPage, setEntriesPerPage] = useState("10")
   const [searchTerm, setSearchTerm] = useState("")
 
   return (
+    <Modal show={show} onHide={handleClose} size="xl">
     <Container className="p-4">
-      <h2 className="text-secondary mb-4">Report Feedback List</h2>
+      <h2 className="text-secondary mb-4">Detail Report</h2>
 
       {/* Table Controls */}
       <Row className="mb-3 align-items-center">
@@ -64,28 +62,28 @@ function DetailReportedAdmin() {
             <td className="text-center">1</td>
             <td>Lê Kim Hoàng Nguyên</td>
             <td>The hotel offers great service, clean room</td>
-            <td>The hotel offers great service, clean rooms, and a relaxing atmosphere, but breakfast options could improve.</td>
+            <td>Thank you for bringing this to our attention. We take all feedback seriously and are working on improving this issue. Please let us know how we can make things right for you.</td>
             <td>12:03:12 20/10/2003</td>
           </tr>
           <tr>
             <td className="text-center">2</td>
             <td>Trương Thị Thiện Duyên</td>
             <td>The hotel relaxing atmosphere</td>
-            <td>The hotel offers great service, clean rooms, and a relaxing atmosphere, but breakfast options could improve.</td>
+            <td>We apologize for any inconvenience caused. Your feedback helps us grow, and we will make sure to take necessary steps to improve. We truly value your input!</td>
             <td>12:03:12 05/02/2003</td>
           </tr>
           <tr>
             <td className="text-center">3</td>
             <td>Nguyễn Văn Duy An</td>
             <td>The hotel breakfast options could improve.</td>
-            <td>The hotel offers great service, clean rooms, and a relaxing atmosphere, but breakfast options could improve.</td>
+            <td>We sincerely appreciate your feedback and are sorry to hear that your experience did not meet expectations. We always strive to improve and would love to understand more about your concerns.</td>
             <td>12:03:12 30/06/2003</td>
           </tr>
         </tbody>
       </Table>
 
       {/* Table Footer */}
-      <Row className="align-items-center">
+      <Row className="align-items-center  mt-3">
         <Col>
           <p className="mb-0">Showing 0 to 0 of 0 entries</p>
         </Col>
@@ -97,6 +95,7 @@ function DetailReportedAdmin() {
         </Col>
       </Row>
     </Container>
+    </Modal>
   )
 }
 

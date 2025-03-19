@@ -35,12 +35,21 @@ export default function Sidebar() {
           </a>
         </li>
         <li className="nav-item_1">
-          <a className="nav-link_1" href="#">
+          <a className="nav-link_1" 
+            onClick={() => {
+              navigate('/BookingPropertyName')
+            }}
+          >
             <i className="bi bi-map me-2"></i> Hotel management
           </a>
         </li>
         <li className="nav-item_1">
-          <a className="nav-link_1" href="#">
+          <a 
+            className="nav-link_1"  
+            onClick={() => {
+              navigate('/AdditionalServicesPage');
+            }}
+          >
             <i className="bi bi-person me-2"></i> Service management
           </a>
         </li>
@@ -48,7 +57,7 @@ export default function Sidebar() {
           <a
             className="nav-link_1"
             onClick={() => {
-              navigate();
+              navigate('/RoomListingPage');
             }}
           >
             <i className="bi bi-door-open me-2"></i> Room management
