@@ -501,18 +501,11 @@ function RoomAvailabilityCalendar() {
 
   return (
     <div className="d-flex">
-      <div className="col-md-2">
-        <Sidebar />
-      </div>
-      <div className="col-md-10">
+     
+     
         <div className="main-content_1 p-3">
-          <div className=" text-black d-flex justify-content-between align-items-center">
-            <h2
-              className="fw-bold text-secondary mb-4"
-              style={{ marginTop: "2.5%" }}
-            >
-              Room Availability Calendar
-            </h2>
+          <div className=" text-black d-flex justify-content-between align-items-center mb-3">
+          <h4>Tổng quan khách sạn</h4>
             <div className="d-flex">
               <Button
                 variant="outline-primary"
@@ -545,7 +538,7 @@ function RoomAvailabilityCalendar() {
             {/* Filters and Actions */}
             <div
               className="calendar-filters p-3  border-bottom"
-              style={{ backgroundColor: "white", borderRadius: "10px" }}
+             
             >
               <Row className="align-items-center">
                 <Col md={3}>
@@ -1505,7 +1498,7 @@ function RoomAvailabilityCalendar() {
             )}
           </Modal.Body>
         </Modal>
-      </div>
+      
     </div>
   );
 }
