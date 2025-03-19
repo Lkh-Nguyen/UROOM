@@ -17,6 +17,7 @@ import {
 } from "chart.js"
 import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar"
 import Transaction from "pages/hotel_host/Transaction"
+import  Chat  from "../Chat"
 
 ChartJS.register(
   CategoryScale,
@@ -432,14 +433,15 @@ function App() {
             </li>
             <li className="nav-item">
               <a
-                className={`nav-link ${activeTab === "settings" ? "active" : ""}`}
+                className={`nav-link ${activeTab === "mess" ? "active" : ""}`}
                 href="#"
-                onClick={() => setActiveTab("settings")}
+                onClick={() => setActiveTab("mess")}
               >
-                <i className="bi bi-gear nav-icon"></i>
-                <span>Cài đặt</span>
+                <i className="bi bi-robot nav-icon"></i>
+                <span>Tin nhắn</span>
               </a>
             </li>
+            
           </ul>
 
           <div className="mt-auto p-3">
@@ -882,7 +884,12 @@ function App() {
                 
               </>
             )}
-             
+              {activeTab === "mess" && (
+              <>
+              <Chat/>
+                
+              </>
+            )}
 
             {activeTab === "revenue" && (
               <>
