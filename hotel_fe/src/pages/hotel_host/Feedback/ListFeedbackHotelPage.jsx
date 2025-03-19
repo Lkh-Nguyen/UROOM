@@ -88,7 +88,7 @@ const ListFeedbackHotelPage = () => {
       <div className="col-md-10">
         <div className="main-content_1 p-3">
           <h2
-            className="fw-bold text-secondary mb-4"
+            className="fw-bold mb-4"
             style={{ marginTop: "2.5%" }}
           >
             {" "}

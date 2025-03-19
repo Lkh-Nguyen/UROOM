@@ -26,6 +26,12 @@ import HotelHostDashboard from "pages/hotel_host/Dashboard";
 import Transaction from "pages/hotel_host/Transaction";
 import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar";
 import TransactionDetail from "pages/hotel_host/TransactionDetail";
+import CreateRoom from "pages/hotel_host/create_hotel/CreateRoom";
+import RoomNamingForm from "pages/hotel_host/create_hotel/RoomNameForm";
+import PricingSetupForm from "pages/hotel_host/create_hotel/PricingSetupForm";
+import RoomImageForm from "pages/hotel_host/create_hotel/RoomImageForm";
+import RoomListingPage from "pages/hotel_host/create_hotel/RoomListingPage";
+import AdditionalServicesPage from "pages/hotel_host/service/AdditionalServicesPage";
 
 function App() {
   return (
@@ -47,6 +53,13 @@ function App() {
         <Route path={"/BookingPropertyCheckInOut"} element={<BookingPropertyCheckInOut/>} />
         <Route path={"/BookingPropertyDescription"} element={<BookingPropertyDescription/>} />
         <Route path={"/BookingPropertyChecklist"} element={<BookingPropertyChecklist/>} />
+        <Route path={"/CreateRoom"} element={<CreateRoom/>} />
+        <Route path={"/RoomNamingForm"} element={<RoomNamingForm/>} />
+        <Route path={"/PricingSetupForm"} element={<PricingSetupForm/>} />
+        <Route path={"/RoomImageForm"} element={<RoomImageForm/>} />
+        <Route path={"/RoomListingPage"} element={<RoomListingPage/>} />
+        <Route path={"/AdditionalServicesPage"} element={<AdditionalServicesPage/>} />
+        
         {/*|Hotel Host */}
         <Route path={Routers.HomeHotel} element={<HomeHotel/>} />
         <Route path={Routers.LoginHotelPage} element={<LoginHotelPage/>} />

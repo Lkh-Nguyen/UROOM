@@ -40,10 +40,7 @@ const TransactionDetail = () => {
         <Sidebar />
       </div>
       <div className="col-md-10 ">
-        <div
-          className="col-md-10 d-flex justify-content-center align-items-center"
-          style={{ height: "100vh" }}
-        >
+        <div className="main-content_1 p-3">
           <Container fluid className="booking-bill-container">
             <Card className="booking-bill-card">
               <Row className="g-0">
