@@ -193,11 +193,6 @@ function AdditionalServicesPage() {
   };
 
   return (
-    <div className="d-flex">
-      <div className="col-md-2">
-        <Sidebar />
-      </div>
-      <div className="col-md-10">
         <div className="main-content_1 p-3">
           <div style={styles.header}>
             <h1 style={styles.title}>Dịch Vụ Đi Kèm</h1>
@@ -503,8 +498,6 @@ function AdditionalServicesPage() {
             </Modal.Footer>
           </Modal>
         </div>
-      </div>
-    </div>
   );
 }
 

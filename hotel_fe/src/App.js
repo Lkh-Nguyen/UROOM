@@ -32,7 +32,8 @@ import PricingSetupForm from "pages/hotel_host/create_hotel/PricingSetupForm";
 import RoomImageForm from "pages/hotel_host/create_hotel/RoomImageForm";
 import RoomListingPage from "pages/hotel_host/create_hotel/RoomListingPage";
 import AdditionalServicesPage from "pages/hotel_host/service/AdditionalServicesPage";
-
+import DataAnalysisAI from "pages/hotel_host/AI/DataAnalysisAI";
+import HotelManagement from "pages/hotel_host/hotel/HotelManagement";
 function App() {
   return (
     <Router>
@@ -61,6 +62,7 @@ function App() {
         <Route path={"/AdditionalServicesPage"} element={<AdditionalServicesPage/>} />
         
         {/*|Hotel Host */}
+        <Route path={'/HotelManagement'} element={<HotelManagement/>} />
         <Route path={Routers.HomeHotel} element={<HomeHotel/>} />
         <Route path={Routers.LoginHotelPage} element={<LoginHotelPage/>} />
         <Route path={Routers.RegisterHotelPage} element={<RegisterHotelPage/>} />
@@ -71,6 +73,7 @@ function App() {
         <Route path={Routers.ListFeedbackHotelPage} element={<ListFeedbackHotelPage/>} />
         <Route path={Routers.ReportedFeedbackHotel} element={<ReportedFeedbackHotel/>} />
         <Route path={Routers.DocumentUpload} element={<DocumentUpload/>} />
+        <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI/>} />
       </Routes>
     </Router>
   );

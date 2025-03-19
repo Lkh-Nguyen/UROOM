@@ -20,6 +20,7 @@ const ReportedFeedback= '/reportedfeedback_customer';
 const PaymentFailedPage= '/paymentfailed_customer';
 const VerifyCodeRegisterPage= '/verifyregiter_customer';
 const HomeNotLogin= '/notlogin';
+const ChatPage= '/ChatPage';
 
 
 export {
@@ -44,4 +45,5 @@ export {
   VerifyCodeRegisterPage,
   RoomDetailPage,
   HomeNotLogin,
+  ChatPage,
 }

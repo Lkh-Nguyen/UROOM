@@ -25,6 +25,8 @@ const MyAccountHotelPage = '/myaccount_hotelhost';
 const ListFeedbackHotelPage = '/feedback_hotelhost';
 const ReportedFeedbackHotel = '/reportedfeedback_hotelhost';
 const DocumentUpload = '/documentupload_hotelhost';
+const DataAnalysisAI = '/';
+
 
 export {
   BannedPage,
@@ -53,5 +55,7 @@ export {
   MyAccountHotelPage,
   ListFeedbackHotelPage,
   ReportedFeedbackHotel,
-  DocumentUpload
+  DocumentUpload,
+  DataAnalysisAI,
+
 };

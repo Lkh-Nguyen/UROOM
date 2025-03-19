@@ -23,6 +23,7 @@ import HomeNotLogin from "pages/customer/home/HomePageNotLogin";
 import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
+import ChatPage from "pages/customer/home/ChatPage";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
 
         <Route path={Routers.BannedPage} element={<BannedPage />} />
         <Route path={Routers.ErrorPage} element={<ErrorPage />} />
+        <Route path={Routers.ChatPage} element={<ChatPage />} />
 
       </Routes>
     </Router>
