@@ -19,7 +19,7 @@ body {
 /* Hero Section */
 .hero-section {
   background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5)),
-    url("../../images/788a690f45e8afb211df217987d0ac56.jpg");
+    url("../../images/banner.png");
   background-size: cover;
   background-position: center;
   height: 500px;
@@ -27,6 +27,7 @@ body {
   justify-content: center;
   align-items: center;
   padding-bottom: 3rem;
+  position: relative; /* Để button không bị lệch */
 }
 
 .hero-content {

@@ -30,6 +30,7 @@ import {
   FaSpa,
   FaDumbbell,
   FaArrowRight,
+  FaHeart,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/css/customer/Home_detail.css";
@@ -82,27 +83,58 @@ function HeroSection() {
             <FaStar key={index} className="star-filled" />
           ))}
         </div>
-          <Button
-            style={{position: "absolute", top: 280, left: 718}}
-            variant="outline-light"
-            onClick={() => {
-              navigate(Routers.ChatPage);
-            }}
-          >
-            Contact
-          </Button>
+        <Button
+          style={{
+            position: "absolute",
+            left: "50%",
+            transform: "translateX(-50%)",
+            marginTop: "20px",
+          }}
+          variant="outline-light"
+          onClick={() => {
+            navigate(Routers.ChatPage);
+          }}
+        >
+          Contact with hotel
+        </Button>
       </div>
     </div>
   );
 }
 
 function MainContent() {
-  const imageList = [room1, room2, room3];
+  const imageList = [image1, room2, room3];
   const [mainImage, setMainImage] = useState(imageList[0]); // Ảnh chính ban đầu
+  const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích
 
   return (
     <Container className="main-content">
       <Card className="content-card">
+        <div
+          style={{
+            width: "35px",
+            height: "35px",
+            borderRadius: "50%",
+            borderWidth: "2px",
+            borderColor: isFavorite ? "red" : "gray",
+            borderStyle: "solid", // Thêm dòng này
+            position: "absolute",
+            top: 10,
+            right: 10,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <FaHeart
+            onClick={() => setIsFavorite(!isFavorite)}
+            style={{
+              fontSize: "20px",
+              color: isFavorite ? "red" : "gray",
+              cursor: "pointer",
+            }}
+          />
+        </div>
         <Row>
           <Col lg={6}>
             <div className="main-image-container">
