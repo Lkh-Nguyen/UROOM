@@ -17,7 +17,6 @@ import {
 } from "chart.js";
 import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar";
 import Transaction from "pages/hotel_host/Transaction";
-import CreateRoom from "../create_hotel/CreateRoom";
 import AdditionalServicesPage from "../service/AdditionalServicesPage";
 import RoomListingPage from "../create_hotel/RoomListingPage";
 import { useNavigate } from "react-router-dom";
@@ -27,8 +26,6 @@ import * as Routers from "../../../utils/Routes";
 import MyAccountHotelPage from "../information/MyAccountHotelPage";
 import HotelManagement from "../hotel/HotelManagement";
 import ListFeedbackHotelPage from "../Feedback/ListFeedbackHotelPage";
-import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar"
-import Transaction from "pages/hotel_host/Transaction"
 import  Chat  from "../Chat"
 
 ChartJS.register(

@@ -1,222 +1,240 @@
-import { useState } from "react"
-import { Table, Button, Form, Pagination, Container } from "react-bootstrap"
-import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
+import { Col, Form, Row } from "react-bootstrap";
 
 const ListPaymentHotel = () => {
-  // Sample data
-  const initialHotels = [
+  // Dữ liệu giao dịch thanh toán gần đây
+  const recentPayments = [
     {
-      id: 1,
-      hotelName: "ManagerMent Bussiness Hotel Fashion",
-      ownerName: "Lê Kim Hoang Nguyen",
-      month: 12,
+      id: "1",
+      hotelName: "Luxury Palace Hotel",
+      amount: "4,500,000 VND",
+      month:1,
       year: 2025,
-      date: "12:00:30 12/03/2024",
-      status: "PAID",
+      status: "Đã thanh toán",
+      type: "Hoa hồng",
     },
-
     {
-        id: 2,
-        hotelName: "ManagerMent Bussiness Hotel Fashion",
-        ownerName: "Lê Kim Hoang Nguyen",
-        month: 6,
-        year: 2024,
-        date: "",
-        status: "PENDING",
-      },
-  ]
+      id: "2",
+      hotelName: "Seaside Resort & Spa",
+      amount: "12,800,000 VND",
+      month:3,
+      year: 2025,
+      status:"Đã thanh toán",
+      type: "Hoa hồng",
+    },
+    {
+      id: "3",
+      hotelName: "City Center Hotel",
+      amount: "1,200,000 VND",
+      month:4,
+      year: 2025,
+      status: "Đang xử lý",
+      type: "Phí dịch vụ",
+    },
+    {
+      id: "4",
+      hotelName: "Mountain View Lodge",
+      amount: "7,500,000 VND",
+      month:5,
+      year: 2025,
+      status: "Đã thanh toán",
+      type: "Hoa hồng",
+    },
+  ];
 
-  const [hotels, setHotels] = useState(initialHotels)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const [entriesPerPage, setEntriesPerPage] = useState(10)
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  // Lấy màu cho trạng thái
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Đã thanh toán":
+      case "Hoạt động":
+        return "success";
+      case "Đang xử lý":
+      case "Đang xem xét":
+      case "Đang chờ":
+        return "warning";
+      case "Tạm khóa":
+      case "Chưa xử lý":
+        return "danger";
+      default:
+        return "secondary";
+    }
+  };
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-  // Filter hotels based on search term
-  const filteredHotels = hotels.filter(
-    (hotel) =>
-      hotel.hotelName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      hotel.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      hotel.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      hotel.location.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-
-  // Pagination logic
-  const indexOfLastHotel = currentPage * entriesPerPage
-  const indexOfFirstHotel = indexOfLastHotel - entriesPerPage
-  const currentHotels = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel)
-  const totalPages = Math.ceil(filteredHotels.length / entriesPerPage)
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+  const years = Array.from(
+    { length: 5 },
+    (_, i) => new Date().getFullYear() - 2 + i
+  );
 
   return (
-    <Container>
-      <h2 style={styles.title}>Hotel Partners</h2>
-
-      <div style={styles.controls}>
-        <div style={styles.showEntries}>
-          <span>Filter:</span>
-          <Form.Select
-            style={styles.entriesSelect}
-            value={entriesPerPage}
-            onChange={(e) => setEntriesPerPage(Number.parseInt(e.target.value))}
-          >
-            <option value="10">All Status</option>
-            <option value="25">PAID</option>
-            <option value="50">PENDING</option>
-          </Form.Select>
-        </div>
-
-        <div style={styles.search}>
-          <span>Search:</span>
-          <Form.Control
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={styles.searchInput}
-            placeholder={"Enter you hotel name or owner name"}
-          />
+    <div className="payments-content">
+      <div className="page-header">
+        <h1>Quản lý Thanh toán</h1>
+        <div className="page-actions">
+          <button className="btn btn-outline-primary">
+            <i className="bi bi-filter"></i> Lọc
+          </button>
+          <button className="btn btn-primary">
+            <i className="bi bi-download"></i> Xuất báo cáo
+          </button>
         </div>
       </div>
 
-      <Table bordered style={styles.table}>
-        <thead>
-          <tr>
-            <th style={styles.tableHeader}>Hotel Name</th>
-            <th style={styles.tableHeader}>Owner Name</th>
-            <th style={styles.tableHeader}>Month/Year</th>
-            <th style={styles.tableHeader}>Date Payment</th>
-            <th style={styles.tableHeader}>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentHotels.map((hotel) => (
-            <tr key={hotel.id}>
-              <td>{hotel.hotelName}</td>
-              <td>{hotel.ownerName}</td>
-              <td>{hotel.month}/{hotel.year}</td>
-              <td>{hotel.date != '' ? hotel.date : '-'}</td>
-              <td>
-                {hotel.status == "PENDING" 
-                    ? <Button variant="warning" style={{width: '100px', marginRight: '10px'}}>{hotel.status}</Button> 
-                    :  <Button variant="primary" style={{width: '100px', marginRight: '10px'}} disabled>{hotel.status}</Button> }
-                <Button variant="success" style={{width: '100px', marginRight: '10px'}}>View</Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
-
-      <div style={styles.paginationContainer}>
-        <div style={styles.paginationInfo}>
-          Showing {indexOfFirstHotel + 1} to {Math.min(indexOfLastHotel, filteredHotels.length)} of{" "}
-          {filteredHotels.length} entries
+      <div className="content-container">
+        <div className="filters-bar">
+          <div className="search-box">
+            <i className="bi bi-search"></i>
+            <input type="text" placeholder="Tìm kiếm giao dịch..." />
+          </div>
+          <div className="filters">
+            <select className="form-select">
+              <option>Tất cả trạng thái</option>
+              <option>Đã thanh toán</option>
+              <option>Đang xử lý</option>
+            </select>
+            <select className="form-select">
+              <option>Tất cả loại</option>
+              <option>Hoa hồng</option>
+              <option>Phí dịch vụ</option>
+            </select>
+            <Form.Group className="mb-3">
+              <Form.Label>Month</Form.Label>
+              <Form.Select
+                value={selectedMonth}
+                onChange={(e) =>
+                  setSelectedMonth(Number.parseInt(e.target.value))
+                }
+              >
+                {months.map((month, index) => (
+                  <option key={index} value={index}>
+                    {month}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Year</Form.Label>
+              <Form.Select
+                value={selectedYear}
+                onChange={(e) =>
+                  setSelectedYear(Number.parseInt(e.target.value))
+                }
+              >
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+          </div>
         </div>
 
-        <Pagination style={styles.pagination}>
-          <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
-            Previous
-          </Pagination.Prev>
+        <div className="table-responsive">
+          <table className="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Khách sạn</th>
+                <th>Số tiền</th>
+                <th>Loại</th>
+                <th>Tháng/Năm</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentPayments.map((payment) => (
+                <tr key={payment.id}>
+                  <td>{payment.id}</td>
+                  <td>{payment.hotelName}</td>
+                  <td>{payment.amount}</td>
+                  <td>{payment.type}</td>
+                  <td>{payment.month}/{payment.year}</td>
+                  <td>
+                    <span
+                      className={`badge bg-${getStatusColor(payment.status)}`}
+                    >
+                      {payment.status}
+                    </span>
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button
+                        className="btn btn-sm btn-primary"
+                        title="Xem chi tiết"
+                      >
+                        <i className="bi bi-eye"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-success"
+                        title="Xác nhận"
+                      >
+                        <i className="bi bi-check-lg"></i>
+                      </button>
+                      <button
+                        className="btn btn-sm btn-warning"
+                        title="In hóa đơn"
+                      >
+                        <i className="bi bi-printer"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
-          {Array.from({ length: totalPages }, (_, i) => (
-            <Pagination.Item
-              key={i + 1}
-              active={i + 1 === currentPage}
-              onClick={() => handlePageChange(i + 1)}
-              style={i + 1 === currentPage ? styles.activePage : {}}
-            >
-              {i + 1}
-            </Pagination.Item>
-          ))}
-
-          <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
-            Next
-          </Pagination.Next>
-        </Pagination>
+        <div className="pagination-container">
+          <div className="pagination-info">Hiển thị 1-4 của 120 kết quả</div>
+          <ul className="pagination">
+            <li className="page-item disabled">
+              <a className="page-link" href="#">
+                Trước
+              </a>
+            </li>
+            <li className="page-item active">
+              <a className="page-link" href="#">
+                1
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                2
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                3
+              </a>
+            </li>
+            <li className="page-item">
+              <a className="page-link" href="#">
+                Sau
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
-    </Container>
-  )
-}
+    </div>
+  );
+};
 
-// Direct CSS styles
-const styles = {
-  container: {
-    padding: "20px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "5px",
-    boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-  },
-  title: {
-    color: "#4285f4",
-    marginBottom: "20px",
-    fontWeight: "normal",
-    fontSize: "24px",
-  },
-  controls: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "20px",
-  },
-  showEntries: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  entriesSelect: {
-    width: "auto",
-    display: "inline-block",
-  },
-  search: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-  },
-  searchInput: {
-    width: "400px",
-    height: "100",
-    borderRadius: 5,
-  },
-  table: {
-    backgroundColor: "white",
-    marginBottom: "20px",
-  },
-  tableHeader: {
-    backgroundColor: "#f8f9fa",
-    color: "#6c757d",
-  },
-  partnerStatus: {
-    color: "#4285f4",
-  },
-  actionButtons: {
-    display: "flex",
-    gap: "5px",
-  },
-  viewButton: {
-    backgroundColor: "#4285f4",
-    borderColor: "#4285f4",
-  },
-  lockButton: {
-    backgroundColor: "#f44336",
-    borderColor: "#f44336",
-  },
-  paginationContainer: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  paginationInfo: {
-    color: "#6c757d",
-  },
-  pagination: {
-    margin: 0,
-  },
-  activePage: {
-    backgroundColor: "#4285f4",
-    borderColor: "#4285f4",
-  },
-}
-
-export default ListPaymentHotel
-
+export default ListPaymentHotel;

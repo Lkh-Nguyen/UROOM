@@ -11,9 +11,11 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "../Sidebar";
 import { useNavigate } from "react-router-dom";
+import Room from "pages/room/Room";
 
 function RoomListingPage() {
   const navigate = useNavigate();
+  const [showModal, setShowModal]= useState(false);
   const [rooms, setRooms] = useState([
     {
       id: 1,
@@ -41,13 +43,13 @@ function RoomListingPage() {
     },
     {
       id: 3,
-      name: "Phòng Đôi Tiêu Chuẩn",
+      name: "Phòng Standand",
       image:
-        "https://cf.bstatic.com/xdata/images/hotel/max500/280949903.jpg?k=ffdbb282a1cbeeed2f59a1f85fae47c82e9556624a13703e4d8616640d533c92&o=",
+        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651319.jpg?k=b66833f77898ba6ce4e093ec0e3e515960437367051a9737d2087968640fb745&o=&hp=1",
       capacity: 2,
       beds: 1,
-      bathroom: "Riêng",
-      price: 25500000,
+      bathroom: "riêng",
+      price: 124000,
       count: 3,
       size: 22,
     },
@@ -169,7 +171,7 @@ function RoomListingPage() {
         <Button
           style={styles.addButton}
           onClick={() => {
-            navigate("/CreateRoom");
+            setShowModal(true);
           }}
         >
           + Thêm Phòng Mới
@@ -256,7 +258,7 @@ function RoomListingPage() {
                   <Button
                     style={styles.editButton}
                     onClick={() => {
-                      navigate("/CreateRoom");
+                      setShowModal(true);
                     }}
                   >
                     Chỉnh sửa
@@ -267,6 +269,11 @@ function RoomListingPage() {
           ))}
         </Row>
       )}
+      <Room
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        handleClose={() => setShowModal(false)}
+      />
     </div>
   );
 }

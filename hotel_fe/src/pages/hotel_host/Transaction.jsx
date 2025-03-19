@@ -443,16 +443,14 @@ const Transaction = () => {
             <tbody>
               {payments.length > 0 ? (
                 payments.map((payment, index) => (
-                  <tr key={payment.id}>
+                  <tr key={payment.id}
+                    onClick={handleShowModal}
+                    style={{cursor: "pointer",}}
+                  >
                     <td>{index + 1}</td>
                     <td>{payment.date}</td>
                     <td>
-                      <a
-                        onClick={handleShowModal}
-                        style={{
-                          cursor: "pointer",
-                        }}
-                      >
+                      <a>
                         {payment.description}
                       </a>
                     </td>

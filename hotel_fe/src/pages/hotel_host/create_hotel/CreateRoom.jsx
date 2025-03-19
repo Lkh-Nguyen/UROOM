@@ -8,11 +8,13 @@ import {
   Card,
   InputGroup,
   Navbar,
+  ProgressBar,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function CreateRoom() {
+  const location = useLocation();
   const navigate = useNavigate();
   const [bedCount, setBedCount] = useState({
     singleBed: 1,
@@ -31,97 +33,6 @@ function CreateRoom() {
     });
   };
 
-  const styles = {
-    header: {
-      backgroundColor: "#003580",
-      padding: "10px 0",
-      marginBottom: "20px",
-    },
-    logo: {
-      height: "24px",
-      marginLeft: "20px",
-    },
-    formContainer: {
-      maxWidth: "800px",
-      margin: "0 auto",
-      padding: "15px 15px",
-    },
-    formTitle: {
-      fontSize: "20px",
-      fontWeight: "bold",
-      marginBottom: "20px",
-    },
-    formSection: {
-      border: "1px solid #e7e7e7",
-      padding: "15px",
-      marginBottom: "15px",
-      borderRadius: "4px",
-    },
-    bedRow: {
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      marginBottom: "10px",
-    },
-    bedInfo: {
-      display: "flex",
-      alignItems: "center",
-    },
-    bedIcon: {
-      width: "24px",
-      height: "24px",
-      marginRight: "10px",
-    },
-    bedName: {
-      fontWeight: "bold",
-      margin: "0",
-    },
-    bedSize: {
-      fontSize: "12px",
-      color: "#6b6b6b",
-      margin: "0",
-    },
-    numberInput: {
-      width: "120px",
-    },
-    continueButton: {
-      backgroundColor: "#0071c2",
-      border: "none",
-      padding: "10px 0",
-      fontWeight: "bold",
-    },
-    backButton: {
-      backgroundColor: "white",
-      border: "1px solid #0071c2",
-      color: "#0071c2",
-      padding: "10px 0",
-      fontWeight: "bold",
-    },
-    checkboxLabel: {
-      display: "flex",
-      alignItems: "center",
-    },
-    infoBox: {
-      backgroundColor: "#ebf3ff",
-      border: "1px solid #d2e3fc",
-      padding: "15px",
-      borderRadius: "4px",
-      marginBottom: "15px",
-    },
-    closeIcon: {
-      cursor: "pointer",
-      float: "right",
-    },
-    // Navbar styles
-    navbarCustom: {
-      backgroundColor: "#003580",
-      padding: "10px 0",
-    },
-    navbarBrand: {
-      color: "#fff",
-      fontWeight: "bold",
-    },
-  };
 
   return (
     <div style={styles.bookingApp}>
@@ -135,6 +46,21 @@ function CreateRoom() {
           </Navbar.Brand>
         </Container>
       </Navbar>
+
+      {/* Progress Bar */}
+      <Container className="mt-4 mb-4">
+        <div className="progress-section">
+          <div className="progress-label mb-2">
+            <h5>Thông tin cơ bản</h5>
+          </div>
+          <ProgressBar style={{ height: "20px" }}>
+            <ProgressBar variant="primary" now={25} key={1} />
+            <ProgressBar variant="secondary" now={25} key={2} />
+            <ProgressBar variant="secondary" now={25} key={3} />
+            <ProgressBar variant="secondary" now={25} key={4} />
+          </ProgressBar>
+        </div>
+      </Container>
 
       <Container style={styles.formContainer}>
         <h2 style={styles.formTitle}>Chi tiết phòng</h2>
@@ -381,5 +307,99 @@ function CreateRoom() {
     </div>
   );
 }
+
+
+const styles = {
+  header: {
+    backgroundColor: "#003580",
+    padding: "10px 0",
+    marginBottom: "20px",
+  },
+  logo: {
+    height: "24px",
+    marginLeft: "20px",
+  },
+  formContainer: {
+    maxWidth: "800px",
+    margin: "0 auto",
+    padding: "15px 15px",
+  },
+  formTitle: {
+    fontSize: "20px",
+    fontWeight: "bold",
+    marginBottom: "20px",
+  },
+  formSection: {
+    border: "1px solid #e7e7e7",
+    padding: "15px",
+    marginBottom: "15px",
+    borderRadius: "4px",
+  },
+  bedRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: "10px",
+  },
+  bedInfo: {
+    display: "flex",
+    alignItems: "center",
+  },
+  bedIcon: {
+    width: "24px",
+    height: "24px",
+    marginRight: "10px",
+  },
+  bedName: {
+    fontWeight: "bold",
+    margin: "0",
+  },
+  bedSize: {
+    fontSize: "12px",
+    color: "#6b6b6b",
+    margin: "0",
+  },
+  numberInput: {
+    width: "120px",
+  },
+  continueButton: {
+    backgroundColor: "#0071c2",
+    border: "none",
+    padding: "10px 0",
+    fontWeight: "bold",
+  },
+  backButton: {
+    backgroundColor: "white",
+    border: "1px solid #0071c2",
+    color: "#0071c2",
+    padding: "10px 0",
+    fontWeight: "bold",
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+  },
+  infoBox: {
+    backgroundColor: "#ebf3ff",
+    border: "1px solid #d2e3fc",
+    padding: "15px",
+    borderRadius: "4px",
+    marginBottom: "15px",
+  },
+  closeIcon: {
+    cursor: "pointer",
+    float: "right",
+  },
+  // Navbar styles
+  navbarCustom: {
+    backgroundColor: "#003580",
+    padding: "10px 0",
+  },
+  navbarBrand: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+};
+
 
 export default CreateRoom;

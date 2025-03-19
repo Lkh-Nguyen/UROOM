@@ -34,6 +34,7 @@ import RoomListingPage from "pages/hotel_host/create_hotel/RoomListingPage";
 import AdditionalServicesPage from "pages/hotel_host/service/AdditionalServicesPage";
 import DataAnalysisAI from "pages/hotel_host/AI/DataAnalysisAI";
 import HotelManagement from "pages/hotel_host/hotel/HotelManagement";
+import Room from "pages/room/Room";
 function App() {
   return (
     <Router>
@@ -74,6 +75,10 @@ function App() {
         <Route path={Routers.ReportedFeedbackHotel} element={<ReportedFeedbackHotel/>} />
         <Route path={Routers.DocumentUpload} element={<DocumentUpload/>} />
         <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI/>} />
+
+
+        <Route path={"/Room"} element={<Room/>} />
+
       </Routes>
     </Router>
   );

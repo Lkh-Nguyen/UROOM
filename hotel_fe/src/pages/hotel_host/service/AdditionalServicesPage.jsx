@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Container,
   Row,
   Col,
   Card,
@@ -9,10 +8,8 @@ import {
   InputGroup,
   Modal,
   Table,
-  Badge,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Sidebar from "../Sidebar";
 
 function AdditionalServicesPage() {
   const [services, setServices] = useState([

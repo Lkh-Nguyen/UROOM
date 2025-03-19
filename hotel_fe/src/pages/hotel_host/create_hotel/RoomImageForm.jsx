@@ -51,6 +51,20 @@ function RoomImageForm() {
         </Container>
       </Navbar>
 
+      {/* Progress Bar */}
+      <Container className="mt-4 mb-4">
+        <div className="progress-section">
+          <div className="progress-label mb-2">
+            <h5>Thông tin cơ bản</h5>
+          </div>
+          <ProgressBar style={{ height: "20px" }}>
+            <ProgressBar variant="primary" now={25} key={1} />
+            <ProgressBar variant="primary" now={25} key={2} />
+            <ProgressBar variant="primary" now={25} key={3} />
+            <ProgressBar variant="primary" now={25} key={4} />
+          </ProgressBar>
+        </div>
+      </Container>
 
       {/* Main Content */}
       <Container className="main-content py-4">
@@ -59,9 +73,7 @@ function RoomImageForm() {
             {/* Main Content */}
             <Container className="main-content">
               <div className="mb-4">
-                <h1 className="main-heading">
-                  Hình ảnh về phòng
-                </h1>
+                <h1 className="main-heading">Hình ảnh về phòng</h1>
               </div>
 
               {/* Facility Form */}
@@ -118,7 +130,7 @@ function RoomImageForm() {
                 variant="primary"
                 className="continue-button"
                 onClick={() => {
-                  navigate(Routers.HotelHostDashboard)
+                  navigate(Routers.BookingPropertyChecklist);
                 }}
               >
                 Tiếp tục

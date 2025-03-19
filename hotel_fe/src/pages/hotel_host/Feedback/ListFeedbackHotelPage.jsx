@@ -89,7 +89,7 @@ const ListFeedbackHotelPage = () => {
 
   return (
     <div className="main-content_1 p-3">
-      <h2 className="fw-bold mb-4" style={{ marginTop: "2.5%" }}>
+      <h2 className="fw-bold mb-4">
         {" "}
         Những review khách của du khách về Tobu Hotel Levant Tokyo
       </h2>
@@ -130,35 +130,35 @@ const ListFeedbackHotelPage = () => {
                 <span>Cơ bản</span>
                 <span>14</span>
               </div>
-              <ProgressBar now={94} />
+              <ProgressBar now={66} />
             </div>
             <div className="rating-item">
               <div className="d-flex justify-content-between mb-1">
                 <span>Tiêu Chuẩn</span>
                 <span>9,2</span>
               </div>
-              <ProgressBar now={92} />
+              <ProgressBar now={50} />
             </div>
             <div className="rating-item">
               <div className="d-flex justify-content-between mb-1">
                 <span>Tốt</span>
                 <span>16</span>
               </div>
-              <ProgressBar now={90} />
+              <ProgressBar now={40} />
             </div>
             <div className="rating-item">
               <div className="d-flex justify-content-between mb-1">
                 <span>Khá Tốt</span>
                 <span>19</span>
               </div>
-              <ProgressBar now={94} />
+              <ProgressBar now={30} />
             </div>
             <div className="rating-item">
               <div className="d-flex justify-content-between mb-1">
                 <span>Rất Tốt</span>
                 <span>19</span>
               </div>
-              <ProgressBar now={93} />
+              <ProgressBar now={15} />
             </div>
           </div>
         </Col>

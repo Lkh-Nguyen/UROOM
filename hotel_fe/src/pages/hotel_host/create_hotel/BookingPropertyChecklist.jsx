@@ -108,7 +108,19 @@ function BookingPropertyChecklist() {
             </Col>
           </Row>
         </div>
+         {/* Confirmation Button */}
+         <div style={{ textAlign: "right", marginTop: 20 }}>
+          <Button 
+            style={styles.confirmButton} 
+            onClick={() => {
+              navigate(Routers.WaitPendingPage)
+            }}
+          >
+            Xác nhận hoàn tất
+          </Button>
+        </div>
       </Container>
+      
     </div>
   );
 }

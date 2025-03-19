@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Form, Button, Card, Navbar } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Card, Navbar, ProgressBar } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 
@@ -98,6 +98,22 @@ function RoomNamingForm() {
           </Navbar.Brand>
         </Container>
       </Navbar>
+
+      {/* Progress Bar */}
+      <Container className="mt-4 mb-4">
+        <div className="progress-section">
+          <div className="progress-label mb-2">
+            <h5>Thông tin cơ bản</h5>
+          </div>
+          <ProgressBar style={{ height: "20px" }}>
+            <ProgressBar variant="primary" now={25} key={1} />
+            <ProgressBar variant="primary" now={25} key={2} />
+            <ProgressBar variant="secondary" now={25} key={3} />
+            <ProgressBar variant="secondary" now={25} key={4} />
+          </ProgressBar>
+        </div>
+      </Container>
+
       <Container style={styles.container}>
         <h1 style={styles.title}>Tên của phòng này là gì?</h1>
 

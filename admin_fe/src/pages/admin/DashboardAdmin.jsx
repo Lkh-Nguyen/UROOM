@@ -18,6 +18,9 @@ import {
 import { FaBell } from "react-icons/fa";
 
 import AccountManagement from "./hotelHost/HotelManagement";
+import ListCustomerAdmin from "./customer/ListCustomerAdmin";
+import ReportedFeedbackAdmin from "./reported_feedback/ReportedFeedbackAdmin";
+import ListPaymentHotel from "./payment/ListPaymentHotel";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -213,41 +216,7 @@ function AdminDashboard() {
     },
   ]
 
-  // Dữ liệu giao dịch thanh toán gần đây
-  const recentPayments = [
-    {
-      id: "P-7829",
-      hotelName: "Luxury Palace Hotel",
-      amount: "4,500,000 VND",
-      date: "15/06/2025",
-      status: "Đã thanh toán",
-      type: "Hoa hồng",
-    },
-    {
-      id: "P-7830",
-      hotelName: "Seaside Resort & Spa",
-      amount: "12,800,000 VND",
-      date: "16/06/2025",
-      status: "Đã thanh toán",
-      type: "Hoa hồng",
-    },
-    {
-      id: "P-7831",
-      hotelName: "City Center Hotel",
-      amount: "1,200,000 VND",
-      date: "16/06/2025",
-      status: "Đang xử lý",
-      type: "Phí dịch vụ",
-    },
-    {
-      id: "P-7832",
-      hotelName: "Mountain View Lodge",
-      amount: "7,500,000 VND",
-      date: "17/06/2025",
-      status: "Đã thanh toán",
-      type: "Hoa hồng",
-    },
-  ]
+  
 
   // Dữ liệu danh sách hotel host
   const hotelHosts = [
@@ -298,54 +267,7 @@ function AdminDashboard() {
     },
   ]
 
-  // Dữ liệu danh sách khách hàng
-  const customers = [
-    {
-      id: "C-7829",
-      name: "Nguyễn Văn X",
-      email: "nguyenvanx@example.com",
-      phone: "0901234567",
-      bookings: 8,
-      joinDate: "15/01/2023",
-      status: "Hoạt động",
-    },
-    {
-      id: "C-7830",
-      name: "Trần Thị Y",
-      email: "tranthiy@example.com",
-      phone: "0912345678",
-      bookings: 5,
-      joinDate: "20/03/2023",
-      status: "Hoạt động",
-    },
-    {
-      id: "C-7831",
-      name: "Lê Văn Z",
-      email: "levanz@example.com",
-      phone: "0923456789",
-      bookings: 3,
-      joinDate: "05/05/2023",
-      status: "Tạm khóa",
-    },
-    {
-      id: "C-7832",
-      name: "Phạm Thị K",
-      email: "phamthik@example.com",
-      phone: "0934567890",
-      bookings: 12,
-      joinDate: "12/07/2023",
-      status: "Hoạt động",
-    },
-    {
-      id: "C-7833",
-      name: "Hoàng Văn M",
-      email: "hoangvanm@example.com",
-      phone: "0945678901",
-      bookings: 7,
-      joinDate: "30/09/2023",
-      status: "Hoạt động",
-    },
-  ]
+
 
   // Đóng dropdown khi click ra ngoài
   useEffect(() => {
@@ -851,117 +773,7 @@ function AdminDashboard() {
 
             {/* Customers Management */}
             {activeTab === "customers" && (
-              <div className="customers-content">
-                <div className="page-header">
-                  <h1>Quản lý Khách hàng</h1>
-                  <div className="page-actions">
-                    <button className="btn btn-outline-primary">
-                      <i className="bi bi-filter"></i> Lọc
-                    </button>
-                    <button className="btn btn-primary">
-                      <i className="bi bi-download"></i> Xuất dữ liệu
-                    </button>
-                  </div>
-                </div>
-
-                <div className="content-container">
-                  <div className="filters-bar">
-                    <div className="search-box">
-                      <i className="bi bi-search"></i>
-                      <input type="text" placeholder="Tìm kiếm khách hàng..." />
-                    </div>
-                    <div className="filters">
-                      <select className="form-select">
-                        <option>Tất cả trạng thái</option>
-                        <option>Hoạt động</option>
-                        <option>Tạm khóa</option>
-                      </select>
-                      <select className="form-select">
-                        <option>Sắp xếp theo</option>
-                        <option>Tên A-Z</option>
-                        <option>Ngày tham gia (Mới nhất)</option>
-                        <option>Số lượng đặt phòng (Cao nhất)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="table-responsive">
-                    <table className="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>
-                            <input type="checkbox" className="form-check-input" />
-                          </th>
-                          <th>ID</th>
-                          <th>Tên</th>
-                          <th>Email</th>
-                          <th>Số điện thoại</th>
-                          <th>Số đặt phòng</th>
-                          <th>Ngày tham gia</th>
-                          <th>Trạng thái</th>
-                          <th>Thao tác</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {customers.map((customer) => (
-                          <tr key={customer.id}>
-                            <td>
-                              <input type="checkbox" className="form-check-input" />
-                            </td>
-                            <td>{customer.id}</td>
-                            <td>{customer.name}</td>
-                            <td>{customer.email}</td>
-                            <td>{customer.phone}</td>
-                            <td>{customer.bookings}</td>
-                            <td>{customer.joinDate}</td>
-                            <td>
-                              <span className={`badge bg-${getStatusColor(customer.status)}`}>
-                                {customer.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="action-buttons">
-                                <button className="btn btn-sm btn-primary" title="Xem chi tiết">
-                                  <i className="bi bi-eye"></i>
-                                </button>
-                                <button className="btn btn-sm btn-warning" title="Chỉnh sửa">
-                                  <i className="bi bi-pencil"></i>
-                                </button>
-                                <button className="btn btn-sm btn-danger" title="Khóa tài khoản">
-                                  <i className="bi bi-lock"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="pagination-container">
-                    <div className="pagination-info">
-                      Hiển thị 1-5 của 42 kết quả
-                    </div>
-                    <ul className="pagination">
-                      <li className="page-item disabled">
-                        <a className="page-link" href="#">Trước</a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="#">1</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">2</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">3</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">Sau</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <ListCustomerAdmin/>
             )}
 
             {/* Hotel Approvals */}
@@ -1085,232 +897,12 @@ function AdminDashboard() {
 
             {/* Payments */}
             {activeTab === "payments" && (
-              <div className="payments-content">
-                <div className="page-header">
-                  <h1>Quản lý Thanh toán</h1>
-                  <div className="page-actions">
-                    <button className="btn btn-outline-primary">
-                      <i className="bi bi-filter"></i> Lọc
-                    </button>
-                    <button className="btn btn-primary">
-                      <i className="bi bi-download"></i> Xuất báo cáo
-                    </button>
-                  </div>
-                </div>
-
-                <div className="content-container">
-                  <div className="filters-bar">
-                    <div className="search-box">
-                      <i className="bi bi-search"></i>
-                      <input type="text" placeholder="Tìm kiếm giao dịch..." />
-                    </div>
-                    <div className="filters">
-                      <select className="form-select">
-                        <option>Tất cả trạng thái</option>
-                        <option>Đã thanh toán</option>
-                        <option>Đang xử lý</option>
-                      </select>
-                      <select className="form-select">
-                        <option>Tất cả loại</option>
-                        <option>Hoa hồng</option>
-                        <option>Phí dịch vụ</option>
-                      </select>
-                      <div className="date-range">
-                        <input type="date" className="form-control" placeholder="Từ ngày" />
-                        <input type="date" className="form-control" placeholder="Đến ngày" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="table-responsive">
-                    <table className="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Khách sạn</th>
-                          <th>Số tiền</th>
-                          <th>Loại</th>
-                          <th>Ngày</th>
-                          <th>Trạng thái</th>
-                          <th>Thao tác</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentPayments.map((payment) => (
-                          <tr key={payment.id}>
-                            <td>{payment.id}</td>
-                            <td>{payment.hotelName}</td>
-                            <td>{payment.amount}</td>
-                            <td>{payment.type}</td>
-                            <td>{payment.date}</td>
-                            <td>
-                              <span className={`badge bg-${getStatusColor(payment.status)}`}>
-                                {payment.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="action-buttons">
-                                <button className="btn btn-sm btn-primary" title="Xem chi tiết">
-                                  <i className="bi bi-eye"></i>
-                                </button>
-                                <button className="btn btn-sm btn-success" title="Xác nhận">
-                                  <i className="bi bi-check-lg"></i>
-                                </button>
-                                <button className="btn btn-sm btn-warning" title="In hóa đơn">
-                                  <i className="bi bi-printer"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="pagination-container">
-                    <div className="pagination-info">
-                      Hiển thị 1-4 của 120 kết quả
-                    </div>
-                    <ul className="pagination">
-                      <li className="page-item disabled">
-                        <a className="page-link" href="#">Trước</a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="#">1</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">2</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">3</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">Sau</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <ListPaymentHotel/>
             )}
 
             {/* Reports */}
             {activeTab === "reports" && (
-              <div className="reports-content">
-                <div className="page-header">
-                  <h1>Báo cáo vi phạm</h1>
-                  <div className="page-actions">
-                    <button className="btn btn-outline-primary">
-                      <i className="bi bi-filter"></i> Lọc
-                    </button>
-                    <button className="btn btn-primary">
-                      <i className="bi bi-download"></i> Xuất báo cáo
-                    </button>
-                  </div>
-                </div>
-
-                <div className="content-container">
-                  <div className="filters-bar">
-                    <div className="search-box">
-                      <i className="bi bi-search"></i>
-                      <input type="text" placeholder="Tìm kiếm báo cáo..." />
-                    </div>
-                    <div className="filters">
-                      <select className="form-select">
-                        <option>Tất cả trạng thái</option>
-                        <option>Chưa xử lý</option>
-                        <option>Đang xử lý</option>
-                        <option>Đã xử lý</option>
-                      </select>
-                      <select className="form-select">
-                        <option>Tất cả mức độ</option>
-                        <option>Cao</option>
-                        <option>Trung bình</option>
-                        <option>Thấp</option>
-                      </select>
-                      <select className="form-select">
-                        <option>Tất cả loại</option>
-                        <option>Vi phạm chính sách</option>
-                        <option>Chất lượng dịch vụ</option>
-                        <option>Sai thông tin</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="table-responsive">
-                    <table className="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Khách hàng</th>
-                          <th>Khách sạn</th>
-                          <th>Loại báo cáo</th>
-                          <th>Ngày gửi</th>
-                          <th>Mức độ</th>
-                          <th>Trạng thái</th>
-                          <th>Thao tác</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentReports.map((report) => (
-                          <tr key={report.id}>
-                            <td>{report.id}</td>
-                            <td>{report.customerName}</td>
-                            <td>{report.hotelName}</td>
-                            <td>{report.reportType}</td>
-                            <td>{report.submittedDate}</td>
-                            <td>
-                              <span className={`badge bg-${getSeverityColor(report.severity)}`}>
-                                {report.severity}
-                              </span>
-                            </td>
-                            <td>
-                              <span className={`badge bg-${getStatusColor(report.status)}`}>
-                                {report.status}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="action-buttons">
-                                <button className="btn btn-sm btn-primary" title="Xem chi tiết">
-                                  <i className="bi bi-eye"></i>
-                                </button>
-                                <button className="btn btn-sm btn-warning" title="Xử lý">
-                                  <i className="bi bi-pencil"></i>
-                                </button>
-                                <button className="btn btn-sm btn-success" title="Đánh dấu đã xử lý">
-                                  <i className="bi bi-check-lg"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className="pagination-container">
-                    <div className="pagination-info">
-                      Hiển thị 1-4 của 12 kết quả
-                    </div>
-                    <ul className="pagination">
-                      <li className="page-item disabled">
-                        <a className="page-link" href="#">Trước</a>
-                      </li>
-                      <li className="page-item active">
-                        <a className="page-link" href="#">1</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">2</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">3</a>
-                      </li>
-                      <li className="page-item">
-                        <a className="page-link" href="#">Sau</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
+              <ReportedFeedbackAdmin/>
             )}
           </div>
         </div>
