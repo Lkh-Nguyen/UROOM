@@ -26,7 +26,7 @@ import HotelHostDashboard from "pages/hotel_host/Dashboard";
 import Transaction from "pages/hotel_host/Transaction";
 import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar";
 import TransactionDetail from "pages/hotel_host/TransactionDetail";
-
+import DataAnalysisAI from "pages/hotel_host/AI/DataAnalysisAI";
 function App() {
   return (
     <Router>
@@ -58,6 +58,7 @@ function App() {
         <Route path={Routers.ListFeedbackHotelPage} element={<ListFeedbackHotelPage/>} />
         <Route path={Routers.ReportedFeedbackHotel} element={<ReportedFeedbackHotel/>} />
         <Route path={Routers.DocumentUpload} element={<DocumentUpload/>} />
+        <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI/>} />
       </Routes>
     </Router>
   );

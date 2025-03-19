@@ -19,71 +19,71 @@ const Transaction = () => {
           dateStart: "13/06/2024",
           dateEnd: "15/06/2024",
           price: "$250",
-          status: "Paid",
+          status: "Đã thanh toán",
         },
         {
           dateStart: "12/06/2024",
           dateEnd: "14/06/2024",
           price: "$260",
-          status: "Pending",
+          status: "Đang xử lí",
         },
         {
           dateStart: "11/06/2024",
           dateEnd: "13/06/2024",
           price: "$270",
-          status: "Paid",
+          status: "Đã thanh toán",
         },
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
         },
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đã thanh toán",
         },
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
         },
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
-        },
-
-        {
-          dateStart: "10/06/2024",
-          dateEnd: "12/06/2024",
-          price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
         },
 
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
         },
 
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
         },
 
         {
           dateStart: "10/06/2024",
           dateEnd: "12/06/2024",
           price: "$280",
-          status: "Pending",
+          status: "Đang xử lí",
+        },
+
+        {
+          dateStart: "10/06/2024",
+          dateEnd: "12/06/2024",
+          price: "$280",
+          status: "Đang xử lí",
         },
       ]);
       setLoading(false);
@@ -92,27 +92,20 @@ const Transaction = () => {
 
   return (
     <div className="d-flex">
-      <div className="col-md-2">
-        <Sidebar />
-      </div>
-      <div className="col-md-10">
+      
+      
         <div className="main-content_1 p-3">
-          <h2
-            className="fw-bold text-secondary mb-4"
-            style={{ marginTop: "2.5%" }}
-          >
-            Room Management
-          </h2>
+        <h4>Quản lí giao dịch</h4>
           <div className="bg-white p-3 rounded shadow-sm mb-4">
             <Row className="g-3">
               <Col md={4}>
                 <Form.Select>
-                  <option>Revenue</option>
+                  <option>Doanh thu</option>
                 </Form.Select>
               </Col>
               <Col md={4}>
                 <Form.Select>
-                  <option>Type</option>
+                  <option>Loại</option>
                 </Form.Select>
               </Col>
               <Col md={4}>
@@ -123,7 +116,7 @@ const Transaction = () => {
           <Row className="g-4">
             {rooms?.map((room, index) => (
               <Col md={4} key={index}>
-                <Card className="shadow-sm border-0">
+                <Card >
                   <Card.Body>
                     {/* Ngày bắt đầu & kết thúc */}
                     <div className="d-flex">
@@ -151,14 +144,14 @@ const Transaction = () => {
 
                       {/* Trạng thái */}
                       <div className="col-md-4">
-                        {room.status.trim() === "Paid" ? (
+                        {room.status.trim() === "Đã thanh toán" ? (
                           <CheckCircle size={16} className="text-success" />
                         ) : (
                           <Clock size={16} className="text-warning" />
                         )}
                         <small
                           className={`text-${
-                            room.status.trim() === "Paid"
+                            room.status.trim() === "Đã thanh toán"
                               ? "success"
                               : "warning"
                           } text-uppercase`}
@@ -171,7 +164,7 @@ const Transaction = () => {
                     <Button variant="primary" className="mt-3 w-100"  onClick={() => {
               navigate(Routers.TransactionDetail);
             }}>
-                      View Detail
+                      Xem chi tiết
                     </Button>
                   </Card.Body>
                 </Card>
@@ -179,7 +172,7 @@ const Transaction = () => {
             ))}
           </Row>
         </div>
-      </div>
+     
     </div>
   );
 };

@@ -72,6 +72,7 @@ function App() {
 }
 
 function HeroSection() {
+  const navigate = useNavigate();
   return (
     <div className="hero-section">
       <div className="hero-content">
@@ -81,6 +82,15 @@ function HeroSection() {
             <FaStar key={index} className="star-filled" />
           ))}
         </div>
+          <Button
+            style={{position: "absolute", top: 280, left: 718}}
+            variant="outline-light"
+            onClick={() => {
+              navigate(Routers.ChatPage);
+            }}
+          >
+            Contact
+          </Button>
       </div>
     </div>
   );
