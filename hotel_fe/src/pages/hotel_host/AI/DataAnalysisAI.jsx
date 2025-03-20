@@ -437,7 +437,7 @@ function App() {
         <div className="sidebar">
           <div className="sidebar-brand d-flex align-items-center justify-content-center">
             <i className="bi bi-building fs-2 me-2"></i>
-            <h4 className="mb-0">Hotel parner</h4>
+            <h4 className="mb-0">Hotel partner</h4>
           </div>
 
           <ul className="nav flex-column">
