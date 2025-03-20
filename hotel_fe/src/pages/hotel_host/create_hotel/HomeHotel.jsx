@@ -1,12 +1,12 @@
-import { Container, Row, Col, Navbar, Button, Card } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../../../css/hotelHost/HomeHotel.css";
-import { CheckCircle } from "react-bootstrap-icons";
-import * as Routers from "../../../utils/Routes";
-import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Navbar, Button, Card } from "react-bootstrap"
+import "bootstrap/dist/css/bootstrap.min.css"
+import "../../../css/hotelHost/HomeHotel.css"
+import { CheckCircle } from "react-bootstrap-icons"
+import * as Routers from "../../../utils/Routes"
+import { useNavigate } from "react-router-dom"
 
 function HomeHotel() {
-  const navigate= useNavigate();
+  const navigate = useNavigate()
   return (
     <div className="booking-app">
       <Navbar bg="primary" variant="dark" className="booking-navbar">
@@ -20,19 +20,21 @@ function HomeHotel() {
             <div className="language-selector me-3">
               <img
                 src="https://t-cf.bstatic.com/design-assets/assets/v3.99.1/images-flags/Vn@3x.png"
-                alt="Vietnam flag"
+                alt="Cờ Việt Nam"
                 className="flag-icon"
               />
-              <span className="text-white ms-2">Already a partner?</span>
+              <span className="text-white ms-2">Đã là đối tác?</span>
             </div>
-            <Button variant="outline-light" className="me-2"
+            <Button
+              variant="outline-light"
+              className="me-2"
               onClick={() => {
                 navigate(Routers.LoginHotelPage)
               }}
             >
-              Login
+              Đăng nhập
             </Button>
-            <Button variant="light">Help</Button>
+            <Button variant="light">Trợ giúp</Button>
           </div>
         </Container>
       </Navbar>
@@ -43,59 +45,50 @@ function HomeHotel() {
             <Col md={7}>
               <div className="hero-content">
                 <h1>
-                  List your
-                  <div className="highlight-text">apartment</div>
-                  on Uroom.com
+                  Đăng ký
+                  <div className="highlight-text">căn hộ</div>
+                  của bạn trên Uroom.com
                 </h1>
-                <p
-                  className="hero-description"
-                  style={{ fontSize: 20, fontWeight: 500 }}
-                >
-                  Whether hosting is your sideline passion or full-time job,
-                  list your home today and quickly start earning more income.
+                <p className="hero-description" style={{ fontSize: 20, fontWeight: 500 }}>
+                  Cho dù việc cho thuê là đam mê phụ hay công việc toàn thời gian của bạn, hãy đăng ký nhà của bạn ngay
+                  hôm nay và nhanh chóng bắt đầu kiếm thêm thu nhập.
                 </p>
               </div>
             </Col>
             <Col md={5}>
               <Card className="registration-card">
                 <Card.Body>
-                  <h2 className="registration-title">Register for free</h2>
+                  <h2 className="registration-title">Đăng ký miễn phí</h2>
 
                   <div className="benefit-item">
                     <div className="check-icon">✓</div>
-                    <div className="benefit-text">
-                      45% of hosts get their first booking within a week
-                    </div>
+                    <div className="benefit-text">45% chủ nhà nhận được đặt phòng đầu tiên trong vòng một tuần</div>
                   </div>
 
                   <div className="benefit-item">
                     <div className="check-icon">✓</div>
-                    <div className="benefit-text">
-                      Choose between instant bookings and booking requests
-                    </div>
+                    <div className="benefit-text">Lựa chọn giữa đặt phòng ngay lập tức và yêu cầu đặt phòng</div>
                   </div>
 
                   <div className="benefit-item">
                     <div className="check-icon">✓</div>
-                    <div className="benefit-text">
-                      We'll facilitate payments for you
-                    </div>
+                    <div className="benefit-text">Chúng tôi sẽ hỗ trợ thanh toán cho bạn</div>
                   </div>
 
-                  <Button variant="primary" className="start-button"
+                  <Button
+                    variant="primary"
+                    className="start-button"
                     onClick={() => {
                       navigate(Routers.RegisterHotelPage)
                     }}
                   >
-                    Get started now <span className="arrow">→</span>
+                    Bắt đầu ngay <span className="arrow">→</span>
                   </Button>
 
                   <div className="continue-section">
-                    <p className="continue-text">
-                      Already started a registration?
-                    </p>
+                    <p className="continue-text">Đã bắt đầu đăng ký?</p>
                     <a href="#" className="continue-link">
-                      Continue your registration
+                      Tiếp tục đăng ký của bạn
                     </a>
                   </div>
                 </Card.Body>
@@ -107,131 +100,124 @@ function HomeHotel() {
       <Container className="py-5">
         <Row className="justify-content-center mb-4">
           <Col xs={12} className="text-center">
-            <h2 className="fw-bold fs-1 mb-5">List with peace of mind</h2>
+            <h2 className="fw-bold fs-1 mb-5">Đăng ký với sự an tâm</h2>
           </Col>
         </Row>
 
         <Row className="justify-content-center">
           <Col xs={12} lg={10}>
             <Row className="g-4">
-              {/* Left Column */}
+              {/* Cột trái */}
               <Col md={6}>
-                {/* Benefit 1 */}
+                {/* Lợi ích 1 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">Damage payments</h5>
+                    <h5 className="fw-bold mb-1">Thanh toán thiệt hại</h5>
                     <p className="mb-0">
-                      Our{" "}
+                      {" "}
                       <a href="#" className="text-primary text-decoration-none">
-                        damage programme
+                        Chương trình bảo vệ
                       </a>{" "}
-                      covers your property in case of damages.
+                      của chúng tôi bảo vệ tài sản của bạn trong trường hợp bị hư hại.
                     </p>
                   </div>
                 </div>
 
-                {/* Benefit 2 */}
+                {/* Lợi ích 2 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">Your own house rules</h5>
+                    <h5 className="fw-bold mb-1">Quy tắc nhà riêng của bạn</h5>
                     <p className="mb-0">
-                      Communicate your house rules to potential guests who must
-                      agree to them in order to book.
+                      Thông báo quy tắc nhà của bạn cho khách tiềm năng, họ phải đồng ý với các quy tắc này để đặt
+                      phòng.
                     </p>
                   </div>
                 </div>
 
-                {/* Benefit 3 */}
+                {/* Lợi ích 3 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">
-                      Choose how you prefer to receive bookings
-                    </h5>
+                    <h5 className="fw-bold mb-1">Chọn cách bạn muốn nhận đặt phòng</h5>
                     <p className="mb-0">
-                      Either by letting guests book instantly, or by{" "}
+                      Hoặc là cho phép khách đặt phòng ngay lập tức, hoặc{" "}
                       <a href="#" className="text-primary text-decoration-none">
-                        reviewing booking requests
+                        xem xét yêu cầu đặt phòng
                       </a>{" "}
-                      before accepting them.
+                      trước khi chấp nhận.
                     </p>
                   </div>
                 </div>
 
-                {/* Benefit 4 */}
+                {/* Lợi ích 4 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">
-                      Protection from liability claims
-                    </h5>
+                    <h5 className="fw-bold mb-1">Bảo vệ khỏi các khiếu nại trách nhiệm</h5>
                     <p className="mb-0">
-                      Receive{" "}
+                      Nhận{" "}
                       <a href="#" className="text-primary text-decoration-none">
-                        protection against liability claims
+                        bảo vệ chống lại các khiếu nại trách nhiệm
                       </a>{" "}
-                      from guests and neighbours of up to €/£/$1,000,000 for
-                      each reservation.
+                      từ khách và hàng xóm lên đến €/£/$1,000,000 cho mỗi lần đặt phòng.
                     </p>
                   </div>
                 </div>
               </Col>
 
-              {/* Right Column */}
+              {/* Cột phải */}
               <Col md={6}>
-                {/* Benefit 5 */}
+                {/* Lợi ích 5 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">
-                      Get paid and secure your finances
-                    </h5>
+                    <h5 className="fw-bold mb-1">Nhận thanh toán và bảo đảm tài chính của bạn</h5>
                     <p className="mb-0">
-                      Get guaranteed payouts and fraud protection through{" "}
+                      Nhận thanh toán được đảm bảo và bảo vệ khỏi gian lận thông qua{" "}
                       <a href="#" className="text-primary text-decoration-none">
-                        Payments by Booking.com
+                        Thanh toán bởi Booking.com
                       </a>
                       .
                     </p>
                   </div>
                 </div>
 
-                {/* Benefit 6 */}
+                {/* Lợi ích 6 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">Verified guests</h5>
+                    <h5 className="fw-bold mb-1">Khách đã được xác minh</h5>
                     <p className="mb-0">
-                      We verify guests email addresses and credit cards for
-                      partners on Payments by Booking.com.
+                      Chúng tôi xác minh địa chỉ email và thẻ tín dụng của khách cho đối tác trên Thanh toán bởi
+                      Booking.com.
                     </p>
                   </div>
                 </div>
 
-                {/* Benefit 7 */}
+                {/* Lợi ích 7 */}
                 <div className="d-flex mb-4">
                   <div className="me-3">
                     <CheckCircle className="text-primary" size={24} />
                   </div>
                   <div>
-                    <h5 className="fw-bold mb-1">Robust support</h5>
+                    <h5 className="fw-bold mb-1">Hỗ trợ mạnh mẽ</h5>
                     <p className="mb-0">
-                      Access support in 45 languages and manage your property
-                      through Pulse, our app for partners like you.
+                      Tiếp cận hỗ trợ bằng 45 ngôn ngữ và quản lý tài sản của bạn thông qua Pulse, ứng dụng của chúng
+                      tôi dành cho đối tác như bạn.
                     </p>
                   </div>
                 </div>
@@ -240,14 +226,14 @@ function HomeHotel() {
 
             <Row className="mt-4">
               <Col xs={12} md={6} lg={4}>
-                <Button 
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   className="px-4 py-2 fw-bold"
                   onClick={() => {
                     navigate(Routers.LoginHotelPage)
                   }}
                 >
-                  List with peace of mind today
+                  Đăng ký với sự an tâm ngay hôm nay
                 </Button>
               </Col>
             </Row>
@@ -255,7 +241,8 @@ function HomeHotel() {
         </Row>
       </Container>
     </div>
-  );
+  )
 }
 
-export default HomeHotel;
+export default HomeHotel
+
