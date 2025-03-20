@@ -11,6 +11,7 @@ import * as Routers from "../../utils/Routes";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaBell } from "react-icons/fa";
+import image from "../../images/image-removebg-preview.png";
 function NavigationBar({ header = 1 }) {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
   const navigate = useNavigate();
@@ -45,13 +46,20 @@ function NavigationBar({ header = 1 }) {
       }}
     >
       <Container>
-        <Navbar.Brand
+        {/* <Navbar.Brand
           style={{ cursor: "pointer" }}
           onClick={() => navigate(Routers.Home)}
           className="brand"
         >
           UR<span style={{ color: "#f8e71c" }}>OO</span>M
-        </Navbar.Brand>
+        </Navbar.Brand> */}
+         <Image
+                  src={image}
+                  
+                  width="100"
+                  height="28"
+                  className="ms-2 me-2"
+                />
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -105,14 +113,14 @@ function NavigationBar({ header = 1 }) {
               {/* Đổi màu chuông nếu cần */}
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item>Các ưu đãi mới</Dropdown.Item>
+              <Dropdown.Item>You have a new message</Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item>Cập nhật hệ thống vào 10h tối nay</Dropdown.Item>
+              <Dropdown.Item>System update at 10pm tonight</Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item
                 onClick={() => navigate(Routers.ChatPage, { state: { id: 0 } })}
               >
-                Bạn có tin nhắn mới
+                You have a new message
               </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
