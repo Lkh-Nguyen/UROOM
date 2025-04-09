@@ -1,7 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react"
 import { Container, Form, Button, Card } from "react-bootstrap"
-import { FaArrowLeft } from "react-icons/fa"
 import * as Routers from "../../../utils/Routes"
 import { useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg"

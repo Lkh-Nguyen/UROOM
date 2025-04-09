@@ -48,17 +48,37 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
 import { showToast, ToastProvider } from "components/ToastContainer";
 import Select from "react-select";
+import { getToken, getUser } from "utils/handleToken";
+import { useDispatch } from "react-redux";
+import AuthActions from "../../../redux/auth/actions";
 
 function Home() {
+  const dispatch = useDispatch();
   const location = useLocation();
+  const navigate = useNavigate(); // cần thêm dòng này
+
+  // Lấy user từ localStorage/session và dispatch lên Redux
+  useEffect(() => {
+    const user = getUser();
+    if (user) {
+      dispatch({
+        type: AuthActions.SET_USER,
+        payload: { user },
+      });
+    }
+  }, [dispatch]);
+
+  // Hiển thị message nếu có và xóa state để tránh hiện lại khi reload
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Kiểm tra nếu có thông báo từ LoginPage
     if (location.state?.message) {
       showToast.success(location.state.message);
+      // Xóa message sau khi hiển thị để tránh hiện lại khi reload
+      navigate(location.pathname, { replace: true });
     }
-  }, [location]);
+  }, [location, navigate]);
+
   return (
     <div className="app-container_1">
       <NavigationBar />

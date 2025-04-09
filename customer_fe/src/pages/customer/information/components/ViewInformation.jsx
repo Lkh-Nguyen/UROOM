@@ -11,20 +11,13 @@ import { FaCalendarAlt } from "react-icons/fa";
 import React, { useState } from "react";
 import ConfirmationModal from "components/ConfirmationModal";
 import { showToast, ToastProvider } from "components/ToastContainer";
+import { useAppSelector } from "../../../../redux/store";
+import Utils from "utils/Utils";
 
 const ViewInformation = () => {
-  const initialFormData = {
-    fullName: "Le Kim Hoang Nguyen",
-    gender: "male",
-    birthdate: "01/01/1999",
-    cmnd: "402116290302",
-    phone: "0905123983",
-    email: "0934726073",
-    address:
-      "650/7 Trần Cao Vân, phường Xuân Hà, quận Thanh Khê, thành phố Đà Nẵng, Việt Nam.",
-  };
+  const Auth = useAppSelector((state) => state.Auth.Auth);
 
-  const [formData, setFormData] = useState(initialFormData);
+  const [formData, setFormData] = useState(Auth);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -41,7 +34,7 @@ const ViewInformation = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const handleCancel = () => {
     console.log("Item Cancel!");
-    setFormData(initialFormData); // Reset form về giá trị ban đầu
+    setFormData(Auth); // Reset form về giá trị ban đầu
   };
 
   const [showAcceptModal, setShowAcceptModal] = useState(false);
@@ -60,8 +53,8 @@ const ViewInformation = () => {
               <Form.Control
                 type="text"
                 placeholder="Enter your full name in here"
-                name="fullName"
-                value={formData.fullName}
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
               />
             </Form.Group>
@@ -75,9 +68,9 @@ const ViewInformation = () => {
                   type="radio"
                   label="Male"
                   name="gender"
-                  id="male"
-                  value="male"
-                  checked={formData.gender === "male"}
+                  id="MALE"
+                  value="MALE"
+                  checked={formData.gender === "MALE"}
                   onChange={handleInputChange}
                 />
                 <Form.Check
@@ -85,9 +78,9 @@ const ViewInformation = () => {
                   type="radio"
                   label="Female"
                   name="gender"
-                  id="female"
-                  value="female"
-                  checked={formData.gender === "female"}
+                  id="FEMALE"
+                  value="FEMALE"
+                  checked={formData.gender === "FEMALE"}
                   onChange={handleInputChange}
                 />
               </div>
@@ -102,8 +95,8 @@ const ViewInformation = () => {
                 <Form.Control
                   type="text"
                   placeholder="DD/MM/YYYY"
-                  name="birthdate"
-                  value={formData.birthdate}
+                  name="birthDate"
+                  value={formData.birthDate ? Utils.getDate(formData.birthDate,3) : ""}
                   onChange={handleInputChange}
                 />
                 <InputGroup.Text>
@@ -132,8 +125,8 @@ const ViewInformation = () => {
               <Form.Control
                 type="text"
                 placeholder="Enter your number phone in here"
-                name="phone"
-                value={formData.phone}
+                name="phoneNumber"
+                value={formData.phoneNumber}
                 onChange={handleInputChange}
               />
             </Form.Group>
@@ -147,6 +140,8 @@ const ViewInformation = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
+                disabled
+                style={{backgroundColor: 'white'}}
               />
             </Form.Group>
           </Col>

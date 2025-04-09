@@ -19,7 +19,6 @@ import PaymentPage from "pages/customer/home/PaymentPage";
 import PaymentSuccessPage from "pages/customer/home/PaymentSuccessPage";
 import HotelSearchPage from "pages/customer/home/HotelSearchPage";
 import VerifyCodeRegisterPage from "pages/customer/login_register/VerifyCodeRegisterPage";
-import HomeNotLogin from "pages/customer/home/HomePageNotLogin";
 import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
@@ -46,7 +45,6 @@ function App() {
 
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
-        <Route path={Routers.HomeNotLogin} element={<HomeNotLogin />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
         <Route path={Routers.Home_detail} element={<Home_detail />} />
         <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />

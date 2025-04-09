@@ -3,10 +3,11 @@ import { Container, Button } from "react-bootstrap";
 import { FaLock } from "react-icons/fa";
 import "../css/BannedPage.css";
 import * as Routers from "../utils/Routes";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const BannedPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   return (
     <Container fluid className="banned-container">
       <div className="banned-content text-center">
@@ -25,13 +26,15 @@ const BannedPage = () => {
           <div className="detail-item">
             <span className="detail-label">Reason: </span>
             <span className="detail-value" style={{ color: "red" }}>
-              Violation of standards
+              {location.state.reasonLocked}
             </span>
           </div>
 
           <div className="detail-item">
             <span className="detail-label">Date locked: </span>
-            <span className="detail-value">12:03:01 20/10/2025</span>
+            <span className="detail-value">              
+              {location.state.dateLocked}
+            </span>
           </div>
         </div>
 
@@ -41,7 +44,7 @@ const BannedPage = () => {
             className="home-btn"
             style={{ width: "140px" }}
             onClick={() => {
-              navigate(Routers.HomeNotLogin);
+              navigate(Routers.Home);
             }}
           >
             Home Page

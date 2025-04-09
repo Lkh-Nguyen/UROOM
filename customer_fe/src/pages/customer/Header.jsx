@@ -12,7 +12,13 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaBell } from "react-icons/fa";
 import image from "../../images/image-removebg-preview.png";
-function NavigationBar({ header = 1 }) {
+import { useAppSelector } from "../../redux/store";
+import AuthActions from "../../redux/auth/actions";
+import { useDispatch } from "react-redux";
+import { clearToken, clearUser, getToken } from "utils/handleToken";
+import { showToast, ToastProvider } from "components/ToastContainer";
+
+function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -36,6 +42,8 @@ function NavigationBar({ header = 1 }) {
     };
   }, []);
 
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  const dispatch= useDispatch();
   return (
     <Navbar
       expand="lg"
@@ -46,20 +54,16 @@ function NavigationBar({ header = 1 }) {
       }}
     >
       <Container>
-        {/* <Navbar.Brand
-          style={{ cursor: "pointer" }}
-          onClick={() => navigate(Routers.Home)}
-          className="brand"
-        >
-          UR<span style={{ color: "#f8e71c" }}>OO</span>M
-        </Navbar.Brand> */}
          <Image
-                  src={image}
-                  
-                  width="100"
-                  height="28"
-                  className="ms-2 me-2"
-                />
+            src={image}
+            width="100"
+            height="28"
+            className="ms-2 me-2"
+            onClick={() => {
+              navigate(Routers.Home)
+            }}
+            style={{cursor: "pointer"}}
+          />
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -125,15 +129,15 @@ function NavigationBar({ header = 1 }) {
             </Dropdown.Menu>
           </Dropdown>
 
-          {header === 1 ? ( // ✅ Sửa header == 1 thành header === 1
+          {Auth._id !== -1 ? ( 
             <Dropdown align="end">
               <Dropdown.Toggle
                 variant="light"
                 className="login-btn d-flex align-items-center"
               >
-                Lê Kim Hoàng Nguyên
+                {Auth.name}
                 <Image
-                  src="https://cdn11.dienmaycholon.vn/filewebdmclnew/public/userupload/files/Image%20FP_2024/avatar-cute-3.jpg"
+                  src={Auth.image.url}
                   roundedCircle
                   width="30"
                   height="30"
@@ -151,11 +155,17 @@ function NavigationBar({ header = 1 }) {
                 <Dropdown.Divider />
                 <Dropdown.Item
                   onClick={() => {
-                    console.log("User logged out");
-                    navigate(Routers.HomeNotLogin);
+                    dispatch({
+                      type: AuthActions.LOGOUT,
+                    });
+                    clearToken();
+                    clearUser();
+                    navigate(Routers.Home, {
+                      state: { message: "Logout account successfully !!!" },
+                    });
                   }}
                 >
-                  Login
+                  Logout
                 </Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
