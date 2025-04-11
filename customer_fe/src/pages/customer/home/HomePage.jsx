@@ -57,17 +57,7 @@ function Home() {
   const location = useLocation();
   const navigate = useNavigate(); // cần thêm dòng này
 
-  // Lấy user từ localStorage/session và dispatch lên Redux
-  useEffect(() => {
-    const user = getUser();
-    if (user) {
-      dispatch({
-        type: AuthActions.SET_USER,
-        payload: { user },
-      });
-    }
-  }, [dispatch]);
-
+ 
   // Hiển thị message nếu có và xóa state để tránh hiện lại khi reload
   useEffect(() => {
     window.scrollTo(0, 0);

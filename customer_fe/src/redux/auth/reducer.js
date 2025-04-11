@@ -31,6 +31,22 @@ const Reducer = (
           ...action.payload?.user,
         }
       };
+      case AuthActions.UPDATE_PROFILE_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth, 
+          ...action.payload?.user, 
+        }
+      };
+      case AuthActions.CHANGE_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+         
+        }
+      };
     default:
       return state;
   }

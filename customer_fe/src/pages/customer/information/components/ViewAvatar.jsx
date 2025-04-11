@@ -5,7 +5,7 @@ import { Modal, Card, Form, Button } from "react-bootstrap";
 function ViewAvatar() {
   // State để điều khiển modal
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  
+
   // State lưu ảnh upload
   const [selectedImage, setSelectedImage] = useState("https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg");
 
@@ -33,8 +33,8 @@ function ViewAvatar() {
           alt="avatar"
         />
         <br />
-        <Button 
-          className="fw-bold mb-4" 
+        <Button
+          className="fw-bold mb-4"
           variant="outline-primary"
           onClick={handleOpenModal}
         >View Avatar</Button>
@@ -81,3 +81,5 @@ function ViewAvatar() {
 }
 
 export default ViewAvatar;
+
+
