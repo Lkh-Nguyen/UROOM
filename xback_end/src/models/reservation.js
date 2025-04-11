@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const reservationSchema = new Schema(
   {
-    _id: { type: Number },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -59,10 +58,6 @@ const reservationSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-// Thêm plugin auto-increment cho _id
-reservationSchema.plugin(AutoIncrement, {
-  id: "reservation_seq",
-  inc_field: "_id",
-});
+
 
 module.exports = mongoose.model("Reservation", reservationSchema);

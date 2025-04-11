@@ -5,6 +5,8 @@ const http = require("http");
 const errorHandler = require("./src/middlewares/errorHandler");
 const connectToDB = require("./src/config/dbConnection");
 const authRoute = require("./src/route_controller/Auth/AuthRoute");
+const SearchHotelRoute = require("./src/route_controller/Search_Hotel/SearchHotelRoute");
+const HotelRouter = require("./src/route_controller/Hotel/HotelRoute");
 
 
 const port = process.env.PORT || 5000;
@@ -26,6 +28,10 @@ app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoute);
+
+app.use("/api/search", SearchHotelRoute);
+
+app.use("/api/hotel", HotelRouter);
 
 server.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);

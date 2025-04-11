@@ -51,6 +51,9 @@ import Select from "react-select";
 import { getToken, getUser } from "utils/handleToken";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
+import {cityOptionSelect } from "utils/data";
+import SearchActions from "../../../redux/search/actions";
+import { useAppSelector } from "../../../redux/store";
 
 function Home() {
   const dispatch = useDispatch();
@@ -113,16 +116,70 @@ function HeroSection() {
   );
 }
 
+    // Options for adults select
+    const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
+      value: i + 1,
+      label: `${i + 1} Adults`,
+    }))
+  
+    // Options for children select
+    const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
+      value: i,
+      label: `${i} Childrens`,
+    }))
+
 export const SearchBar = () => {
   const navigate = useNavigate();
-  const [selectedCity, setSelectedCity] = useState(null);
-  const cityOptions = [
-    { value: "hanoi", label: "Hà Nội" },
-    { value: "hochiminh", label: "Hồ Chí Minh" },
-    { value: "danang", label: "Đà Nẵng" },
-    { value: "hue", label: "Huế" },
-    { value: "haiphong", label: "Hải Phòng" },
-  ];
+  const cityOptions = cityOptionSelect;
+  // State for all search parameters
+  const [selectedCity, setSelectedCity] = useState(null)
+  const [checkinDate, setCheckinDate] = useState("")
+  const [checkoutDate, setCheckoutDate] = useState("")
+  const [selectedAdults, setSelectedAdults] = useState(adultsOptions[0]) // Default to 1 adult
+  const [selectedChildren, setSelectedChildren] = useState(childrenOptions[0]) // Default to 0 children
+  const dispatch= useDispatch();
+  const SearchInformation = useAppSelector((state) => state.Search.SearchInformation);
+  console.log('SearchInformation: ', SearchInformation)
+  // Handle search function
+  const handleSearch = () => {
+    // Create query parameters
+    const adults= selectedAdults ? selectedAdults.value : 1;
+    const childrens= selectedChildren ? selectedChildren.value : 0;
+    const numberOfPeople= adults + childrens;
+
+    const SearchInformation=  {
+      address: selectedCity ? selectedCity.value : "",
+      checkinDate,
+      checkoutDate,
+      adults,
+      childrens
+    }
+    dispatch({type: SearchActions.SAVE_SEARCH, payload: {SearchInformation}})
+    const searchParams = {
+      address: selectedCity ? selectedCity.value : "",
+      checkinDate,
+      checkoutDate,
+      numberOfPeople
+    }
+
+    // Navigate to search page with parameters
+    navigate(Routers.HotelSearchPage, {
+      state: searchParams,
+    })
+
+    // You can also log the search parameters for debugging
+    console.log("Search parameters:", searchParams)
+  }
+  // Custom styles for react-select
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      border: "none",
+      background: "transparent",
+      boxShadow: "none",
+      width: "100%",
+    }),
+  }
   return (
     <div style={{ maxWidth: "1300px", margin: "0 auto", marginTop: "-4.5%" }}>
       {/* Khối chứa cả Hotel và Search Bar */}
@@ -148,7 +205,6 @@ export const SearchBar = () => {
             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             paddingLeft: "20px",
             marginBottom: "-1%",
-
             marginLeft: "-0.9%",
           }}
         >
@@ -172,7 +228,7 @@ export const SearchBar = () => {
               </InputGroup.Text>
               <div style={{ flex: 1 }}>
                 <Select
-                  options={cityOptions}
+                  options={cityOptionSelect}
                   value={selectedCity}
                   onChange={setSelectedCity}
                   placeholder="Search location"
@@ -183,7 +239,7 @@ export const SearchBar = () => {
                       border: "none",
                       background: "transparent",
                       boxShadow: "none",
-                      width: "100%", // Đảm bảo full chiều rộng
+                      width: "100%",
                     }),
                   }}
                 />
@@ -198,40 +254,35 @@ export const SearchBar = () => {
             <Row className="align-items-center">
               {/* Ngày bắt đầu */}
               <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
+                <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
                   <InputGroup.Text className="bg-transparent border-0">
                     <FaCalendarAlt />
                   </InputGroup.Text>
                   <Form.Control
                     type="date"
                     className="border-0 bg-transparent"
+                    value={checkinDate}
+                    onChange={(e) => setCheckinDate(e.target.value)}
                   />
                 </InputGroup>
               </Col>
 
               {/* Icon mũi tên */}
-              <Col
-                xs="auto"
-                className="d-flex align-items-center justify-content-center"
-              >
+              <Col xs="auto" className="d-flex align-items-center justify-content-center">
                 <FaArrowRight style={{ fontSize: "1.2rem", color: "#555" }} />
               </Col>
 
               {/* Ngày kết thúc */}
               <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
+                <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
                   <InputGroup.Text className="bg-transparent border-0">
                     <FaCalendarAlt />
                   </InputGroup.Text>
                   <Form.Control
                     type="date"
                     className="border-0 bg-transparent"
+                    value={checkoutDate}
+                    onChange={(e) => setCheckoutDate(e.target.value)}
                   />
                 </InputGroup>
               </Col>
@@ -240,33 +291,32 @@ export const SearchBar = () => {
 
           {/* Ô chọn số lượng Adults và Children */}
           <Col md={4} className="px-3 ">
-            <InputGroup
-              className="border"
-              style={{ borderRadius: "10px", padding: "2px" }}
-            >
+            <InputGroup className="border" style={{ borderRadius: "10px", padding: "2px" }}>
               <InputGroup.Text className="bg-transparent border-0">
                 <FaUser />
               </InputGroup.Text>
-              <Form.Select className="border-0 bg-transparent">
-                <option>1 Adult</option>
-                <option>2 Adults</option>
-                <option>3 Adults</option>
-                <option>4 Adults</option>
-                <option>5 Adults</option>
-                <option>6 Adults</option>
-              </Form.Select>
+              <div style={{ flex: 1 }}>
+                <Select
+                  options={adultsOptions}
+                  value={selectedAdults}
+                  onChange={setSelectedAdults}
+                  styles={selectStyles}
+                  isSearchable={false}
+                />
+              </div>
 
               <InputGroup.Text className="bg-transparent border-0">
                 <FaChild />
               </InputGroup.Text>
-              <Form.Select className="border-0 bg-transparent">
-                <option>0 Children</option>
-                <option>1 Children</option>
-                <option>2 Children</option>
-                <option>3 Children</option>
-                <option>4 Children</option>
-                <option>5 Children</option>
-              </Form.Select>
+              <div style={{ flex: 1 }}>
+                <Select
+                  options={childrenOptions}
+                  value={selectedChildren}
+                  onChange={setSelectedChildren}
+                  styles={selectStyles}
+                  isSearchable={false}
+                />
+              </div>
             </InputGroup>
           </Col>
 
@@ -274,13 +324,8 @@ export const SearchBar = () => {
           <Col xs="auto" className="px-2">
             <Button
               variant="primary"
-              // className="rounded-circl"
               style={{ width: "60px", height: "45px", borderRadius: "15px" }}
-              onClick={() => {
-                navigate(Routers.HotelSearchPage, {
-                  // state: { id: 1}
-                });
-              }}
+              onClick={handleSearch}
             >
               <FaSearch />
             </Button>

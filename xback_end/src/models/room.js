@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const RoomSchema = new Schema(
   {
-    _id: { type: Number },
     name: { type: String, required: true },
     type: { type: String, required: true },
     price: { type: Number, required: true },
@@ -25,10 +24,6 @@ const RoomSchema = new Schema(
   { versionKey: false }
 );
 
-// Tự động tăng _id
-RoomSchema.plugin(AutoIncrement, {
-  id: 'room_seq',
-  inc_field: '_id',
-});
+
 
 module.exports = mongoose.model('Room', RoomSchema);

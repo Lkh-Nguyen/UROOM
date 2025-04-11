@@ -28,6 +28,11 @@ import { FaChild, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
 import Select from "react-select";
+import { cityOptionSelect } from "../../../utils/data";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../redux/store";
+import SearchActions from "../../../redux/search/actions";
+import Factories from "../../../redux/search/factories";
 
 const hotelData = [
   {
@@ -69,6 +74,18 @@ const hotelData = [
   },
 ];
 
+// Options for adults select
+const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
+  value: i + 1,
+  label: `${i + 1} Adults`,
+}));
+
+// Options for children select
+const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
+  value: i,
+  label: `${i} Childrens`,
+}));
+
 const HotelSearchPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -82,15 +99,80 @@ const HotelSearchPage = () => {
   const [starFilter, setStarFilter] = useState(null);
   const [priceRange, setPriceRange] = useState(1000);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    console.log("Search parameters:", {
-      location,
-      people,
-      rooms,
-      departureDate,
-      returnDate,
+  const cityOptions = cityOptionSelect;
+  // State for all search parameters
+  const SearchInformation = useAppSelector(
+    (state) => state.Search.SearchInformation
+  );
+  const [selectedCity, setSelectedCity] = useState(SearchInformation.address);
+  const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
+  const [checkoutDate, setCheckoutDate] = useState(SearchInformation.checkoutDate);
+  const [selectedAdults, setSelectedAdults] = useState(SearchInformation.adults); // Default to 1 adult
+  const [selectedChildren, setSelectedChildren] = useState(SearchInformation.childrens); // Default to 0 children
+  const dispatch = useDispatch();
+  
+  const [loading, setLoading]= useState(true);
+  const [searchHotel, setSearchHotel]= useState();
+
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        const response = await Factories.searchHotel(SearchInformation);
+        if (response?.status === 200) {
+          setSearchHotel(response?.data.hotels);
+        }
+      } catch (error) {
+        console.error("Error fetching hotels:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchHotels();
+  }, []);
+
+  console.log("Hotels: ", searchHotel)
+  // Handle search function
+  const handleSearch = () => {
+    // Create query parameters
+    const adults = selectedAdults ? selectedAdults.value : 1;
+    const childrens = selectedChildren ? selectedChildren.value : 0;
+    const numberOfPeople = adults + childrens;
+
+    const SearchInformation = {
+      address: selectedCity ? selectedCity.value : "",
+      checkinDate,
+      checkoutDate,
+      adults,
+      childrens,
+    };
+    dispatch({
+      type: SearchActions.SAVE_SEARCH,
+      payload: { SearchInformation },
     });
+    const searchParams = {
+      address: selectedCity ? selectedCity.value : "",
+      checkinDate,
+      checkoutDate,
+      numberOfPeople,
+    };
+
+    // Navigate to search page with parameters
+    navigate(Routers.HotelSearchPage, {
+      state: searchParams,
+    });
+
+    // You can also log the search parameters for debugging
+    console.log("Search parameters:", searchParams);
+  };
+  const selectStyles = {
+    control: (provided) => ({
+      ...provided,
+      border: "none",
+      background: "transparent",
+      boxShadow: "none",
+      width: "100%",
+    }),
   };
 
   const filteredHotels = hotelData.filter((hotel) => {
@@ -114,14 +196,6 @@ const HotelSearchPage = () => {
     return stars;
   };
 
-  const [selectedCity, setSelectedCity] = useState(null);
-  const cityOptions = [
-    { value: "hanoi", label: "Hà Nội" },
-    { value: "hochiminh", label: "Hồ Chí Minh" },
-    { value: "danang", label: "Đà Nẵng" },
-    { value: "hue", label: "Huế" },
-    { value: "haiphong", label: "Hải Phòng" },
-  ];
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -144,7 +218,12 @@ const HotelSearchPage = () => {
           }}
         >
           <div
-            style={{ maxWidth: "100%", margin: "0 auto", marginTop: "-4.5%", marginBottom: '50px' }}
+            style={{
+              maxWidth: "100%",
+              margin: "0 auto",
+              marginTop: "-4.5%",
+              marginBottom: "50px",
+            }}
           >
             {/* Khối chứa cả Hotel và Search Bar */}
             <div
@@ -197,8 +276,8 @@ const HotelSearchPage = () => {
                     </InputGroup.Text>
                     <div style={{ flex: 1 }}>
                       <Select
-                        options={cityOptions}
-                        value={selectedCity}
+                        options={cityOptionSelect}
+                        value={cityOptionSelect.find(option => option.label === selectedCity)}
                         onChange={setSelectedCity}
                         placeholder="Search location"
                         isSearchable
@@ -208,7 +287,7 @@ const HotelSearchPage = () => {
                             border: "none",
                             background: "transparent",
                             boxShadow: "none",
-                            width: "100%", // Đảm bảo full chiều rộng
+                            width: "100%",
                           }),
                         }}
                       />
@@ -233,6 +312,8 @@ const HotelSearchPage = () => {
                         <Form.Control
                           type="date"
                           className="border-0 bg-transparent"
+                          value={checkinDate}
+                          onChange={(e) => setCheckinDate(e.target.value)}
                         />
                       </InputGroup>
                     </Col>
@@ -259,6 +340,8 @@ const HotelSearchPage = () => {
                         <Form.Control
                           type="date"
                           className="border-0 bg-transparent"
+                          value={checkoutDate}
+                          onChange={(e) => setCheckoutDate(e.target.value)}
                         />
                       </InputGroup>
                     </Col>
@@ -274,26 +357,28 @@ const HotelSearchPage = () => {
                     <InputGroup.Text className="bg-transparent border-0">
                       <FaUser />
                     </InputGroup.Text>
-                    <Form.Select className="border-0 bg-transparent">
-                      <option>1 Adult</option>
-                      <option>2 Adults</option>
-                      <option>3 Adults</option>
-                      <option>4 Adults</option>
-                      <option>5 Adults</option>
-                      <option>6 Adults</option>
-                    </Form.Select>
+                    <div style={{ flex: 1 }}>
+                      <Select
+                        options={adultsOptions}
+                        value={adultsOptions.find(option => option.label === `${selectedAdults} Adults`)}
+                        onChange={setSelectedAdults}
+                        styles={selectStyles}
+                        isSearchable={false}
+                      />
+                    </div>
 
                     <InputGroup.Text className="bg-transparent border-0">
                       <FaChild />
                     </InputGroup.Text>
-                    <Form.Select className="border-0 bg-transparent">
-                      <option>0 Children</option>
-                      <option>1 Children</option>
-                      <option>2 Children</option>
-                      <option>3 Children</option>
-                      <option>4 Children</option>
-                      <option>5 Children</option>
-                    </Form.Select>
+                    <div style={{ flex: 1 }}>
+                      <Select
+                        options={childrenOptions}
+                        value={childrenOptions.find(option => option.label === `${selectedChildren} Childrens`)}
+                        onChange={setSelectedChildren}
+                        styles={selectStyles}
+                        isSearchable={false}
+                      />
+                    </div>
                   </InputGroup>
                 </Col>
 
@@ -301,17 +386,12 @@ const HotelSearchPage = () => {
                 <Col xs="auto" className="px-2">
                   <Button
                     variant="primary"
-                    // className="rounded-circl"
                     style={{
                       width: "60px",
                       height: "45px",
                       borderRadius: "15px",
                     }}
-                    onClick={() => {
-                      navigate(Routers.HotelSearchPage, {
-                        // state: { id: 1}
-                      });
-                    }}
+                    onClick={handleSearch}
                   >
                     <FaSearch />
                   </Button>

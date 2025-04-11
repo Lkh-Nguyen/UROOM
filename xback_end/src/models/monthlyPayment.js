@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const monthlyPaymentSchema = new Schema(
   {
-    _id: { type: Number },
     hotel: { 
       type: mongoose.Schema.Types.ObjectId, 
       ref: 'Hotel', 
@@ -37,10 +36,6 @@ const monthlyPaymentSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-// Thêm plugin auto-increment cho _id
-monthlyPaymentSchema.plugin(AutoIncrement, {
-  id: 'monthly_payment_seq',
-  inc_field: '_id',
-});
+
 
 module.exports = mongoose.model('MonthlyPayment', monthlyPaymentSchema);

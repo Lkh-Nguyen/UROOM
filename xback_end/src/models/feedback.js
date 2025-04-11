@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 
 const FeedbackSchema = new Schema(
   {
-    _id: { type: Number },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User ID
     reservation: {
       type: Schema.Types.ObjectId,
@@ -23,10 +22,6 @@ const FeedbackSchema = new Schema(
   { versionKey: false }
 );
 
-// Tích hợp AutoIncrement plugin
-FeedbackSchema.plugin(AutoIncrement, {
-  id: "feedback_seq", // tên sequence
-  inc_field: "_id",   // trường cần tăng
-});
+
 
 module.exports = mongoose.model("Feedback", FeedbackSchema);
