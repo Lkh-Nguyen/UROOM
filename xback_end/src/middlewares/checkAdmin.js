@@ -12,7 +12,7 @@ const isAdmin = (req, res, next) => {
     if (decoded.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied, You don't have admin role" });
     }
-    req.user = decoded;
+    req.user = decoded.user;
     next();
   });
 };
