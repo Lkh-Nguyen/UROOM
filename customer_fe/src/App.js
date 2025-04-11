@@ -23,8 +23,25 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
+import { useEffect } from "react";
+import { getToken, getUser } from "utils/handleToken";
+import { useDispatch } from "react-redux";
+import AuthActions from "./redux/auth/actions";
+
 
 function App() {
+  const dispatch = useDispatch();
+   // Lấy user từ localStorage/session và dispatch lên Redux
+   useEffect(() => {
+    const user = getUser();
+    if (user) {
+      dispatch({
+        type: AuthActions.SET_USER,
+        payload: { user },
+      });
+    }
+  }, [dispatch]);
+
   return (
     <Router>
       <Routes>
