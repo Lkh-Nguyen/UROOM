@@ -15,7 +15,7 @@ import image from "../../images/image-removebg-preview.png";
 import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
-import { clearToken, clearUser, getToken } from "utils/handleToken";
+import { clearToken, getToken } from "utils/handleToken";
 import { showToast, ToastProvider } from "components/ToastContainer";
 
 function NavigationBar() {
@@ -159,7 +159,6 @@ function NavigationBar() {
                       type: AuthActions.LOGOUT,
                     });
                     clearToken();
-                    clearUser();
                     navigate(Routers.Home, {
                       state: { message: "Logout account successfully !!!" },
                     });

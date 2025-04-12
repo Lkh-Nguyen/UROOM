@@ -19,7 +19,7 @@ connectToDB();
 
 // Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 
 //from errorHandle
 app.use(errorHandler);
@@ -28,6 +28,7 @@ app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoute);
+// app.use("/api/customer", customerRoute);
 
 app.use("/api/search", SearchHotelRoute);
 

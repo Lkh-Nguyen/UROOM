@@ -11,8 +11,11 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import React, { useState } from "react";
 import ConfirmationModal from "components/ConfirmationModal";
 import { showToast, ToastProvider } from "components/ToastContainer";
+import { useDispatch } from "react-redux";
+import AuthActions from "../../../../redux/auth/actions"; 
+ const ChangePassword = () => {
+  const dispatch = useDispatch();
 
-const ChangePassword = () => {
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -23,37 +26,64 @@ const ChangePassword = () => {
     againNewPassword: "",
   };
   const [formData, setFormData] = useState(initialFormData);
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Handle form submission logic here
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData({
+    ...formData,
+    [name]: value,
+  });
+};
+const [showUpdateModal, setShowUpdateModal] = useState(false);
+const [showAcceptModal, setShowAcceptModal] = useState(false);
 
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const handleCancel = () => {
-    console.log("Item Cancel!");
-    setFormData(initialFormData); // Reset form về giá trị ban đầu
-  };
+const handleCancel = () => {
+  setFormData(initialFormData); // Reset form
+  showToast.info("Cancelled change password.");
+  setShowUpdateModal(false);
+};
 
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const handleSave = () => {
-    console.log("Item Update!");
-    showToast.success("Change Password Successfully!");
-  };
+const handleSave = () => {
+  const { oldPassword, newPassword, againNewPassword } = formData;
+
+  if (!oldPassword || !newPassword || !againNewPassword) {
+    showToast.warning("Please fill in all fields.");
+    return;
+  }
+
+  if (newPassword !== againNewPassword) {
+    showToast.warning("New password and confirmation do not match.");
+    return;
+  }
+
+  dispatch({
+    type: AuthActions.CHANGE_PASSWORD,
+    payload: {
+      data: {
+        currentPassword: oldPassword,
+        newPassword,
+        confirmPassword: againNewPassword,
+      },
+      onSuccess: () => {
+        showToast.success("Password changed successfully!");
+        setFormData(initialFormData);
+      },
+      onFailed: (msg) => {
+        showToast.warning(`Change failed: ${msg}`);
+      },
+      onError: (err) => {
+        console.error(err);
+        showToast.warning("An error occurred while changing password.");
+      },
+    },
+  });
+
+  setShowAcceptModal(false);
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+  setShowAcceptModal(true);
+};
 
   return (
     <Card.Body>
@@ -181,3 +211,4 @@ const ChangePassword = () => {
 };
 
 export default ChangePassword;
+

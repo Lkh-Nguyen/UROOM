@@ -14,18 +14,29 @@ import BookingHistory from "./components/BookingHistory";
 import { useLocation, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
-
+import { useAppSelector } from "../../../redux/store";
 function MyAccountPage() {
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  const [formData, setFormData] = useState(Auth);
   const location = useLocation();
-  const { id } = location.state || {}; // Lấy dữ liệu từ state
+  const { id } = location.state || {};
   useEffect(() => {
-    if(id){
-      setIndexActive(id)
+    if (Auth.id != -1) {
+      setFormData(Auth);
     }
-  }, [location.state?.id])
+  }, [Auth]); // Lấy dữ liệu từ state
+  useEffect(() => {
+    if (id) {
+      setIndexActive(id);
+    }
+  }, [location.state?.id]);
+
   const [indexActive, setIndexActive] = useState(0);
   const handleMenuClick = (index) => {
     setIndexActive(index);
+  };
+  const handleAvatarUpdate = (newAvatarURL) => {
+    setFormData((prev) => ({ ...prev, avatarURL: newAvatarURL }));
   };
   const menuItems = [
     { name: "My Account", icon: <IoSettingsSharp /> },
@@ -57,13 +68,21 @@ function MyAccountPage() {
                 <div className="user-profile text-center p-3 border-bottom">
                   <div className="avatar-circle">
                     <img
-                      src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                      src={
+                        formData.avatarURL && formData.avatarURL !== ""
+                          ? formData.avatarURL
+                          : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                      }
                       className="rounded-circle mb-2"
-                      style={{ width: "80px", height: "80px" }}
+                      style={{
+                        width: "80px",
+                        height: "80px",
+                        objectFit: "cover",
+                      }}
                       alt="avatar"
                     />
                   </div>
-                  <h5 className="mt-2 mb-0">Nguyễn Văn Nam</h5>
+                  <h5 className="mt-2 mb-0">{formData.name}</h5>
                   <small className="text-muted">Google</small>
                 </div>
                 <ListGroup variant="flush">
@@ -86,7 +105,12 @@ function MyAccountPage() {
               <Card style={{ backgroundColor: "rgba(255, 255, 255,0.9)" }}>
                 {indexActive == 0 && <ViewInformation />}
                 {indexActive == 1 && <ChangePassword />}
-                {indexActive == 2 && <ViewAvatar />}
+                {indexActive === 2 && (
+                  <ViewAvatar
+                    avatarURL={formData.avatarURL}
+                    onAvatarUpdate={handleAvatarUpdate}
+                  />
+                )}
                 {indexActive == 3 && <BookingHistory />}
                 {indexActive == 4 && <FavoriteHotel />}
                 {indexActive == 5 && <MyFeedback />}

@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
 import { showToast, ToastProvider } from "components/ToastContainer";
-import { clearToken, clearUser } from "utils/handleToken";
+import { clearToken } from "utils/handleToken";
 import Utils from "utils/Utils";
 
 const LoginPage = () => {
@@ -55,7 +55,6 @@ const LoginPage = () => {
               });
               dispatch({ type: AuthActions.LOGOUT });
               clearToken();
-              clearUser();
             } else {
               navigate(Routers.Home, {
                 state: { message: "Login account successfully!" },

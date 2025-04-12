@@ -48,7 +48,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
 import { showToast, ToastProvider } from "components/ToastContainer";
 import Select from "react-select";
-import { getToken, getUser } from "utils/handleToken";
+import { getToken } from "utils/handleToken";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
 import {cityOptionSelect } from "utils/data";
@@ -60,17 +60,7 @@ function Home() {
   const location = useLocation();
   const navigate = useNavigate(); // cần thêm dòng này
 
-  // Lấy user từ localStorage/session và dispatch lên Redux
-  useEffect(() => {
-    const user = getUser();
-    if (user) {
-      dispatch({
-        type: AuthActions.SET_USER,
-        payload: { user },
-      });
-    }
-  }, [dispatch]);
-
+ 
   // Hiển thị message nếu có và xóa state để tránh hiện lại khi reload
   useEffect(() => {
     window.scrollTo(0, 0);
