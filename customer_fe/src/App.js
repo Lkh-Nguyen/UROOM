@@ -23,17 +23,11 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
-import { useEffect } from "react";
-import { getToken } from "utils/handleToken";
-import { useDispatch } from "react-redux";
-import AuthActions from "./redux/auth/actions";
-import { useAppSelector } from "./redux/store";
+
 
 
 function App() {
-   const SearchInformation = useAppSelector(
-      (state) => state.Search.SearchInformation
-    );
+
   return (
     <Router>
       <Routes>

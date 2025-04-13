@@ -27,7 +27,6 @@ exports.loginCustomer = async (req, res) => {
 exports.updateCustomerProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log("User: ", req.user)
     const { name, phoneNumber, address, gender, birthDate, image } = req.body;
 
     const user = await User.findById(userId);
@@ -73,9 +72,7 @@ exports.updateCustomerProfile = async (req, res) => {
 exports.changePassword = async (req, res) => {
   try {
     const userId = req.user._id;
-    console.log("User: ", req.user)
     const { currentPassword, newPassword, confirmPassword } = req.body;
-    console.log(req.body);
     const user = await User.findById(userId).select("+password");
 
     if (!user) {

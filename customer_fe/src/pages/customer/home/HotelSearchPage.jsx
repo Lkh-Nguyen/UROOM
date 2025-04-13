@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -9,6 +11,7 @@ import {
   InputGroup,
   Badge,
   Alert,
+  Modal,
 } from "react-bootstrap";
 import {
   FaMapMarkerAlt,
@@ -18,6 +21,7 @@ import {
   FaSearch,
   FaHotel,
   FaArrowRight,
+  FaHeart,
 } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/customer/HotelSearchPage.css";
@@ -28,51 +32,18 @@ import { FaChild, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
 import Select from "react-select";
-import { cityOptionSelect } from "../../../utils/data";
+import {
+  cityOptionSelect,
+  districtsByCity,
+  listFacilities,
+} from "../../../utils/data";
 import { useDispatch } from "react-redux";
 import { useAppSelector } from "../../../redux/store";
 import SearchActions from "../../../redux/search/actions";
 import Factories from "../../../redux/search/factories";
-
-const hotelData = [
-  {
-    id: 1,
-    name: "Khách sạn và căn hộ Seashore",
-    location: "Đà Nẵng",
-    address: "Đia điểm: 15-16 Hoàng Sa, Mân Thái, Sơn Trà, Đà Nẵng, Việt Nam",
-    star: 4,
-    rating: 1.3,
-    feedbacks: 4,
-    image:
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/629251764.jpg?k=050e0b7a57991869eb2c714c9191d7eea3a712e3a37b66f665be9816c9a87b6c&o=",
-    features: ["Free cancellation", "No prepayment needed - pay at property"],
-  },
-  {
-    id: 2,
-    name: "Danue Hotel Da Nang",
-    location: "Đà Nẵng",
-    address: "Đia điểm: 57-59 Đỗ Bí, Mỹ An, Ngũ Hành Sơn, Đà Nẵng, Việt Nam",
-    star: 3,
-    rating: 4.3,
-    feedbacks: 4,
-    image:
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/531732579.jpg?k=5f6be2537974a0e620c275efe41a2aa9b7549a8547800f7a71e1748f0d360604&o=",
-    features: ["Free cancellation", "No prepayment needed - pay at property"],
-  },
-  {
-    id: 3,
-    name: "Cicilia Danang Hotels & Spa Powered by ASTON",
-    location: "Đà Nẵng",
-    address:
-      "Đia điểm: 06 10 Đỗ Bá, Đại Biển T20, Phường Mỹ An, Mỹ An, Ngũ Hành Sơn, Đà Nẵng, Việt Nam",
-    star: 3,
-    rating: 3.3,
-    feedbacks: 4,
-    image:
-      "https://cf.bstatic.com/xdata/images/hotel/max500/531742767.jpg?k=1ba12672d85a3117cd06ba6428159756a32fe585c68830c9e5260600e1512aae&o=",
-    features: ["Free cancellation", "No prepayment needed - pay at property"],
-  },
-];
+import { showToast, ToastProvider } from "../../../components/ToastContainer";
+import Pagination from "components/Pagination";
+import MapComponent from "pages/MapLocation";
 
 // Options for adults select
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -91,35 +62,68 @@ const HotelSearchPage = () => {
     window.scrollTo(0, 0);
   }, []);
   const navigate = useNavigate();
-  const [location, setLocation] = useState("Đà Nẵng");
-  const [people, setPeople] = useState("5");
-  const [rooms, setRooms] = useState("2");
-  const [departureDate, setDepartureDate] = useState("06/18/2024");
-  const [returnDate, setReturnDate] = useState("06/19/2024");
-  const [starFilter, setStarFilter] = useState(null);
+  const [starFilter, setStarFilter] = useState(0);
   const [priceRange, setPriceRange] = useState(1000);
 
-  const cityOptions = cityOptionSelect;
-  // State for all search parameters
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
   );
-  const [selectedCity, setSelectedCity] = useState(SearchInformation.address);
+  // State for all search parameters
+  const selectedCityTemp = SearchInformation.address;
+  const [selectedCity, setSelectedCity] = useState(
+    cityOptionSelect.find(
+      (option) => option.value === SearchInformation.address
+    ) || null
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
-  const [checkoutDate, setCheckoutDate] = useState(SearchInformation.checkoutDate);
-  const [selectedAdults, setSelectedAdults] = useState(SearchInformation.adults); // Default to 1 adult
-  const [selectedChildren, setSelectedChildren] = useState(SearchInformation.childrens); // Default to 0 children
+  const [checkoutDate, setCheckoutDate] = useState(
+    SearchInformation.checkoutDate
+  );
+  const [selectedAdults, setSelectedAdults] = useState(
+    adultsOptions.find((option) => option.value === SearchInformation.adults) ||
+      adultsOptions[0]
+  );
+  const [selectedChildren, setSelectedChildren] = useState(
+    childrenOptions.find(
+      (option) => option.value === SearchInformation.childrens
+    ) || childrenOptions[0]
+  );
   const dispatch = useDispatch();
-  
-  const [loading, setLoading]= useState(true);
-  const [searchHotel, setSearchHotel]= useState();
+
+  const [loading, setLoading] = useState(true);
+  const [searchHotel, setSearchHotel] = useState([]);
+  console.log("searchHotel: ", searchHotel);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
+  const [selectedFacilities, setSelectedFacilities] = useState([]);
+
+  const [searchParams, setSearchParams] = useState({
+    address: SearchInformation.address,
+    checkinDate: SearchInformation.checkinDate,
+    checkoutDate: SearchInformation.checkoutDate,
+    numberOfPeople: SearchInformation.adults + SearchInformation.childrens,
+    page: currentPage,
+    star: starFilter,
+    district: selectedCity.value,
+  });
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    setSearchParams({
+      ...searchParams,
+      page: page,
+    });
+  };
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const response = await Factories.searchHotel(SearchInformation);
+        const response = await Factories.searchHotel(searchParams);
         if (response?.status === 200) {
           setSearchHotel(response?.data.hotels);
+          setCurrentPage(response?.data.currentPage);
+          setTotalPages(response?.data.totalPages);
         }
       } catch (error) {
         console.error("Error fetching hotels:", error);
@@ -127,13 +131,53 @@ const HotelSearchPage = () => {
         setLoading(false);
       }
     };
-  
-    fetchHotels();
-  }, []);
 
-  console.log("Hotels: ", searchHotel)
-  // Handle search function
+    fetchHotels();
+  }, [searchParams, starFilter]);
+
+  const [formErrors, setFormErrors] = useState({});
+  const [isSearching, setIsSearching] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+  const handleFacilityChange = (e, name) => {
+    const isChecked = e.target.checked;
+
+    // Cập nhật state selectedFacilities
+    setSelectedFacilities(
+      (prev) =>
+        isChecked
+          ? [...prev, name] // Thêm name nếu checkbox được check
+          : prev.filter((item) => item !== name) // Xóa name nếu checkbox bị uncheck
+    );
+
+    // Cập nhật searchParams với mảng selectedFacilities đã thay đổi
+    setSearchParams({
+      ...searchParams,
+      page: 1,
+      selectedFacilities: isChecked
+        ? [...selectedFacilities, name] // Thêm name nếu được check
+        : selectedFacilities.filter((item) => item !== name), // Xóa name nếu uncheck
+    });
+  };
+
+  // Replace the handleSearch function with this updated version
   const handleSearch = () => {
+    setSelectedDistrict(null);
+    // Validate check-in date is before check-out date
+    if (
+      checkinDate &&
+      checkoutDate &&
+      new Date(checkinDate) >= new Date(checkoutDate)
+    ) {
+      showToast.warning("Check-in date cannot be later than check-out date.");
+      return;
+    }
+
+    // Clear any previous errors
+    setFormErrors({});
+
+    // Set loading state
+    setIsSearching(true);
+
     // Create query parameters
     const adults = selectedAdults ? selectedAdults.value : 1;
     const childrens = selectedChildren ? selectedChildren.value : 0;
@@ -146,25 +190,30 @@ const HotelSearchPage = () => {
       adults,
       childrens,
     };
-    dispatch({
-      type: SearchActions.SAVE_SEARCH,
-      payload: { SearchInformation },
-    });
-    const searchParams = {
-      address: selectedCity ? selectedCity.value : "",
-      checkinDate,
-      checkoutDate,
-      numberOfPeople,
-    };
 
-    // Navigate to search page with parameters
-    navigate(Routers.HotelSearchPage, {
-      state: searchParams,
-    });
+    // Simulate loading delay (1 second)
+    setTimeout(() => {
+      dispatch({
+        type: SearchActions.SAVE_SEARCH,
+        payload: { SearchInformation },
+      });
 
-    // You can also log the search parameters for debugging
-    console.log("Search parameters:", searchParams);
+      // Reset to page 1 when performing a new search
+      setCurrentPage(1);
+
+      const searchParamsTemp = {
+        address: selectedCity ? selectedCity.value : "",
+        checkinDate,
+        checkoutDate,
+        numberOfPeople,
+        page: 1, // Reset to page 1
+        star: starFilter, // Include star filter in search params
+      };
+      setSearchParams(searchParamsTemp);
+      setIsSearching(false);
+    }, 1000);
   };
+
   const selectStyles = {
     control: (provided) => ({
       ...provided,
@@ -174,13 +223,6 @@ const HotelSearchPage = () => {
       width: "100%",
     }),
   };
-
-  const filteredHotels = hotelData.filter((hotel) => {
-    if (starFilter && hotel.star !== starFilter) {
-      return false;
-    }
-    return true;
-  });
 
   const renderStars = (count) => {
     const stars = [];
@@ -196,6 +238,10 @@ const HotelSearchPage = () => {
     return stars;
   };
 
+  const [showModalMap, setShowModalMap] = useState(false);
+  const [addressMap, setAddressMap] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích
+
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -207,7 +253,7 @@ const HotelSearchPage = () => {
     >
       <Header />
       <div
-        className="flex-grow-1 d-flex align-items-center justify-content-center"
+        className="flex-grow-1 d-flex justify-content-center"
         style={{ paddingTop: "50px", paddingBottom: "50px" }}
       >
         <Container
@@ -217,6 +263,8 @@ const HotelSearchPage = () => {
             marginTop: "50px",
           }}
         >
+          <ToastProvider />
+
           <div
             style={{
               maxWidth: "100%",
@@ -277,8 +325,8 @@ const HotelSearchPage = () => {
                     <div style={{ flex: 1 }}>
                       <Select
                         options={cityOptionSelect}
-                        value={cityOptionSelect.find(option => option.label === selectedCity)}
-                        onChange={setSelectedCity}
+                        value={selectedCity}
+                        onChange={(option) => setSelectedCity(option)}
                         placeholder="Search location"
                         isSearchable
                         styles={{
@@ -296,6 +344,14 @@ const HotelSearchPage = () => {
                       <FaSearch />
                     </InputGroup.Text>
                   </InputGroup>
+                  {formErrors.location && (
+                    <div
+                      className="text-danger mt-1"
+                      style={{ fontSize: "0.875rem" }}
+                    >
+                      {formErrors.location}
+                    </div>
+                  )}
                 </Col>
 
                 <Col md={4}>
@@ -314,8 +370,18 @@ const HotelSearchPage = () => {
                           className="border-0 bg-transparent"
                           value={checkinDate}
                           onChange={(e) => setCheckinDate(e.target.value)}
+                          required
+                          min={today} // ✅ Không cho chọn ngày trước hôm nay
                         />
                       </InputGroup>
+                      {formErrors.checkinDate && (
+                        <div
+                          className="text-danger mt-1"
+                          style={{ fontSize: "0.875rem" }}
+                        >
+                          {formErrors.checkinDate}
+                        </div>
+                      )}
                     </Col>
 
                     {/* Icon mũi tên */}
@@ -342,8 +408,18 @@ const HotelSearchPage = () => {
                           className="border-0 bg-transparent"
                           value={checkoutDate}
                           onChange={(e) => setCheckoutDate(e.target.value)}
+                          min={today} // ✅ Không cho chọn ngày trước hôm nay
+                          required
                         />
                       </InputGroup>
+                      {formErrors.checkoutDate && (
+                        <div
+                          className="text-danger mt-1"
+                          style={{ fontSize: "0.875rem" }}
+                        >
+                          {formErrors.checkoutDate}
+                        </div>
+                      )}
                     </Col>
                   </Row>
                 </Col>
@@ -360,7 +436,7 @@ const HotelSearchPage = () => {
                     <div style={{ flex: 1 }}>
                       <Select
                         options={adultsOptions}
-                        value={adultsOptions.find(option => option.label === `${selectedAdults} Adults`)}
+                        value={selectedAdults}
                         onChange={setSelectedAdults}
                         styles={selectStyles}
                         isSearchable={false}
@@ -373,7 +449,7 @@ const HotelSearchPage = () => {
                     <div style={{ flex: 1 }}>
                       <Select
                         options={childrenOptions}
-                        value={childrenOptions.find(option => option.label === `${selectedChildren} Childrens`)}
+                        value={selectedChildren}
                         onChange={setSelectedChildren}
                         styles={selectStyles}
                         isSearchable={false}
@@ -392,6 +468,7 @@ const HotelSearchPage = () => {
                       borderRadius: "15px",
                     }}
                     onClick={handleSearch}
+                    disabled={isSearching}
                   >
                     <FaSearch />
                   </Button>
@@ -404,153 +481,348 @@ const HotelSearchPage = () => {
           <Row>
             {/* Filters */}
             <Col md={3}>
-              <Card className="shadow-sm mb-4">
-                <Card.Body>
-                  <h5 className="mb-3">Lọc khách sạn</h5>
+              <div
+                className="shadow-sm mb-4"
+                style={{
+                  backgroundColor: "white",
+                  padding: "16px",
+                  borderRadius: "10px",
+                }}
+              >
+                <h5 className="mb-3">Lọc khách sạn</h5>
 
-                  {/* Star Rating Filter */}
-                  <div className="mb-4">
-                    <Form>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Form.Check
-                          key={star}
-                          type="radio"
-                          id={`star-${star}`}
-                          name="starRating"
-                          label={
-                            <div className="d-flex align-items-center">
-                              {[...Array(star)].map((_, i) => (
-                                <FaStar key={i} className="text-warning me-1" />
-                              ))}
-                            </div>
-                          }
-                          onChange={() => setStarFilter(star)}
-                          checked={starFilter === star}
-                        />
-                      ))}
-                      <Form.Check
-                        type="radio"
-                        id="star-all"
-                        name="starRating"
-                        label="All ratings"
-                        onChange={() => setStarFilter(null)}
-                        checked={starFilter === null}
-                      />
-                    </Form>
-                  </div>
-
-                  {/* Price Range */}
-                  <div>
-                    <h6 className="mb-2">Price Range</h6>
-                    <Form.Label className="d-flex justify-content-between">
-                      <span>0</span>
-                      <span>1000$</span>
-                    </Form.Label>
-                    <Form.Range
-                      value={priceRange}
-                      onChange={(e) => setPriceRange(e.target.value)}
+                {/* Star Rating Filter */}
+                <div className="mb-4">
+                  <h6 className="mb-2">Star Range</h6>
+                  <Form>
+                    <Form.Check
+                      type="radio"
+                      id="star-all"
+                      name="starRating"
+                      label="All stars"
+                      onChange={() => {
+                        setStarFilter(0);
+                        setSearchParams({
+                          ...searchParams,
+                          page: 1,
+                          star: 0,
+                        });
+                      }}
+                      checked={starFilter === 0}
                     />
-                    <div className="text-center mt-2">
-                      <Badge bg="secondary">${priceRange * 10}</Badge>
+                    {[5, 4, 3, 2, 1].map((star) => (
+                      <Form.Check
+                        key={star}
+                        type="radio"
+                        id={`star-${star}`}
+                        name="starRating"
+                        label={
+                          <div className="d-flex align-items-center">
+                            {[...Array(star)].map((_, i) => (
+                              <FaStar key={i} className="text-warning me-1" />
+                            ))}
+                          </div>
+                        }
+                        onChange={() => {
+                          setStarFilter(star);
+                          setSearchParams({
+                            ...searchParams,
+                            page: 1,
+                            star: star,
+                          });
+                        }}
+                        checked={starFilter === star}
+                      />
+                    ))}
+                  </Form>
+
+                  <h6 className="mt-2">District select</h6>
+                  <InputGroup
+                    className="border"
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <InputGroup.Text className="bg-transparent border-0">
+                      <FaMapMarkerAlt />
+                    </InputGroup.Text>
+                    <div style={{ flex: 1 }}>
+                      <Select
+                        options={districtsByCity[`${selectedCity.value}`]}
+                        value={selectedDistrict}
+                        onChange={(option) => {
+                          setSelectedDistrict(option);
+                          setSearchParams({
+                            ...searchParams,
+                            district: option.value,
+                          });
+                        }}
+                        placeholder="Search District"
+                        isSearchable
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            border: "none",
+                            background: "transparent",
+                            boxShadow: "none",
+                            width: "100%",
+                          }),
+                        }}
+                      />
                     </div>
-                  </div>
-                </Card.Body>
-              </Card>
+                    <InputGroup.Text className="bg-transparent border-0">
+                      <FaSearch />
+                    </InputGroup.Text>
+                  </InputGroup>
+
+                  <h6 className="mt-4">Facilities select</h6>
+                  {listFacilities.map((item, index) => {
+                    const FacilityIcon = item.iconTemp;
+                    return (
+                      <div className="form-check" key={index}>
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={`facility-${index}`}
+                          value={item.name}
+                          onChange={(e) => handleFacilityChange(e, item.name)}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={`facility-${index}`}
+                        >
+                          {FacilityIcon && (
+                            <FacilityIcon style={{ marginRight: "8px" }} />
+                          )}
+                          {item.name}
+                        </label>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </Col>
 
-            {/* Hotel Listings */}
             <Col md={9}>
-              {filteredHotels.length > 0 ? (
-                filteredHotels.map((hotel, index) => (
-                  <Card key={hotel.id || index} className="mb-3 shadow-sm">
-                    <Row className="g-0">
-                      <Col md={4}>
-                        <div className="position-relative h-100">
-                          {hotel.isHot && (
-                            <Badge
-                              bg="danger"
-                              className="position-absolute top-0 start-0 m-2"
-                            >
-                              HOT
-                            </Badge>
-                          )}
-                          <img
-                            src={hotel.image ? hotel.image : "/placeholder.svg"}
-                            alt={hotel.name || "Unnamed Hotel"}
-                            className="img-fluid rounded-start hotel-image"
-                            style={{ height: "100%", objectFit: "cover" }}
-                          />
-                        </div>
-                      </Col>
-                      <Col md={8}>
-                        <Card.Body>
-                          <div className="d-flex justify-content-between align-items-start">
-                            <div>
-                              <h5 className="card-title">
-                                {hotel.name || "No Name"}
-                              </h5>
-                              <p className="text-muted mb-1">
-                                {hotel.location || "Unknown Location"} -{" "}
-                                <a href="#" className="text-primary">
-                                  Show on map
-                                </a>
-                              </p>
-                              <p className="text-muted small mb-2">
-                                <FaMapMarkerAlt className="me-1 text-secondary" />
-                                {hotel.address || "No Address Provided"}
-                              </p>
-                              <p style={{ marginTop: "15px" }}>
-                                <span
-                                  className="rating-box p-2"
-                                  style={{ marginRight: "10px" }}
-                                >
-                                  {hotel.rating}
-                                </span>
-                                <span className="text-muted">
-                                  {hotel.feedbacks} feedbacks
-                                </span>
-                              </p>
-                              {/* Features */}
-                              <div className="mt-3">
-                                {hotel.features && hotel.features.length > 0 ? (
-                                  hotel.features.map((feature, i) => (
-                                    <p
-                                      key={i}
-                                      className="mb-1 text-success small"
-                                      style={{ fontSize: 18 }}
-                                    >
-                                      <FaCheck className="me-1" /> {feature}
-                                    </p>
-                                  ))
-                                ) : (
-                                  <p className="text-muted small">
-                                    No features available
-                                  </p>
-                                )}
+              {isSearching ? (
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "300px" }}
+                >
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : searchHotel.length > 0 ? (
+                <>
+                  {searchHotel.map((hotel, index) => {
+                    const inforHotel = hotel.hotel;
+                    return (
+                      <Card key={hotel.id || index} className="mb-3 shadow-sm">
+                        <Row className="g-0" style={{ height: "350px" }}>
+                          <Col md={4}>
+                            <div className="position-relative">
+                              <div
+                                style={{
+                                  width: "35px",
+                                  height: "35px",
+                                  borderRadius: "50%",
+                                  borderWidth: "2px",
+                                  borderColor: isFavorite ? "red" : "white",
+                                  borderStyle: "solid", // Thêm dòng này
+                                  position: "absolute",
+                                  top: 10,
+                                  left: 10,
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <FaHeart
+                                  onClick={() => setIsFavorite(!isFavorite)}
+                                  style={{
+                                    fontSize: "20px",
+                                    color: isFavorite ? "red" : "white",
+                                    cursor: "pointer",
+                                  }}
+                                />
                               </div>
+                              <img
+                                src={
+                                  inforHotel.images
+                                    ? inforHotel.images[0]
+                                    : "/placeholder.svg"
+                                }
+                                alt={hotel.name || "Unnamed Hotel"}
+                                className="img-fluid rounded-start hotel-image"
+                                style={{ height: "100%", objectFit: "cover" }}
+                              />
                             </div>
-                            <div className="d-flex">
-                              {hotel.star
-                                ? renderStars(hotel.star)
-                                : "No Rating"}
-                            </div>
-                          </div>
+                          </Col>
+                          <Col md={8}>
+                            <Card.Body>
+                              <div className="d-flex justify-content-between align-items-start">
+                                <div>
+                                  <h5 className="card-title">
+                                    {inforHotel.hotelName || "No Name"}
+                                  </h5>
+                                  <p className="text-muted mb-1">
+                                    {selectedCityTemp || "Unknown Location"} -{" "}
+                                    <a
+                                      onClick={() => {
+                                        setAddressMap(inforHotel.address);
+                                        setShowModalMap(true);
+                                      }}
+                                      className="text-primary"
+                                    >
+                                      Show on map
+                                    </a>
+                                  </p>
+                                  <p className="text-muted small mb-2">
+                                    <FaMapMarkerAlt className="me-1 text-secondary" />
+                                    {inforHotel.address ||
+                                      "No Address Provided"}
+                                  </p>
+                                  <p style={{ marginTop: "15px" }}>
+                                    {hotel.totalFeedbacks > 0 ? (
+                                      <>
+                                        <span
+                                          className="rating-box p-2"
+                                          style={{
+                                            display: "inline-flex",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            width: "30px",
+                                            height: "30px",
+                                            backgroundColor: "#FFC107",
+                                            borderRadius: "20%",
+                                            color: "white",
+                                            fontWeight: "bold",
+                                            fontSize: "14px",
+                                            textAlign: "center",
+                                            marginRight: "8px",
+                                          }}
+                                        >
+                                          {hotel.avgValueRating.toFixed(1)}
+                                        </span>
+                                        <span className="text-muted">
+                                          {hotel.totalFeedbacks} feedbacks about
+                                          hotel
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="text-muted">
+                                        No feedback about hotel
+                                      </span>
+                                    )}
+                                  </p>
 
-                          <div className="text-end mt-3">
-                            <Button
-                              variant="primary"
-                              onClick={() => {
-                                navigate(Routers.Home_detail);
-                              }}
-                            >
-                              Đặt Phòng
-                            </Button>
-                          </div>
-                        </Card.Body>
-                      </Col>
-                    </Row>
-                  </Card>
-                ))
+                                  <div className="mt-3 d-flex flex-wrap gap-2">
+                                    {inforHotel.facilities &&
+                                    inforHotel.facilities.length > 0 ? (
+                                      inforHotel.facilities
+                                        .slice(0, 7)
+                                        .map((feature, i) => {
+                                          // feature là 1 object: { _id, name, description, icon }
+                                          const matchedFeature =
+                                            listFacilities.find(
+                                              (f) =>
+                                                f.name.toLowerCase() ===
+                                                feature.name.toLowerCase()
+                                            );
+                                          const FacilityIcon =
+                                            matchedFeature?.iconTemp;
+
+                                          return (
+                                            <span
+                                              key={feature._id || i}
+                                              className="badge bg-light text-dark border"
+                                              style={{
+                                                fontSize: "14px",
+                                                padding: "8px 12px",
+                                                borderRadius: "20px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              {FacilityIcon && (
+                                                <FacilityIcon
+                                                  style={{ marginRight: "8px" }}
+                                                />
+                                              )}
+                                              {feature.name}
+                                            </span>
+                                          );
+                                        })
+                                    ) : (
+                                      <p className="text-muted small">
+                                        No features available
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
+                                    <p
+                                      className="text-success mb-0"
+                                      style={{
+                                        fontSize: 16,
+                                        padding: "8px 12px",
+                                      }}
+                                    >
+                                      <FaCheck className="me-1" /> Free
+                                      cancellation
+                                    </p>
+                                    <p
+                                      className="text-success mb-0"
+                                      style={{
+                                        fontSize: 16,
+                                        padding: "8px 12px",
+                                      }}
+                                    >
+                                      <FaCheck className="me-1" /> No immediate
+                                      payment
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="d-flex">
+                                  {inforHotel.star
+                                    ? renderStars(inforHotel.star)
+                                    : "No Rating"}
+                                </div>
+                              </div>
+
+                              <div className="text-end mt-3">
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    bottom: 20,
+                                    right: 20,
+                                  }}
+                                  variant="primary"
+                                  onClick={() => {
+                                    navigate(Routers.Home_detail);
+                                  }}
+                                >
+                                  Booking Room
+                                </Button>
+                              </div>
+                            </Card.Body>
+                          </Col>
+                        </Row>
+                      </Card>
+                    );
+                  })}
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="d-flex justify-content-center mt-4">
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
+                    </div>
+                  )}
+                </>
               ) : (
                 <Alert variant="danger" style={{ textAlign: "center" }}>
                   No hotels available
@@ -558,6 +830,32 @@ const HotelSearchPage = () => {
               )}
             </Col>
           </Row>
+          <Modal
+            show={showModalMap}
+            onHide={() => {
+              setShowModalMap(false);
+              setAddressMap("");
+            }}
+            size="lg"
+          >
+            <Modal.Header closeButton>
+              <Modal.Title>Map Address</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <MapComponent addressMap={addressMap} />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowModalMap(false);
+                  setAddressMap("");
+                }}
+              >
+                Đóng
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </Container>
       </div>
       <Footer />
