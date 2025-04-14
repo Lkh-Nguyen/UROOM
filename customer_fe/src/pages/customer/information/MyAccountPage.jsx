@@ -11,7 +11,7 @@ import MyFeedback from "./components/MyFeedback";
 import FavoriteHotel from "./components/MyFavoriteHotel";
 import Banner from "../../../images/banner.jpg";
 import BookingHistory from "./components/BookingHistory";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
@@ -26,16 +26,23 @@ function MyAccountPage() {
   const { id } = location.state || {};
   const [indexActive, setIndexActive] = useState(0);
   console.log('id: ', id)
+  const navigate = useNavigate() // cần thêm dòng này
+
   useEffect(() => {
     const fetchIndex = async () => {
       const result = await getIndexMyAccountPage();
-      setIndexActive(Number(result)); // nhớ ép kiểu về số
+      setIndexActive(Number(result));
     };
+    if(id == undefined){
+      fetchIndex()
+    }
+  },[])
+  useEffect(() => {
     if (id != undefined) {
       setIndexActive(id);
-    }else{
-      fetchIndex();
     }
+    navigate(location.pathname, { replace: true })
+
   }, [location.state?.id]);
   
   const handleMenuClick = (index) => {

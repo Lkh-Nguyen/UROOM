@@ -65,7 +65,7 @@ exports.getHotelsByIds = asyncHandler(async (req, res) => {
   const hotels = await Hotel.find({ _id: { $in: ids } })
     .populate("services")
     .populate("facilities");
-
+  
   return res.status(200).json({
     error: false,
     hotels,

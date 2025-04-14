@@ -45,8 +45,8 @@ const BookingBill = () => {
       }}
     >
       <Header />
-      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: "50px", paddingBottom: "50px"}}>
-        <Container fluid className="booking-bill-container">
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper">
+        <Container fluid className="booking-bill-container" style={{marginTop: "50px"}}>
           <Card className="booking-bill-card">
             <Row className="g-0">
               {/* Left side - Hotel Image and Info */}

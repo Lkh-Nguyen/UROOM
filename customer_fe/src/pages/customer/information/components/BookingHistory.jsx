@@ -156,7 +156,7 @@ const BookingHistory = () => {
   };
 
   return (
-    <Container className="py-4">
+    <Container className="py-4" >
       <h2 className="fw-bold mb-4">Booking History</h2>
       {/* Filter buttons */}
       <div
