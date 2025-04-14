@@ -45,7 +45,6 @@ const LoginPage = () => {
         payload: {
           data: { email: formData.email, password: formData.password },
           onSuccess: (user) => {
-            console.log('user: ', user)
             if (user.isLocked) {
               navigate(Routers.BannedPage, {
                 state: {

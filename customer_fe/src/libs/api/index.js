@@ -70,7 +70,6 @@ export default {
 
   async put(endPoint, data, options = {}) {
     const headers = options.headers ? { ...options.headers } : {};
-
     if (data instanceof FormData) {
       headers['Content-Type'] = 'multipart/form-data';
     }

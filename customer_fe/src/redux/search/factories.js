@@ -8,7 +8,15 @@ const Factories = {
       checkinDate: '',
       checkoutDate: '',
       numberOfPeople: 0,
+      page: 1,
+      star: 0,
+      district: '',
+      selectedFacilities: "",
     };
+
+    if (Array.isArray(query.selectedFacilities) && query.selectedFacilities.length > 0) {
+      params.selectedFacilities = query.selectedFacilities.join(",");
+    }
 
     if(query.address){
       params.address= query.address
@@ -21,6 +29,15 @@ const Factories = {
     }
     if(query.numberOfPeople){
       params.numberOfPeople= query.numberOfPeople
+    }
+    if(query.page){
+      params.page= query.page
+    }
+    if(query.star){
+      params.star= query.star
+    }
+    if(query.district){
+      params.district= query.district
     }
     return api.get(ApiConstants.SEARCH_HOTEL, {params});
   },

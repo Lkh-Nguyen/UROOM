@@ -13,13 +13,21 @@ import * as Routers from "../../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
 import CancelReservationModal from "pages/customer/home/components/CancelReservationModal";
 import { showToast, ToastProvider } from "components/ToastContainer";
+import { getStatusBooking, setStatusBooking } from "utils/handleToken";
 
 const BookingHistory = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState(0);
   const [activePage, setActivePage] = useState(1);
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
+  useEffect(() => {
+    const fetchIndex = async () => {
+      const result = await getStatusBooking();
+      setActiveFilter(Number(result)); // nhớ ép kiểu về số
+    };
+    fetchIndex();
+  }, []);
   // Filter options
   const filters = [
     "Feedbacked",
@@ -29,6 +37,7 @@ const BookingHistory = () => {
     "NoPaid",
     "Cancel",
   ];
+
   const colors = [
     "#00BBFF",
     "#00611D",
@@ -139,6 +148,7 @@ const BookingHistory = () => {
 
   const handleFilterClick = (index) => {
     setActiveFilter(index);
+    setStatusBooking(index);
   };
 
   const handlePageClick = (page) => {
@@ -162,7 +172,7 @@ const BookingHistory = () => {
               borderRadius: 10,
               color: activeFilter === index ? "white" : "black", // Màu chữ
               backgroundColor:
-                activeFilter === index ? colors[activeFilter] : "transparent",
+                activeFilter === index ? colors[activeFilter] : "white",
               borderColor:
                 activeFilter === index ? colors[activeFilter] : "white",
               borderWidth: 1,
@@ -258,14 +268,15 @@ const BookingHistory = () => {
                 )}
               </Card.Body>
             </Card>
-            <ToastProvider/>
-            <CancelReservationModal 
-              show={showModal} 
-              onHide={() => setShowModal(false)} 
+            <ToastProvider />
+            <CancelReservationModal
+              show={showModal}
+              onHide={() => setShowModal(false)}
               onConfirm={() => {
-                setShowModal(false)
-                showToast.success("Cancel Booking Successfully!")
-              }} />
+                setShowModal(false);
+                showToast.success("Cancel Booking Successfully!");
+              }}
+            />
           </Col>
         ))}
       </Row>

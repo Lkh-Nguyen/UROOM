@@ -37,8 +37,8 @@ function* update_profile() {
     try {
       const response = yield call(() => Factories.update_profile(data));
 
-      console.log('status: ', response?.status)
-      console.log('data: ', response?.data.Data)
+      console.log("status: ", response?.status);
+      console.log("data: ", response?.data.Data);
 
       if (response?.status === 200) {
         const { user } = response.data.Data;
@@ -96,7 +96,45 @@ function* change_password() {
   });
 }
 
+function* update_avatar() {
+  yield takeEvery(AuthActions.UPDATE_AVATAR, function* (action) {
+    const { formData, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.update_avatar(formData));
+
+      if (response?.status === 200) {
+        console.log("image: ", response?.data?.Data.image)
+        yield put({
+          type: AuthActions.UPDATE_AVATAR_SUCCESS,
+          payload: { image: response?.data?.Data.image},
+        });
+
+        onSuccess && onSuccess(response?.data?.Data.MsgYes);
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.MsgNo;
+
+      console.log("status: ", status);
+      console.log("msg: ", msg);
+
+      if (status >= 500) {
+        onError && onError(error);
+      } else {
+        onFailed && onFailed(msg);
+      }
+    }
+  });
+}
 
 export default function* userSaga() {
-  yield all([fork(login), fork(update_profile),fork(change_password)]);
+  yield all(
+    [
+      fork(login), 
+      fork(update_profile), 
+      fork(change_password), 
+      fork(update_avatar)
+    ]
+  );
 }

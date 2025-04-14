@@ -69,3 +69,6 @@ static getDate(
     return result;
   }
 }
+
+
+export const cloudName = "dnel8ng9g";
