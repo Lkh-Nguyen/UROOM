@@ -98,11 +98,47 @@ function* getHotelDetails() {
     }
   });
 }
+function* getAllHotels() {
+  yield takeEvery(HotelActions.FETCH_ALL_HOTEL, function* (action) {
+    const { onSuccess, onFailed, onError } = action.payload || {};
+
+    try {
+      const response = yield call(() => Factories.get_all_hotels());
+
+      console.log("Get all hotels response:", response);
+
+      if (response?.status === 200) {
+        const hotels = response.data.hotels;
+
+        yield put({
+          type: HotelActions.FETCH_All_HOTEL_SUCCESS,
+          payload: hotels,
+        });
+
+        onSuccess?.(hotels);
+      } else {
+        onFailed?.(response?.data?.message || "Failed to get hotels");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Something went wrong";
+
+      console.log("Get all hotels error:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
 
 export default function* userSaga() {
   yield all([
     fork(getFavoriteHotels),
     fork(removeFavoriteHotel),
     fork(getHotelDetails),
+    fork(getAllHotels),
   ]);
 }

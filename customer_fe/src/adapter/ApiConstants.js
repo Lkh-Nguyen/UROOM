@@ -12,6 +12,7 @@ const ApiConstants = {
   REMOVE_FAVORITE_HOTELS:'/hotel/remove-favorite',
   FETCH_DETAIL_HOTELS: '/hotel/hotel_detail/:hotelId',
   FETCH_ROOM: '/room/rooms_information/:hotelId',
+  FETCH_ALL_HOTEL:'/hotel/get-all-hotel',
 };
 
 export default ApiConstants;
