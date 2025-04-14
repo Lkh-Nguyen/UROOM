@@ -23,17 +23,11 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
-import { useEffect } from "react";
-import { getToken } from "utils/handleToken";
-import { useDispatch } from "react-redux";
-import AuthActions from "./redux/auth/actions";
-import { useAppSelector } from "./redux/store";
+
 
 
 function App() {
-   const SearchInformation = useAppSelector(
-      (state) => state.Search.SearchInformation
-    );
+
   return (
     <Router>
       <Routes>
@@ -55,7 +49,7 @@ function App() {
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
-        <Route path={`${Routers.Home_detail}/:id`} element={<Home_detail />} />
+        <Route path={`${Routers.Home_detail}`} element={<Home_detail />} />
         <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />

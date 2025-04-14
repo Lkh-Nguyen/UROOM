@@ -15,8 +15,7 @@ import image from "../../images/image-removebg-preview.png";
 import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
-import { clearToken, getToken } from "utils/handleToken";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
 
 function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
@@ -75,9 +74,9 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(Routers.ErrorPage)}
+              onClick={() => navigate(Routers.ChatPage)}
             >
-              About
+              Message
             </Nav.Link>
             <Nav.Link
               className="nav-link"
@@ -155,13 +154,15 @@ function NavigationBar() {
                 <Dropdown.Divider />
                 <Dropdown.Item
                   onClick={() => {
+                    navigate(Routers.Home, {
+                      state: { message: "Logout account successfully !!!" },
+                    });
                     dispatch({
                       type: AuthActions.LOGOUT,
                     });
                     clearToken();
-                    navigate(Routers.Home, {
-                      state: { message: "Logout account successfully !!!" },
-                    });
+                    setIndexMyAccountPage(0);
+                    setStatusBooking(0);
                   }}
                 >
                   Logout

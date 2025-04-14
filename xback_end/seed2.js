@@ -998,10 +998,12 @@ const roomFacilities = [
         });
         continue; // Bỏ qua insert nếu có lỗi
       }
-    
+      
+      const random = Math.random() < 0.5 ? 11 : 12;
+
       // Insert reservation với trạng thái ngẫu nhiên
       let reservation = db.reservations.insertOne({
-        user: userIds[i % userIds.length],
+        user: random,
         hotel: hotelId,
         rooms: selectedRooms,
         checkInDate: checkInDate,

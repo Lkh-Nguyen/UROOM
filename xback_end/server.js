@@ -7,6 +7,7 @@ const connectToDB = require("./src/config/dbConnection");
 const authRoute = require("./src/route_controller/Auth/AuthRoute");
 const SearchHotelRoute = require("./src/route_controller/Search_Hotel/SearchHotelRoute");
 const HotelRouter = require("./src/route_controller/Hotel/HotelRoute");
+const FeedbackRouter = require("./src/route_controller/Feedback/FeedbackRoute");
 const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 
 
@@ -22,8 +23,7 @@ connectToDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//from errorHandle
-app.use(errorHandler);
+
 //from cors
 app.use(cors());
 
@@ -35,6 +35,11 @@ app.use("/api/search", SearchHotelRoute);
 
 app.use("/api/hotel", HotelRouter);
 app.use("/api/room", RoomRouter);
+
+app.use("/api/feedback", FeedbackRouter);
+
+//from errorHandle
+app.use(errorHandler);
 
 server.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
