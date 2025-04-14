@@ -7,7 +7,11 @@ const ApiConstants = {
   UPDATE_AVATAR:'/auth/update_avatar',
 
   //SEARCH:
-  SEARCH_HOTEL: '/search'
+  SEARCH_HOTEL: '/search',
+  FETCH_FAVORITE_HOTELS:'/hotel/get-hotel-byId',
+  REMOVE_FAVORITE_HOTELS:'/hotel/remove-favorite',
+  FETCH_DETAIL_HOTELS: '/hotel/hotel_detail/:hotelId',
+  FETCH_ROOM: '/room/rooms_information/:hotelId',
 };
 
 export default ApiConstants;

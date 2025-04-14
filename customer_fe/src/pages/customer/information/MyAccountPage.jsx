@@ -114,8 +114,7 @@ function MyAccountPage() {
                 {indexActive == 1 && <ChangePassword />}
                 {indexActive === 2 && (
                   <ViewAvatar
-                    avatarURL={formData.avatarURL}
-                    onAvatarUpdate={handleAvatarUpdate}
+                   
                   />
                 )}
                 {indexActive == 3 && <BookingHistory />}

@@ -32,6 +32,9 @@ import {
   FaArrowRight,
   FaHeart,
 } from "react-icons/fa";
+import * as FaIcons from "react-icons/fa";
+import * as MdIcons from "react-icons/md";
+import * as GiIcons from "react-icons/gi";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/css/customer/Home_detail.css";
 import NavigationBar from "../Header";
@@ -53,7 +56,11 @@ import * as Routers from "../../../utils/Routes";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
-
+import HotelActions from "../../../redux/hotel/actions";
+import RoomActions from "../../../redux/room/actions";
+import { useParams } from "react-router-dom";
+import { useAppSelector, useAppDispatch } from "../../../redux/store";
+import { showToast, ToastProvider } from "components/ToastContainer";
 function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -79,14 +86,47 @@ function App() {
 }
 
 function HeroSection() {
+  const { id: hotelId } = useParams();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const [hotelDetail, setHotelDetail] = useState(null);
+  useEffect(() => {
+    if (hotelId) {
+      dispatch({
+        type: HotelActions.FETCH_DETAIL_HOTEL,
+        payload: {
+          hotelId,
+          onSuccess: (hotel) => {
+            setHotelDetail(hotel);
+          },
+          onFailed: (msg) => {
+            showToast.warning("Get hotel details failed");
+          },
+          onError: (err) => {
+            showToast.warning("Server error");
+            console.error("Server error", err);
+          },
+        },
+      });
+    }
+  }, [hotelId, dispatch]);
+
+  if (!hotelDetail) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="hero-section">
       <div className="hero-content">
-        <h1>Hotel Paradise</h1>
+        <h1>{hotelDetail.hotelName || "Hotel Paradise"}</h1>
         <div className="rating">
           {[...Array(5)].map((_, index) => (
-            <FaStar key={index} className="star-filled" />
+            <FaStar
+              key={index}
+              className={
+                index < hotelDetail.rating ? "star-filled" : "star-empty"
+              }
+            />
           ))}
         </div>
         <Button
@@ -109,9 +149,62 @@ function HeroSection() {
 }
 
 function MainContent() {
-  const imageList = [image1, room2, room3];
-  const [mainImage, setMainImage] = useState(imageList[0]); // Ảnh chính ban đầu
-  const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích
+  const renderIcon = (iconName) => {
+    const iconLibraries = {
+      ...FaIcons,
+      ...MdIcons,
+      ...GiIcons,
+    };
+
+    const IconComponent = iconLibraries[iconName];
+    return IconComponent ? (
+      <IconComponent style={{ fontSize: "20px", color: "#1a2b49" }} />
+    ) : null;
+  };
+
+  const { id: hotelId } = useParams();
+  const dispatch = useAppDispatch();
+
+  const navigate = useNavigate();
+
+  const [hotelDetail, setHotelDetail] = useState([]);
+  const [mainImage, setMainImage] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    if (hotelId) {
+      dispatch({
+        type: HotelActions.FETCH_DETAIL_HOTEL,
+        payload: {
+          hotelId,
+          onSuccess: (hotel) => {
+            if (hotel.images && hotel.images.length > 0) {
+              const limitedImages = hotel.images.slice(0, 3);
+
+              setHotelDetail({
+                ...hotel,
+                images: limitedImages,
+              });
+
+              setMainImage(limitedImages[0]);
+            } else {
+              setHotelDetail(hotel);
+            }
+          },
+          onFailed: (msg) => {
+            showToast.warning("Get hotel details failed:");
+            console.error("Get hotel details failed:", msg);
+          },
+          onError: (err) => {
+            showToast.warning("Server error:");
+            console.error("Server error:", err);
+          },
+        },
+      });
+    }
+  }, [hotelId, dispatch]);
+
+  const imageList = hotelDetail.images || [];
 
   return (
     <Container className="main-content">
@@ -123,7 +216,7 @@ function MainContent() {
             borderRadius: "50%",
             borderWidth: "2px",
             borderColor: isFavorite ? "red" : "gray",
-            borderStyle: "solid", // Thêm dòng này
+            borderStyle: "solid",
             position: "absolute",
             top: 10,
             right: 10,
@@ -144,10 +237,11 @@ function MainContent() {
         <Row>
           <Col lg={6}>
             <div className="main-image-container">
-              {/* Ảnh lớn */}
-              <img src={mainImage} alt="Main Room" className="main-image" />
-
-              {/* Danh sách ảnh nhỏ */}
+              <img
+                src={mainImage || "https://via.placeholder.com/600x400"}
+                alt="Main Room"
+                className="main-image"
+              />
               <div className="thumbnail-container">
                 {imageList.map((image, index) => (
                   <img
@@ -157,7 +251,7 @@ function MainContent() {
                     className={`thumbnail ${
                       mainImage === image ? "active" : ""
                     }`}
-                    onClick={() => setMainImage(image)} // Khi click, ảnh lớn thay đổi
+                    onClick={() => setMainImage(image)}
                     style={{
                       cursor: "pointer",
                       border:
@@ -173,81 +267,47 @@ function MainContent() {
           </Col>
           <Col lg={6}>
             <div className="hotel-info">
-              <h2 style={{ fontWeight: "bold" }}>
-                Introducing the accommodation
-              </h2>
-              <p>
-                Experience unparalleled luxury and comfort at our hotel, where
-                modern amenities meet exceptional hospitality. Enjoy high-speed
-                Wi-Fi in every room, unwind at our world-class spa, stay active
-                in our state-of-the-art fitness center, and indulge in exquisite
-                dining at our restaurant. Take in breathtaking views from our
-                scenic terrace, creating the perfect setting for relaxation.
-                Conveniently located near top attractions, our hotel is the
-                ideal choice for both business and leisure travelers seeking a
-                seamless and memorable stay.
-              </p>
+              <h1 style={{ fontWeight: "bold" }}>
+                {hotelDetail.hotelName || "Hotel"}
+              </h1>
+              <p>{hotelDetail.description || "No description."}</p>
 
               <h3 style={{ fontWeight: "bold" }}>Highlights of the property</h3>
               <ul className="highlights-list">
-                <li>Luxurious rooms with mountain views</li>
-                <li>Full-service spa and wellness center</li>
-                <li>Fine dining restaurant and bar</li>
-                <li>24/7 concierge service</li>
+                {hotelDetail.services?.length > 0 ? (
+                  hotelDetail.services.map((service, index) => (
+                    <li key={index}>{service.name}</li>
+                  ))
+                ) : (
+                  <li>No highlights.</li>
+                )}
               </ul>
+
               <h3 style={{ fontWeight: "bold", color: "#1a2b49" }}>
                 Favorite amenities
               </h3>
               <div className="amenities-grid">
-                <div className="amenity-item">
-                  <FaWifi />
-                  <span>Free WiFi</span>
-                </div>
-                <div className="amenity-item">
-                  <FaSwimmingPool />
-                  <span>Swimming Pool</span>
-                </div>
-                <div className="amenity-item">
-                  <FaParking />
-                  <span>Parking</span>
-                </div>
-                <div className="amenity-item">
-                  <FaUtensils />
-                  <span>Restaurant</span>
-                </div>
-                <div className="amenity-item">
-                  <FaDumbbell />
-                  <span>Fitness Center</span>
-                </div>
-                <div className="amenity-item">
-                  <FaSpa />
-                  <span>Spa & Wellness</span>
-                </div>
-                <div className="amenity-item">
-                  <FaCocktail />
-                  <span>Bar</span>
-                </div>
-                <div className="amenity-item">
-                  <FaTv />
-                  <span>Flat-screen TV</span>
-                </div>
-                <div className="amenity-item">
-                  <FaSnowflake />
-                  <span>Air Conditioning</span>
-                </div>
-                <div className="amenity-item">
-                  <FaConciergeBell />
-                  <span>24/7 Concierge Service</span>
-                </div>
-                <div className="amenity-item">
-                  <FaCoffee />
-                  <span>Free Breakfast</span>
-                </div>
-                <div className="amenity-item">
-                  <FaShuttleVan />
-                  <span>Airport Shuttle</span>
-                </div>
+                {hotelDetail.facilities?.map((facility, index) => (
+                  <div
+                    key={index}
+                    className="amenity-item"
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    {renderIcon(facility.icon)}
+                    <span style={{ marginLeft: "5px" }}>{facility.name}</span>
+                  </div>
+                )) || <div>No amenities.</div>}
               </div>
+              {/* <div>
+                <h3 style={{ fontWeight: "bold", color: "#1a2b49" }}>
+                  Price:{" "}
+                  {new Intl.NumberFormat("vi-VN", {
+                    style: "currency",
+                    currency: "VND",
+                  }).format(hotelDetail.pricePerNight)}
+                  /day
+                </h3>
+              </div> */}
             </div>
           </Col>
         </Row>
@@ -255,6 +315,7 @@ function MainContent() {
     </Container>
   );
 }
+
 const SearchBar = () => {
   return (
     <Container fluid>
@@ -340,111 +401,185 @@ const SearchBar = () => {
   );
 };
 
-function HotelRooms() {
+const HotelRooms = () => {
+  const { id: hotelId } = useParams();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const rooms = [
-    {
-      id: 1,
-      type: "Standard Room",
-      price: 150,
-      guests: 2,
-      image: image1,
-    },
-    {
-      id: 2,
-      type: "Deluxe Room",
-      price: 200,
-      guests: 2,
-      image: image2,
-    },
-    {
-      id: 3,
-      type: "Superior Room",
-      price: 300,
-      guests: 4,
-      image: image3,
-    },
-  ];
+
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    if (hotelId) {
+      dispatch({
+        type: RoomActions.FETCH_ROOM,
+        payload: {
+          hotelId,
+          onSuccess: (roomList) => {
+            if (Array.isArray(roomList)) {
+              setRooms(roomList);
+              console.log("roomList", roomList);
+            } else {
+              console.warn("Unexpected data format received:", roomList);
+            }
+          },
+          onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
+          onError: (err) => console.error("Server error:", err),
+        },
+      });
+    }
+  }, [hotelId, dispatch]);
+
+  const handleRoomClick = (roomId) => {
+    navigate(`${Routers.RoomDetailPage}/${roomId}`);
+  };
 
   return (
-    <Container className="rooms-section">
+    <Container className="rooms-section py-5">
       <h2
-        className="section-title"
+        className="text-center text-uppercase fw-bold mb-5"
+        style={{ color: "#1a2b49", fontSize: "2.5rem" }}
+      >
+        Hotel Rooms
+      </h2>
+
+      <div
+        className="d-flex gap-4 overflow-auto px-2 rooms-scroll"
         style={{
-          textAlign: "center",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "3rem",
-          color: "#1a2b49",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
         }}
       >
-        Hotel rooms
-      </h2>
-      <Row>
-        {rooms.map((room) => (
-          <Col md={4} key={room.id}>
-            <Card className="room-card">
-              <div className="room-image-container">
-                <Card.Img
-                  variant="top"
-                  src={room.image}
-                  className="room-image"
-                  onClick={() => {
-                    navigate(Routers.RoomDetailPage);
+        {rooms.length === 0 ? (
+          <div className="text-center w-100">
+            <p style={{ color: "#999", fontSize: "1.2rem" }}>
+              No rooms available for this hotel.
+            </p>
+          </div>
+        ) : (
+          rooms.map((room) => (
+            <div
+              key={room.id || room._id}
+              style={{
+                minWidth: "400px",
+                maxWidth: "400px",
+                scrollSnapAlign: "start",
+              }}
+            >
+              <Card
+                className="shadow-sm border-0 h-100 room-card"
+                style={{
+                  borderRadius: "15px",
+                  transition: "transform 0.3s ease",
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.transform = "translateY(-5px)")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.transform = "translateY(0)")
+                }
+              >
+                <div
+                  className="overflow-hidden"
+                  style={{
+                    borderTopLeftRadius: "15px",
+                    borderTopRightRadius: "15px",
                   }}
-                  style={{ cursor: "pointer" }} // Hiển thị dấu tay khi hover
-                />
-              </div>
-              <Card.Body>
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <Card.Title
-                    className="room-title"
-                    onClick={() => {
-                      navigate(Routers.RoomDetailPage);
+                >
+                  <Card.Img
+                    variant="top"
+                    src={room.images?.[0] || "/default-room.jpg"}
+                    alt={room.type}
+                    onClick={() => handleRoomClick(room.id || room._id)}
+                    style={{
+                      height: "220px",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      width: "100%",
                     }}
-                    style={{ cursor: "pointer" }} // Hiển thị dấu tay khi hover
-                  >
-                    {room.type}
-                  </Card.Title>
-                  <div className="guests-count">
-                    <FaUser />
-                    {room.guests}
-                  </div>
+                  />
                 </div>
-                <div className="price-container">
-                  <span className="price">{room.price}$</span>
-                  <span className="per-day">/Day</span>
-                  <div className="amount-container">
-                    <span className="label">Amount</span>
-                    <select className="amount-dropdown">
-                      <option value="0">0</option>
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
+
+                <Card.Body className="d-flex flex-column justify-content-between p-3">
+                  <div>
+                    <Card.Title
+                      onClick={() => handleRoomClick(room.id || room._id)}
+                      style={{
+                        fontSize: "1.2rem",
+                        fontWeight: 600,
+                        color: "#1a2b49",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {room?.type}
+                    </Card.Title>
+
+                    <div className="d-flex align-items-center text-muted mb-2">
+                      <FaUser className="me-2" />
+                      {room.capacity} Guests
+                    </div>
+
+                    <div
+                      className="text-primary fw-bold"
+                      style={{ fontSize: "1.3rem" }}
+                    >
+                      ${room.price}{" "}
+                      <span className="text-muted" style={{ fontSize: "0.9rem" }}>
+                        / Day
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 d-flex justify-content-between align-items-center">
+                    <span
+                      className="text-muted"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      Amount
+                    </span>
+                    <select
+                      className="form-select w-auto"
+                      style={{ fontSize: "0.9rem" }}
+                    >
+                      {[0, 1, 2, 3, 4, 5].map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
                     </select>
                   </div>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
-      <div className="text-center mt-4">
+                </Card.Body>
+              </Card>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className="text-center mt-5">
         <Button
-          variant="outline-primary"
-          style={{ padding: "0.7rem 4.5rem", fontWeight: "500" }}
-          onClick={() => {
-            navigate(Routers.BookingCheckPage);
+          variant="primary"
+          onClick={() => navigate(Routers.BookingCheckPage)}
+          style={{
+            padding: "0.8rem 4rem",
+            borderRadius: "30px",
+            backgroundColor: "#1a2b49",
+            border: "none",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            transition: "all 0.3s ease",
           }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = "#2c4373")
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = "#1a2b49")
+          }
         >
           Book Now
         </Button>
       </div>
     </Container>
   );
-}
+};
 
 function OtherHotels() {
   const navigate = useNavigate();
