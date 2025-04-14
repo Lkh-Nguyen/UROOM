@@ -429,12 +429,12 @@ const HotelRooms = () => {
 
   return (
     <Container className="rooms-section py-5">
-      <h2
+      <h3
         className="text-center text-uppercase fw-bold mb-5"
         style={{ color: "#1a2b49", fontSize: "2.5rem" }}
       >
         Hotel Rooms
-      </h2>
+      </h3>
 
       <div
         className="d-flex gap-4 overflow-auto px-2 rooms-scroll"
@@ -517,17 +517,17 @@ const HotelRooms = () => {
                       style={{ fontSize: "1.3rem" }}
                     >
                       ${room.price}{" "}
-                      <span className="text-muted" style={{ fontSize: "0.9rem" }}>
+                      <span
+                        className="text-muted"
+                        style={{ fontSize: "0.9rem" }}
+                      >
                         / Day
                       </span>
                     </div>
                   </div>
 
                   <div className="mt-3 d-flex justify-content-between align-items-center">
-                    <span
-                      className="text-muted"
-                      style={{ fontSize: "0.9rem" }}
-                    >
+                    <span className="text-muted" style={{ fontSize: "0.9rem" }}>
                       Amount
                     </span>
                     <select
@@ -575,94 +575,136 @@ const HotelRooms = () => {
   );
 };
 
-function OtherHotels() {
+const OtherHotels = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const hotels = [
-    {
-      id: 1,
-      name: "Hotel Paradise",
-      roomType: "Deluxe Room",
-      price: 300,
-      guests: 2,
-      image: image4,
-      sale: "Sale 30%",
-    },
-    {
-      id: 2,
-      name: "Royal Pearl Hotel",
-      roomType: "Executive Room",
-      price: 700,
-      guests: 2,
-      image: image5,
-      sale: "Sale 40%",
-    },
-    {
-      id: 3,
-      name: "Blue Horizon Resort",
-      roomType: "Sea View Room",
-      price: 340,
-      guests: 2,
-      image: image6,
-      sale: "Sale 50%",
-    },
-  ];
+
+  const [shuffledHotels, setShuffledHotels] = useState([]);
+  const [roomsByHotel, setRoomsByHotel] = useState({}); // Dữ liệu phòng theo từng khách sạn
+
+  useEffect(() => {
+    dispatch({
+      type: HotelActions.FETCH_ALL_HOTEL,
+      payload: {
+        onSuccess: (data) => {
+          const shuffled = [...data].sort(() => 0.5 - Math.random()); // Random sắp xếp các khách sạn
+          setShuffledHotels(shuffled);
+
+          // Fetch các phòng của từng khách sạn
+          shuffled.forEach((hotel) => {
+            dispatch({
+              type: RoomActions.FETCH_ROOM,
+              payload: {
+                hotelId: hotel._id,
+                onSuccess: (roomList) => {
+                  setRoomsByHotel((prev) => ({
+                    ...prev,
+                    [hotel._id]: roomList, // Lưu danh sách phòng theo từng khách sạn
+                  }));
+                },
+                onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
+                onError: (err) => console.error("Server error:", err),
+              },
+            });
+          });
+        },
+        onFailed: (msg) => console.error("Failed to fetch hotels:", msg),
+        onError: (error) => console.error("Error:", error),
+      },
+    });
+  }, [dispatch]);
 
   return (
     <Container className="other-hotels-section">
       <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
         Special Offers Just For You
       </h1>
-      <Row className="mt-5">
-        {hotels.map((hotel) => (
-          <Col md={4} key={hotel.id}>
-            <Card className="hotel-card">
+      <div
+        className="horizontal-scroll mt-5"
+        style={{
+          display: "flex",
+          overflowX: "auto",
+          scrollSnapType: "x mandatory",
+          paddingBottom: "20px",
+          gap: "20px",
+        }}
+      >
+        {shuffledHotels.map((hotel) => {
+          const rooms = roomsByHotel[hotel._id] || []; // Lấy danh sách phòng của khách sạn
+          const firstRoom = rooms[0]; // Lấy phòng đầu tiên (hoặc có thể tìm phòng có giá thấp nhất)
+
+          return (
+            <Card
+              key={hotel._id}
+              className="hotel-card"
+              style={{
+                minWidth: "400px",
+                scrollSnapAlign: "start",
+                flexShrink: 0,
+                borderRadius: "20px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              }}
+            >
               <div
                 style={{
                   padding: "20px",
                   height: "250px",
                   paddingRight: "40px",
+                  position: "relative",
                 }}
               >
                 <Image
-                  md={4}
                   variant="top"
-                  src={hotel.image}
+                  src={
+                    hotel.images && hotel.images.length > 0
+                      ? hotel.images[0]
+                      : "/images/default-hotel.jpg"
+                  }
                   className="hotel-image"
-                  style={{ borderRadius: "20px" }}
+                  style={{
+                    borderRadius: "20px",
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
                 />
 
-                <div
-                  className="rating-overlay"
-                  style={{ paddingRight: "30px", paddingTop: "10px" }}
-                >
+                <div className="rating-overlay" style={{ paddingTop: "10px", marginRight:"28px" }}>
                   {[...Array(5)].map((_, i) => (
                     <FaStar key={i} className="star-icon" />
                   ))}
                 </div>
+
                 <span
-                  className="price"
+                  className="sale-tag"
                   style={{
                     color: "gray",
                     position: "absolute",
                     transform: "rotate(90deg)",
                     transformOrigin: "left bottom",
-                    width: "1000px",
-                    letterSpacing: "6px", // Điều chỉnh điểm xoay nếu cần
+                    letterSpacing: "6px",
+                    top: 10,
+                    right: -110,
+                    fontSize:"25px",
                   }}
                 >
-                  {hotel.sale}
+                Sale 10%
                 </span>
               </div>
               <Card.Body style={{ marginLeft: "10px" }}>
-                <Card.Title className="hotel-name">{hotel.name}</Card.Title>
+                <Card.Title className="hotel-name">
+                  {hotel.hotelName}
+                </Card.Title>
                 <div className="room-info">
-                  <span className="room-type">{hotel.roomType}</span>
+                  <span className="room-type">
+                    {firstRoom?.type || "Standard Room"}
+                  </span>
                   <span className="guests-count">
-                    <FaUser /> {hotel.guests}
+                    <FaUser /> {firstRoom?.capacity || 2}
                   </span>
                 </div>
                 <div className="price-container">
-                  <span className="price">{hotel.price}$</span>
+                  <span className="price">{firstRoom?.price || 100}$</span>
                   <span className="per-day">/Day</span>
                   <Button
                     variant="outline-primary"
@@ -672,7 +714,9 @@ function OtherHotels() {
                       fontWeight: "500",
                     }}
                     onClick={() => {
-                      navigate(Routers.Home_detail);
+                      navigate(
+                        Routers.Home_detail.replace(":hotelId", hotel._id)
+                      );
                     }}
                   >
                     Book Now
@@ -680,12 +724,12 @@ function OtherHotels() {
                 </div>
               </Card.Body>
             </Card>
-          </Col>
-        ))}
-      </Row>
+          );
+        })}
+      </div>
     </Container>
   );
-}
+};
 function CustomerReviews() {
   const navigate = useNavigate();
   const reviews = [

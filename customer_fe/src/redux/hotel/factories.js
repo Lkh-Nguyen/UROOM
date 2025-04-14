@@ -12,9 +12,11 @@ const Factories = {
   fetch_detail_hotel: (hotelId) => {
     const url = ApiConstants.FETCH_DETAIL_HOTELS.replace(":hotelId", hotelId);
     return api.get(url);
+  },
+  
+  get_all_hotels: () => {
+    return api.get(ApiConstants.FETCH_ALL_HOTEL);
   }
-  
-  
 };
 
 export default Factories;

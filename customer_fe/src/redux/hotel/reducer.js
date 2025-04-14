@@ -22,6 +22,11 @@ const favoriteHotelReducer = (state = initialState, action) => {
         return {
           ...state,
           hotelDetail: action.payload,
+        };
+        case HotelActions.FETCH_All_HOTEL_SUCCESS: 
+        return {
+          ...state,
+          hotels: action.payload,
         };      
     default:
       return state;
