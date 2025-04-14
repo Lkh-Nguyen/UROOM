@@ -653,7 +653,11 @@ const HotelSearchPage = () => {
                                 }
                                 alt={hotel.name || "Unnamed Hotel"}
                                 className="img-fluid rounded-start hotel-image"
-                                style={{ height: "100%", objectFit: "cover" }}
+                                style={{ 
+                                  height: "100%", 
+                                  objectFit: "cover",
+                                  userSelect: "none"
+                                }}
                               />
                             </div>
                           </Col>
@@ -799,7 +803,7 @@ const HotelSearchPage = () => {
                                   }}
                                   variant="primary"
                                   onClick={() => {
-                                    navigate(Routers.Home_detail);
+                                    navigate(`${Routers.Home_detail}?hotel_id=${inforHotel._id}`);
                                   }}
                                 >
                                   Booking Room

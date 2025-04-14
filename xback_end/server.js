@@ -22,8 +22,7 @@ connectToDB();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//from errorHandle
-app.use(errorHandler);
+
 //from cors
 app.use(cors());
 
@@ -36,6 +35,9 @@ app.use("/api/search", SearchHotelRoute);
 app.use("/api/hotel", HotelRouter);
 
 app.use("/api/feedback", FeedbackRouter);
+
+//from errorHandle
+app.use(errorHandler);
 
 server.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);

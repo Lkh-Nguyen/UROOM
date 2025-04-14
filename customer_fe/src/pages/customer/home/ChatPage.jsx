@@ -1,10 +1,445 @@
-import { FaPaperPlane } from "react-icons/fa";
-
+import { FaArrowLeft, FaPaperPlane } from "react-icons/fa";
+import { IoArrowBack } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
-
+import { useNavigate } from "react-router-dom";
 function CustomerChat() {
-  // Danh sách khách sạn
+  // Styles object
+  const styles = {
+    body: {
+      margin: 0,
+      fontFamily:
+        "'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+      backgroundColor: "#f8f9fa",
+      overflowX: "hidden",
+    },
+    container: {
+      display: "flex",
+      height: "100vh",
+      backgroundColor: "#fff",
+    },
+    sidebar: {
+      width: "320px",
+      borderRight: "1px solid #e9ecef",
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "#fff",
+    },
+    sidebarHeader: {
+      padding: "15px",
+      borderBottom: "1px solid #e9ecef",
+    },
+    sidebarTitle: {
+      fontSize: "1.2rem",
+      fontWeight: 600,
+      marginBottom: "15px",
+    },
+    search: {
+      position: "relative",
+    },
+    searchInput: {
+      width: "100%",
+      padding: "10px 15px 10px 40px",
+      border: "1px solid #e9ecef",
+      borderRadius: "50px",
+      backgroundColor: "#f8f9fa",
+    },
+    searchInputFocus: {
+      outline: "none",
+      borderColor: "#0d6efd",
+    },
+    searchIcon: {
+      position: "absolute",
+      left: "15px",
+      top: "50%",
+      transform: "translateY(-50%)",
+      color: "#6c757d",
+    },
+    hotelList: {
+      flex: 1,
+      overflowY: "auto",
+      padding: "10px 0",
+    },
+    hotelItem: {
+      padding: "12px 15px",
+      display: "flex",
+      alignItems: "center",
+      borderBottom: "1px solid #f8f9fa",
+      cursor: "pointer",
+      transition: "background-color 0.2s",
+      position: "relative",
+    },
+    hotelItemHover: {
+      backgroundColor: "#f8f9fa",
+    },
+    hotelItemActive: {
+      backgroundColor: "#e9f5ff",
+      borderLeft: "3px solid #0d6efd",
+    },
+    hotelAvatar: {
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      marginRight: "15px",
+      position: "relative",
+    },
+    hotelAvatarImg: {
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      objectFit: "cover",
+    },
+    onlineIndicator: {
+      width: "12px",
+      height: "12px",
+      borderRadius: "50%",
+      border: "2px solid #fff",
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+    },
+    onlineIndicatorOnline: {
+      backgroundColor: "#20c997",
+    },
+    onlineIndicatorOffline: {
+      backgroundColor: "#6c757d",
+    },
+    hotelInfo: {
+      flex: 1,
+      minWidth: 0,
+    },
+    hotelName: {
+      fontWeight: 600,
+      marginBottom: "3px",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+    hotelLastMessage: {
+      fontSize: "0.85rem",
+      color: "#6c757d",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
+    hotelMeta: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "flex-end",
+      marginLeft: "10px",
+    },
+    hotelTime: {
+      fontSize: "0.75rem",
+      color: "#6c757d",
+      marginBottom: "5px",
+    },
+    hotelUnread: {
+      backgroundColor: "#0d6efd",
+      color: "#fff",
+      fontSize: "0.7rem",
+      fontWeight: 600,
+      width: "20px",
+      height: "20px",
+      borderRadius: "50%",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    main: {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+    },
+    header: {
+      padding: "15px 20px",
+      borderBottom: "1px solid #e9ecef",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      backgroundColor: "#fff",
+    },
+    headerInfo: {
+      display: "flex",
+      alignItems: "center",
+    },
+    avatar: {
+      width: "50px",
+      height: "50px",
+      borderRadius: "50%",
+      marginRight: "15px",
+      position: "relative",
+    },
+    avatarImg: {
+      width: "100%",
+      height: "100%",
+      borderRadius: "50%",
+      objectFit: "cover",
+    },
+    headerActions: {
+      display: "flex",
+      gap: "15px",
+    },
+    headerActionsButton: {
+      background: "none",
+      border: "none",
+      color: "#6c757d",
+      fontSize: "1.2rem",
+      cursor: "pointer",
+      transition: "color 0.2s",
+    },
+    headerActionsButtonHover: {
+      color: "#0d6efd",
+    },
+    bookingSummary: {
+      padding: "15px 20px",
+      backgroundColor: "#f8f9fa",
+      borderBottom: "1px solid #e9ecef",
+    },
+    bookingHeader: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: "10px",
+    },
+    bookingTitle: {
+      fontSize: "0.9rem",
+      fontWeight: 600,
+      margin: 0,
+    },
+    bookingStatus: {
+      padding: "3px 10px",
+      borderRadius: "50px",
+      fontSize: "0.75rem",
+      fontWeight: 600,
+    },
+    bookingStatusPending: {
+      backgroundColor: "#fff3cd",
+      color: "#856404",
+    },
+    bookingStatusConfirmed: {
+      backgroundColor: "#d4edda",
+      color: "#155724",
+    },
+    bookingStatusCancelled: {
+      backgroundColor: "#f8d7da",
+      color: "#721c24",
+    },
+    bookingDetails: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "10px",
+      fontSize: "0.85rem",
+    },
+    bookingDetail: {
+      backgroundColor: "#fff",
+      padding: "8px 12px",
+      borderRadius: "5px",
+      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
+    },
+    bookingLabel: {
+      fontWeight: 600,
+      marginRight: "5px",
+    },
+    messages: {
+      flex: 1,
+      padding: "20px",
+      overflowY: "auto",
+      backgroundColor: "#f8f9fa",
+    },
+    dateDivider: {
+      textAlign: "center",
+      margin: "20px 0",
+      position: "relative",
+    },
+    dateDividerSpan: {
+      backgroundColor: "#f8f9fa",
+      padding: "0 10px",
+      fontSize: "0.8rem",
+      color: "#6c757d",
+      position: "relative",
+      zIndex: 1,
+    },
+    dateDividerBefore: {
+      content: "''",
+      position: "absolute",
+      top: "50%",
+      left: 0,
+      right: 0,
+      height: "1px",
+      backgroundColor: "#e9ecef",
+      zIndex: 0,
+    },
+    message: {
+      display: "flex",
+      marginBottom: "20px",
+    },
+    messageCustomer: {
+      justifyContent: "flex-end",
+    },
+    messageHotel: {
+      justifyContent: "flex-start",
+    },
+    messageContent: {
+      maxWidth: "70%",
+      padding: "12px 15px",
+      borderRadius: "18px",
+      position: "relative",
+    },
+    messageContentCustomer: {
+      backgroundColor: "#0d6efd",
+      color: "#fff",
+      borderBottomRightRadius: "4px",
+    },
+    messageContentHotel: {
+      backgroundColor: "#e9ecef",
+      color: "#212529",
+      borderBottomLeftRadius: "4px",
+    },
+    messageTime: {
+      fontSize: "0.7rem",
+      marginTop: "5px",
+      textAlign: "right",
+      opacity: 0.8,
+    },
+    messageStatus: {
+      display: "flex",
+      justifyContent: "flex-end",
+      fontSize: "0.7rem",
+      marginTop: "2px",
+      color: "#6c757d",
+    },
+    messageStatusIcon: {
+      fontSize: "0.8rem",
+      marginLeft: "3px",
+    },
+    bookingInfo: {
+      backgroundColor: "#fff",
+      border: "1px solid #e9ecef",
+      borderRadius: "10px",
+      padding: "15px",
+      marginBottom: "20px",
+      boxShadow: "0 2px 5px rgba(0, 0, 0, 0.05)",
+      maxWidth: "80%",
+    },
+    bookingInfoDetails: {
+      display: "grid",
+      gridTemplateColumns: "repeat(2, 1fr)",
+      gap: "10px",
+    },
+    bookingInfoDetail: {
+      marginBottom: "5px",
+    },
+    bookingInfoLabel: {
+      fontSize: "0.8rem",
+      color: "#6c757d",
+      marginBottom: "3px",
+    },
+    bookingInfoValue: {
+      fontWeight: 600,
+    },
+    bookingPrice: {
+      marginTop: "10px",
+      paddingTop: "10px",
+      borderTop: "1px solid #e9ecef",
+    },
+    input: {
+      padding: "15px 20px",
+      borderTop: "1px solid #e9ecef",
+      backgroundColor: "#fff",
+    },
+    inputForm: {
+      display: "flex",
+      alignItems: "center",
+    },
+    inputActions: {
+      display: "flex",
+      gap: "10px",
+      marginRight: "15px",
+    },
+    inputActionsButton: {
+      background: "none",
+      border: "none",
+      color: "#6c757d",
+      fontSize: "1.2rem",
+      cursor: "pointer",
+      transition: "color 0.2s",
+    },
+    inputActionsButtonHover: {
+      color: "#0d6efd",
+    },
+    inputField: {
+      flex: 1,
+      position: "relative",
+    },
+    inputFieldTextarea: {
+      width: "100%",
+      padding: "12px 15px",
+      border: "1px solid #e9ecef",
+      borderRadius: "24px",
+      resize: "none",
+      maxHeight: "100px",
+      backgroundColor: "#f8f9fa",
+    },
+    inputFieldTextareaFocus: {
+      outline: "none",
+      borderColor: "#0d6efd",
+    },
+    sendButton: {
+      marginLeft: "15px",
+      width: "45px",
+      height: "45px",
+      borderRadius: "50%",
+      backgroundColor: "#0d6efd",
+      color: "#fff",
+      border: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+      transition: "background-color 0.2s",
+    },
+    sendButtonHover: {
+      backgroundColor: "#0b5ed7",
+    },
+    sendButtonIcon: {
+      fontSize: "1.2rem",
+    },
+    emptyState: {
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100%",
+      padding: "20px",
+      textAlign: "center",
+      color: "#6c757d",
+    },
+    emptyStateIcon: {
+      fontSize: "4rem",
+      marginBottom: "20px",
+      color: "#e9ecef",
+    },
+    emptyStateTitle: {
+      fontSize: "1.5rem",
+      marginBottom: "10px",
+    },
+    emptyStateText: {
+      maxWidth: "400px",
+    },
+    backButton: {
+      background: "none",
+      border: "none",
+      color: "#6c757d",
+      fontSize: "1.5rem",
+      cursor: "pointer",
+      marginRight: "10px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    // Media queries would be handled in CSS or with conditional styling in React
+  };
 
+  // Danh sách khách sạn
   const [hotels, setHotels] = useState([
     {
       id: 1,
@@ -129,6 +564,9 @@ function CustomerChat() {
 
   // Khách sạn đang được chọn
   const [selectedHotel, setSelectedHotel] = useState(hotels[0]);
+
+  // State for mobile view
+  const [showSidebar, setShowSidebar] = useState(true);
 
   // Tin nhắn cho từng khách sạn
   const [hotelMessages, setHotelMessages] = useState({
@@ -448,6 +886,7 @@ function CustomerChat() {
   // Chọn khách sạn
   const selectHotel = (hotel) => {
     setSelectedHotel(hotel);
+    setShowSidebar(false); // Hide sidebar on mobile after selecting a hotel
 
     // Đánh dấu tin nhắn đã đọc
     setHotels((prevHotels) =>
@@ -461,597 +900,57 @@ function CustomerChat() {
     hotel.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <>
-      <style>
-        {`
-          body {
-            margin: 0;
-            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            overflow-x: hidden;
-          }
-          
-          .customer-chat-container {
-            display: flex;
-            height: 100vh;
-            background-color: #fff;
-          }
-          
-          .customer-chat-sidebar {
-            width: 320px;
-            border-right: 1px solid #e9ecef;
-            display: flex;
-            flex-direction: column;
-            background-color: #fff;
-          }
-          
-          .customer-chat-sidebar-header {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
-          }
-          
-          .customer-chat-sidebar-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-          }
-          
-          .customer-chat-search {
-            position: relative;
-          }
-          
-          .customer-chat-search input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #e9ecef;
-            border-radius: 50px;
-            background-color: #f8f9fa;
-          }
-          
-          .customer-chat-search input:focus {
-            outline: none;
-            border-color: #0d6efd;
-          }
-          
-          .customer-chat-search i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-          }
-          
-          .customer-chat-hotel-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-          }
-          
-          .customer-chat-hotel-item {
-            padding: 12px 15px;
-            display: flex;
-            align-items: center;
-            border-bottom: 1px solid #f8f9fa;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            position: relative;
-          }
-          
-          .customer-chat-hotel-item:hover {
-            background-color: #f8f9fa;
-          }
-          
-          .customer-chat-hotel-item.active {
-            background-color: #e9f5ff;
-            border-left: 3px solid #0d6efd;
-          }
-          
-          .customer-chat-hotel-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            position: relative;
-          }
-          
-          .customer-chat-hotel-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-          }
-          
-          .customer-chat-hotel-online-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-          }
-          
-          .customer-chat-hotel-online-indicator.online {
-            background-color: #20c997;
-          }
-          
-          .customer-chat-hotel-online-indicator.offline {
-            background-color: #6c757d;
-          }
-          
-          .customer-chat-hotel-info {
-            flex: 1;
-            min-width: 0;
-          }
-          
-          .customer-chat-hotel-name {
-            font-weight: 600;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          
-          .customer-chat-hotel-last-message {
-            font-size: 0.85rem;
-            color: #6c757d;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-          
-          .customer-chat-hotel-meta {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            margin-left: 10px;
-          }
-          
-          .customer-chat-hotel-time {
-            font-size: 0.75rem;
-            color: #6c757d;
-            margin-bottom: 5px;
-          }
-          
-          .customer-chat-hotel-unread {
-            background-color: #0d6efd;
-            color: #fff;
-            font-size: 0.7rem;
-            font-weight: 600;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-          }
-          
-          .customer-chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-          }
-          
-          .customer-chat-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background-color: #fff;
-          }
-          
-          .customer-chat-header-info {
-            display: flex;
-            align-items: center;
-          }
-          
-          .customer-chat-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            margin-right: 15px;
-            position: relative;
-          }
-          
-          .customer-chat-avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-          }
-          
-          .customer-chat-online-indicator {
-            width: 12px;
-            height: 12px;
-            background-color: #20c997;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-          }
-          
-          .customer-chat-online-indicator.offline {
-            background-color: #6c757d;
-          }
-          
-          .customer-chat-header-actions {
-            display: flex;
-            gap: 15px;
-          }
-          
-          .customer-chat-header-actions button {
-            background: none;
-            border: none;
-            color: #6c757d;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.2s;
-          }
-          
-          .customer-chat-header-actions button:hover {
-            color: #0d6efd;
-          }
-          
-          .customer-chat-booking-summary {
-            padding: 15px 20px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #e9ecef;
-          }
-          
-          .customer-chat-booking-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-          }
-          
-          .customer-chat-booking-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin: 0;
-          }
-          
-          .customer-chat-booking-status {
-            padding: 3px 10px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 600;
-          }
-          
-          .customer-chat-booking-status.pending {
-            background-color: #fff3cd;
-            color: #856404;
-          }
-          
-          .customer-chat-booking-status.confirmed {
-            background-color: #d4edda;
-            color: #155724;
-          }
-          
-          .customer-chat-booking-status.cancelled {
-            background-color: #f8d7da;
-            color: #721c24;
-          }
-          
-          .customer-chat-booking-details {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 0.85rem;
-          }
-          
-          .customer-chat-booking-detail {
-            background-color: #fff;
-            padding: 8px 12px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          }
-          
-          .customer-chat-booking-label {
-            font-weight: 600;
-            margin-right: 5px;
-          }
-          
-          .customer-chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #f8f9fa;
-          }
-          
-          .customer-chat-date-divider {
-            text-align: center;
-            margin: 20px 0;
-            position: relative;
-          }
-          
-          .customer-chat-date-divider span {
-            background-color: #f8f9fa;
-            padding: 0 10px;
-            font-size: 0.8rem;
-            color: #6c757d;
-            position: relative;
-            z-index: 1;
-          }
-          
-          .customer-chat-date-divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background-color: #e9ecef;
-            z-index: 0;
-          }
-          
-          .customer-chat-message {
-            display: flex;
-            margin-bottom: 20px;
-          }
-          
-          .customer-chat-message.customer {
-            justify-content: flex-end;
-          }
-          
-          .customer-chat-message.hotel {
-            justify-content: flex-start;
-          }
-          
-          .customer-chat-message-content {
-            max-width: 70%;
-            padding: 12px 15px;
-            border-radius: 18px;
-            position: relative;
-          }
-          
-          .customer-chat-message.customer .customer-chat-message-content {
-            background-color: #0d6efd;
-            color: #fff;
-            border-bottom-right-radius: 4px;
-          }
-          
-          .customer-chat-message.hotel .customer-chat-message-content {
-            background-color: #e9ecef;
-            color: #212529;
-            border-bottom-left-radius: 4px;
-          }
-          
-          .customer-chat-message-time {
-            font-size: 0.7rem;
-            margin-top: 5px;
-            text-align: right;
-            opacity: 0.8;
-          }
-          
-          .customer-chat-message-status {
-            display: flex;
-            justify-content: flex-end;
-            font-size: 0.7rem;
-            margin-top: 2px;
-            color: #6c757d;
-          }
-          
-          .customer-chat-message-status i {
-            font-size: 0.8rem;
-            margin-left: 3px;
-          }
-          
-          .customer-chat-booking-info {
-            background-color: #fff;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            max-width: 80%;
-          }
-          
-          .customer-chat-booking-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e9ecef;
-          }
-          
-          .customer-chat-booking-title {
-            font-weight: 600;
-            margin: 0;
-          }
-          
-          .customer-chat-booking-info-details {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-          }
-          
-          .customer-chat-booking-info-detail {
-            margin-bottom: 5px;
-          }
-          
-          .customer-chat-booking-info-label {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-bottom: 3px;
-          }
-          
-          .customer-chat-booking-info-value {
-            font-weight: 600;
-          }
-          
-          .customer-chat-booking-price {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid #e9ecef;
-          }
-          
-          .customer-chat-input {
-            padding: 15px 20px;
-            border-top: 1px solid #e9ecef;
-            background-color: #fff;
-          }
-          
-          .customer-chat-input form {
-            display: flex;
-            align-items: center;
-          }
-          
-          .customer-chat-input-actions {
-            display: flex;
-            gap: 10px;
-            margin-right: 15px;
-          }
-          
-          .customer-chat-input-actions button {
-            background: none;
-            border: none;
-            color: #6c757d;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: color 0.2s;
-          }
-          
-          .customer-chat-input-actions button:hover {
-            color: #0d6efd;
-          }
-          
-          .customer-chat-input-field {
-            flex: 1;
-            position: relative;
-          }
-          
-          .customer-chat-input-field textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #e9ecef;
-            border-radius: 24px;
-            resize: none;
-            max-height: 100px;
-            background-color: #f8f9fa;
-          }
-          
-          .customer-chat-input-field textarea:focus {
-            outline: none;
-            border-color: #0d6efd;
-          }
-          
-          .customer-chat-send-button {
-            margin-left: 15px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background-color: #0d6efd;
-            color: #fff;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-          }
-          
-          .customer-chat-send-button:hover {
-            background-color: #0b5ed7;
-          }
-          
-          .customer-chat-send-button i {
-            font-size: 1.2rem;
-          }
-          
-          .customer-chat-empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            padding: 20px;
-            text-align: center;
-            color: #6c757d;
-          }
-          
-          .customer-chat-empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #e9ecef;
-          }
-          
-          .customer-chat-empty-state h3 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-          }
-          
-          .customer-chat-empty-state p {
-            max-width: 400px;
-          }
-          
-          @media (max-width: 992px) {
-            .customer-chat-sidebar {
-              width: 280px;
-            }
-          }
-          
-          @media (max-width: 768px) {
-            .customer-chat-container {
-              flex-direction: column;
-            }
-            
-            .customer-chat-sidebar {
-              width: 100%;
-              height: 60px;
-              flex-direction: row;
-              align-items: center;
-              padding: 0 15px;
-            }
-            
-            .customer-chat-sidebar-header {
-              width: 100%;
-              padding: 10px 0;
-              border-bottom: none;
-            }
-            
-            .customer-chat-sidebar-title {
-              display: none;
-            }
-            
-            .customer-chat-search {
-              width: 100%;
-            }
-            
-            .customer-chat-hotel-list {
-              display: none;
-            }
-            
-            .customer-chat-main {
-              height: calc(100vh - 60px);
-            }
-            
-            .customer-chat-message-content {
-              max-width: 85%;
-            }
-            
-            .customer-chat-booking-info {
-              max-width: 90%;
-            }
-            
-            .customer-chat-booking-info-details {
-              grid-template-columns: 1fr;
-            }
-          }
-        `}
-      </style>
+  // Toggle sidebar for mobile view
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
 
-      <div className="customer-chat-container">
-        {/* Sidebar - Danh sách khách sạn */}
-        <div className="customer-chat-sidebar">
-          <div className="customer-chat-sidebar-header">
-            <h5 className="customer-chat-sidebar-title">Tin nhắn</h5>
-            <div className="customer-chat-search">
-              <i className="bi bi-search"></i>
+  // Check if we're on mobile
+  const isMobile = () => {
+    return window.innerWidth <= 768;
+  };
+
+  // Set initial sidebar state based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      if (isMobile()) {
+        setShowSidebar(true);
+      } else {
+        setShowSidebar(true);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const navigate = useNavigate();
+
+  return (
+    <div style={styles.container}>
+      {/* Sidebar - Danh sách khách sạn */}
+      {(showSidebar || !isMobile()) && (
+        <div style={styles.sidebar}>
+          <div style={styles.sidebarHeader}>
+            <h5 style={styles.sidebarTitle}>
+              <FaArrowLeft 
+                onClick={() => {
+                  navigate(-1);
+                }}
+                style={{ marginRight: "10px", cursor: "pointer" }} 
+              />
+              Tin nhắn
+            </h5>
+            <div style={styles.search}>
+              <i style={styles.searchIcon} className="bi bi-search"></i>
               <input
+                style={styles.searchInput}
                 type="text"
                 placeholder="Tìm kiếm khách sạn..."
                 value={searchTerm}
@@ -1059,289 +958,359 @@ function CustomerChat() {
               />
             </div>
           </div>
-          <div className="customer-chat-hotel-list">
+          <div style={styles.hotelList}>
             {filteredHotels.map((hotel) => (
               <div
                 key={hotel.id}
-                className={`customer-chat-hotel-item ${
-                  selectedHotel.id === hotel.id ? "active" : ""
-                }`}
+                style={{
+                  ...styles.hotelItem,
+                  ...(selectedHotel.id === hotel.id
+                    ? styles.hotelItemActive
+                    : {}),
+                }}
                 onClick={() => selectHotel(hotel)}
               >
-                <div className="customer-chat-hotel-avatar">
+                <div style={styles.hotelAvatar}>
                   <img
+                    style={styles.hotelAvatarImg}
                     src={hotel.avatar || "/placeholder.svg"}
                     alt={hotel.name}
                   />
                   <div
-                    className={`customer-chat-hotel-online-indicator ${hotel.status}`}
+                    style={{
+                      ...styles.onlineIndicator,
+                      ...(hotel.status === "online"
+                        ? styles.onlineIndicatorOnline
+                        : styles.onlineIndicatorOffline),
+                    }}
                   ></div>
                 </div>
-                <div className="customer-chat-hotel-info">
-                  <div className="customer-chat-hotel-name">{hotel.name}</div>
-                  <div className="customer-chat-hotel-last-message">
-                    {hotel.lastMessage}
-                  </div>
+                <div style={styles.hotelInfo}>
+                  <div style={styles.hotelName}>{hotel.name}</div>
+                  <div style={styles.hotelLastMessage}>{hotel.lastMessage}</div>
                 </div>
-                <div className="customer-chat-hotel-meta">
-                  <div className="customer-chat-hotel-time">
-                    {hotel.lastMessageTime}
-                  </div>
+                <div style={styles.hotelMeta}>
+                  <div style={styles.hotelTime}>{hotel.lastMessageTime}</div>
                   {hotel.unread > 0 && (
-                    <div className="customer-chat-hotel-unread">
-                      {hotel.unread}
-                    </div>
+                    <div style={styles.hotelUnread}>{hotel.unread}</div>
                   )}
                 </div>
               </div>
             ))}
           </div>
         </div>
+      )}
 
-        {/* Main Chat Area */}
-        <div className="customer-chat-main">
-          {/* Header - Thông tin khách sạn */}
-          <div className="customer-chat-header">
-            <div className="customer-chat-header-info">
-              <div className="customer-chat-avatar">
-                <img
-                  src={selectedHotel.avatar || "/placeholder.svg"}
-                  alt={selectedHotel.name}
-                />
-                <div
-                  className={`customer-chat-online-indicator ${selectedHotel.status}`}
-                ></div>
-              </div>
-              <div>
-                <h5 className="mb-0">{selectedHotel.name}</h5>
-                <small className="text-muted">{selectedHotel.lastSeen}</small>
-              </div>
-            </div>
-            <div className="customer-chat-header-actions">
-              <button title="Gọi điện">
-                <i className="bi bi-telephone"></i>
+      {/* Main Chat Area */}
+      <div style={styles.main}>
+        {/* Header - Thông tin khách sạn */}
+        <div style={styles.header}>
+          <div style={styles.headerInfo}>
+            {isMobile() && (
+              <button style={styles.backButton} onClick={toggleSidebar}>
+                <IoArrowBack />
               </button>
-              <button title="Thông tin khách sạn">
-                <i className="bi bi-info-circle"></i>
-              </button>
-              <button title="Tùy chọn khác">
-                <i className="bi bi-three-dots-vertical"></i>
-              </button>
-            </div>
-          </div>
-
-          {/* Thông tin đặt phòng */}
-          <div className="customer-chat-booking-summary">
-            <div className="customer-chat-booking-header">
-              <h6 className="customer-chat-booking-title">
-                Đặt phòng #{selectedHotel.booking.id}
-              </h6>
-              <span
-                className={`customer-chat-booking-status ${
-                  selectedHotel.booking.status === "Chờ xác nhận" ||
-                  selectedHotel.booking.status === "Chờ thanh toán"
-                    ? "pending"
-                    : selectedHotel.booking.status === "Đã xác nhận"
-                    ? "confirmed"
-                    : "cancelled"
-                }`}
-              >
-                {selectedHotel.booking.status}
-              </span>
-            </div>
-            <div className="customer-chat-booking-details">
-              <div className="customer-chat-booking-detail">
-                <span className="customer-chat-booking-label">Phòng:</span>
-                <span>{selectedHotel.booking.roomType}</span>
-              </div>
-              <div className="customer-chat-booking-detail">
-                <span className="customer-chat-booking-label">Check-in:</span>
-                <span>{selectedHotel.booking.checkIn}</span>
-              </div>
-              <div className="customer-chat-booking-detail">
-                <span className="customer-chat-booking-label">Check-out:</span>
-                <span>{selectedHotel.booking.checkOut}</span>
-              </div>
-              <div className="customer-chat-booking-detail">
-                <span className="customer-chat-booking-label">Khách:</span>
-                <span>{selectedHotel.booking.guests} người</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Khu vực tin nhắn */}
-          <div className="customer-chat-messages">
-            {hotelMessages[selectedHotel.id] &&
-            hotelMessages[selectedHotel.id].length > 0 ? (
-              <>
-                <div className="customer-chat-date-divider">
-                  <span>Hôm nay</span>
-                </div>
-
-                {hotelMessages[selectedHotel.id].map((message) => (
-                  <div
-                    key={message.id}
-                    className={`customer-chat-message ${message.sender}`}
-                  >
-                    <div className="customer-chat-message-content">
-                      {message.isBookingInfo ? (
-                        <div className="customer-chat-booking-info">
-                          <div className="customer-chat-booking-header">
-                            <h6 className="customer-chat-booking-title">
-                              Thông tin đặt phòng #{message.booking.id}
-                            </h6>
-                            <span
-                              className={`customer-chat-booking-status ${
-                                message.booking.status === "Chờ xác nhận" ||
-                                message.booking.status === "Chờ thanh toán"
-                                  ? "pending"
-                                  : message.booking.status === "Đã xác nhận"
-                                  ? "confirmed"
-                                  : "cancelled"
-                              }`}
-                            >
-                              {message.booking.status}
-                            </span>
-                          </div>
-                          <div className="customer-chat-booking-info-details">
-                            <div className="customer-chat-booking-info-detail">
-                              <div className="customer-chat-booking-info-label">
-                                Loại phòng
-                              </div>
-                              <div className="customer-chat-booking-info-value">
-                                {message.booking.roomType}
-                              </div>
-                            </div>
-                            <div className="customer-chat-booking-info-detail">
-                              <div className="customer-chat-booking-info-label">
-                                Số khách
-                              </div>
-                              <div className="customer-chat-booking-info-value">
-                                {message.booking.guests} người
-                              </div>
-                            </div>
-                            <div className="customer-chat-booking-info-detail">
-                              <div className="customer-chat-booking-info-label">
-                                Nhận phòng
-                              </div>
-                              <div className="customer-chat-booking-info-value">
-                                {message.booking.checkIn}
-                              </div>
-                            </div>
-                            <div className="customer-chat-booking-info-detail">
-                              <div className="customer-chat-booking-info-label">
-                                Trả phòng
-                              </div>
-                              <div className="customer-chat-booking-info-value">
-                                {message.booking.checkOut}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="customer-chat-booking-price">
-                            <div className="d-flex justify-content-between mb-2">
-                              <span>Giá phòng:</span>
-                              <span>{message.booking.price}</span>
-                            </div>
-                            <div className="d-flex justify-content-between mb-2">
-                              <span>Số đêm:</span>
-                              <span>{message.booking.nights} đêm</span>
-                            </div>
-                            <div className="d-flex justify-content-between mb-2">
-                              <span className="fw-bold">Tổng cộng:</span>
-                              <span className="fw-bold">
-                                {message.booking.total}
-                              </span>
-                            </div>
-                            <div className="d-flex justify-content-between">
-                              <span>Đặt cọc (50%):</span>
-                              <span>{message.booking.deposit}</span>
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div style={{ whiteSpace: "pre-line" }}>
-                            {message.text}
-                          </div>
-                          <div className="customer-chat-message-time">
-                            {message.time}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                ))}
-
-                {/* Hiển thị trạng thái tin nhắn (đã gửi, đã xem) */}
-                {hotelMessages[selectedHotel.id]
-                  .filter((m) => m.sender === "hotel" && m.status)
-                  .map((message, index, array) => {
-                    // Chỉ hiển thị trạng thái cho tin nhắn cuối cùng của khách sạn
-                    if (index === array.length - 1) {
-                      return (
-                        <div
-                          key={`status-${message.id}`}
-                          className="customer-chat-message-status"
-                        >
-                          {message.status === "sent" ? (
-                            <>
-                              Đã gửi <i className="bi bi-check"></i>
-                            </>
-                          ) : message.status === "seen" ? (
-                            <>
-                              Đã xem <i className="bi bi-check-all"></i>
-                            </>
-                          ) : null}
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-              </>
-            ) : (
-              <div className="customer-chat-empty-state">
-                <i className="bi bi-chat-dots"></i>
-                <h3>Không có tin nhắn</h3>
-                <p>
-                  Bắt đầu cuộc trò chuyện với khách sạn bằng cách gửi tin nhắn
-                  đầu tiên.
-                </p>
-              </div>
             )}
-
-            <div ref={messagesEndRef} />
+            <div style={styles.avatar}>
+              <img
+                style={styles.avatarImg}
+                src={selectedHotel.avatar || "/placeholder.svg"}
+                alt={selectedHotel.name}
+              />
+              <div
+                style={{
+                  ...styles.onlineIndicator,
+                  ...(selectedHotel.status === "online"
+                    ? styles.onlineIndicatorOnline
+                    : styles.onlineIndicatorOffline),
+                }}
+              ></div>
+            </div>
+            <div>
+              <h5 style={{ margin: 0 }}>{selectedHotel.name}</h5>
+              <small style={{ color: "#6c757d" }}>
+                {selectedHotel.lastSeen}
+              </small>
+            </div>
           </div>
-
-          {/* Khu vực nhập tin nhắn */}
-          <div className="customer-chat-input">
-            <form onSubmit={sendMessage}>
-              <div className="customer-chat-input-actions">
-                <button type="button" title="Đính kèm file">
-                  <i className="bi bi-paperclip"></i>
-                </button>
-                <button type="button" title="Gửi hình ảnh">
-                  <i className="bi bi-image"></i>
-                </button>
-                <button type="button" title="Gửi vị trí">
-                  <i className="bi bi-geo-alt"></i>
-                </button>
-              </div>
-              <div className="customer-chat-input-field">
-                <textarea
-                  placeholder="Nhập tin nhắn..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  rows="1"
-                ></textarea>
-              </div>
-              <button type="submit" className="customer-chat-send-button">
-                <FaPaperPlane className="text-white-500 text-2xl" />
-              </button>
-            </form>
+          <div style={styles.headerActions}>
+            <button style={styles.headerActionsButton} title="Gọi điện">
+              <i className="bi bi-telephone"></i>
+            </button>
+            <button
+              style={styles.headerActionsButton}
+              title="Thông tin khách sạn"
+            >
+              <i className="bi bi-info-circle"></i>
+            </button>
+            <button style={styles.headerActionsButton} title="Tùy chọn khác">
+              <i className="bi bi-three-dots-vertical"></i>
+            </button>
           </div>
         </div>
+
+        {/* Thông tin đặt phòng */}
+        <div style={styles.bookingSummary}>
+          <div style={styles.bookingHeader}>
+            <h6 style={styles.bookingTitle}>
+              Đặt phòng #{selectedHotel.booking.id}
+            </h6>
+            <span
+              style={{
+                ...styles.bookingStatus,
+                ...(selectedHotel.booking.status === "Chờ xác nhận" ||
+                selectedHotel.booking.status === "Chờ thanh toán"
+                  ? styles.bookingStatusPending
+                  : selectedHotel.booking.status === "Đã xác nhận"
+                  ? styles.bookingStatusConfirmed
+                  : styles.bookingStatusCancelled),
+              }}
+            >
+              {selectedHotel.booking.status}
+            </span>
+          </div>
+          <div style={styles.bookingDetails}>
+            <div style={styles.bookingDetail}>
+              <span style={styles.bookingLabel}>Phòng:</span>
+              <span>{selectedHotel.booking.roomType}</span>
+            </div>
+            <div style={styles.bookingDetail}>
+              <span style={styles.bookingLabel}>Check-in:</span>
+              <span>{selectedHotel.booking.checkIn}</span>
+            </div>
+            <div style={styles.bookingDetail}>
+              <span style={styles.bookingLabel}>Check-out:</span>
+              <span>{selectedHotel.booking.checkOut}</span>
+            </div>
+            <div style={styles.bookingDetail}>
+              <span style={styles.bookingLabel}>Khách:</span>
+              <span>{selectedHotel.booking.guests} người</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Khu vực tin nhắn */}
+        <div style={styles.messages}>
+          {hotelMessages[selectedHotel.id] &&
+          hotelMessages[selectedHotel.id].length > 0 ? (
+            <>
+              <div style={styles.dateDivider}>
+                <span style={styles.dateDividerSpan}>Hôm nay</span>
+              </div>
+
+              {hotelMessages[selectedHotel.id].map((message) => (
+                <div
+                  key={message.id}
+                  style={{
+                    ...styles.message,
+                    ...(message.sender === "customer"
+                      ? styles.messageCustomer
+                      : styles.messageHotel),
+                  }}
+                >
+                  <div
+                    style={{
+                      ...styles.messageContent,
+                      ...(message.sender === "customer"
+                        ? styles.messageContentCustomer
+                        : styles.messageContentHotel),
+                    }}
+                  >
+                    {message.isBookingInfo ? (
+                      <div style={styles.bookingInfo}>
+                        <div style={styles.bookingHeader}>
+                          <h6 style={styles.bookingTitle}>
+                            Thông tin đặt phòng #{message.booking.id}
+                          </h6>
+                          <span
+                            style={{
+                              ...styles.bookingStatus,
+                              ...(message.booking.status === "Chờ xác nhận" ||
+                              message.booking.status === "Chờ thanh toán"
+                                ? styles.bookingStatusPending
+                                : message.booking.status === "Đã xác nhận"
+                                ? styles.bookingStatusConfirmed
+                                : styles.bookingStatusCancelled),
+                            }}
+                          >
+                            {message.booking.status}
+                          </span>
+                        </div>
+                        <div style={styles.bookingInfoDetails}>
+                          <div style={styles.bookingInfoDetail}>
+                            <div style={styles.bookingInfoLabel}>
+                              Loại phòng
+                            </div>
+                            <div style={styles.bookingInfoValue}>
+                              {message.booking.roomType}
+                            </div>
+                          </div>
+                          <div style={styles.bookingInfoDetail}>
+                            <div style={styles.bookingInfoLabel}>Số khách</div>
+                            <div style={styles.bookingInfoValue}>
+                              {message.booking.guests} người
+                            </div>
+                          </div>
+                          <div style={styles.bookingInfoDetail}>
+                            <div style={styles.bookingInfoLabel}>
+                              Nhận phòng
+                            </div>
+                            <div style={styles.bookingInfoValue}>
+                              {message.booking.checkIn}
+                            </div>
+                          </div>
+                          <div style={styles.bookingInfoDetail}>
+                            <div style={styles.bookingInfoLabel}>Trả phòng</div>
+                            <div style={styles.bookingInfoValue}>
+                              {message.booking.checkOut}
+                            </div>
+                          </div>
+                        </div>
+                        <div style={styles.bookingPrice}>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <span>Giá phòng:</span>
+                            <span>{message.booking.price}</span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <span>Số đêm:</span>
+                            <span>{message.booking.nights} đêm</span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              marginBottom: "8px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            <span>Tổng cộng:</span>
+                            <span>{message.booking.total}</span>
+                          </div>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <span>Đặt cọc (50%):</span>
+                            <span>{message.booking.deposit}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div style={{ whiteSpace: "pre-line" }}>
+                          {message.text}
+                        </div>
+                        <div style={styles.messageTime}>{message.time}</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {/* Hiển thị trạng thái tin nhắn (đã gửi, đã xem) */}
+              {hotelMessages[selectedHotel.id]
+                .filter((m) => m.sender === "hotel" && m.status)
+                .map((message, index, array) => {
+                  // Chỉ hiển thị trạng thái cho tin nhắn cuối cùng của khách sạn
+                  if (index === array.length - 1) {
+                    return (
+                      <div
+                        key={`status-${message.id}`}
+                        style={styles.messageStatus}
+                      >
+                        {message.status === "sent" ? (
+                          <>
+                            Đã gửi{" "}
+                            <i
+                              style={styles.messageStatusIcon}
+                              className="bi bi-check"
+                            ></i>
+                          </>
+                        ) : message.status === "seen" ? (
+                          <>
+                            Đã xem{" "}
+                            <i
+                              style={styles.messageStatusIcon}
+                              className="bi bi-check-all"
+                            ></i>
+                          </>
+                        ) : null}
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+            </>
+          ) : (
+            <div style={styles.emptyState}>
+              <i style={styles.emptyStateIcon} className="bi bi-chat-dots"></i>
+              <h3 style={styles.emptyStateTitle}>Không có tin nhắn</h3>
+              <p style={styles.emptyStateText}>
+                Bắt đầu cuộc trò chuyện với khách sạn bằng cách gửi tin nhắn đầu
+                tiên.
+              </p>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Khu vực nhập tin nhắn */}
+        <div style={styles.input}>
+          <form style={styles.inputForm} onSubmit={sendMessage}>
+            <div style={styles.inputActions}>
+              <button
+                style={styles.inputActionsButton}
+                type="button"
+                title="Đính kèm file"
+              >
+                <i className="bi bi-paperclip"></i>
+              </button>
+              <button
+                style={styles.inputActionsButton}
+                type="button"
+                title="Gửi hình ảnh"
+              >
+                <i className="bi bi-image"></i>
+              </button>
+              <button
+                style={styles.inputActionsButton}
+                type="button"
+                title="Gửi vị trí"
+              >
+                <i className="bi bi-geo-alt"></i>
+              </button>
+            </div>
+            <div style={styles.inputField}>
+              <textarea
+                style={styles.inputFieldTextarea}
+                placeholder="Nhập tin nhắn..."
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                rows="1"
+              ></textarea>
+            </div>
+            <button style={styles.sendButton} type="submit">
+              <FaPaperPlane />
+            </button>
+          </form>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 

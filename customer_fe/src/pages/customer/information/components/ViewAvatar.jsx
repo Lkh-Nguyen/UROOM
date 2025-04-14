@@ -1,25 +1,58 @@
 import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Modal, Card, Form, Button } from "react-bootstrap";
+import AuthActions from "../../../../redux/auth/actions";
+import { useAppSelector } from "../../../../redux/store";
+import { useDispatch } from "react-redux";
+import { showToast, ToastProvider } from "components/ToastContainer";
+import ConfirmationModal from "components/ConfirmationModal";
+import { set } from "date-fns";
 
 function ViewAvatar() {
-  // State để điều khiển modal
+  const Auth = useAppSelector((state) => state.Auth.Auth);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-
-  // State lưu ảnh upload
-  const [selectedImage, setSelectedImage] = useState("https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg");
+  const [selectedImage, setSelectedImage] = useState(Auth?.image?.url);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   // Xử lý mở modal
   const handleOpenModal = () => setShowAvatarModal(true);
   const handleCloseModal = () => setShowAvatarModal(false);
 
-  // Xử lý chọn file ảnh
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
+      setSelectedFile(file);
     }
+  };
+
+  const handleUploadFile = () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("avatar", selectedFile);
+    setLoading(true);
+    dispatch({
+      type: AuthActions.UPDATE_AVATAR,
+      payload: {
+        formData: formData,
+        onSuccess: (MsgYes) => {
+          setLoading(false);
+          showToast.success(MsgYes);
+        },
+        onFailed: (MsgNo) => {
+          showToast.warning(MsgNo);
+        },
+        onError: (MsgNo) => {
+          showToast.warning(MsgNo);
+        },
+      },
+    });
   };
 
   return (
@@ -37,14 +70,19 @@ function ViewAvatar() {
           className="fw-bold mb-4"
           variant="outline-primary"
           onClick={handleOpenModal}
-        >View Avatar</Button>
+        >
+          View Avatar
+        </Button>
       </div>
       <p className="text-center text-muted">
-        Maximum file size is 1 MB<br />Format JPEG, PNG, JPG, ...
+        Maximum file size is 1 MB
+        <br />
+        Format JPEG, PNG, JPG, ...
       </p>
       <Form>
         <Form.Group controlId="formFile" className="mb-3 text-center">
           <Form.Control
+            name="avatar"
             type="file"
             className="d-inline-block w-auto"
             onChange={handleFileChange}
@@ -52,13 +90,45 @@ function ViewAvatar() {
           />
         </Form.Group>
         <div className="d-flex justify-content-end">
-          <Button variant="danger" className="me-2">CANCEL</Button>
-          <Button variant="primary">Upload</Button>
+          <Button
+            variant="danger"
+            className="me-2"
+            onClick={() => {
+              setShowUpdateModal(true);
+            }}
+          >
+            CANCEL
+          </Button>
+          <Button
+            variant="primary"
+            disabled={loading} // disable khi loading
+            onClick={() => {
+              setShowAcceptModal(true);
+            }}
+          >
+            {loading ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Uploading...
+              </>
+            ) : (
+              "Upload"
+            )}
+          </Button>
         </div>
       </Form>
 
       {/* Avatar Modal */}
-      <Modal show={showAvatarModal} onHide={handleCloseModal} centered size="lg">
+      <Modal
+        show={showAvatarModal}
+        onHide={handleCloseModal}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Customer Avatar</Modal.Title>
         </Modal.Header>
@@ -67,7 +137,7 @@ function ViewAvatar() {
             src={selectedImage}
             alt="Customer avatar"
             className="img-fluid"
-            style={{ maxHeight: "70vh" }}
+            style={{ height: "480px", width: "480px" }}
           />
         </Modal.Body>
         <Modal.Footer>
@@ -76,10 +146,33 @@ function ViewAvatar() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ToastProvider />
+      {/* Update Confirmation Modal */}
+      <ConfirmationModal
+        show={showUpdateModal}
+        onHide={() => setShowUpdateModal(false)}
+        onConfirm={() => {
+          setSelectedImage(Auth.image.url);
+          setSelectedFile()
+        }}
+        title="Confirm Cancel"
+        message="Are you sure you want to reset this avatar ?"
+        confirmButtonText="Confirm"
+        type="warning"
+      />
+
+      {/* Accept Confirmation Modal */}
+      <ConfirmationModal
+        show={showAcceptModal}
+        onHide={() => setShowAcceptModal(false)}
+        onConfirm={handleUploadFile}
+        title="Confirm Update"
+        message="Are you sure you want to update this new avatar?"
+        confirmButtonText="Accept"
+        type="accept"
+      />
     </Card.Body>
   );
 }
 
 export default ViewAvatar;
-
-

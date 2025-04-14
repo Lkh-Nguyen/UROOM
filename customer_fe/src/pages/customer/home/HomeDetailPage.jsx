@@ -50,7 +50,7 @@ import image7 from "../../../images/Ellipse_3_(1).png";
 import image9 from "../../../images/Ellipse_3.png";
 import image10 from "../../../images/Ellipse_3_(1).png";
 import * as Routers from "../../../utils/Routes";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import { useEffect, useState } from "react";
 
@@ -58,6 +58,12 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const id = params.get('hotel_id');
+  console.log('id: ', id);
+
   return (
     <div className="app-container">
       <NavigationBar />

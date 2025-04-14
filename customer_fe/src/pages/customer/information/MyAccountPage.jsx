@@ -15,25 +15,32 @@ import { useLocation, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
+import {
+  getIndexMyAccountPage,
+  setIndexMyAccountPage,
+} from "utils/handleToken";
 function MyAccountPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const [formData, setFormData] = useState(Auth);
   const location = useLocation();
   const { id } = location.state || {};
+  const [indexActive, setIndexActive] = useState(0);
+  console.log('id: ', id)
   useEffect(() => {
-    if (Auth.id != -1) {
-      setFormData(Auth);
-    }
-  }, [Auth]); // Lấy dữ liệu từ state
-  useEffect(() => {
-    if (id) {
+    const fetchIndex = async () => {
+      const result = await getIndexMyAccountPage();
+      setIndexActive(Number(result)); // nhớ ép kiểu về số
+    };
+    if (id != undefined) {
       setIndexActive(id);
+    }else{
+      fetchIndex();
     }
   }, [location.state?.id]);
-
-  const [indexActive, setIndexActive] = useState(0);
+  
   const handleMenuClick = (index) => {
     setIndexActive(index);
+    setIndexMyAccountPage(index);
   };
   const handleAvatarUpdate = (newAvatarURL) => {
     setFormData((prev) => ({ ...prev, avatarURL: newAvatarURL }));
@@ -69,8 +76,8 @@ function MyAccountPage() {
                   <div className="avatar-circle">
                     <img
                       src={
-                        formData.avatarURL && formData.avatarURL !== ""
-                          ? formData.avatarURL
+                        formData?.image?.url && formData?.image?.url !== ""
+                          ? formData?.image?.url
                           : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                       }
                       className="rounded-circle mb-2"

@@ -49,7 +49,7 @@ function App() {
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
-        <Route path={Routers.Home_detail} element={<Home_detail />} />
+        <Route path={`${Routers.Home_detail}`} element={<Home_detail />} />
         <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />

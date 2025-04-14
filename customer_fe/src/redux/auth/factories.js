@@ -11,5 +11,8 @@ const Factories = {
   change_password: (data) => {
     return api.post(ApiConstants.CHANGE_PASSWORD, data );
   },
+  update_avatar: (formData) => {
+    return api.put(ApiConstants.UPDATE_AVATAR, formData)
+  }
 };
 export default Factories;
