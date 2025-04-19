@@ -3,15 +3,27 @@ import api from "../../libs/api/index";
 
 
 const Factories = {
-  fetch_favorite_hotel: (ids) => {
-    return api.post(ApiConstants.FETCH_FAVORITE_HOTELS, { ids });
+  fetch_favorite_hotel: (ids, paramsQuery) => {
+    const params = {
+      address: '',
+      district: '',
+      star: '0',
+    };
+    if(paramsQuery.selectedCity != '' && paramsQuery.selectedCity){
+      params.address= paramsQuery.selectedCity
+    }
+    if(paramsQuery.selectedDistrict != '' && paramsQuery.selectedDistrict){
+      params.district= paramsQuery.selectedDistrict
+    }
+    if(paramsQuery.selectedStar != '0'){
+      params.star= paramsQuery.selectedStar
+    }
+    return api.post(ApiConstants.FETCH_FAVORITE_HOTELS, { ids, params});
   },
-  remove_favorite_hotel: (hotelId) => {
-    return api.post(ApiConstants.REMOVE_FAVORITE_HOTELS, { hotelId });
-  },
-  fetch_detail_hotel: (hotelId) => {
+
+  fetch_detail_hotel: (hotelId, userId) => {
     const url = ApiConstants.FETCH_DETAIL_HOTELS.replace(":hotelId", hotelId);
-    return api.get(url);
+    return api.get(url, {userId});
   },
   
   get_all_hotels: () => {

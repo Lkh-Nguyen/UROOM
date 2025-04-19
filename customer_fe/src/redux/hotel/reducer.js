@@ -13,11 +13,6 @@ const favoriteHotelReducer = (state = initialState, action) => {
         ...state,
         hotels: action.payload,
       };
-    case HotelActions.REMOVE_FAVORITE_HOTEL_SUCCESS:
-      return {
-        ...state,
-        hotels: state.hotels.filter((hotel) => hotel._id !== action.payload),
-      };
       case HotelActions.FETCH_DETAIL_HOTEL_SUCCESS:
         return {
           ...state,

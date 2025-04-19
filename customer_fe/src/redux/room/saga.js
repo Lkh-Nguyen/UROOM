@@ -5,12 +5,10 @@ import Factories from "./factories";
 
 function* getRoomsByHotel() {
   yield takeEvery(RoomActions.FETCH_ROOM, function* (action) {
-    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+    const { hotelId, query, onSuccess, onFailed, onError } = action.payload;
 
     try {
-      const response = yield call(Factories.fetch_room, hotelId); 
-      console.log(response?.status)
-      console.log("rooms", response?.rooms)
+      const response = yield call(Factories.fetch_room, hotelId, query); 
       if (response?.status === 200) {
         yield put({
           type: RoomActions.FETCH_ROOM_SUCCESS,

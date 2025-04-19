@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const FeedbackSchema = new Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User ID
+    user: { type: mongoose.Schema.Types.Number, ref: "User", required: true }, // User ID
     reservation: {
       type: Schema.Types.ObjectId,
       ref: "Reservation", // sửa đúng ref là "Reservation"
@@ -18,6 +18,14 @@ const FeedbackSchema = new Schema(
     content: { type: String, required: true },
     rating: { type: Number, min: 1, max: 5, required: true },
     createdAt: { type: Date, default: Date.now },
+    likedBy: [{ 
+      type: mongoose.Schema.Types.Number, 
+      ref: "User" 
+    }],
+    dislikedBy: [{ 
+      type: mongoose.Schema.Types.Number, 
+      ref: "User" 
+    }],
   },
   { versionKey: false }
 );

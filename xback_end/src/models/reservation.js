@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const reservationSchema = new Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.Number,
       ref: "User",
       required: true,
     },
@@ -54,6 +54,7 @@ const reservationSchema = new Schema(
       required: true,
       default: 0,
     },
+    createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true, versionKey: false }
 );

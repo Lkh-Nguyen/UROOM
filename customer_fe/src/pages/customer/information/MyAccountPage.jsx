@@ -83,8 +83,8 @@ function MyAccountPage() {
                   <div className="avatar-circle">
                     <img
                       src={
-                        formData?.image?.url && formData?.image?.url !== ""
-                          ? formData?.image?.url
+                        Auth?.image?.url && Auth?.image?.url !== ""
+                          ? Auth?.image?.url
                           : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                       }
                       className="rounded-circle mb-2"
@@ -96,7 +96,7 @@ function MyAccountPage() {
                       alt="avatar"
                     />
                   </div>
-                  <h5 className="mt-2 mb-0">{formData.name}</h5>
+                  <h5 className="mt-2 mb-0">{Auth.name}</h5>
                   <small className="text-muted">Google</small>
                 </div>
                 <ListGroup variant="flush">

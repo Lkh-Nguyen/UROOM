@@ -23,11 +23,13 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
+import { useAppSelector } from "./redux/store";
 
 
 
 function App() {
-
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  console.log('Auth: ', Auth)
   return (
     <Router>
       <Routes>

@@ -128,13 +128,86 @@ function* update_avatar() {
   });
 }
 
+
+function* removeFavoriteHotel() {
+  yield takeEvery(AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST, function* (action) {
+    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.remove_favorite_hotel(hotelId));
+
+      console.log('Remove favorite hotel status:', response?.status);
+
+      if (response?.status === 200) {
+        console.log(hotelId)
+        yield put({
+          type: AuthActions.REMOVE_FAVORITE_HOTEL_SUCCESS,
+          payload: {hotelId: hotelId}, 
+        });
+        onSuccess?.();
+      } else {
+        onFailed?.(response?.data?.message || "Failed to remove favorite hotel");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Something went wrong";
+
+      console.log("Remove favorite hotel error status:", status);
+      console.log("Remove favorite hotel error message:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
+function*  addFavoriteHotel() {
+  yield takeEvery(AuthActions.ADD_FAVORITE_HOTEL_REQUEST, function* (action) {
+    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.add_favorite_hotel(hotelId));
+
+      console.log('Add favorite hotel status:', response?.status);
+
+      if (response?.status === 200) {
+        console.log(hotelId)
+        yield put({
+          type: AuthActions.ADD_FAVORITE_HOTEL_SUCCESS,
+          payload: {hotelId: hotelId}, 
+        });
+        onSuccess?.();
+      } else {
+        onFailed?.(response?.data?.message || "Failed to add favorite hotel");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Something went wrong";
+
+      console.log("Add favorite hotel error status:", status);
+      console.log("Add favorite hotel error message:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
 export default function* userSaga() {
   yield all(
     [
       fork(login), 
       fork(update_profile), 
       fork(change_password), 
-      fork(update_avatar)
+      fork(update_avatar),
+      fork(removeFavoriteHotel),
+      fork(addFavoriteHotel),
     ]
   );
 }
