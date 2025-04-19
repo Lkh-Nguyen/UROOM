@@ -26,8 +26,36 @@ function* getRoomsByHotel() {
     }
   });
 }
+function* getRoomDetail() {
+  yield takeEvery(RoomActions.FETCH_ROOM_DETAIL, function* (action) {
+    const { roomId, onSuccess, onFailed, onError } = action.payload;
 
+    try {
+      const response = yield call(() => Factories.fetch_room_detail(roomId));
+      console.log("Room detail response:", response);
+
+      if (response?.status === 200) {
+        const room = response.data.room;
+        yield put({
+          type: RoomActions.FETCH_ROOM_DETAIL_SUCCESS,
+          payload: room,
+        });
+        onSuccess?.(room);
+      } else {
+        onFailed?.("Failed to fetch room details");
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || "Something went wrong";
+      const status = error.response?.status;
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
 
 export default function* roomSaga() {
-  yield all([fork(getRoomsByHotel)]); 
+  yield all([fork(getRoomsByHotel),fork(getRoomDetail)]); 
 }

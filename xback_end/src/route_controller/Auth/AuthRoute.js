@@ -6,8 +6,6 @@ const authRouter = express.Router();
 authRouter.post("/login_customer", AuthController.loginCustomer);
 authRouter.post("/updateProfile_customer",checkCustomer, AuthController.updateCustomerProfile);
 authRouter.post("/changePassword_customer", checkCustomer, AuthController.changePassword);
-
-
 //upload ảnh
 const upload = require("../../middlewares/uploadMiddleware");
 authRouter.put("/update_avatar", checkCustomer, upload.single("avatar"), AuthController.updateAvatar);

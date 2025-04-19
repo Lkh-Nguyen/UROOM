@@ -24,21 +24,27 @@ import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
 
-
-
 function App() {
-
   return (
     <Router>
       <Routes>
         <Route path={Routers.LoginPage} element={<LoginPage />} />
 
         <Route path={Routers.RegisterPage} element={<RegisterPage />} />
-        <Route path={Routers.VerifyCodeRegisterPage} element={<VerifyCodeRegisterPage />} />
-        
-        <Route path={Routers.ForgetPasswordPage} element={<ForgetPasswordPage />} />
+        <Route
+          path={Routers.VerifyCodeRegisterPage}
+          element={<VerifyCodeRegisterPage />}
+        />
+
+        <Route
+          path={Routers.ForgetPasswordPage}
+          element={<ForgetPasswordPage />}
+        />
         <Route path={Routers.VerifyCodePage} element={<VerifyCodePage />} />
-        <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage />} />
+        <Route
+          path={Routers.ResetPasswordPage}
+          element={<ResetPasswordPage />}
+        />
 
         {/*Infomation, Avatar */}
         <Route path={Routers.MyAccountPage} element={<MyAccountPage />} />
@@ -49,18 +55,23 @@ function App() {
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
-        <Route path={`${Routers.Home_detail}`} element={<Home_detail />} />
-        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
+        <Route path={`${Routers.Home_detail}/:id`} element={<Home_detail />} />
+        <Route path={`${Routers.RoomDetailPage}/:id`} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />
         <Route path={Routers.PaymentPage} element={<PaymentPage />} />
-        <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>}/>
-        <Route path={Routers.PaymentFailedPage} element={<PaymentFailedPage/>}/>
+        <Route
+          path={Routers.PaymentSuccessPage}
+          element={<PaymentSuccessPage />}
+        />
+        <Route
+          path={Routers.PaymentFailedPage}
+          element={<PaymentFailedPage />}
+        />
 
         <Route path={Routers.BannedPage} element={<BannedPage />} />
         <Route path={Routers.ErrorPage} element={<ErrorPage />} />
         <Route path={Routers.ChatPage} element={<ChatPage />} />
-
       </Routes>
     </Router>
   );

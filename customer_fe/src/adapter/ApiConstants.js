@@ -13,6 +13,7 @@ const ApiConstants = {
   FETCH_DETAIL_HOTELS: '/hotel/hotel_detail/:hotelId',
   FETCH_ROOM: '/room/rooms_information/:hotelId',
   FETCH_ALL_HOTEL:'/hotel/get-all-hotel',
+  FETCH_ROOM_DETAIL:'/room/rooms_detail/:roomId',
 };
 
 export default ApiConstants;
