@@ -16,6 +16,22 @@ const Reducer = (state = initState, action) => {
           isAuthenticated: true,
         },
       };
+    case AuthActions.REGISTER_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...action.payload?.user,
+          isAuthenticated: true,
+        },
+      };
+    case AuthActions.VERIFY_EMAIL_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...action.payload?.user,
+          isAuthenticated: true,
+        },
+      };
     case AuthActions.LOGOUT:
       return {
         Auth: {
