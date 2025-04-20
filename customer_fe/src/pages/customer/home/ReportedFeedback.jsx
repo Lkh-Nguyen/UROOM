@@ -6,10 +6,18 @@ import { CheckCircle, TriangleIcon as ExclamationTriangle } from "lucide-react";
 import Footer from "../Footer";
 import Header from "../Header";
 import Banner from "../../../images/banner.jpg";
-import { Star, StarFill, X } from "react-bootstrap-icons";
-import * as Routers from "../../../utils/Routes";
+import {
+  ExclamationTriangleFill,
+  Star,
+  StarFill,
+  X,
+} from "react-bootstrap-icons";
 import { useNavigate } from "react-router-dom";
 
+import {
+  FaThumbsUp,
+  FaThumbsDown,
+} from "react-icons/fa";
 const ReportedFeedback = () => {
   const navigate = useNavigate();
   const [validated, setValidated] = useState(false);
@@ -66,9 +74,7 @@ const ReportedFeedback = () => {
               Thank you for your report. Our team will review it and take
               appropriate action.
             </p>
-            <Button 
-              variant="primary" 
-              onClick={() => setSubmitted(false)}>
+            <Button variant="primary" onClick={() => setSubmitted(false)}>
               Submit Another Report
             </Button>
           </Card.Body>
@@ -147,18 +153,27 @@ const ReportedFeedback = () => {
                         Clean hotel, great service, friendly and helpful staff!
                       </p>
                       <div>
-                        <b
-                          className="text-primary p-0 me-3"
-                          style={{ textDecoration: "none" }}
+                        <a
+                          variant="outline-primary"
+                          className="p-0 me-3"
+                          style={{ textDecoration: "none", cursor: "pointer" }}
                         >
+                          <FaThumbsUp className="me-2" />
                           5 lượt thích
-                        </b>
-                        <b
-                          className="text-danger p-0"
-                          style={{ textDecoration: "none" }}
+                        </a>
+
+                        <a
+                          variant="outline-danger"
+                          className="p-0"
+                          style={{
+                            textDecoration: "none",
+                            color: "red",
+                            cursor: "pointer",
+                          }}
                         >
-                          7 lượt không thích
-                        </b>
+                          <FaThumbsDown className="me-2" />
+                          10 lượt không thích
+                        </a>
                       </div>
                     </Card.Body>
                   </Card>
@@ -211,7 +226,7 @@ const ReportedFeedback = () => {
                 </Form.Group>
 
                 <Alert variant="warning" className="d-flex align-items-center">
-                  <ExclamationTriangle className="me-2" />
+                  <ExclamationTriangleFill className="me-2" />
                   <div>
                     False reporting may result in account restrictions. Please
                     ensure your report is accurate.
@@ -224,7 +239,7 @@ const ReportedFeedback = () => {
                     className="me-md-2"
                     style={{ width: "140px" }}
                     onClick={() => {
-                        navigate(-1)
+                      navigate(-1);
                     }}
                   >
                     Cancel

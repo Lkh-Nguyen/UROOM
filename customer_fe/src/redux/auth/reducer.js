@@ -59,6 +59,33 @@ const Reducer = (state = initState, action) => {
           ...state.Auth,
         },
       };
+
+    case AuthActions.UPDATE_AVATAR_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+          image: action.payload.image,
+        },
+      };
+    case AuthActions.REMOVE_FAVORITE_HOTEL_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+          favorites: state.Auth.favorites.filter(
+            (hotel) => hotel !== action.payload?.hotelId
+          ),
+        },
+      };
+    case AuthActions.ADD_FAVORITE_HOTEL_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+          favorites: [...state.Auth.favorites, action.payload?.hotelId],
+        },
+      };
     default:
       return state;
   }

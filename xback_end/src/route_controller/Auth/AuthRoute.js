@@ -16,5 +16,10 @@ authRouter.post(
     AuthController.updateCustomerProfile
   );
 authRouter.post("/changePassword_customer", checkCustomer, AuthController.changePassword);
-  
+
+//upload ảnh
+const upload = require("../../middlewares/uploadMiddleware");
+authRouter.put("/update_avatar", checkCustomer, upload.single("avatar"), AuthController.updateAvatar);
+
+
 module.exports = authRouter;

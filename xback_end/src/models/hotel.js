@@ -4,13 +4,12 @@ const Schema = mongoose.Schema;
 
 const hotelSchema = new Schema(
   {
-    _id: { type: Number },
     hotelName: {
       type: String,
       required: true,
     },
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.Number,
       ref: "User",
     },
     description: {
@@ -79,10 +78,6 @@ const hotelSchema = new Schema(
   { versionKey: false }
 );
 
-// Thêm plugin auto-increment
-hotelSchema.plugin(AutoIncrement, {
-  id: "hotel_seq",
-  inc_field: "_id",
-});
+
 
 module.exports = mongoose.model("Hotel", hotelSchema);

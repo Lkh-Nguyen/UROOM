@@ -1,11 +1,14 @@
 import { combineReducers } from 'redux';
 import AuthReducer from './auth/reducer';
-// import CustomerReducer from './customer/reducer';
-// import SalaryReducer from '@redux/salary/reducer'
+import SearchReducer from './search/reducer';
+import HotelReducer from './hotel/reducer';
+import RoomReducer from './room/reducer';
 
 const rootReducer = combineReducers({
     Auth: AuthReducer,
-    // Customer: AuthReducer
+    Search: SearchReducer,
+    hotel: HotelReducer,
+    Room: RoomReducer
 });
 
 export default rootReducer;

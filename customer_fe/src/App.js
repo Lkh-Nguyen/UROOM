@@ -23,25 +23,13 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
-import { useEffect } from "react";
-import { getToken, getUser } from "utils/handleToken";
-import { useDispatch } from "react-redux";
-import AuthActions from "./redux/auth/actions";
+import { useAppSelector } from "./redux/store";
+
 
 
 function App() {
-  const dispatch = useDispatch();
-   // Lấy user từ localStorage/session và dispatch lên Redux
-   useEffect(() => {
-    const user = getUser();
-    if (user) {
-      dispatch({
-        type: AuthActions.SET_USER,
-        payload: { user },
-      });
-    }
-  }, [dispatch]);
-
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  console.log('Auth: ', Auth)
   return (
     <Router>
       <Routes>
@@ -63,7 +51,7 @@ function App() {
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
-        <Route path={Routers.Home_detail} element={<Home_detail />} />
+        <Route path={`${Routers.Home_detail}/:id`} element={<Home_detail />} />
         <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />

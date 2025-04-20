@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { clearToken, clearUser, getToken } from "utils/handleToken";
 
 const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
+import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
 
 function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
@@ -76,9 +77,9 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(Routers.ErrorPage)}
+              onClick={() => navigate(Routers.ChatPage)}
             >
-              About
+              Message
             </Nav.Link>
             <Nav.Link
               className="nav-link"
@@ -156,14 +157,15 @@ function NavigationBar() {
                 <Dropdown.Divider />
                 <Dropdown.Item
                   onClick={() => {
+                    navigate(Routers.Home, {
+                      state: { message: "Logout account successfully !!!" },
+                    });
                     dispatch({
                       type: AuthActions.LOGOUT,
                     });
                     clearToken();
-                    clearUser();
-                    navigate(Routers.Home, {
-                      state: { message: "Logout account successfully !!!" },
-                    });
+                    setIndexMyAccountPage(0);
+                    setStatusBooking(0);
                   }}
                 >
                   Logout

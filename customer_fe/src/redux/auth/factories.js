@@ -20,5 +20,16 @@ const Factories = {
   resend_verification: (data) => {
     return api.post(ApiConstants.RESEND_VERIFICATION, data);
   },
+  update_avatar: (formData) => {
+    return api.put(ApiConstants.UPDATE_AVATAR, formData);
+  },
+
+  remove_favorite_hotel: (hotelId) => {
+    return api.post(ApiConstants.REMOVE_FAVORITE_HOTELS, { hotelId });
+  },
+
+  add_favorite_hotel: (hotelId) => {
+    return api.post(ApiConstants.ADD_FAVORITE_HOTELS, { hotelId });
+  },
 };
 export default Factories;

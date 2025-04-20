@@ -10,18 +10,28 @@ export const clearToken = () => {
   localStorage.removeItem("token");
 };
 
-// Lưu user (object) vào localStorage
-export const setUser = (user) => {
-  localStorage.setItem("user", JSON.stringify(user));
+
+export const getIndexMyAccountPage = async () => {
+  return localStorage.getItem("IndexMyAccountPage") ?? 0;
 };
 
-// Lấy user từ localStorage
-export const getUser = () => {
-  const user = localStorage.getItem("user");
-  return user ? JSON.parse(user) : null;
+export const setIndexMyAccountPage = (index) => {
+  localStorage.setItem("IndexMyAccountPage", index);
 };
 
-// Xóa user khỏi localStorage
-export const clearUser = () => {
-  localStorage.removeItem("user");
+export const clearIndexMyAccountPage = () => {
+  localStorage.removeItem("IndexMyAccountPage");
 };
+
+export const getStatusBooking = async () => {
+  return localStorage.getItem("StatusBooking") ?? 0;
+};
+
+export const setStatusBooking = (index) => {
+  localStorage.setItem("StatusBooking", index);
+};
+
+export const clearStatusBooking = () => {
+  localStorage.removeItem("StatusBooking");
+};
+

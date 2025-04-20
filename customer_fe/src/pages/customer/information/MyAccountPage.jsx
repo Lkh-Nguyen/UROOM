@@ -11,30 +11,43 @@ import MyFeedback from "./components/MyFeedback";
 import FavoriteHotel from "./components/MyFavoriteHotel";
 import Banner from "../../../images/banner.jpg";
 import BookingHistory from "./components/BookingHistory";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
-// import { getUser } from "utils/handleToken";
+import {
+  getIndexMyAccountPage,
+  setIndexMyAccountPage,
+} from "utils/handleToken";
 function MyAccountPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const [formData, setFormData] = useState(Auth);
   const location = useLocation();
   const { id } = location.state || {};
+  const [indexActive, setIndexActive] = useState(0);
+  console.log('id: ', id)
+  const navigate = useNavigate() // cần thêm dòng này
+
   useEffect(() => {
-    if (Auth.id != -1) {
-      setFormData(Auth);
+    const fetchIndex = async () => {
+      const result = await getIndexMyAccountPage();
+      setIndexActive(Number(result));
+    };
+    if(id == undefined){
+      fetchIndex()
     }
-  }, [Auth]); // Lấy dữ liệu từ state
+  },[])
   useEffect(() => {
-    if (id) {
+    if (id != undefined) {
       setIndexActive(id);
     }
-  }, [location.state?.id]);
+    navigate(location.pathname, { replace: true })
 
-  const [indexActive, setIndexActive] = useState(0);
+  }, [location.state?.id]);
+  
   const handleMenuClick = (index) => {
     setIndexActive(index);
+    setIndexMyAccountPage(index);
   };
   const handleAvatarUpdate = (newAvatarURL) => {
     setFormData((prev) => ({ ...prev, avatarURL: newAvatarURL }));
@@ -70,8 +83,8 @@ function MyAccountPage() {
                   <div className="avatar-circle">
                     <img
                       src={
-                        formData.avatarURL && formData.avatarURL !== ""
-                          ? formData.avatarURL
+                        Auth?.image?.url && Auth?.image?.url !== ""
+                          ? Auth?.image?.url
                           : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                       }
                       className="rounded-circle mb-2"
@@ -83,7 +96,7 @@ function MyAccountPage() {
                       alt="avatar"
                     />
                   </div>
-                  <h5 className="mt-2 mb-0">{formData.name}</h5>
+                  <h5 className="mt-2 mb-0">{Auth.name}</h5>
                   <small className="text-muted">Google</small>
                 </div>
                 <ListGroup variant="flush">
@@ -108,8 +121,7 @@ function MyAccountPage() {
                 {indexActive == 1 && <ChangePassword />}
                 {indexActive === 2 && (
                   <ViewAvatar
-                    avatarURL={formData.avatarURL}
-                    onAvatarUpdate={handleAvatarUpdate}
+                   
                   />
                 )}
                 {indexActive == 3 && <BookingHistory />}

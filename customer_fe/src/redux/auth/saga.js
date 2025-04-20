@@ -1,7 +1,7 @@
 import { all, call, fork, put, takeEvery } from "@redux-saga/core/effects";
 import AuthActions from "./actions";
 import Factories from "./factories";
-import { setToken, setUser } from "utils/handleToken";
+import { setToken } from "utils/handleToken";
 
 function* login() {
   yield takeEvery(AuthActions.LOGIN, function* (action) {
@@ -10,7 +10,6 @@ function* login() {
       const response = yield call(() => Factories.login(data));
       if (response?.status === 200) {
         setToken(response.data.Data.token);
-        setUser(response.data.Data.user);
         yield put({
           type: AuthActions.LOGIN_SUCCESS,
           payload: { user: response.data.Data.user },
@@ -87,12 +86,11 @@ function* update_profile() {
     try {
       const response = yield call(() => Factories.update_profile(data));
 
+      console.log("status: ", response?.status);
+      console.log("data: ", response?.data.Data);
+
       if (response?.status === 200) {
         const { user } = response.data.Data;
-
-        // Cập nhật token và user vào localStorage
-
-        setUser(user);
 
         // Cập nhật vào redux store
         yield put({
@@ -171,6 +169,109 @@ function* resend_verification() {
   });
 }
 
+function* update_avatar() {
+  yield takeEvery(AuthActions.UPDATE_AVATAR, function* (action) {
+    const { formData, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.update_avatar(formData));
+
+      if (response?.status === 200) {
+        console.log("image: ", response?.data?.Data.image)
+        yield put({
+          type: AuthActions.UPDATE_AVATAR_SUCCESS,
+          payload: { image: response?.data?.Data.image},
+        });
+
+        onSuccess && onSuccess(response?.data?.Data.MsgYes);
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.MsgNo;
+
+      console.log("status: ", status);
+      console.log("msg: ", msg);
+
+      if (status >= 500) {
+        onError && onError(error);
+      } else {
+        onFailed && onFailed(msg);
+      }
+    }
+  });
+}
+
+
+function* removeFavoriteHotel() {
+  yield takeEvery(AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST, function* (action) {
+    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.remove_favorite_hotel(hotelId));
+
+      console.log('Remove favorite hotel status:', response?.status);
+
+      if (response?.status === 200) {
+        console.log(hotelId)
+        yield put({
+          type: AuthActions.REMOVE_FAVORITE_HOTEL_SUCCESS,
+          payload: {hotelId: hotelId}, 
+        });
+        onSuccess?.();
+      } else {
+        onFailed?.(response?.data?.message || "Failed to remove favorite hotel");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Something went wrong";
+
+      console.log("Remove favorite hotel error status:", status);
+      console.log("Remove favorite hotel error message:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
+function*  addFavoriteHotel() {
+  yield takeEvery(AuthActions.ADD_FAVORITE_HOTEL_REQUEST, function* (action) {
+    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.add_favorite_hotel(hotelId));
+
+      console.log('Add favorite hotel status:', response?.status);
+
+      if (response?.status === 200) {
+        console.log(hotelId)
+        yield put({
+          type: AuthActions.ADD_FAVORITE_HOTEL_SUCCESS,
+          payload: {hotelId: hotelId}, 
+        });
+        onSuccess?.();
+      } else {
+        onFailed?.(response?.data?.message || "Failed to add favorite hotel");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Something went wrong";
+
+      console.log("Add favorite hotel error status:", status);
+      console.log("Add favorite hotel error message:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
 export default function* userSaga() {
   yield all([
     fork(login), 
@@ -178,6 +279,9 @@ export default function* userSaga() {
     fork(change_password),
     fork(register),
     fork(verify_email),
-    fork(resend_verification)
+    fork(resend_verification),
+    fork(update_avatar),
+    fork(removeFavoriteHotel),
+    fork(addFavoriteHotel),
   ]);
 }
