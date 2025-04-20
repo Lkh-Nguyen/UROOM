@@ -16,7 +16,8 @@ import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
 import { clearToken, clearUser, getToken } from "utils/handleToken";
-import { showToast, ToastProvider } from "components/ToastContainer";
+
+const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
 
 function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
@@ -137,7 +138,7 @@ function NavigationBar() {
               >
                 {Auth.name}
                 <Image
-                  src={Auth.image.url}
+                  src={Auth.image?.url || defaultImage}
                   roundedCircle
                   width="30"
                   height="30"
