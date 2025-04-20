@@ -15,10 +15,9 @@ import image from "../../images/image-removebg-preview.png";
 import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
-import { clearToken, clearUser, getToken } from "utils/handleToken";
+import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
 
 const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
-import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
 
 function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
