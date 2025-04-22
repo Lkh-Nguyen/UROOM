@@ -2,7 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import createSagaMiddleware from 'redux-saga';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // sử dụng localStorage
+import storage from 'redux-persist/lib/storage';
+import expireReducer from 'redux-persist-transform-expire';
 
 import rootReducer from './root-reducer';
 import rootSaga from './root-saga';
@@ -10,11 +11,23 @@ import rootSaga from './root-saga';
 // Khởi tạo middleware saga
 const sagaMiddleware = createSagaMiddleware();
 
-// Cấu hình persist
+// Cấu hình expire cho các reducer có thời gian hết hạn
+const expireConfig = {
+  expireKey: 'expireAt',
+  expireSeconds: 60*60*1, // 1 ngày
+  autoExpire: true,
+};
+
+// Cấu hình persist tổng
 const persistConfig = {
   key: 'root',
   storage,
-  // whitelist: ['booking'], // ⚠️ Chỉ persist những reducer bạn muốn giữ sau reload (ví dụ: booking)
+  whitelist: ['Auth', 'Search', 'hotel', 'Room'], // auth vĩnh viễn, booking sẽ expire
+  transforms: [
+    expireReducer('Search', expireConfig),
+    expireReducer('hotel', expireConfig),
+    expireReducer('Room', expireConfig),
+  ],
 };
 
 // Gộp persist vào reducer

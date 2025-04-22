@@ -104,12 +104,19 @@ const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
   label: `${i} Childrens`,
 }))
 
+
 export const SearchBar = () => {
   const navigate = useNavigate()
-  const today = new Date().toISOString().split("T")[0];
-  const [selectedCity, setSelectedCity] = useState(null)
-  const [checkinDate, setCheckinDate] = useState("")
-  const [checkoutDate, setCheckoutDate] = useState("")
+
+  const todayDate = new Date(); // Date object
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(todayDate.getDate() + 1);
+  const today = todayDate.toISOString().split("T")[0];     // "YYYY-MM-DD"
+  const tomorrow = tomorrowDate.toISOString().split("T")[0];
+  const [checkinDate, setCheckinDate] = useState(today)
+  const [checkoutDate, setCheckoutDate] = useState(tomorrow)
+
+  const [selectedCity, setSelectedCity] = useState({value: 'Hà Nội', label: 'Hà Nội'})
   const [selectedAdults, setSelectedAdults] = useState(adultsOptions[0]) // Default to 1 adult
   const [selectedChildren, setSelectedChildren] = useState(childrenOptions[0]) // Default to 0 children
   const dispatch = useDispatch()

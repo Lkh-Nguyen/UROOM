@@ -149,3 +149,82 @@ exports.getAllFeedBackByHotelId = asyncHandler(async (req, res) => {
         : "Get all feedback by hotel id success",
   });
 });
+
+
+
+exports.likeFeedback = async (req, res) => {
+  const feedbackId = req.params.id;
+  const userId = req.user._id;
+
+  console.log("feedbackId: ", feedbackId);
+  console.log("userId: ", userId);
+
+  try {
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    const hasLiked = feedback.likedBy.includes(userId);
+    const hasDisliked = feedback.dislikedBy.includes(userId);
+
+    if (hasLiked) {
+      // Nếu đã like thì bỏ like
+      feedback.likedBy.pull(userId);
+    } else {
+      // Nếu chưa like thì thêm vào và bỏ dislike nếu có
+      feedback.likedBy.push(userId);
+      if (hasDisliked) {
+        feedback.dislikedBy.pull(userId);
+      }
+    }
+
+    await feedback.save();
+
+    return res.status(200).json({
+      message: hasLiked ? "Like removed" : "Feedback liked",
+      feedback,
+    });
+  } catch (error) {
+    console.error("Error liking feedback:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.dislikeFeedback = async (req, res) => {
+  const feedbackId = req.params.id;
+  const userId = req.user._id;
+
+  try {
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    const hasDisliked = feedback.dislikedBy.includes(userId);
+    const hasLiked = feedback.likedBy.includes(userId);
+
+    if (hasDisliked) {
+      // Nếu đã dislike thì bỏ dislike
+      feedback.dislikedBy.pull(userId);
+    } else {
+      // Nếu chưa dislike thì thêm vào và bỏ like nếu có
+      feedback.dislikedBy.push(userId);
+      if (hasLiked) {
+        feedback.likedBy.pull(userId);
+      }
+    }
+
+    await feedback.save();
+
+    return res.status(200).json({
+      message: hasDisliked ? "Dislike removed" : "Feedback disliked",
+      feedback,
+    });
+  } catch (error) {
+    console.error("Error disliking feedback:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};

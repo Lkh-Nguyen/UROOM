@@ -1,7 +1,10 @@
 const express = require('express')
 const FeedbackRouter = express.Router();
-const FeedbackController = require('./FeedbackController')
+const FeedbackController = require('./FeedbackController');
+const checkCustomer = require('../../middlewares/checkCustomer');
 
 FeedbackRouter.get('/get-feedback-hotel/:hotelId', FeedbackController.getAllFeedBackByHotelId)
+FeedbackRouter.post("/like/:id",checkCustomer, FeedbackController.likeFeedback);
+FeedbackRouter.post("/dislike/:id",checkCustomer, FeedbackController.dislikeFeedback);
 
 module.exports = FeedbackRouter;

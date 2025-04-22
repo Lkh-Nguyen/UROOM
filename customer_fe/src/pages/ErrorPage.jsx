@@ -1,8 +1,12 @@
 import React from 'react';
 import { Container, Button } from 'react-bootstrap';
 import '../css/ErrorPage.css';
+import { useNavigate } from 'react-router-dom';
+import * as Routers from "../utils/Routes"
 
 const ErrorPage = () => {
+  const navigate = useNavigate() // cần thêm dòng này
+
   return (
     <div className="not-found-container">
       
@@ -18,7 +22,14 @@ const ErrorPage = () => {
           </p>
           
           <div className="button-container">
-            <Button variant="light" className="action-button" style={{width: '170px'}}>
+            <Button 
+              variant="light" 
+              className="action-button" 
+              style={{width: '170px'}}
+              onClick={() => {
+                navigate(Routers.Home)
+              }}
+            >
               Home Page
             </Button>
             <Button variant="light" className="action-button" style={{width: '170px'}}>

@@ -45,5 +45,18 @@ const Factories = {
     }
     return api.get(ApiConstants.SEARCH_HOTEL, {params});
   },
+
+
+  create_booking: (params) => {
+    return api.post(ApiConstants.CREATE_BOOKING, {params});
+  },
+
+  cancel_payment: (reservationId) => {
+    return api.post(ApiConstants.CANCEL_PAYMENT, {reservationId});
+  },
+
+  accept_payment: (reservationId) => {
+    return api.post(ApiConstants.ACCEPT_PAYMENT, {reservationId});
+  },
 };
 export default Factories;

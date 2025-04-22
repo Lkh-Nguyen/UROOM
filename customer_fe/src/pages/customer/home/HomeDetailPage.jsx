@@ -50,6 +50,8 @@ import { showToast } from "components/ToastContainer";
 import Factories from "../../../redux/search/factories";
 import Factories2 from "../../../redux/feedback/factories";
 import Utils from "../../../utils/Utils";
+import ErrorModal from "components/ErrorModal";
+import SearchActions from "../../../redux/search/actions";
 
 // Options for select inputs
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -117,6 +119,9 @@ export default function HotelDetailPage() {
     sort: sort,
     star: star,
   });
+  const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Search state
   const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
   const [checkoutDate, setCheckoutDate] = useState(
@@ -263,6 +268,8 @@ export default function HotelDetailPage() {
   };
 
   const scrollRef = useRef(null);
+  const scrollRefRoom = useRef(null);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = 0;
@@ -344,25 +351,51 @@ export default function HotelDetailPage() {
   //booking room
   const [selectedRooms, setSelectedRooms] = useState([]);
   console.log("selectedRooms: ", selectedRooms);
-  const handleAmountChange = (roomId, amount) => {
+  const handleAmountChange = (room, amount) => {
     setSelectedRooms((prevSelected) => {
-      // Nếu chọn lại 0 thì xóa khỏi danh sách
       if (amount === 0) {
-        return prevSelected.filter((item) => item.id !== roomId);
+        return prevSelected.filter((item) => item.room._id !== room._id);
       }
-  
-      const existing = prevSelected.find((item) => item.id === roomId);
+
+      const existing = prevSelected.find((item) => item.room._id === room._id);
       if (existing) {
         // Nếu đã có thì cập nhật amount
         return prevSelected.map((item) =>
-          item.id === roomId ? { ...item, amount } : item
+          item.room._id === room._id ? { ...item, amount } : item
         );
       } else {
         // Nếu chưa có thì thêm mới
-        return [...prevSelected, { id: roomId, amount }];
+        return [...prevSelected, { room, amount }];
       }
     });
   };
+
+
+  //feedback
+  const handleLike= async (feedbackId) =>{
+    try {
+      const response = await Factories2.like_feedback(feedbackId);
+      if (response?.status === 200) {
+        fetchFeedbacks()
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  }
+
+  const handleDisLike= async (feedbackId) =>{
+    try {
+      const response = await Factories2.dislike_feedback(feedbackId);
+      if (response?.status === 200) {
+        fetchFeedbacks()
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  }
+
   if (!hotelDetail) {
     return (
       <div
@@ -789,21 +822,60 @@ export default function HotelDetailPage() {
           </div>
         ) : (
           <>
-            <div
-              className="d-flex gap-4 overflow-auto px-2 rooms-scroll"
-              style={{
-                scrollSnapType: "x mandatory",
-                WebkitOverflowScrolling: "touch",
-              }}
-            >
-              {rooms.length === 0 ? (
-                <div className="text-center w-100">
-                  <p style={{ color: "#999", fontSize: "1.2rem" }}>
-                    No rooms available for this hotel.
-                  </p>
-                </div>
-              ) : (
-                rooms.map((room) => (
+            <div style={{ position: "relative" }}>
+              {/* Nút trái */}
+              <Button
+                variant="light"
+                onClick={() => {
+                  scrollRefRoom.current.scrollBy({ left: -400, behavior: "smooth" });
+                }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "-20px",
+                  transform: "translateY(-50%)",
+                  zIndex: 10,
+                  borderRadius: "50%",
+                  padding: "10px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                }}
+              >
+                <FaChevronLeft />
+              </Button>
+
+              {/* Nút phải */}
+              <Button
+                variant="light"
+                onClick={() => {
+                  scrollRefRoom.current.scrollBy({ left: 400, behavior: "smooth" });
+                }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "-20px",
+                  transform: "translateY(-50%)",
+                  zIndex: 10,
+                  borderRadius: "50%",
+                  padding: "10px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                }}
+              >
+                <FaChevronRight />
+              </Button>
+
+              {/* Danh sách khách sạn */}
+              <div
+                ref={scrollRefRoom}
+                className="horizontal-scroll mt-5"
+                style={{
+                  display: "flex",
+                  overflowX: "hidden", // ❌ ẩn scroll
+                  scrollSnapType: "x mandatory",
+                  gap: "20px",
+                  paddingBottom: "20px",
+                }}
+              >
+                {rooms.map((room) => (
                   <div
                     key={room.id || room._id}
                     style={{
@@ -926,10 +998,7 @@ export default function HotelDetailPage() {
                               className="form-select w-auto"
                               style={{ fontSize: "0.9rem" }}
                               onChange={(e) =>
-                                handleAmountChange(
-                                  room._id,
-                                  Number(e.target.value)
-                                )
+                                handleAmountChange(room, Number(e.target.value))
                               }
                             >
                               {Array.from(
@@ -946,14 +1015,30 @@ export default function HotelDetailPage() {
                       </Card.Body>
                     </Card>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </div>
 
             <div className="text-center mt-5">
               <Button
                 variant="primary"
-                onClick={() => navigate(Routers.BookingCheckPage)}
+                onClick={() => {
+                  if (selectedRooms.length == 0) {
+                    setErrorMessage(
+                      "Please select a room to proceed with your booking"
+                    );
+                    setShowModal(true);
+                  } else {
+                    dispatch({
+                      type: SearchActions.SAVE_SELECTED_ROOMS,
+                      payload: {
+                        selectedRooms: selectedRooms,
+                        hotelDetail: hotelDetail,
+                      },
+                    });
+                    navigate(Routers.BookingCheckPage);
+                  }
+                }}
                 style={{
                   padding: "0.8rem 4rem",
                   borderRadius: "30px",
@@ -973,36 +1058,25 @@ export default function HotelDetailPage() {
                 Book Now
               </Button>
             </div>
+            <ErrorModal
+              show={showModal}
+              onClose={() => {
+                setShowModal(false);
+              }}
+              message={errorMessage}
+            />
           </>
         )}
       </Container>
       {/* Other Hotels */}
-      <Container className="other-hotels-section position-relative">
-        <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
-          Special Offers Just For You
-        </h1>
 
-        {searchRoom ? (
-          <div className="text-center py-5">
-            <Spinner
-              animation="border"
-              role="status"
-              variant="primary"
-              style={{ width: "3rem", height: "3rem" }}
-            >
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-            <p className="mt-3" style={{ color: "#666", fontSize: "1.1rem" }}>
-              Loading Special Offers Rooms For you...
-            </p>
-          </div>
-        ) : shuffledHotels.length === 0 ? (
-          <div className="text-center w-100">
-            <p style={{ color: "#999", fontSize: "1.2rem" }}>
-              No rooms available for this hotel.
-            </p>
-          </div>
-        ) : (
+      {searchRoom ? (
+        <div></div>
+      ) : (
+        <Container className="other-hotels-section position-relative">
+          <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
+            Special Offers Just For You
+          </h1>
           <div style={{ position: "relative" }}>
             {/* Nút trái */}
             <Button
@@ -1162,8 +1236,8 @@ export default function HotelDetailPage() {
               })}
             </div>
           </div>
-        )}
-      </Container>
+        </Container>
+      )}
       <div
         className="d-flex flex-column"
         style={{
@@ -1437,35 +1511,73 @@ export default function HotelDetailPage() {
                           </div>
                           <p>{review.content}</p>
                           <div>
-                            <a
-                              variant="outline-primary"
+                            <span
                               className="p-0 me-3"
                               style={{
                                 textDecoration: "none",
-                                cursor: "pointer",
+                                cursor: review.likedBy.includes(Auth._id)
+                                  ? "pointer"
+                                  : "pointer",
                                 color: review.likedBy.includes(Auth._id)
                                   ? "blue"
-                                  : "black", // tô màu nếu đã like
+                                  : "black",
+                                userSelect: "none",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!review.likedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "#0d6efd";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!review.likedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "black";
+                                }
+                              }}
+                              onClick={() => {
+                                if (Auth._id !== -1) {
+                                  handleLike(review._id)
+                                } else {
+                                  navigate(Routers.LoginPage);
+                                }
                               }}
                             >
                               <FaThumbsUp className="me-2" />
                               {review.likedBy.length} like
-                            </a>
+                            </span>
 
-                            <a
-                              variant="outline-danger"
+                            <span
                               className="p-0"
                               style={{
                                 textDecoration: "none",
-                                cursor: "pointer",
+                                cursor: review.dislikedBy.includes(Auth._id)
+                                  ? "pointer"
+                                  : "pointer",
                                 color: review.dislikedBy.includes(Auth._id)
                                   ? "red"
-                                  : "black", // tô màu nếu đã dislike
+                                  : "black",
+                                userSelect: "none",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!review.dislikedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "#dc3545";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!review.dislikedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "black";
+                                }
+                              }}
+                              onClick={() => {
+                                if (Auth._id !== -1) {
+                                  handleDisLike(review._id)
+                                } else {
+                                  navigate(Routers.LoginPage);
+                                }
                               }}
                             >
                               <FaThumbsDown className="me-2" />
                               {review.dislikedBy.length} dislike
-                            </a>
+                            </span>
                           </div>
                         </Card.Body>
                       </Card>
@@ -1490,4 +1602,7 @@ export default function HotelDetailPage() {
       <Footer />
     </div>
   );
+
+
+
 }

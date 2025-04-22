@@ -22,6 +22,16 @@ const Factories = {
     const url = ApiConstants.FETCH_FEEDBACK_BY_HOTELID.replace(":hotelId", hotelId);
     return api.get(url, {params});  
   },
+
+  like_feedback: (feedbackId) => {
+    const url = `${ApiConstants.LIKE_FEEDBACK}/${feedbackId}`
+    return api.post(url);  
+  },
+  dislike_feedback: (feedbackId) => {
+    const url = `${ApiConstants.DISLIKE_FEEDBACK}/${feedbackId}`
+    return api.post(url);  
+  },
+  
 };
 
 export default Factories;
