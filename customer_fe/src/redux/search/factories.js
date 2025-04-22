@@ -9,6 +9,7 @@ const Factories = {
       checkoutDate: '',
       numberOfPeople: 0,
       page: 1,
+      limit: 3,
       star: 0,
       district: '',
       selectedFacilities: "",
@@ -32,6 +33,9 @@ const Factories = {
     }
     if(query.page){
       params.page= query.page
+    }
+    if(query.limit){
+      params.limit= query.limit
     }
     if(query.star){
       params.star= query.star

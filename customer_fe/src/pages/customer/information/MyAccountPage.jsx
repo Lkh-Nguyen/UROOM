@@ -11,7 +11,7 @@ import MyFeedback from "./components/MyFeedback";
 import FavoriteHotel from "./components/MyFavoriteHotel";
 import Banner from "../../../images/banner.jpg";
 import BookingHistory from "./components/BookingHistory";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
@@ -26,16 +26,23 @@ function MyAccountPage() {
   const { id } = location.state || {};
   const [indexActive, setIndexActive] = useState(0);
   console.log('id: ', id)
+  const navigate = useNavigate() // cần thêm dòng này
+
   useEffect(() => {
     const fetchIndex = async () => {
       const result = await getIndexMyAccountPage();
-      setIndexActive(Number(result)); // nhớ ép kiểu về số
+      setIndexActive(Number(result));
     };
+    if(id == undefined){
+      fetchIndex()
+    }
+  },[])
+  useEffect(() => {
     if (id != undefined) {
       setIndexActive(id);
-    }else{
-      fetchIndex();
     }
+    navigate(location.pathname, { replace: true })
+
   }, [location.state?.id]);
   
   const handleMenuClick = (index) => {
@@ -76,8 +83,8 @@ function MyAccountPage() {
                   <div className="avatar-circle">
                     <img
                       src={
-                        formData?.image?.url && formData?.image?.url !== ""
-                          ? formData?.image?.url
+                        Auth?.image?.url && Auth?.image?.url !== ""
+                          ? Auth?.image?.url
                           : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                       }
                       className="rounded-circle mb-2"
@@ -89,7 +96,7 @@ function MyAccountPage() {
                       alt="avatar"
                     />
                   </div>
-                  <h5 className="mt-2 mb-0">{formData.name}</h5>
+                  <h5 className="mt-2 mb-0">{Auth.name}</h5>
                   <small className="text-muted">Google</small>
                 </div>
                 <ListGroup variant="flush">

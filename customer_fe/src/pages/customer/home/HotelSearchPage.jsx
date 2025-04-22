@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import {
   Container,
@@ -44,6 +42,7 @@ import Factories from "../../../redux/search/factories";
 import { showToast, ToastProvider } from "../../../components/ToastContainer";
 import Pagination from "components/Pagination";
 import MapComponent from "pages/MapLocation";
+import AuthActions from "../../../redux/auth/actions";
 
 // Options for adults select
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -63,8 +62,6 @@ const HotelSearchPage = () => {
   }, []);
   const navigate = useNavigate();
   const [starFilter, setStarFilter] = useState(0);
-  const [priceRange, setPriceRange] = useState(1000);
-
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
   );
@@ -73,7 +70,7 @@ const HotelSearchPage = () => {
   const [selectedCity, setSelectedCity] = useState(
     cityOptionSelect.find(
       (option) => option.value === SearchInformation.address
-    ) || null
+    ) || ""
   );
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
@@ -92,8 +89,7 @@ const HotelSearchPage = () => {
   const dispatch = useDispatch();
 
   const [loading, setLoading] = useState(true);
-  const [searchHotel, setSearchHotel] = useState([]);
-  console.log("searchHotel: ", searchHotel);
+  const [searchHotel, setSearchHotel] = useState([]); 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [selectedFacilities, setSelectedFacilities] = useState([]);
@@ -116,22 +112,22 @@ const HotelSearchPage = () => {
     });
   };
 
-  useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const response = await Factories.searchHotel(searchParams);
-        if (response?.status === 200) {
-          setSearchHotel(response?.data.hotels);
-          setCurrentPage(response?.data.currentPage);
-          setTotalPages(response?.data.totalPages);
-        }
-      } catch (error) {
-        console.error("Error fetching hotels:", error);
-      } finally {
-        setLoading(false);
+  const fetchHotels = async () => {
+    try {
+      const response = await Factories.searchHotel(searchParams);
+      if (response?.status === 200) {
+        setSearchHotel(response?.data.hotels);
+        setCurrentPage(response?.data.currentPage);
+        setTotalPages(response?.data.totalPages);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchHotels();
   }, [searchParams, starFilter]);
 
@@ -240,8 +236,40 @@ const HotelSearchPage = () => {
 
   const [showModalMap, setShowModalMap] = useState(false);
   const [addressMap, setAddressMap] = useState("");
-  const [isFavorite, setIsFavorite] = useState(false); // Trạng thái yêu thích
 
+  const handleChangeFavorite= (isFavorite, hotelId) => {
+    if(isFavorite){
+      dispatch({
+        type: AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST,
+        payload: {
+          hotelId,
+          onSuccess: () => {
+            fetchHotels();
+          },
+          onFailed: (msg) => {
+          },
+          onError: (error) => {
+            console.error(error);
+          },
+        },
+      });
+    }else{
+      dispatch({
+        type: AuthActions.ADD_FAVORITE_HOTEL_REQUEST,
+        payload: {
+          hotelId,
+          onSuccess: () => {
+            fetchHotels();
+          },
+          onFailed: (msg) => {
+          },
+          onError: (error) => {
+            console.error(error);
+          },
+        },
+      });
+    }
+  }
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -626,7 +654,7 @@ const HotelSearchPage = () => {
                                   height: "35px",
                                   borderRadius: "50%",
                                   borderWidth: "2px",
-                                  borderColor: isFavorite ? "red" : "white",
+                                  borderColor: hotel.isFavorite ? "red" : "white",
                                   borderStyle: "solid", // Thêm dòng này
                                   position: "absolute",
                                   top: 10,
@@ -637,10 +665,10 @@ const HotelSearchPage = () => {
                                 }}
                               >
                                 <FaHeart
-                                  onClick={() => setIsFavorite(!isFavorite)}
+                                  onClick={()=> handleChangeFavorite(hotel.isFavorite, inforHotel._id)}
                                   style={{
                                     fontSize: "20px",
-                                    color: isFavorite ? "red" : "white",
+                                    color: hotel.isFavorite ? "red" : "white",
                                     cursor: "pointer",
                                   }}
                                 />
@@ -654,7 +682,7 @@ const HotelSearchPage = () => {
                                 alt={hotel.name || "Unnamed Hotel"}
                                 className="img-fluid rounded-start hotel-image"
                                 style={{ 
-                                  height: "100%", 
+                                  height: "350px",
                                   objectFit: "cover",
                                   userSelect: "none"
                                 }}
@@ -803,7 +831,7 @@ const HotelSearchPage = () => {
                                   }}
                                   variant="primary"
                                   onClick={() => {
-                                    navigate(`${Routers.Home_detail}?hotel_id=${inforHotel._id}`);
+                                    navigate(`${Routers.Home_detail}/${inforHotel._id}`)
                                   }}
                                 >
                                   Booking Room

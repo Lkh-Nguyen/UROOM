@@ -1,14 +1,13 @@
-
 const Hotel = require("../../models/hotel");
 const User = require("../../models/user");
 const asyncHandler = require("../../middlewares/asyncHandler");
+const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
-
 
 // exports.getAllHotels = asyncHandler(async (req, res) => {
 //     const {page= 1, limit= 5}= req.query;
 
-//     const query = {}; 
+//     const query = {};
 
 //     // 📄 Pagination
 //     const pageNum = parseInt(page);
@@ -35,9 +34,8 @@ require("../../models/hotelFacility");
 //   });
 // });
 
-
 exports.getAllHotels = asyncHandler(async (req, res) => {
-    const hotels = await Hotel.find().populate("services").populate("facilities");
+  const hotels = await Hotel.find().populate("services").populate("facilities");
 
   if (hotels.length === 0) {
     return res.status(404).json({
@@ -52,8 +50,9 @@ exports.getAllHotels = asyncHandler(async (req, res) => {
     message: "Get all hotels success",
   });
 });
+
 exports.getHotelsByIds = asyncHandler(async (req, res) => {
-  const { ids } = req.body; 
+  const { ids, params } = req.body;
 
   if (!ids || !Array.isArray(ids)) {
     return res.status(400).json({
@@ -62,16 +61,61 @@ exports.getHotelsByIds = asyncHandler(async (req, res) => {
     });
   }
 
-  const hotels = await Hotel.find({ _id: { $in: ids } })
+  const { star, address, district } = params || {};
+  let query = {
+    _id: { $in: ids },
+  };
+
+  if (star) {
+    if (star === "0") {
+    } else if (/^\d$/.test(star) && Number(star) >= 1 && Number(star) <= 5) {
+      // Nếu star là một số từ 1 đến 5
+      query.star = Number(star);
+    }
+  }
+
+  // Thêm điều kiện $and nếu có address hoặc district
+  const andConditions = [];
+
+  if (address) {
+    andConditions.push({ address: { $regex: address, $options: "i" } });
+  }
+
+  if (district) {
+    andConditions.push({ address: { $regex: district, $options: "i" } });
+  }
+
+  if (andConditions.length > 0) {
+    query.$and = andConditions;
+  }
+
+  // Tìm kiếm theo query đã build
+  const listHotels = await Hotel.find(query)
     .populate("services")
     .populate("facilities");
 
+    console.log("hotel: ", listHotels)
+  // Tính trung bình rating
+  const finalHotelTemps = await Promise.all(
+    listHotels.map(async (hotel) => {
+      const { avgValueRating, totalFeedbacks } = await calculateAvgRatingHotel(
+        hotel._id
+      );
+      return {
+        avgValueRating,
+        totalFeedbacks,
+        hotel,
+      };
+    })
+  );
+
   return res.status(200).json({
     error: false,
-    hotels,
-    message: "Get favorite hotels success",
+    hotels: finalHotelTemps,
+    message: "Get filtered hotels success",
   });
 });
+
 exports.removeFavoriteHotel = asyncHandler(async (req, res) => {
   const userId = req.user._id; // Lấy từ token
   const { hotelId } = req.body;
@@ -123,7 +167,6 @@ exports.addFavoriteHotel = asyncHandler(async (req, res) => {
     });
   }
 
-
   const hotelExists = await Hotel.findById(hotelId);
   if (!hotelExists) {
     return res.status(404).json({
@@ -132,14 +175,12 @@ exports.addFavoriteHotel = asyncHandler(async (req, res) => {
     });
   }
 
-  
   if (user.favorites.includes(hotelId)) {
     return res.status(409).json({
       error: true,
       message: "Hotel is already in favorites",
     });
   }
-
 
   user.favorites.push(hotelId);
   await user.save();
@@ -152,7 +193,14 @@ exports.addFavoriteHotel = asyncHandler(async (req, res) => {
 });
 
 exports.getHotelDetails = asyncHandler(async (req, res) => {
-  const { hotelId } = req.params; 
+  const { hotelId } = req.params;
+  let user = null;
+  if (req.user && req.user._id) {
+    user = await User.findById(req.user._id);
+    if (!user) {
+      console.warn("User from token not found, proceeding without user.");
+    }
+  }
 
   if (!hotelId) {
     return res.status(400).json({
@@ -162,6 +210,7 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
   }
 
   const hotel = await Hotel.findById(hotelId)
+    .populate("owner")
     .populate("services")
     .populate("facilities");
 
@@ -171,17 +220,17 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
       message: "Hotel not found",
     });
   }
+  let isFavorite= false;
+  if(user){
+    isFavorite = user
+    ? user.favorites.includes(hotel._id.toString())
+    : false;
+  }
 
   return res.status(200).json({
     error: false,
+    isFavorite,
     hotel,
     message: "Get hotel details success",
   });
 });
-
-
-
-
-
-
-

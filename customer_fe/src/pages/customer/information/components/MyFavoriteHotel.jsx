@@ -1,185 +1,3 @@
-// import {
-//   Card,
-//   Row,
-//   Col,
-//   Form,
-//   Button,
-//   Pagination,
-//   Container,
-// } from "react-bootstrap";
-// import { FaMapMarkerAlt, FaEye } from "react-icons/fa";
-// import "../../../../css/customer/MyFavoriteHotel.css";
-// import { useState } from "react";
-// import { Star, StarFill, X } from "react-bootstrap-icons";
-// import { useNavigate } from "react-router-dom";
-// import * as Routers from "../../../../utils/Routes";
-// import { showToast, ToastProvider } from "components/ToastContainer";
-// import ConfirmationModal from "components/ConfirmationModal";
-// import { useAppSelector } from "../../../../redux/store";
-
-// const MyFavoriteHotel = () => {
-//   const navigate = useNavigate();
-//   const Auth = useAppSelector((state) => state.Auth.Auth);
-//   const [formData, setFormData] = useState(Auth);
-//   const hotels = [
-//     {
-//       id: 1,
-//       name: "Balcona Nice Try Hotel Da Nang",
-//       image: "/placeholder.svg?height=200&width=300",
-//       address: "850/7 Tran Cao Van Street, Xuan Ha, Thanh Khe, Da Nang",
-//       rating: 3.2,
-//       feedbacks: 1,
-//       stars: 4,
-//     },
-//     {
-//       id: 2,
-//       name: "Novotel Hotel Da Nang",
-//       image: "/placeholder.svg?height=200&width=300",
-//       address: "70 Ho Huy Tap, Thanh Khe Dong, Thanh Khe, Da Nang",
-//       rating: 4.1,
-//       feedbacks: 12,
-//       stars: 5,
-//     },
-//   ];
-//   const [activePage, setActivePage] = useState(1);
-//   const renderStars = (count) => {
-//     const stars = [];
-//     for (let i = 0; i < 5; i++) {
-//       if (i < count) {
-//         stars.push(<StarFill key={i} className="text-warning" />);
-//       } else {
-//         stars.push(<Star key={i} className="text-warning" />);
-//       }
-//     }
-//     return stars;
-//   };
-//   const [showAcceptModal, setShowAcceptModal] = useState(false);
-//   return (
-//     <Container fluid className="bg-light py-4">
-//       <h2 className="fw-bold mb-4">My Favorite Hotels</h2>
-//       <h1>{formData.favorites}</h1>
-//       <Row className="mb-4 align-items-center">
-//         <Col xs="auto">
-//           <span className="me-2">Filter:</span>
-//         </Col>
-//         <Col xs="auto">
-//           <Form.Select className="border-primary" style={{ width: "200px" }}>
-//             <option>Score(High to low)</option>
-//             <option>Score(Low to high)</option>
-//             <option>Date(Newest first)</option>
-//             <option>Date(Oldest first)</option>
-//           </Form.Select>
-//         </Col>
-//         <Col xs="auto">
-//           <Form.Select className="border-primary" style={{ width: "120px" }}>
-//             <option>1 star</option>
-//             <option>2 stars</option>
-//             <option>3 stars</option>
-//             <option>4 stars</option>
-//             <option>5 stars</option>
-//           </Form.Select>
-//         </Col>
-//         <Col xs="auto">
-//           <Form.Select className="border-primary" style={{ width: "140px" }}>
-//             <option>Đà Nẵng</option>
-//             <option>Huế</option>
-//             <option>Hải Phòng</option>
-//             <option>Hà Nội</option>
-//             <option>Hồ Chí Minh</option>
-//           </Form.Select>
-//         </Col>
-//       </Row>
-//       <Row className="m-4">
-//         <Col md={12}>
-//           {hotels.map((hotel) => (
-//             <Card key={hotel.id} className="mb-4 hotel-card">
-//               <Row className="g-0">
-//                 <Col md={4}>
-//                   <Card.Img
-//                     variant="top"
-//                     src="https://cf.bstatic.com/xdata/images/hotel/max1024x768/629251764.jpg?k=050e0b7a57991869eb2c714c9191d7eea3a712e3a37b66f665be9816c9a87b6c&o=&hp=1"
-//                     className="hotel-image"
-//                   />
-//                 </Col>
-//                 <Col md={8}>
-//                   <Card.Body>
-//                     <Card.Title className="hotel-name">{hotel.name}</Card.Title>
-//                     <div className="stars mb-2">{renderStars(hotel.stars)}</div>
-//                     <div className="location mb-2">
-//                       <FaMapMarkerAlt className="me-1" />
-//                       <small>{hotel.address}</small>
-//                     </div>
-//                     <div className="d-flex align-items-center mb-2">
-//                       <span className="rating-box1 me-2">{hotel.rating}</span>
-//                       <span className="text-muted">
-//                         {hotel.feedbacks} feedbacks
-//                       </span>
-//                     </div>
-//                     <Button
-//                       variant="link"
-//                       className="view-detail p-0"
-//                       style={{ fontSize: 16 }}
-//                       onClick={() => {
-//                         navigate(Routers.Home_detail);
-//                       }}
-//                     >
-//                       <FaEye className="me-1" />
-//                       View Detail Hotel
-//                     </Button>
-//                     <Button
-//                       variant="link"
-//                       className="text-dark p-0"
-//                       style={{ position: "absolute", top: 5, right: 5 }}
-//                       onClick={() => {setShowAcceptModal(true)}}
-//                     >
-//                       <X size={20} />
-//                     </Button>
-//                   </Card.Body>
-//                 </Col>
-//               </Row>
-//               {/* Accept Confirmation Modal */}
-//               <ConfirmationModal
-//                 show={showAcceptModal}
-//                 onHide={() => setShowAcceptModal(false)}
-//                 onConfirm={() =>{
-//                   showToast.warning("Delete Hotel Successfully!");
-//                 }}
-//                 title="Confirm Delete"
-//                 message="Are you sure you want to delete hotel in list favorite hotels ?"
-//                 confirmButtonText="Accept"
-//                 type="danger"
-//               />
-
-//             </Card>
-//           ))}
-//           <div className="d-flex justify-content-center mt-4">
-//             <Pagination>
-//               {[1, 2, 3, 4].map((number) => (
-//                 <Pagination.Item
-//                   key={number}
-//                   active={number === activePage}
-//                   onClick={() => setActivePage(number)}
-//                 >
-//                   <b
-//                     style={{
-//                       color: number === activePage ? "white" : "#0d6efd",
-//                     }}
-//                   >
-//                     {number}
-//                   </b>
-//                 </Pagination.Item>
-//               ))}
-//             </Pagination>
-//           </div>
-//           <ToastProvider/>
-//         </Col>
-//       </Row>
-//     </Container>
-//   );
-// };
-
-// export default MyFavoriteHotel;
-
 import {
   Card,
   Row,
@@ -188,6 +6,7 @@ import {
   Pagination,
   Container,
   Spinner,
+  Form,
 } from "react-bootstrap";
 import { FaMapMarkerAlt, FaEye } from "react-icons/fa";
 import "../../../../css/customer/MyFavoriteHotel.css";
@@ -199,12 +18,43 @@ import { showToast, ToastProvider } from "components/ToastContainer";
 import ConfirmationModal from "components/ConfirmationModal";
 import { useAppSelector, useAppDispatch } from "../../../../redux/store";
 import HotelActions from "../../../../redux/hotel/actions";
+import AuthActions from "../../../../redux/auth/actions";
+import Select from "react-select";
+import { cityOptionSelect, districtsByCity } from "utils/data";
+
+const starOptions = [
+  { value: "0", label: "All stars" },
+  { value: "1", label: "1 star" },
+  { value: "2", label: "2 stars" },
+  { value: "3", label: "3 stars" },
+  { value: "4", label: "4 stars" },
+  { value: "5", label: "5 stars" },
+];
+const customStyles = {
+  control: (provided, state) => ({
+    ...provided,
+    border: state.isFocused ? "1px solid #0d6efd" : "1px solid #ced4da",
+    boxShadow: state.isFocused
+      ? "0 0 0 0.25rem rgba(13, 110, 253, 0.25)"
+      : "none",
+    borderRadius: "0.375rem",
+    backgroundColor: "#fff",
+    padding: "2px 4px",
+    transition: "border 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+    minHeight: "40px",
+    fontSize: "0.95rem",
+  }),
+  placeholder: (provided) => ({
+    ...provided,
+    color: "#6c757d",
+  }),
+};
 
 const MyFavoriteHotel = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const Auth = useAppSelector((state) => state.Auth.Auth);
-
+  console.log("Auth: ", Auth);
   const [hotels, setHotels] = useState([]);
   const [activePage, setActivePage] = useState(1);
   const [showAcceptModal, setShowAcceptModal] = useState(false);
@@ -212,17 +62,26 @@ const MyFavoriteHotel = () => {
   const [loading, setLoading] = useState(false);
 
   const itemsPerPage = 3;
-
+  const [selectedCity, setSelectedCity] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedStar, setSelectedStar] = useState(starOptions[0]); // default là "All"
+  const [paramsQuery, setParamQuery] = useState({
+    selectedCity,
+    selectedDistrict,
+    selectedStar: selectedStar.value,
+  });
   useEffect(() => {
     const favoriteHotelIds = Auth?.favorites || [];
-
     if (favoriteHotelIds.length > 0) {
       setLoading(true);
       dispatch({
         type: HotelActions.FETCH_FAVORITE_HOTELS,
         payload: {
           ids: favoriteHotelIds,
+          paramsQuery: paramsQuery,
+
           onSuccess: (data) => {
+            console.log(data);
             setHotels(data);
             setLoading(false);
           },
@@ -231,11 +90,11 @@ const MyFavoriteHotel = () => {
     } else {
       setHotels([]);
     }
-  }, [dispatch, Auth?.favorites]);
+  }, [dispatch, Auth?.favorites, paramsQuery]);
 
   const handleDelete = (hotelId) => {
     dispatch({
-      type: HotelActions.REMOVE_FAVORITE_HOTEL_REQUEST,
+      type: AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST,
       payload: {
         hotelId,
         onSuccess: () => {
@@ -278,7 +137,64 @@ const MyFavoriteHotel = () => {
   return (
     <Container fluid className="bg-light py-4">
       <h2 className="fw-bold mb-4">My Favorite Hotels</h2>
-
+      <Row className="m-4">
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="mb-2">City</Form.Label>
+            <Select
+              options={cityOptionSelect}
+              value={selectedCity}
+              onChange={(option) => {
+                setSelectedCity(option);
+                setSelectedDistrict("");
+                setParamQuery({ 
+                  ...paramsQuery, 
+                  selectedCity: option.value,
+                  selectedDistrict: ""
+                });
+              }}
+              placeholder="Select City"
+              isSearchable
+              styles={customStyles}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="mb-2">District</Form.Label>
+            <Select
+              options={districtsByCity[selectedCity?.value] || []}
+              value={selectedDistrict}
+              onChange={(option) => {
+                setSelectedDistrict(option);
+                setParamQuery({
+                  ...paramsQuery,
+                  selectedDistrict: option.value,
+                });
+              }}
+              placeholder="Select District"
+              isSearchable
+              styles={customStyles}
+            />
+          </Form.Group>
+        </Col>
+        <Col md={4}>
+          <Form.Group>
+            <Form.Label className="mb-2">Stars</Form.Label>
+            <Select
+              options={starOptions}
+              value={selectedStar}
+              onChange={(option) => {
+                setSelectedStar(option);
+                setParamQuery({ ...paramsQuery, selectedStar: option.value });
+              }}
+              placeholder="Select star"
+              isSearchable
+              styles={customStyles}
+            />
+          </Form.Group>
+        </Col>
+      </Row>
       <Row className="m-4">
         <Col md={12}>
           {loading ? (
@@ -287,16 +203,17 @@ const MyFavoriteHotel = () => {
             </div>
           ) : hotelsToShow.length > 0 ? (
             hotelsToShow.map((hotel) => (
-              <Card key={hotel._id} className="mb-4 hotel-card">
+              <Card key={hotel.hotel._id} className="mb-4 hotel-card">
                 <Row className="g-0">
                   <Col md={4}>
                     <Card.Img
                       variant="top"
                       src={
-                        hotel.images && hotel.images.length > 0
-                          ? hotel.images[0]
+                        hotel.hotel.images && hotel.hotel.images.length > 0
+                          ? hotel.hotel.images[0]
                           : "/placeholder.svg?height=200&width=300"
                       }
+                      style={{ height: "220px" }}
                       className="hotel-image"
                     />
                   </Col>
@@ -304,27 +221,55 @@ const MyFavoriteHotel = () => {
                   <Col md={8}>
                     <Card.Body>
                       <Card.Title className="hotel-name">
-                        {hotel.hotelName}
+                        {hotel.hotel.hotelName}
                       </Card.Title>
                       <div className="stars mb-2">
-                        {renderStars(hotel.star)}
+                        {renderStars(hotel.hotel.star)}
                       </div>
                       <div className="location mb-2">
                         <FaMapMarkerAlt className="me-1" />
-                        <small>{hotel.address}</small>
+                        <small>{hotel.hotel.address}</small>
                       </div>
                       <div className="d-flex align-items-center mb-2">
-                        <span className="rating-box1 me-2">{hotel.rating}</span>
-                        <span className="text-muted">
-                          {hotel.feedbacks} feedbacks
-                        </span>
+                        <p style={{ marginTop: "15px" }}>
+                          {hotel.totalFeedbacks > 0 ? (
+                            <>
+                              <span
+                                className="rating-box p-2"
+                                style={{
+                                  display: "inline-flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  width: "30px",
+                                  height: "30px",
+                                  backgroundColor: "#FFC107",
+                                  borderRadius: "20%",
+                                  color: "white",
+                                  fontWeight: "bold",
+                                  fontSize: "14px",
+                                  textAlign: "center",
+                                  marginRight: "8px",
+                                }}
+                              >
+                                {hotel.avgValueRating.toFixed(1)}
+                              </span>
+                              <span className="text-muted">
+                                {hotel.totalFeedbacks} feedbacks about hotel
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-muted">
+                              No feedback about hotel
+                            </span>
+                          )}
+                        </p>
                       </div>
                       <Button
                         variant="link"
-                        className="view-detail p-0"
-                        style={{ fontSize: 16 }}
+                        className="view-detail d-flex align-items-center gap-1 p-0 text-primary fw-medium"
+                        style={{ fontSize: "16px", textDecoration: "none" }}
                         onClick={() =>
-                          navigate(`${Routers.Home_detail}/${hotel._id}`)
+                          navigate(`${Routers.Home_detail}/${hotel.hotel._id}`)
                         }
                       >
                         <FaEye className="me-1" />
@@ -335,7 +280,7 @@ const MyFavoriteHotel = () => {
                         className="text-dark p-0"
                         style={{ position: "absolute", top: 5, right: 5 }}
                         onClick={() => {
-                          setSelectedHotelId(hotel._id);
+                          setSelectedHotelId(hotel.hotel._id);
                           setShowAcceptModal(true);
                         }}
                       >
@@ -347,14 +292,18 @@ const MyFavoriteHotel = () => {
               </Card>
             ))
           ) : (
-            <div className="text-center text-muted">
+            <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
               <img
                 src="/empty-state.svg"
                 alt="No data"
-                height={150}
-                style={{ opacity: 0.6 }}
+                height={170}
+                style={{ opacity: 0.6, transition: "opacity 0.3s" }}
+                onMouseOver={(e) => (e.currentTarget.style.opacity = 0.8)}
+                onMouseOut={(e) => (e.currentTarget.style.opacity = 0.6)}
               />
-              <p className="mt-3">You haven't saved any favorite hotel yet.</p>
+              <p className="mt-4 text-secondary fs-5">
+                You haven't saved any favorite hotel yet.
+              </p>
             </div>
           )}
 
@@ -383,9 +332,7 @@ const MyFavoriteHotel = () => {
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
                 <Pagination.Prev
-                  onClick={() =>
-                    setActivePage((prev) => Math.max(prev - 1, 1))
-                  }
+                  onClick={() => setActivePage((prev) => Math.max(prev - 1, 1))}
                   disabled={activePage === 1}
                 />
 
@@ -407,8 +354,7 @@ const MyFavoriteHotel = () => {
                       >
                         <b
                           style={{
-                            color:
-                              number === activePage ? "white" : "#0d6efd",
+                            color: number === activePage ? "white" : "#0d6efd",
                           }}
                         >
                           {number}

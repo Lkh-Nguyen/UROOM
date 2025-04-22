@@ -186,7 +186,7 @@ async function seedUsers() {
         cmnd: "047003012311",
         image: {
           public_ID: "avatar_customer1",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+          url: "https://cdn11.dienmaycholon.vn/filewebdmclnew/public/userupload/files/Image%20FP_2024/avatar-cute-54.png"
         },
       },
       {
@@ -197,11 +197,56 @@ async function seedUsers() {
         phoneNumber: "0934726072",
         address: "456 Hùng Vương, Đà Nẵng",
         isVerified: true,
-        isLocked: true,
+        isLocked: false,
         cmnd: "047003012312",
         image: {
           public_ID: "avatar_customer2",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+          url: "https://i.pinimg.com/736x/00/40/22/00402207be828983fee5889803fd5d00.jpg"
+        },
+      },
+      {
+        name: "Nguyễn Văn C",
+        email: "cus3@gm.com",
+        password: "12345678",
+        role: "CUSTOMER",
+        phoneNumber: "0934726071",
+        address: "123 Trần Cao Vân, Đà Nẵng",
+        isVerified: true,
+        isLocked: false,
+        cmnd: "047003012311",
+        image: {
+          public_ID: "avatar_customer1",
+          url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-58.jpg"
+        },
+      },
+      {
+        name: "Nguyễn Văn D",
+        email: "cus4@gm.com",
+        password: "12345678",
+        role: "CUSTOMER",
+        phoneNumber: "0934726072",
+        address: "456 Hùng Vương, Đà Nẵng",
+        isVerified: true,
+        isLocked: false,
+        cmnd: "047003012312",
+        image: {
+          public_ID: "avatar_customer2",
+          url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-53.jpg"
+        },
+      },
+      {
+        name: "Nguyễn Văn E",
+        email: "cus5@gm.com",
+        password: "12345678",
+        role: "CUSTOMER",
+        phoneNumber: "0934726072",
+        address: "456 Hùng Vương, Đà Nẵng",
+        isVerified: true,
+        isLocked: false,
+        cmnd: "047003012312",
+        image: {
+          public_ID: "avatar_customer2",
+          url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-71.jpg"
         },
       },
     ];

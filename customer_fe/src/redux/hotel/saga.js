@@ -4,10 +4,10 @@ import Factories from "./factories";
 
 function* getFavoriteHotels() {
   yield takeEvery(HotelActions.FETCH_FAVORITE_HOTELS, function* (action) {
-    const { ids, onSuccess, onFailed, onError } = action.payload;
+    const { ids,paramsQuery, onSuccess, onFailed, onError } = action.payload;
 
     try {
-      const response = yield call(() => Factories.fetch_favorite_hotel(ids));
+      const response = yield call(() => Factories.fetch_favorite_hotel(ids, paramsQuery));
 
       console.log('status: ', response?.status);
       console.log('data: ', response?.data?.hotels);
@@ -37,53 +37,21 @@ function* getFavoriteHotels() {
     }
   });
 }
-function* removeFavoriteHotel() {
-  yield takeEvery(HotelActions.REMOVE_FAVORITE_HOTEL_REQUEST, function* (action) {
-    const { hotelId, onSuccess, onFailed, onError } = action.payload;
 
-    try {
-      const response = yield call(() => Factories.remove_favorite_hotel(hotelId));
-
-      console.log('Remove favorite hotel status:', response?.status);
-
-      if (response?.status === 200) {
-        yield put({
-          type: HotelActions.REMOVE_FAVORITE_HOTEL_SUCCESS,
-          payload: hotelId, 
-        });
-
-        onSuccess?.();
-      } else {
-        onFailed?.(response?.data?.message || "Failed to remove favorite hotel");
-      }
-    } catch (error) {
-      const status = error.response?.status;
-      const msg = error.response?.data?.message || "Something went wrong";
-
-      console.log("Remove favorite hotel error status:", status);
-      console.log("Remove favorite hotel error message:", msg);
-
-      if (status >= 500) {
-        onError?.(error);
-      } else {
-        onFailed?.(msg);
-      }
-    }
-  });
-}
 function* getHotelDetails() {
   yield takeEvery(HotelActions.FETCH_DETAIL_HOTEL, function* (action) {
-    const { hotelId, onSuccess, onFailed, onError } = action.payload;
+    const { hotelId, userId, onSuccess, onFailed, onError } = action.payload;
 
     try {
-      const response = yield call(() => Factories.fetch_detail_hotel(hotelId));
+      const response = yield call(() => Factories.fetch_detail_hotel(hotelId, userId));
       if (response?.status === 200) {
         const hotel = response.data.hotel;
+        const isFavorite= response.data.isFavorite;
         yield put({
           type: HotelActions.FETCH_DETAIL_HOTEL_SUCCESS,
           payload: hotel,
         });
-        onSuccess?.(hotel);
+        onSuccess?.(hotel, isFavorite);
       } else {
         onFailed?.("Failed to fetch hotel details");
       }
@@ -137,7 +105,6 @@ function* getAllHotels() {
 export default function* userSaga() {
   yield all([
     fork(getFavoriteHotels),
-    fork(removeFavoriteHotel),
     fork(getHotelDetails),
     fork(getAllHotels),
   ]);
