@@ -860,7 +860,7 @@ for (let i = 0; i < 50; i++) {
       images.push(randomImage);
     }
 
-    let shuffledFacilities = hotelfacilityIds
+    let shuffledFacilities = roomFacilityIds
       .map((facility) => ({ facility, sort: Math.random() })) // Thêm giá trị ngẫu nhiên
       .sort((a, b) => a.sort - b.sort) // Sắp xếp theo giá trị ngẫu nhiên
       .slice(0, Math.floor(Math.random() * 3) + 3) // Chọn từ 3-5 phần tử

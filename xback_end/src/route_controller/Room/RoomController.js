@@ -1,8 +1,8 @@
-const Room = require('../../models/room');
-const Hotel = require('../../models/hotel');
-const RoomFacility = require('../../models/roomFacility');
-const Bed = require('../../models/bed');
-const reservation = require('../../models/reservation');
+const Room = require("../../models/room");
+const Hotel = require("../../models/hotel");
+const RoomFacility = require("../../models/roomFacility");
+const Bed = require("../../models/bed");
+const reservation = require("../../models/reservation");
 
 const getRoomsByHotel = async (req, res) => {
   const { hotelId } = req.params;
@@ -12,7 +12,8 @@ const getRoomsByHotel = async (req, res) => {
   if (!hotelId || !checkInDate || !checkOutDate) {
     return res.status(400).json({
       error: true,
-      message: "Missing required fields (hotelId, checkInDate, or checkOutDate).",
+      message:
+        "Missing required fields (hotelId, checkInDate, or checkOutDate).",
     });
   }
   try {
@@ -23,31 +24,34 @@ const getRoomsByHotel = async (req, res) => {
     const skip = (pageNumber - 1) * limitNumber;
 
     // Fetch overlapping reservations
-    const overlappingReservations = await reservation.find({
-      hotel: hotelId,
-      status: { $nin: ["CANCELLED", "COMPLETED"] },
-      $and: [
-        { checkInDate: { $lt: selectedCheckOut } },
-        { checkOutDate: { $gt: selectedCheckIn } },
-      ],
-    }).populate("rooms.room");
+    const overlappingReservations = await reservation
+      .find({
+        hotel: hotelId,
+        status: { $nin: ["CANCELLED", "COMPLETED"] },
+        $and: [
+          { checkInDate: { $lt: selectedCheckOut } },
+          { checkOutDate: { $gt: selectedCheckIn } },
+        ],
+      })
+      .populate("rooms.room");
 
     // Get all rooms for this hotel
     const allRooms = await Room.find({ hotel: hotelId });
 
     // Calculate total booked quantity per room
     const roomBookedQuantities = {};
-    overlappingReservations.forEach(res => {
-      res.rooms.forEach(roomItem => {
+    overlappingReservations.forEach((res) => {
+      res.rooms.forEach((roomItem) => {
         const roomId = roomItem.room._id.toString();
         const quantity = roomItem.quantity;
-        roomBookedQuantities[roomId] = (roomBookedQuantities[roomId] || 0) + quantity;
+        roomBookedQuantities[roomId] =
+          (roomBookedQuantities[roomId] || 0) + quantity;
       });
     });
 
     // Determine available rooms with remaining quantity
     const availableRooms = allRooms
-      .map(room => {
+      .map((room) => {
         const booked = roomBookedQuantities[room._id.toString()] || 0;
         const available = room.quantity - booked;
         return {
@@ -55,7 +59,7 @@ const getRoomsByHotel = async (req, res) => {
           availableQuantity: available,
         };
       })
-      .filter(room => room.availableQuantity > 0);
+      .filter((room) => room.availableQuantity > 0);
 
     // Apply pagination
     const paginatedRooms = availableRooms.slice(skip, skip + limitNumber);
@@ -78,7 +82,29 @@ const getRoomsByHotel = async (req, res) => {
     });
   }
 };
+const getRoomById = async (req, res) => {
+  const { roomId } = req.params;
 
+  try {
+    const room = await Room.findById(roomId)
+      .populate("hotel")
+      .populate("facilities")
+      .populate("bed.bed", "bedType capacity name");
+  
+
+    if (!room) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy phòng với ID đã cung cấp." });
+    }
+
+    res.status(200).json({ room });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin phòng:", error);
+    res.status(500).json({ message: "Đã xảy ra lỗi khi lấy thông tin phòng." });
+  }
+};
 module.exports = {
   getRoomsByHotel,
+  getRoomById,
 };

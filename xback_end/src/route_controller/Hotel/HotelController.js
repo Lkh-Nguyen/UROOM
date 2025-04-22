@@ -62,16 +62,12 @@ exports.getHotelsByIds = asyncHandler(async (req, res) => {
   }
 
   const { star, address, district } = params || {};
-
-  // Khởi tạo query cơ bản với điều kiện lọc theo ids
   let query = {
     _id: { $in: ids },
   };
 
-  // Thêm điều kiện lọc theo sao
   if (star) {
     if (star === "0") {
-      // Không lọc theo star
     } else if (/^\d$/.test(star) && Number(star) >= 1 && Number(star) <= 5) {
       // Nếu star là một số từ 1 đến 5
       query.star = Number(star);
@@ -214,6 +210,7 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
   }
 
   const hotel = await Hotel.findById(hotelId)
+    .populate("owner")
     .populate("services")
     .populate("facilities");
 

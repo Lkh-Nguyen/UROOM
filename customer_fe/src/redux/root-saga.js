@@ -4,6 +4,8 @@ import AuthSaga from './auth/saga';
 import SearchSaga from './search/saga';
 import HotelSaga from './hotel/saga';
 import RoomSaga from './room/saga';
+import FeedbackSaga from './feedback/saga';
+import ReservationSaga from './reservations/saga';
 
 export default function* rootSaga() {
   yield all([
@@ -11,5 +13,7 @@ export default function* rootSaga() {
     SearchSaga(),
     HotelSaga(),
     RoomSaga(),
+    FeedbackSaga(),
+    ReservationSaga()
   ]);
 }

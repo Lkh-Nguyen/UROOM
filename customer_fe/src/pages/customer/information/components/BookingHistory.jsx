@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Row,
   Col,
   Card,
-  Badge,
   Button,
   Pagination,
   Form,
@@ -16,23 +15,20 @@ import CancelReservationModal from "pages/customer/home/components/CancelReserva
 import { showToast, ToastProvider } from "components/ToastContainer";
 import { getStatusBooking, setStatusBooking } from "utils/handleToken";
 import Select from "react-select";
-import { set } from "date-fns";
-
+import { useAppSelector, useAppDispatch } from "../../../../redux/store";
+import ReservationActions from "../../../../redux/reservations/actions";
 const BookingHistory = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const Auth = useAppSelector((state) => state.Auth.Auth);
   const [activeFilter, setActiveFilter] = useState(0);
   const [dateFilter, setDateFilter] = useState("NEWEST");
   const [activePage, setActivePage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-
-  useEffect(() => {
-    const fetchIndex = async () => {
-      const result = await getStatusBooking();
-      setActiveFilter(Number(result)); // nhớ ép kiểu về số
-    };
-    fetchIndex();
-    console.log("abc");
-  }, []);
+  const [selectedReservation, setSelectedReservation] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [filterBill, setFilterBill] = useState([]);
+  const [reservations, setReservations] = useState([]);
 
   // Filter options
   const filters = [
@@ -54,137 +50,95 @@ const BookingHistory = () => {
     "#FD7E14", // NOT PAID - Cam đậm (chưa thanh toán, cảnh báo)
     "#DC3545", // CANCELLED - Đỏ (hủy bỏ, lỗi)
   ];
-  // Sample reservation data
-  const reservations = [
-    {
-      id: "01",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "BOOKED",
-    },
-    {
-      id: "02",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "BOOKED",
-    },
-    {
-      id: "03",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "BOOKED",
-    },
-    {
-      id: "04",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CHECKED IN",
-    },
-    {
-      id: "05",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CHECKED IN",
-    },
-    {
-      id: "06",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CHECKED OUT",
-    },
 
-    {
-      id: "07",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CHECKED OUT",
-    },
-    {
-      id: "08",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "COMPLETED",
-    },
-    {
-      id: "09",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "COMPLETED",
-    },
-    {
-      id: "10",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "PENDING",
-    },
-    {
-      id: "12",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "PENDING",
-    },
-    {
-      id: "13",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CANCELLED",
-    },
-    {
-      id: "14",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "CANCELLED",
-    },
-    {
-      id: "15",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "NOT PAID",
-    },
-    {
-      id: "16",
-      hotelName: "Ha Noi Note",
-      checkIn: "12/03/2024",
-      checkOut: "12/03/2024",
-      totalPrice: "$12,230",
-      status: "NOT PAID",
-    },
-  ];
-  const [filterBill, setFilterBill] = useState([]);
+  // useEffect(() => {
+  //   const fetchIndex = async () => {
+  //     const result = await getStatusBooking()
+  //     setActiveFilter(Number(result)) // nhớ ép kiểu về số
+  //   }
+  //   fetchIndex()
+  // }, [])
+
+  // Fetch user reservations from API
+  useEffect(() => {
+    fetchUserReservations();
+  }, dispatch);
+
+  const fetchUserReservations = () => {
+    setIsLoading(true);
+    dispatch({
+      type: ReservationActions.FETCH_USER_RESERVATIONS,
+      payload: {
+        userId: Auth?.user?._id,
+        onSuccess: (data) => {
+          console.log("Fetched reservations:", data);
+          // Transform API data to match the expected format
+          const transformedData = data.map((reservation) => ({
+            id: reservation._id,
+            hotelName: reservation.hotel?.name || "Unknown Hotel",
+            checkIn: new Date(reservation.checkIn).toLocaleDateString(),
+            checkOut: new Date(reservation.checkOut).toLocaleDateString(),
+            totalPrice: formatCurrency(reservation.totalAmount),
+            status: reservation.status || "PENDING",
+            originalData: reservation, // Keep the original data for reference
+          }));
+          setReservations(transformedData);
+          setIsLoading(false);
+        },
+        onFailed: (msg) => {
+          showToast.error(msg || "Failed to fetch reservations");
+          setIsLoading(false);
+          // Set empty reservations if fetch fails
+          setReservations([]);
+        },
+        onError: (err) => {
+          console.error("Error fetching reservations:", err);
+          showToast.error("Server error occurred while fetching reservations");
+          setIsLoading(false);
+          // Set empty reservations if fetch fails
+          setReservations([]);
+        },
+      },
+    });
+  };
+
+  // Format currency for display
+  const formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Filter reservations based on selected status
   useEffect(() => {
     const newList = reservations.filter(
-      (e, i) => e.status === filters[activeFilter]
+      (e) => e.status === filters[activeFilter]
     );
-    setFilterBill(newList);
-  }, [activeFilter]);
+
+    // Apply date sorting
+    const sortedList = [...newList];
+    if (dateFilter === "NEWEST") {
+      sortedList.sort((a, b) => {
+        return (
+          new Date(b.originalData?.createdAt || b.checkIn) -
+          new Date(a.originalData?.createdAt || a.checkIn)
+        );
+      });
+    } else {
+      sortedList.sort((a, b) => {
+        return (
+          new Date(a.originalData?.createdAt || a.checkIn) -
+          new Date(b.originalData?.createdAt || b.checkIn)
+        );
+      });
+    }
+
+    setFilterBill(sortedList);
+  }, [activeFilter, reservations, dateFilter]);
 
   const customStyles = {
     control: (provided, state) => ({
@@ -206,7 +160,12 @@ const BookingHistory = () => {
     }),
   };
 
-  console.log("DateFilter: ", dateFilter);
+  // Handle cancel reservation
+  const handleCancelReservation = (reservation) => {
+    setSelectedReservation(reservation);
+    setShowModal(true);
+  };
+
   return (
     <Container fluid className="py-4">
       <h2 className="fw-bold mb-4">Booking History</h2>
@@ -272,7 +231,13 @@ const BookingHistory = () => {
 
       {/* Reservation cards */}
       <Row>
-        {filterBill.length === 0 ? (
+        {isLoading ? (
+          <div className="d-flex justify-content-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : filterBill.length === 0 ? (
           <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
             <div
               className="rounded-circle bg-light d-flex align-items-center justify-content-center mb-4"
@@ -295,8 +260,8 @@ const BookingHistory = () => {
             </div>
             <h5 className="text-muted fw-semibold">No Reservations Yet</h5>
             <p className="text-secondary mb-0" style={{ maxWidth: 300 }}>
-              You hasn’t has any bookings yet. Be the first to make
-              a reservation!
+              You haven't had any {filters[activeFilter].toLowerCase()} bookings
+              yet.
             </p>
           </div>
         ) : (
@@ -305,7 +270,7 @@ const BookingHistory = () => {
               <Card className="reservation-card">
                 <Card.Body>
                   <div className="reservation-header">
-                    <h5>Reversation ID: {reservation.id}</h5>
+                    {/* <h5>Reservation ID: {reservation.id.substring(0, 8)}</h5> */}
                   </div>
                   <div className="reservation-details">
                     <p>
@@ -339,11 +304,12 @@ const BookingHistory = () => {
                       </b>
                     </p>
                   </div>
+                  {/* <h1>{reservation.id}</h1> */}
                   <Button
                     variant="outline-primary"
                     style={{ width: "100%", marginTop: "10px" }}
                     onClick={() => {
-                      navigate(Routers.BookingBill);
+                      navigate(`${Routers.BookingBill}/${reservation.id}`);
                     }}
                   >
                     View Details
@@ -363,7 +329,7 @@ const BookingHistory = () => {
                     <Button
                       variant="outline-danger"
                       style={{ width: "100%", marginTop: "10px" }}
-                      onClick={() => setShowModal(true)}
+                      onClick={() => handleCancelReservation(reservation)}
                     >
                       Cancel Booking
                     </Button>
@@ -381,35 +347,42 @@ const BookingHistory = () => {
                   )}
                 </Card.Body>
               </Card>
-              <ToastProvider />
-              <CancelReservationModal
-                show={showModal}
-                onHide={() => setShowModal(false)}
-                onConfirm={() => {
-                  setShowModal(false);
-                  showToast.success("Cancel Booking Successfully!");
-                }}
-              />
             </Col>
           ))
         )}
       </Row>
 
-      <div className="d-flex justify-content-center mt-4">
-        <Pagination>
-          {[1, 2, 3, 4].map((number) => (
-            <Pagination.Item
-              key={number}
-              active={number === activePage}
-              onClick={() => setActivePage(number)}
-            >
-              <b style={{ color: number === activePage ? "white" : "#0d6efd" }}>
-                {number}
-              </b>
-            </Pagination.Item>
-          ))}
-        </Pagination>
-      </div>
+      {filterBill.length > 0 && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination>
+            {[1, 2, 3, 4].map((number) => (
+              <Pagination.Item
+                key={number}
+                active={number === activePage}
+                onClick={() => setActivePage(number)}
+              >
+                <b
+                  style={{ color: number === activePage ? "white" : "#0d6efd" }}
+                >
+                  {number}
+                </b>
+              </Pagination.Item>
+            ))}
+          </Pagination>
+        </div>
+      )}
+
+      <ToastProvider />
+      <CancelReservationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        onConfirm={() => {
+          setShowModal(false);
+          showToast.success("Cancel Booking Successfully!");
+          // After successful cancellation, refresh the reservations
+          fetchUserReservations();
+        }}
+      />
     </Container>
   );
 };
