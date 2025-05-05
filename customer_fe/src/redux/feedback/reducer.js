@@ -26,7 +26,11 @@ const feedbackReducer = (state = initialState, action) => {
         ...state,
         feedbacks: state.feedbacks.filter((fb) => fb._id !== action.payload),
       };
-
+    case FeedbackActions.CREATE_FEEDBACK_SUCCESS:
+      return {
+        ...state,
+        feedbacks: [action.payload, ...state.feedbacks], 
+      };
     default:
       return state;
   }

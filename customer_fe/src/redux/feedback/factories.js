@@ -11,6 +11,9 @@ const Factories = {
   deleteFeedback: (feedbackId) => {
     return api.delete(ApiConstants.DELETE_FEEDBACK.replace(":feedbackId", feedbackId));
   },
+  createFeedback: (data) => {
+    return api.post(ApiConstants.CREATE_FEEDBACK, data);
+  },
 };
 
 export default Factories;

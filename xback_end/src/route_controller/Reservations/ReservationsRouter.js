@@ -7,5 +7,14 @@ ReservationRouter.get(
   checkCustomer,
   reservationController.getReservationsByUserId
 );
-ReservationRouter.get("/reservations-detail/:id",checkCustomer, reservationController.getReservationById);
+ReservationRouter.get(
+  "/reservations-detail/:id",
+  checkCustomer,
+  reservationController.getReservationById
+);
+ReservationRouter.put(
+  "/update-reservations/:id",
+  checkCustomer,
+  reservationController.updateReservationById
+);
 module.exports = ReservationRouter;

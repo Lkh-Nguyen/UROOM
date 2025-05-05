@@ -58,3 +58,21 @@ exports.getReservationById = async (req, res) => {
     });
   }
 };
+exports.updateReservationById = async (req, res) => {
+  try {
+    const updated = await Reservation.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate("hotel").populate("rooms.room");
+
+    if (!updated)
+      return res.status(404).json({ error: true, message: "Không tìm thấy đơn đặt phòng." });
+
+    res.status(200).json({ error: false, message: "Cập nhật thành công.", data: updated });
+  } catch (err) {
+    console.error("Lỗi cập nhật:", err);
+    res.status(500).json({ error: true, message: "Lỗi server." });
+  }
+};
+
