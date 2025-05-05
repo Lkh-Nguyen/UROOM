@@ -102,27 +102,70 @@ exports.searchAndFilterHotels = async (req, res) => {
     let finalHotels = [];
 
     if (checkinDate && checkoutDate) {
-      const overlappingReservations = await Reservation.find({
-        $and: [
-          { checkInDate: { $lt: new Date(checkoutDate) } },
-          { checkOutDate: { $gt: new Date(checkinDate) } },
-        ],
-      });
-
-      const reservedRoomIds = overlappingReservations.flatMap((reservation) =>
-        reservation.rooms.map((room) => room.room.toString())
-      );
-
       let finalHotelTemps = await Promise.all(
         hotelsWithRooms.map(async ({ hotel, rooms }) => {
+          const selectedCheckIn = new Date(checkinDate);
+          const selectedCheckOut = new Date(checkoutDate);
+          const overlappingReservations = await Reservation.find({
+            hotel: hotel._id,
+            status: { $nin: ["CANCELLED", "COMPLETED"] },
+            $and: [
+              { checkInDate: { $lt: selectedCheckOut } },
+              { checkOutDate: { $gt: selectedCheckIn } },
+            ],
+          }).populate("rooms.room");
+
+          console.log("overlappingReservations: ", overlappingReservations);
+          const allRooms = await Room.find({ hotel: hotel._id });
+
+          // Calculate total booked quantity per room
+          const roomBookedQuantities = {};
+          const roomDateRanges = {}; // để lưu khoảng ngày của roomId
+
+          overlappingReservations.forEach((res) => {
+            const resCheckIn = new Date(res.checkInDate);
+            const resCheckOut = new Date(res.checkOutDate);
+
+            res.rooms.forEach((roomItem) => {
+              const roomId = roomItem.room._id.toString();
+              const quantity = roomItem.quantity;
+
+              const currentRange = roomDateRanges[roomId];
+              const currentQuantity = roomBookedQuantities[roomId] || 0;
+
+              if (currentRange && resCheckIn <= currentRange.checkOut) {
+                // nằm trong khoảng → cộng dồn
+                roomBookedQuantities[roomId] = currentQuantity + quantity;
+              } else {
+                // ngoài khoảng → lấy max
+                if (quantity > currentQuantity) {
+                  roomBookedQuantities[roomId] = quantity;
+                  roomDateRanges[roomId] = {
+                    checkIn: resCheckIn,
+                    checkOut: resCheckOut,
+                  };
+                }
+              }
+            });
+          });
+
           const { avgValueRating, totalFeedbacks } =
             await calculateAvgRatingHotel(hotel._id);
 
-          const availableRooms = rooms.filter(
-            (room) => !reservedRoomIds.includes(room._id.toString())
-          );
+          const availableRooms = allRooms
+            .map((room) => {
+              const booked = roomBookedQuantities[room._id.toString()] || 0;
+              console.log("booked: ", booked);
+              const available = room.quantity - booked;
+              return {
+                ...room.toObject(),
+                availableQuantity: available,
+              };
+            })
+            .filter((room) => room.availableQuantity > 0);
+
           const totalCapacity = availableRooms.reduce(
-            (sum, room) => sum + room.capacity,
+            (sum, room) => sum + room.capacity * room.availableQuantity,
             0
           );
 
@@ -140,7 +183,6 @@ exports.searchAndFilterHotels = async (req, res) => {
           };
         })
       );
-
       finalHotels = finalHotelTemps.filter(
         ({ totalCapacity }) => totalCapacity >= Number(numberOfPeople)
       );

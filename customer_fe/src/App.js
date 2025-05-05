@@ -25,44 +25,54 @@ import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
 import { useAppSelector } from "./redux/store";
 
-
-
 function App() {
-  const Auth = useAppSelector((state) => state.Auth.Auth);
-  console.log('Auth: ', Auth)
   return (
     <Router>
       <Routes>
         <Route path={Routers.LoginPage} element={<LoginPage />} />
 
         <Route path={Routers.RegisterPage} element={<RegisterPage />} />
-        <Route path={Routers.VerifyCodeRegisterPage} element={<VerifyCodeRegisterPage />} />
-        
-        <Route path={Routers.ForgetPasswordPage} element={<ForgetPasswordPage />} />
+        <Route
+          path={Routers.VerifyCodeRegisterPage}
+          element={<VerifyCodeRegisterPage />}
+        />
+
+        <Route
+          path={Routers.ForgetPasswordPage}
+          element={<ForgetPasswordPage />}
+        />
         <Route path={Routers.VerifyCodePage} element={<VerifyCodePage />} />
-        <Route path={Routers.ResetPasswordPage} element={<ResetPasswordPage />} />
+        <Route
+          path={Routers.ResetPasswordPage}
+          element={<ResetPasswordPage />}
+        />
 
         {/*Infomation, Avatar */}
         <Route path={Routers.MyAccountPage} element={<MyAccountPage />} />
         <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
-        <Route path={Routers.BookingBill} element={<BookingBill />} />
+        <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
         <Route path={Routers.CreateFeedback} element={<CreateFeedback />} />
 
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
         <Route path={Routers.HotelSearchPage} element={<HotelSearchPage />} />
         <Route path={`${Routers.Home_detail}/:id`} element={<Home_detail />} />
-        <Route path={Routers.RoomDetailPage} element={<RoomDetailPage />} />
+        <Route path={`${Routers.RoomDetailPage}/:id`} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
         <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />
         <Route path={Routers.PaymentPage} element={<PaymentPage />} />
-        <Route path={Routers.PaymentSuccessPage} element={<PaymentSuccessPage/>}/>
-        <Route path={Routers.PaymentFailedPage} element={<PaymentFailedPage/>}/>
+        <Route
+          path={Routers.PaymentSuccessPage}
+          element={<PaymentSuccessPage />}
+        />
+        <Route
+          path={Routers.PaymentFailedPage}
+          element={<PaymentFailedPage />}
+        />
 
         <Route path={Routers.BannedPage} element={<BannedPage />} />
         <Route path={Routers.ErrorPage} element={<ErrorPage />} />
         <Route path={Routers.ChatPage} element={<ChatPage />} />
-
       </Routes>
     </Router>
   );

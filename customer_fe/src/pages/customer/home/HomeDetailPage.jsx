@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -19,7 +21,6 @@ import {
   FaCalendarAlt,
   FaChild,
   FaUser,
-  FaQuoteLeft,
   FaThumbsUp,
   FaThumbsDown,
   FaArrowRight,
@@ -30,7 +31,7 @@ import {
 import * as FaIcons from "react-icons/fa";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
-import { ExclamationTriangleFill, X } from "react-bootstrap-icons";
+import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/css/customer/Home_detail.css";
@@ -107,6 +108,7 @@ export default function HotelDetailPage() {
   const [shuffledHotels, setShuffledHotels] = useState([]);
   const [roomsByHotel, setRoomsByHotel] = useState({});
   const [feedbacks, setFeedbacks] = useState([]);
+  console.log("feedbacks: ", feedbacks);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [ratingBreakdown, setRatingBreakdown] = useState({});
@@ -140,10 +142,12 @@ export default function HotelDetailPage() {
   const [isSearching, setIsSearching] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
-
+  console.log("Rooms: ", rooms);
   // Fetch hotel details
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    let isMounted = true;
 
     if (hotelId) {
       dispatch({
@@ -152,21 +156,31 @@ export default function HotelDetailPage() {
           hotelId,
           userId: Auth._id,
           onSuccess: (hotel, isFavorite) => {
-            setHotelDetail(hotel);
-            setIsFavorite(isFavorite);
-            if (hotel.images && hotel.images.length > 0) {
-              setMainImage(hotel.images[0]);
+            if (isMounted) {
+              setHotelDetail(hotel);
+              setIsFavorite(isFavorite);
+              if (hotel.images && hotel.images.length > 0) {
+                setMainImage(hotel.images[0]);
+              }
             }
           },
           onFailed: (msg) => {
-            showToast.warning("Get hotel details failed");
+            if (isMounted) {
+              showToast.warning("Get hotel details failed");
+            }
           },
           onError: (err) => {
-            showToast.warning("Server error");
+            if (isMounted) {
+              showToast.warning("Server error");
+            }
           },
         },
       });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [hotelId, dispatch, Auth._id]);
 
   const [searchParams, setSearchParams] = useState({
@@ -178,8 +192,12 @@ export default function HotelDetailPage() {
     limit: 10,
   });
 
+  console.log("Rooms: ", rooms);
+
   // Fetch rooms
   useEffect(() => {
+    let isMounted = true;
+
     if (hotelId) {
       dispatch({
         type: RoomActions.FETCH_ROOM,
@@ -187,21 +205,54 @@ export default function HotelDetailPage() {
           hotelId,
           query: searchParams,
           onSuccess: (roomList) => {
-            if (Array.isArray(roomList)) {
-              setRooms(roomList);
-            } else {
-              console.warn("Unexpected data format received:", roomList);
+            if (isMounted) {
+              if (Array.isArray(roomList)) {
+                setRooms(roomList);
+              } else {
+                console.warn("Unexpected data format received:", roomList);
+              }
             }
           },
-          onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
-          onError: (err) => console.error("Server error:", err),
+          onFailed: (msg) => {
+            if (isMounted) {
+              console.error("Failed to fetch rooms:", msg);
+            }
+          },
+          onError: (err) => {
+            if (isMounted) {
+              console.error("Server error:", err);
+            }
+          },
         },
       });
     }
-  }, [hotelId, dispatch]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [hotelId, dispatch, searchParams]);
 
   const [searchRoom, setSearchRoom] = useState(false);
+
   const handleSearchRoom = () => {
+
+    const adults = selectedAdults ? selectedAdults.value : 1;
+    const childrens = selectedChildren ? selectedChildren.value : 0;
+    const SearchInformationTemp = {
+      address: SearchInformation.address,
+      checkinDate,
+      checkoutDate,
+      adults,
+      childrens,
+    }
+
+    console.log("SearchInformationTemp: ",SearchInformationTemp)
+    dispatch({
+      type: SearchActions.SAVE_SEARCH,
+      payload: { SearchInformation: SearchInformationTemp },
+    });
+
+
     setSearchRoom(true);
     dispatch({
       type: RoomActions.FETCH_ROOM,
@@ -233,40 +284,6 @@ export default function HotelDetailPage() {
     });
   };
 
-  const fetchHotels = async () => {
-    try {
-      const response = await Factories.searchHotel(searchParams);
-      if (response?.status === 200) {
-        const shuffled = [...response.data.hotels].sort(
-          () => 0.5 - Math.random()
-        );
-        setShuffledHotels(shuffled);
-
-        // Fetch rooms for each hotel
-        shuffled.forEach((hotel) => {
-          dispatch({
-            type: RoomActions.FETCH_ROOM,
-            payload: {
-              hotelId: hotel.hotel._id,
-              query: searchParams,
-              onSuccess: (roomList) => {
-                setRoomsByHotel((prev) => ({
-                  ...prev,
-                  [hotel.hotel._id]: roomList,
-                }));
-              },
-              onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
-              onError: (err) => console.error("Server error:", err),
-            },
-          });
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching hotels:", error);
-    } finally {
-    }
-  };
-
   const scrollRef = useRef(null);
   const scrollRefRoom = useRef(null);
 
@@ -274,6 +291,10 @@ export default function HotelDetailPage() {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = 0;
     }
+
+    return () => {
+      // No cleanup needed for this simple DOM manipulation
+    };
   }, [shuffledHotels]);
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
@@ -284,8 +305,61 @@ export default function HotelDetailPage() {
   };
 
   useEffect(() => {
-    fetchHotels();
-  }, [searchRoom]);
+    let isMounted = true;
+
+    const fetchHotelsData = async () => {
+      try {
+        const response = await Factories.searchHotel(searchParams);
+        if (response?.status === 200 && isMounted) {
+          const shuffled = [...response.data.hotels].sort(
+            () => 0.5 - Math.random()
+          );
+          setShuffledHotels(shuffled);
+
+          // Fetch rooms for each hotel
+          shuffled.forEach((hotel) => {
+            if (isMounted) {
+              dispatch({
+                type: RoomActions.FETCH_ROOM,
+                payload: {
+                  hotelId: hotel.hotel._id,
+                  query: searchParams,
+                  onSuccess: (roomList) => {
+                    if (isMounted) {
+                      setRoomsByHotel((prev) => ({
+                        ...prev,
+                        [hotel.hotel._id]: roomList,
+                      }));
+                    }
+                  },
+                  onFailed: (msg) => {
+                    if (isMounted) {
+                      console.error("Failed to fetch rooms:", msg);
+                    }
+                  },
+                  onError: (err) => {
+                    if (isMounted) {
+                      console.error("Server error:", err);
+                    }
+                  },
+                },
+              });
+            }
+          });
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching hotels:", error);
+        }
+      }
+    };
+
+    fetchHotelsData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchRoom, dispatch, searchParams]);
 
   const fetchFeedbacks = async () => {
     try {
@@ -308,8 +382,35 @@ export default function HotelDetailPage() {
   };
 
   useEffect(() => {
-    fetchFeedbacks();
-  }, [filterParams]);
+    let isMounted = true;
+
+    const fetchFeedbacksData = async () => {
+      try {
+        const response = await Factories2.get_feedback_by_hotelId(
+          hotelId,
+          filterParams
+        );
+        if (response?.status === 200 && isMounted) {
+          setFeedbacks(response?.data.listFeedback);
+          setTotalFeedback(response?.data.totalFeedback);
+          setAverageRating(response?.data.averageRating);
+          setRatingBreakdown(response?.data.ratingBreakdown);
+          setTotalPages(response?.data.totalPages);
+          setCurrentPage(response?.data.currentPage);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching feedbacks:", error);
+        }
+      }
+    };
+
+    fetchFeedbacksData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [filterParams, hotelId]);
   // Event handlers
   const handleChangeFavorite = (isFavorite, hotelId) => {
     if (isFavorite) {
@@ -370,31 +471,30 @@ export default function HotelDetailPage() {
     });
   };
 
-
   //feedback
-  const handleLike= async (feedbackId) =>{
+  const handleLike = async (feedbackId) => {
     try {
       const response = await Factories2.like_feedback(feedbackId);
       if (response?.status === 200) {
-        fetchFeedbacks()
+        fetchFeedbacks();
       }
     } catch (error) {
       console.error("Error fetching hotels:", error);
     } finally {
     }
-  }
+  };
 
-  const handleDisLike= async (feedbackId) =>{
+  const handleDisLike = async (feedbackId) => {
     try {
       const response = await Factories2.dislike_feedback(feedbackId);
       if (response?.status === 200) {
-        fetchFeedbacks()
+        fetchFeedbacks();
       }
     } catch (error) {
       console.error("Error fetching hotels:", error);
     } finally {
     }
-  }
+  };
 
   if (!hotelDetail) {
     return (
@@ -827,7 +927,10 @@ export default function HotelDetailPage() {
               <Button
                 variant="light"
                 onClick={() => {
-                  scrollRefRoom.current.scrollBy({ left: -400, behavior: "smooth" });
+                  scrollRefRoom.current.scrollBy({
+                    left: -400,
+                    behavior: "smooth",
+                  });
                 }}
                 style={{
                   position: "absolute",
@@ -847,7 +950,10 @@ export default function HotelDetailPage() {
               <Button
                 variant="light"
                 onClick={() => {
-                  scrollRefRoom.current.scrollBy({ left: 400, behavior: "smooth" });
+                  scrollRefRoom.current.scrollBy({
+                    left: 400,
+                    behavior: "smooth",
+                  });
                 }}
                 style={{
                   position: "absolute",
@@ -939,7 +1045,7 @@ export default function HotelDetailPage() {
                               cursor: "pointer",
                             }}
                           >
-                            {room?.type}
+                            {room?.name}
                           </Card.Title>
 
                           <div className="d-flex align-items-center text-muted mb-2">
@@ -964,7 +1070,7 @@ export default function HotelDetailPage() {
                         </div>
 
                         <div>
-                          {room.quantity <= 3 ? (
+                          {room.availableQuantity <= 3 ? (
                             <div
                               className="text-danger fw-semibold"
                               style={{
@@ -972,8 +1078,8 @@ export default function HotelDetailPage() {
                                 marginBottom: "10px",
                               }}
                             >
-                              Only {room.quantity} rooms left for this room
-                              type!
+                              Only {room.availableQuantity} rooms left for this
+                              room type!
                             </div>
                           ) : (
                             <div
@@ -983,8 +1089,8 @@ export default function HotelDetailPage() {
                                 marginBottom: "10px",
                               }}
                             >
-                              Have {room.quantity} rooms left for this room
-                              type!
+                              Have {room.availableQuantity} rooms left for this
+                              room type!
                             </div>
                           )}
                           <div className="mt-2 d-flex justify-content-between align-items-center">
@@ -1002,7 +1108,7 @@ export default function HotelDetailPage() {
                               }
                             >
                               {Array.from(
-                                { length: room.quantity + 1 },
+                                { length: room.availableQuantity + 1 },
                                 (_, n) => (
                                   <option key={n} value={n}>
                                     {n}
@@ -1490,7 +1596,9 @@ export default function HotelDetailPage() {
                           <div className="d-flex justify-content-between align-items-start mb-2">
                             <div className="d-flex align-items-center">
                               <Image
-                                src={review.user?.image?.url}
+                                src={
+                                  review.user?.image?.url || "/placeholder.svg"
+                                }
                                 roundedCircle
                                 style={{
                                   width: "50px",
@@ -1535,7 +1643,7 @@ export default function HotelDetailPage() {
                               }}
                               onClick={() => {
                                 if (Auth._id !== -1) {
-                                  handleLike(review._id)
+                                  handleLike(review._id);
                                 } else {
                                   navigate(Routers.LoginPage);
                                 }
@@ -1569,7 +1677,7 @@ export default function HotelDetailPage() {
                               }}
                               onClick={() => {
                                 if (Auth._id !== -1) {
-                                  handleDisLike(review._id)
+                                  handleDisLike(review._id);
                                 } else {
                                   navigate(Routers.LoginPage);
                                 }
@@ -1602,7 +1710,4 @@ export default function HotelDetailPage() {
       <Footer />
     </div>
   );
-
-
-
 }

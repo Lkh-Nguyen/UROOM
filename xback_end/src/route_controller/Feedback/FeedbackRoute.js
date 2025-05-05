@@ -7,4 +7,8 @@ FeedbackRouter.get('/get-feedback-hotel/:hotelId', FeedbackController.getAllFeed
 FeedbackRouter.post("/like/:id",checkCustomer, FeedbackController.likeFeedback);
 FeedbackRouter.post("/dislike/:id",checkCustomer, FeedbackController.dislikeFeedback);
 
+FeedbackRouter.get("/my-feedbacks", checkCustomer, FeedbackController.getFeedbackByUserId);
+FeedbackRouter.put('/update-feedback/:feedbackId', checkCustomer, FeedbackController.updateFeedback);
+FeedbackRouter.delete('/delete-feedback/:feedbackId', checkCustomer, FeedbackController.deleteFeedback);
+
 module.exports = FeedbackRouter;

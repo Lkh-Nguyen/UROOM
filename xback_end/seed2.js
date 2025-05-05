@@ -188,28 +188,28 @@ const hotelNames = [
 ];
 
 const hotelAddresses = [
-  "12 Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Lê Lợi, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
-  "78 Hoàng Diệu, Phường 12, Quận 4, Thành phố Hồ Chí Minh",
-  "23 Trần Hưng Đạo, Phường 6, Quận 5, Thành phố Hồ Chí Minh",
-  "90 Phan Xích Long, Phường 3, Quận Phú Nhuận, Thành phố Hồ Chí Minh",
-  "56 Võ Văn Kiệt, Phường Thạnh Mỹ Lợi, Thành phố Thủ Đức, Thành phố Hồ Chí Minh",
-  "34 Tôn Đức Thắng, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh",
-  "67 Bùi Viện, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
-  "11 Đinh Tiên Hoàng, Phường 3, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "102 Pasteur, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
-  "72 Nguyễn Văn Cừ, Phường An Khánh, Quận 5, Thành phố Hồ Chí Minh",
-  "33 Lê Quang Định, Phường 7, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "21 Mai Thị Lựu, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "101 Nguyễn Thái Học, Phường Tân Định, Quận 1, Thành phố Hồ Chí Minh",
-  "8 Cao Thắng, Phường 12, Quận 10, Thành phố Hồ Chí Minh",
-  "59 Xô Viết Nghệ Tĩnh, Phường 21, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "12 Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "83 Ngô Quyền, Phường 12, Quận 5, Thành phố Hồ Chí Minh",
-  "77 Lê Duẩn, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
-  "130 Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "99 Nguyễn Đình Chiểu, Phường 6, Quận 3, Thành phố Hồ Chí Minh",
+  "102 Võ Nguyên Giáp, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "200 Bạch Đằng, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
+  "17 Nguyễn Văn Linh, Phường Nam Dương, Quận Hải Châu, Thành phố Đà Nẵng",
+  "65 Phan Châu Trinh, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
+  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "57 Hùng Vương, Phường Bình Hiên, Quận Hải Châu, Thành phố Đà Nẵng",
+  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "38 Bùi Thị Xuân, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "12 Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "44 Lý Tự Trọng, Phường Hòa Cường Nam, Quận Hải Châu, Thành phố Đà Nẵng",
+  "71 Cách Mạng Tháng 8, Phường Thanh Bình, Quận Hải Châu, Thành phố Đà Nẵng",
+  "50 Nguyễn Công Trứ, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "39 Hải Phòng, Phường Thuận Phước, Quận Hải Châu, Thành phố Đà Nẵng",
+  "61 Trần Phú, Phường Thạch Thang, Quận Hải Châu, Thành phố Đà Nẵng",
+  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "57 Hùng Vương, Phường Bình Hiên, Quận Hải Châu, Thành phố Đà Nẵng",
+  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "38 Bùi Thị Xuân, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "57 Hùng Vương, Phường Bình Hiên, Quận Hải Châu, Thành phố Đà Nẵng",
+  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "38 Bùi Thị Xuân, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
   "39 Cộng Hòa, Phường 13, Quận Tân Bình, Thành phố Hồ Chí Minh",
   "50 Lê Hồng Phong, Phường 10, Quận 10, Thành phố Hồ Chí Minh",
   "15 Tràng Tiền, Phường Tràng Tiền, Quận Hoàn Kiếm, Thành phố Hà Nội",
@@ -860,7 +860,7 @@ for (let i = 0; i < 50; i++) {
       images.push(randomImage);
     }
 
-    let shuffledFacilities = hotelfacilityIds
+    let shuffledFacilities = roomFacilityIds
       .map((facility) => ({ facility, sort: Math.random() })) // Thêm giá trị ngẫu nhiên
       .sort((a, b) => a.sort - b.sort) // Sắp xếp theo giá trị ngẫu nhiên
       .slice(0, Math.floor(Math.random() * 3) + 3) // Chọn từ 3-5 phần tử
@@ -978,7 +978,7 @@ const reservationStatuses = [
   // "NOT PAID", // Chưa trả tiền
 ];
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 0; i++) {
   let randomStatus =
     reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
 
@@ -1048,7 +1048,7 @@ for (let i = 0; i < 1000; i++) {
   let hotelPricePerNight = hotelData ? hotelData.pricePerNight || 0 : 0;
 
   for (let k = 0; k < selectedRooms.length; k++) {
-    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });
+    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });  
     let roomPrice = roomData ? roomData.price : 0;
     totalPrice += roomPrice * selectedRooms[k].quantity * numNights;
   }

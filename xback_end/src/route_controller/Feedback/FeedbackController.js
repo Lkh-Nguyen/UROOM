@@ -1,11 +1,9 @@
 const Feedback = require("../../models/feedback");
-const Reservation = require("../../models/reservation");
-const Hotel = require("../../models/hotel");
 const asyncHandler = require("../../middlewares/asyncHandler");
-const { FEEDBACK } = require("../../utils/constantMessage");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const User = require("../../models/user");
 exports.calculateAvgRatingHotel = async (hotelId) => {
   // Sử dụng aggregate để tính trung bình rating và tổng số feedback
   const result = await Feedback.aggregate([
@@ -72,7 +70,6 @@ exports.getAllFeedBackByHotelId = asyncHandler(async (req, res) => {
       .sort(sortOption)
       .skip((page - 1) * limit)
       .limit(Number(limit));
-    
   } catch (err) {
     console.error("❌ Error when fetching listFeedback:", err);
     return res.status(500).json({
@@ -156,9 +153,6 @@ exports.likeFeedback = async (req, res) => {
   const feedbackId = req.params.id;
   const userId = req.user._id;
 
-  console.log("feedbackId: ", feedbackId);
-  console.log("userId: ", userId);
-
   try {
     const feedback = await Feedback.findById(feedbackId);
 
@@ -228,3 +222,97 @@ exports.dislikeFeedback = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+exports.getFeedbackByUserId = async (req, res) => {
+  try {
+    const userId = Number(req.user._id); 
+
+    const feedbacks = await Feedback.find({ user: userId }) 
+      .populate("hotel")
+      .populate("reservation", "checkInDate checkOutDate")
+      .sort({ createdAt: -1 });
+
+    if (feedbacks.length === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "Bạn chưa viết feedback nào.",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: "Lấy danh sách feedback thành công",
+      data: feedbacks,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy feedback theo user:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi lấy feedback người dùng",
+    });
+  }
+};
+exports.updateFeedback = async (req, res) => {
+  try {
+    const userId = Number(req.user._id);
+    const feedbackId = req.params.feedbackId;
+    const { content, rating } = req.body;
+
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ error: true, message: "Feedback không tồn tại." });
+    }
+
+    if (feedback.user !== userId) {
+      return res.status(403).json({ error: true, message: "Bạn không có quyền sửa feedback này." });
+    }
+
+    feedback.content = content || feedback.content;
+    feedback.rating = rating || feedback.rating;
+    feedback.updatedAt = new Date();
+
+    await feedback.save();
+
+    return res.status(200).json({
+      error: false,
+      message: "Cập nhật feedback thành công",
+      data: feedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật feedback:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi cập nhật feedback",
+    });
+  }
+};
+exports.deleteFeedback = async (req, res) => {
+  try {
+    const userId = Number(req.user._id);
+    const feedbackId = req.params.feedbackId;
+
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ error: true, message: "Feedback không tồn tại." });
+    }
+
+    if (feedback.user !== userId) {
+      return res.status(403).json({ error: true, message: "Bạn không có quyền xoá feedback này." });
+    }
+
+    await Feedback.findByIdAndDelete(feedbackId);
+
+    return res.status(200).json({
+      error: false,
+      message: "Xoá feedback thành công",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xoá feedback:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi xoá feedback",
+    });
+  }
+};
+
