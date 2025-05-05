@@ -1,4 +1,4 @@
-const express = require('express')
+const express = require("express");
 const FeedbackRouter = express.Router();
 const FeedbackController = require('./FeedbackController');
 const checkCustomer = require('../../middlewares/checkCustomer');
@@ -10,5 +10,7 @@ FeedbackRouter.post("/dislike/:id",checkCustomer, FeedbackController.dislikeFeed
 FeedbackRouter.get("/my-feedbacks", checkCustomer, FeedbackController.getFeedbackByUserId);
 FeedbackRouter.put('/update-feedback/:feedbackId', checkCustomer, FeedbackController.updateFeedback);
 FeedbackRouter.delete('/delete-feedback/:feedbackId', checkCustomer, FeedbackController.deleteFeedback);
+FeedbackRouter.post("/create-feedback", checkCustomer, FeedbackController.createFeedback);
 
 module.exports = FeedbackRouter;
+

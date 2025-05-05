@@ -40,6 +40,9 @@ const Factories = {
     return api.post(url);  
   },
   
+  createFeedback: (data) => {
+    return api.post(ApiConstants.CREATE_FEEDBACK, data);
+  },
 };
 
 export default Factories;

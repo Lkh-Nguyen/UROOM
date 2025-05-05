@@ -315,4 +315,32 @@ exports.deleteFeedback = async (req, res) => {
     });
   }
 };
+exports.createFeedback = async (req, res) => {
+  try {
+    const { reservation, hotel, content, rating } = req.body;
+    const user = req.user._id;
+
+    if (!reservation || !hotel || !content || !rating) {
+      return res.status(400).json({
+        error: true,
+        message: "Vui lòng cung cấp đầy đủ thông tin feedback.",
+      });
+    }
+
+    const newFeedback = await Feedback.create({ user, reservation, hotel, content, rating });
+
+    res.status(201).json({
+      error: false,
+      message: "Tạo feedback thành công",
+      data: newFeedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi tạo feedback:", error);
+    res.status(500).json({
+      error: true,
+      message: "Lỗi server khi tạo feedback",
+    });
+  }
+};
+
 

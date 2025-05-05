@@ -19,6 +19,15 @@ const reservationReducer = (state = initialState, action) => {
           reservationDetail: action.payload,
           error: null,
         };
+        case ReservationActions.UPDATE_RESERVATIONS_SUCCESS:
+          return {
+            ...state,
+            reservationDetail: {
+              ...state.reservationDetail,
+              ...action.payload, 
+            },
+            error: null,
+          };
     default:
       return state;
   }

@@ -8,6 +8,9 @@ const Factories = {
   fetchReservationDetail: (reservationId) => {
     return api.get(ApiConstants.FETCH_RESERVATION_DETAIL.replace(":id", reservationId));
   },
+  updateReservationById: (reservationId, data) => {
+    return api.put(ApiConstants.UPDATE_RESERVATION.replace(":id", reservationId), data);
+  },
 };
 
 

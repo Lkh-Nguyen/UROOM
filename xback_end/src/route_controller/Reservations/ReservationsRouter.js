@@ -13,4 +13,10 @@ ReservationRouter.get(
   checkCustomer,
   reservationController.getReservationDetailById
 )
+
+ReservationRouter.put(
+  "/update-reservations/:id",
+  checkCustomer,
+  reservationController.updateReservationById
+);
 module.exports = ReservationRouter;

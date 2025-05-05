@@ -51,7 +51,7 @@ function App() {
         <Route path={Routers.MyAccountPage} element={<MyAccountPage />} />
         <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
         <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
-        <Route path={Routers.CreateFeedback} element={<CreateFeedback />} />
+        <Route path={`${Routers.CreateFeedback}/:id`} element={<CreateFeedback />} />
 
         {/*Home*/}
         <Route path={Routers.Home} element={<Home />} />
