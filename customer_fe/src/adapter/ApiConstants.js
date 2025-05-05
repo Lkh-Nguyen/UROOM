@@ -21,8 +21,12 @@ const ApiConstants = {
   FETCH_USER_FEEDBACKS: "feedback/my-feedbacks",
   UPDATE_FEEDBACK: "feedback/update-feedback/:feedbackId",
   DELETE_FEEDBACK: "feedback/delete-feedback/:feedbackId",
+    CREATE_FEEDBACK:"feedback/create-feedback",
+    ////ESERVATIONS
   FETCH_USER_RESERVATIONS: "reservations/get-reservation",
-  FETCH_RESERVATION_DETAIL:"reservations/reservations-detail/:id"
+  FETCH_RESERVATION_DETAIL:"reservations/reservations-detail/:id",
+
+  UPDATE_RESERVATION:"reservations/update-reservations/:id"
 };
 
 export default ApiConstants;

@@ -61,10 +61,44 @@ function* getReservationDetail() {
     }
   });
 }
+function* updateReservation() {
+  yield takeEvery(ReservationActions.UPDATE_RESERVATIONS, function* (action) {
+    const { reservationId, data, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() =>
+        Factories.updateReservationById(reservationId, data)
+      );
+
+      if (response?.status === 200 && response?.data?.error === false) {
+        const updatedReservation = response.data?.data;
+
+        yield put({
+          type: ReservationActions.UPDATE_RESERVATIONS_SUCCESS,
+          payload: updatedReservation,
+        });
+
+        onSuccess?.(updatedReservation);
+      } else {
+        onFailed?.(response?.data?.message || "Không thể cập nhật đơn đặt phòng");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Lỗi server";
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
 
 export default function* reservationSaga() {
   yield all([
     fork(getUserReservations),
     fork(getReservationDetail),
+    fork(updateReservation),
   ]);
 }
