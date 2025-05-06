@@ -6,6 +6,7 @@ const ForgetPasswordPage= '/forget_password';
 const VerifyCodePage= '/verify_code';
 const ResetPasswordPage= '/reset_password';
 const MyAccountPage= '/my_account';
+const ViewInformationScreen= '/view_information';
 const Home_detail= '/home_detail';
 const Home= '/';
 const BookingBill= '/booking_bill';
@@ -24,6 +25,7 @@ const ChatPage= '/chat';
 
 
 export {
+  ViewInformationScreen,
   LoginPage,
   RegisterPage,
   ForgetPasswordPage,

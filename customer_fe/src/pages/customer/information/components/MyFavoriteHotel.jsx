@@ -12,7 +12,7 @@ import { FaMapMarkerAlt, FaEye } from "react-icons/fa";
 import "../../../../css/customer/MyFavoriteHotel.css";
 import { useState, useEffect } from "react";
 import { Star, StarFill, X } from "react-bootstrap-icons";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as Routers from "../../../../utils/Routes";
 import { showToast, ToastProvider } from "components/ToastContainer";
 import ConfirmationModal from "components/ConfirmationModal";
@@ -54,20 +54,34 @@ const MyFavoriteHotel = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  console.log("Auth: ", Auth);
+
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
+  const city = searchParams.get("city");
+  const district = searchParams.get("district");
+  const star = searchParams.get("star");
+
   const [hotels, setHotels] = useState([]);
-  const [activePage, setActivePage] = useState(1);
+  const [activePage, setActivePage] = useState(Number(page));
+  let url = `${Routers.MyAccountPage}/favorite_hotel`;
+
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [selectedHotelId, setSelectedHotelId] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const itemsPerPage = 3;
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedDistrict, setSelectedDistrict] = useState("");
-  const [selectedStar, setSelectedStar] = useState(starOptions[0]); // default là "All"
+  const [selectedCity, setSelectedCity] = useState(
+    city ? { value: city, label: city } : ""
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    district ? { value: district, label: district } : ""
+  );
+  const [selectedStar, setSelectedStar] = useState(
+    star ? starOptions[star] : starOptions[0]
+  );
   const [paramsQuery, setParamQuery] = useState({
-    selectedCity,
-    selectedDistrict,
+    selectedCity: selectedCity.value,
+    selectedDistrict: selectedDistrict.value,
     selectedStar: selectedStar.value,
   });
   useEffect(() => {
@@ -81,8 +95,15 @@ const MyFavoriteHotel = () => {
           paramsQuery: paramsQuery,
 
           onSuccess: (data) => {
-            console.log(data);
-            setHotels(data);
+            if(data.length == 0) {
+              if(activePage > 1){
+                setActivePage(activePage - 1);
+              }else{
+                setHotels(data);
+              }
+            }else{
+              setHotels(data)
+            }
             setLoading(false);
           },
         },
@@ -100,7 +121,7 @@ const MyFavoriteHotel = () => {
         onSuccess: () => {
           showToast.success("Deleted hotel from favorites successfully!");
           setHotels((prev) => {
-            const updated = prev.filter((h) => h._id !== hotelId);
+            const updated = prev.filter((h) => h.hotel._id !== hotelId);
             const maxPages = Math.ceil(updated.length / itemsPerPage);
             if (activePage > maxPages) {
               setActivePage(Math.max(activePage - 1, 1));
@@ -131,7 +152,13 @@ const MyFavoriteHotel = () => {
 
   const indexOfLastItem = activePage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const hotelsToShow = hotels.slice(indexOfFirstItem, indexOfLastItem);
+  let hotelsToShow = [];
+  hotelsToShow = hotels.slice(indexOfFirstItem, indexOfLastItem);
+  if(hotelsToShow.length === 0){
+    if(activePage > 1){
+      setActivePage(activePage - 1)
+    }
+  }
   const totalPages = Math.ceil(hotels.length / itemsPerPage);
 
   return (
@@ -147,11 +174,19 @@ const MyFavoriteHotel = () => {
               onChange={(option) => {
                 setSelectedCity(option);
                 setSelectedDistrict("");
-                setParamQuery({ 
-                  ...paramsQuery, 
+                setParamQuery({
+                  ...paramsQuery,
                   selectedCity: option.value,
-                  selectedDistrict: ""
+                  selectedDistrict: "",
                 });
+                setActivePage(1);
+
+                if (true) url += `?page=${1}`;
+                if (option.value)
+                  url += `&city=${encodeURIComponent(option.value)}`;
+                if (star) url += `&star=${encodeURIComponent(star)}`;
+
+                navigate(url);
               }}
               placeholder="Select City"
               isSearchable
@@ -171,6 +206,14 @@ const MyFavoriteHotel = () => {
                   ...paramsQuery,
                   selectedDistrict: option.value,
                 });
+                setActivePage(1);
+                if (true) url += `?page=${1}`;
+                if (city) url += `&city=${encodeURIComponent(city)}`;
+                if (option.value)
+                  url += `&district=${encodeURIComponent(option.value)}`;
+                if (star) url += `&star=${encodeURIComponent(star)}`;
+
+                navigate(url);
               }}
               placeholder="Select District"
               isSearchable
@@ -187,6 +230,15 @@ const MyFavoriteHotel = () => {
               onChange={(option) => {
                 setSelectedStar(option);
                 setParamQuery({ ...paramsQuery, selectedStar: option.value });
+                setActivePage(1);
+                if (true) url += `?page=${1}`;
+                if (city) url += `&city=${encodeURIComponent(city)}`;
+                if (district)
+                  url += `&district=${encodeURIComponent(district)}`;
+                if (option.value)
+                  url += `&star=${encodeURIComponent(option.value)}`;
+
+                navigate(url);
               }}
               placeholder="Select star"
               isSearchable
@@ -332,8 +384,17 @@ const MyFavoriteHotel = () => {
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
                 <Pagination.Prev
-                  onClick={() => setActivePage((prev) => Math.max(prev - 1, 1))}
-                  disabled={activePage === 1}
+                  onClick={() => {
+                    setActivePage((prev) => Math.max(Number(prev) - 1, 1));
+                    const number = Number(activePage) - 1;
+                    url += `?page=${number}`;
+                    if (city) url += `&city=${encodeURIComponent(city)}`;
+                    if (district)
+                      url += `&district=${encodeURIComponent(district)}`;
+                    if (star) url += `&star=${encodeURIComponent(star)}`;
+                    navigate(url);
+                  }}
+                  disabled={activePage == 1}
                 />
 
                 {(() => {
@@ -349,12 +410,20 @@ const MyFavoriteHotel = () => {
                     pages.push(
                       <Pagination.Item
                         key={number}
-                        active={number === activePage}
-                        onClick={() => setActivePage(number)}
+                        active={number == activePage}
+                        onClick={() => {
+                          setActivePage(number);
+                          if (number) url += `?page=${number}`;
+                          if (city) url += `&city=${encodeURIComponent(city)}`;
+                          if (district)
+                            url += `&district=${encodeURIComponent(district)}`;
+                          if (star) url += `&star=${encodeURIComponent(star)}`;
+                          navigate(url);
+                        }}
                       >
                         <b
                           style={{
-                            color: number === activePage ? "white" : "#0d6efd",
+                            color: number == activePage ? "white" : "#0d6efd",
                           }}
                         >
                           {number}
@@ -367,10 +436,19 @@ const MyFavoriteHotel = () => {
                 })()}
 
                 <Pagination.Next
-                  onClick={() =>
-                    setActivePage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={activePage === totalPages}
+                  onClick={() => {
+                    setActivePage((prev) =>
+                      Math.min(Number(prev) + 1, totalPages)
+                    );
+                    const number = Number(activePage) + 1;
+                    url += `?page=${number}`;
+                    if (city) url += `&city=${encodeURIComponent(city)}`;
+                    if (district)
+                      url += `&district=${encodeURIComponent(district)}`;
+                    if (star) url += `&star=${encodeURIComponent(star)}`;
+                    navigate(url);
+                  }}
+                  disabled={activePage == totalPages}
                 />
               </Pagination>
             </div>

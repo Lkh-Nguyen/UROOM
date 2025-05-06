@@ -81,7 +81,7 @@ function NavigationBar() {
             <Nav.Link
               className="nav-link"
               onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 3 } })
+                navigate(`${Routers.MyAccountPage}/booking_history`)
               }
             >
               Transaction
@@ -89,7 +89,7 @@ function NavigationBar() {
             <Nav.Link
               className="nav-link"
               onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 5 } })
+                navigate(`${Routers.MyAccountPage}/my_feedback`)
               }
             >
               My Feedback
@@ -97,10 +97,26 @@ function NavigationBar() {
             <Nav.Link
               className="nav-link"
               onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 4 } })
+                navigate(`${Routers.MyAccountPage}/favorite_hotel`)
               }
             >
               Favorite hotels
+            </Nav.Link>
+            <Nav.Link
+              className="nav-link"
+              onClick={() =>
+                navigate(`${Routers.MyAccountPage}/my_report`)
+              }
+            >
+              My Reports
+            </Nav.Link>
+            <Nav.Link
+              className="nav-link"
+              onClick={() =>
+                navigate(`${Routers.MyAccountPage}/my_refund`)
+              }
+            >
+              My Refund
             </Nav.Link>
           </Nav>
 
@@ -146,7 +162,7 @@ function NavigationBar() {
               <Dropdown.Menu>
                 <Dropdown.Item
                   onClick={() =>
-                    navigate(Routers.MyAccountPage, { state: { id: 0 } })
+                    navigate(`${Routers.MyAccountPage}/view_information`)
                   }
                 >
                   View Information
@@ -161,7 +177,6 @@ function NavigationBar() {
                       type: AuthActions.LOGOUT,
                     });
                     clearToken();
-                    setIndexMyAccountPage(0);
                     setStatusBooking(0);
                   }}
                 >

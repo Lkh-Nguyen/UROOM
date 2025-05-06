@@ -970,15 +970,15 @@ const now = new Date();
 // Trạng thái của Reservation
 const reservationStatuses = [
   "CHECKED OUT", // Đã check-out, có thể để lại phản hồi
-  // "COMPLETED", // Hoàn thành, đã phản hồi
-  // "BOOKED", // Đã đặt, trả tiền nhưng chưa check-in
-  // "CHECKED IN", // Đang ở, đã check-in
-  // "PENDING", // Chờ xử lý hoặc xác nhận
-  // "CANCELLED", // Đã hủy
+  "COMPLETED", // Hoàn thành, đã phản hồi
+  "BOOKED", // Đã đặt, trả tiền nhưng chưa check-in
+  "CHECKED IN", // Đang ở, đã check-in
+  "PENDING", // Chờ xử lý hoặc xác nhận
+  "CANCELLED", // Đã hủy
   // "NOT PAID", // Chưa trả tiền
 ];
 
-for (let i = 0; i < 5; i++) {
+for (let i = 0; i < 200; i++) {
   let randomStatus =
     reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
 

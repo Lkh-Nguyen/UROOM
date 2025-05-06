@@ -648,42 +648,50 @@ const BookingBill = () => {
                   {/* Customer Information */}
 
                   <div className="info-section">
-                    <h5 className="section-title">I. CUSTOMER INFORMATION</h5>
                     <Row className="mb-2">
-                      <Col md={4} className="info-label">
+                      <Col md={12} className="info-label">
+                        <h5>I. CUSTOMER INFORMATION</h5>
+                      </Col>
+                    </Row>
+                    <Row className="mb-2">
+                      <Col md={3} className="info-label">
                         Customer name:
                       </Col>
-                      <Col md={8} className="info-value">
+                      <Col md={9} className="info-value">
                         {Auth.name || "N/A"}
                       </Col>
                     </Row>
                     <Row className="mb-2">
-                      <Col md={4} className="info-label">
+                      <Col md={3} className="info-label">
                         Phone number:
                       </Col>
-                      <Col md={8} className="info-value">
+                      <Col md={9} className="info-value">
                         {Auth.phoneNumber || "N/A"}
                       </Col>
                     </Row>
                     <Row className="mb-2">
-                      <Col md={4} className="info-label">
+                      <Col md={3} className="info-label">
                         Email:
                       </Col>
-                      <Col md={8} className="info-value">
+                      <Col md={9} className="info-value">
                         {Auth.email || "N/A"}
                       </Col>
                     </Row>
                   </div>
 
                   <div className="info-section">
-                    <h5 className="section-title">II. HOTEL INFORMATION</h5>
+                    <Row className="mb-2">
+                      <Col md={12} className="info-label">
+                      <h5>II. HOTEL INFORMATION</h5>
+                      </Col>
+                    </Row>
                     <Row className="mb-2"></Row>
                     {/* Update the hotel contact information display section */}
                     <Row className="mb-2">
-                      <Col md={4} className="info-label">
+                      <Col md={3} className="info-label">
                         Phone number:
                       </Col>
-                      <Col md={8} className="info-value">
+                      <Col md={9} className="info-value">
                         <div className="d-flex align-items-center">
                           {hotelDetail?.phoneNumber ||
                             hotelDetail?.owner?.phoneNumber ||
@@ -693,10 +701,10 @@ const BookingBill = () => {
                       </Col>
                     </Row>
                     <Row className="mb-2">
-                      <Col md={4} className="info-label">
+                      <Col md={3} className="info-label">
                         Email:
                       </Col>
-                      <Col md={8} className="info-value">
+                      <Col md={9} className="info-value">
                         <div className="d-flex align-items-center">
                           {hotelDetail?.email ||
                             hotelDetail?.owner?.email ||
@@ -707,10 +715,10 @@ const BookingBill = () => {
                     </Row>
                     {hotelDetail?.address && (
                       <Row className="mb-2">
-                        <Col md={4} className="info-label">
+                        <Col md={3} className="info-label">
                           Address:
                         </Col>
-                        <Col md={8} className="info-value">
+                        <Col md={9} className="info-value">
                           {hotelDetail.address}
                         </Col>
                       </Row>

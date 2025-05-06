@@ -23,7 +23,6 @@ import PaymentFailedPage from "pages/customer/home/PaymentFailedPage";
 import RoomDetailPage from "pages/customer/home/RoomDetailPage";
 import ReportedFeedback from "pages/customer/home/ReportedFeedback";
 import ChatPage from "pages/customer/home/ChatPage";
-import { useAppSelector } from "./redux/store";
 
 function App() {
   return (
@@ -48,7 +47,7 @@ function App() {
         />
 
         {/*Infomation, Avatar */}
-        <Route path={Routers.MyAccountPage} element={<MyAccountPage />} />
+        <Route path={`${Routers.MyAccountPage}/:section`} element={<MyAccountPage />} />
         <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
         <Route path={`${Routers.BookingBill}/:id`} element={<BookingBill />} />
         <Route path={`${Routers.CreateFeedback}/:id`} element={<CreateFeedback />} />
