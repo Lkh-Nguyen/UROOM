@@ -11,6 +11,7 @@ exports.getReservationsByUserId = async (req, res) => {
       .populate("rooms.room") 
       .sort({ createdAt: -1 });
 
+      console.log("reservations: ", reservations)
     if (reservations.length === 0) {
       return res.status(404).json({
         error: true,
@@ -64,7 +65,7 @@ exports.getReservationById = async (req, res) => {
 
 exports.getReservationDetailById = asyncHandler(async (req, res) => {
   const { reservationId } = req.params;
-
+  console.log("abc")
   if (!reservationId) {
     return res.status(400).json({
       message: RESERVATION.INVALID_STATUS,
@@ -112,7 +113,7 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
 
 // setinterval auto run after each minutes
 cron.schedule(
-  "*/5 * * * *",
+  "*/1 * * * *",
   () => {
     // autoUpdateReservationStatus();
     autoUpdateNotPaidReservation();
@@ -130,7 +131,7 @@ exports.updateReservationById = async (req, res) => {
       req.body,
       { new: true }
     ).populate("hotel").populate("rooms.room");
-
+    updated.up
     if (!updated)
       return res.status(404).json({ error: true, message: "Không tìm thấy đơn đặt phòng." });
 

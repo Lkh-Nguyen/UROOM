@@ -35,7 +35,7 @@ exports.createBooking = asyncHandler(async (req, res) => {
       return res.json({
         unpaidReservation: unpaidReservation,
         message:
-          "You must payment the not paid reservation before or wait 10 minutes to delete",
+          "You must payment the not paid reservation before or wait 5 minutes to delete",
       });
     }
 
@@ -58,7 +58,7 @@ exports.createBooking = asyncHandler(async (req, res) => {
     console.log("reservation: ", reservation);
     return res.status(201).json({
       error: false,
-      message: "Reservation created successfully. Please finish payment in 10 minutes",
+      message: "Reservation created successfully. Please finish payment in 5 minutes",
       reservation,
     });
   } catch (err) {
@@ -71,7 +71,7 @@ exports.createBooking = asyncHandler(async (req, res) => {
 
 exports.cancelPayment = asyncHandler(async (req, res) => {
   const { reservationId } = req.body;
-  console.log("reservationId: ", reservationId);
+  console.log("reservationId1: ", reservationId);
   const userId = req.user.id;
 
   try {

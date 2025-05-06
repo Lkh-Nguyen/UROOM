@@ -27,7 +27,6 @@ const BookingCheckPage = () => {
   );
   const selectedRooms = useAppSelector((state) => state.Search.selectedRooms);
   const hotelDetail = useAppSelector((state) => state.Search.hotelDetail);
-  console.log("hotelDetail: ", hotelDetail);
   const navigate = useNavigate();
   const [bookingFor, setBookingFor] = useState("mainGuest");
   // Star rating component

@@ -27,7 +27,7 @@ const ApiConstants = {
   ACCEPT_PAYMENT: 'payment/accept-payment',
 
   //RESERVATION:
-  FETCH_DETAIL_RESERVATION: '/reservation/detail',
+  FETCH_DETAIL_RESERVATION: '/reservations/detail',
 
   FETCH_FEEDBACK_BY_HOTELID: "feedback/get-feedback-hotel/:hotelId",
   FETCH_USER_FEEDBACKS: "feedback/my-feedbacks",

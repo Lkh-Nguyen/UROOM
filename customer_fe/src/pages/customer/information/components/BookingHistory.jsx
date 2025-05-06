@@ -7,7 +7,7 @@ import * as Routers from "../../../../utils/Routes"
 import { useNavigate } from "react-router-dom"
 import CancelReservationModal from "pages/customer/home/components/CancelReservationModal"
 import { showToast, ToastProvider } from "components/ToastContainer"
-import { setStatusBooking } from "utils/handleToken"
+import { getStatusBooking, setStatusBooking } from "../../../../utils/handleToken"
 import Select from "react-select"
 import { useAppSelector, useAppDispatch } from "../../../../redux/store"
 import ReservationActions from "../../../../redux/reservations/actions"
@@ -48,13 +48,13 @@ const BookingHistory = () => {
     "#DC3545", // CANCELLED - Đỏ (hủy bỏ, lỗi)
   ]
 
-  // useEffect(() => {
-  //   const fetchIndex = async () => {
-  //     const result = await getStatusBooking()
-  //     setActiveFilter(Number(result)) // nhớ ép kiểu về số
-  //   }
-  //   fetchIndex()
-  // }, [])
+  useEffect(() => {
+    const fetchIndex = async () => {
+      const result = await getStatusBooking()
+      setActiveFilter(Number(result)) // nhớ ép kiểu về số
+    }
+    fetchIndex()
+  }, [])
 
   // Fetch user reservations from API
   useEffect(() => {
@@ -79,19 +79,19 @@ const BookingHistory = () => {
             totalPrice: formatCurrency(reservation.totalPrice),
             status: reservation.status || "PENDING",
             originalData: reservation, // Keep the original data for reference
+            createdAt: reservation.createdAt
           }))
           setReservations(transformedData)
           setIsLoading(false)
         },
+
         onFailed: (msg) => {
-          showToast.error(msg || "Failed to fetch reservations")
           setIsLoading(false)
           // Set empty reservations if fetch fails
           setReservations([])
         },
         onError: (err) => {
           console.error("Error fetching reservations:", err)
-          showToast.error("Server error occurred while fetching reservations")
           setIsLoading(false)
           // Set empty reservations if fetch fails
           setReservations([])
@@ -317,7 +317,7 @@ const BookingHistory = () => {
                       Create Feedback
                     </Button>
                   )}
-                  {activeFilter == 3 && (
+                  {activeFilter == 4 && (
                     <Button
                       variant="outline-danger"
                       style={{ width: "100%", marginTop: "10px" }}
@@ -326,12 +326,21 @@ const BookingHistory = () => {
                       Cancel Booking
                     </Button>
                   )}
-                  {activeFilter == 4 && (
+                  {activeFilter == 5 && (
                     <Button
                       variant="outline-warning"
                       style={{ width: "100%", marginTop: "10px" }}
                       onClick={() => {
-                        navigate(Routers.PaymentPage)
+                        console.log(reservation)
+                        navigate(Routers.PaymentPage,
+                          {
+                            state: {
+                              createdAt: reservation.createdAt,
+                              idReservation: reservation.id,
+                              totalPrice: reservation.totalPrice,
+                            }
+                          }
+                        )
                       }}
                     >
                       Pay money

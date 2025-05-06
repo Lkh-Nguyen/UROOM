@@ -4,8 +4,8 @@ import api from "../../libs/api/index";
 
 const Factories = {
 
-  fetch_detail_reservation: (reservationId) => {
-    const url = `${ApiConstants.FETCH_DETAIL_RESERVATION}/${reservationId}`
+  fetch_detail_reservation: (idReservation) => {
+    const url = `${ApiConstants.FETCH_DETAIL_RESERVATION}/${idReservation}`
     return api.get(url);
   },
   

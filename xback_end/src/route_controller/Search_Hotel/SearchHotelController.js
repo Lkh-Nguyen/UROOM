@@ -155,7 +155,6 @@ exports.searchAndFilterHotels = async (req, res) => {
           const availableRooms = allRooms
             .map((room) => {
               const booked = roomBookedQuantities[room._id.toString()] || 0;
-              console.log("booked: ", booked);
               const available = room.quantity - booked;
               return {
                 ...room.toObject(),

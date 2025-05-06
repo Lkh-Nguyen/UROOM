@@ -16,8 +16,9 @@ const PaymentPage = () => {
 
   const location = useLocation();
   const { createdAt, totalPrice, idReservation, messageSuccess, messageError } = location.state || {};
-  
-  const [reservation, setReservation]= useState({});
+  console.log("createAt: ", createdAt)
+  console.log("idReservation: ", idReservation)
+
   const fetchReservation= async() => {
     try {
       const response = await Factories2.fetch_detail_reservation(idReservation);
@@ -65,7 +66,7 @@ const PaymentPage = () => {
     return timeDiff > 0 ? timeDiff : 0;
   };
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
+  console.log("timeleft: ", timeLeft)
   const handleAccept = async () => {
     try {
       const response = await Factories.accept_payment(idReservation);
@@ -94,7 +95,7 @@ const PaymentPage = () => {
   }, []);
 
   useEffect(() => {
-    if (timeLeft <= 0) {
+    if (timeLeft <= 0 && timeLeft) {
       handleDelete();
       navigate(Routers.PaymentFailedPage); // Redirect to timeout page
       return;

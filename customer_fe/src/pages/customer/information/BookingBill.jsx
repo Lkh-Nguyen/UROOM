@@ -403,34 +403,34 @@ const BookingBill = () => {
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
       doc.rect(15, finalY, 85, 40);
-     
+
       doc.setTextColor(33, 43, 73);
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
       doc.text("CUSTOMER SIGNATURE", 20, finalY + 10);
-     
+
       doc.line(20, finalY + 30, 80, finalY + 30); // Signature line
-     
+
       // Add hotel signature section
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
       doc.rect(110, finalY, 85, 40);
-     
+
       doc.setTextColor(33, 43, 73);
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
       doc.text("HOTEL SIGNATURE", 115, finalY + 10);
-     
+
       doc.line(115, finalY + 30, 175, finalY + 30); // Signature line
-     
+
       // Add terms and conditions
       doc.setTextColor(100, 100, 100);
       doc.setFontSize(8);
       doc.setFont("helvetica", "italic");
-     
+
       // Use text wrapping for terms and conditions
       const termsText =
-      "This invoice confirms your booking with the agreed terms and conditions.";
+        "This invoice confirms your booking with the agreed terms and conditions.";
       const termsLines = doc.splitTextToSize(termsText, 150);
       doc.text(termsLines, 105, finalY + 50, { align: "center" });
 
@@ -546,8 +546,8 @@ const BookingBill = () => {
           {loading ? (
             <div className="text-center py-5 bg-white rounded shadow">
               <Spinner animation="border" variant="primary" />
-              <p className="mt-3 text-muted">Đang tải thông tin đặt phòng...</p>
-            </div>
+              <p className="mt-3 text-muted">Loading booking information...</p>
+              </div>
           ) : !reservationDetail ? (
             <div className="text-center py-5 bg-white rounded shadow">
               <div className="mb-3">
@@ -556,10 +556,10 @@ const BookingBill = () => {
                   onClick={() => navigate(-1)}
                 />
               </div>
-              <h4>Không tìm thấy thông tin đặt phòng</h4>
+              <h4>Booking information not found</h4>
               <p className="text-muted">
-                Thông tin đặt phòng không tồn tại hoặc bạn không có quyền truy
-                cập.
+                The booking information does not exist or you do not have
+                permission to access it.
               </p>
               <Button
                 variant="primary"
