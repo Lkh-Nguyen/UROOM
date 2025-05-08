@@ -106,10 +106,47 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
     if (diffInMinutes >= 5 && r.status === "NOT PAID") {
       r.status = "CANCELLED";
       await r.save();
-      console.log(`Reservation ${r._id} đã bị hủy do quá 10 phút chưa thanh toán.`);
+      console.log(`Reservation ${r._id} đã bị hủy do quá 5 phút chưa thanh toán.`);
+    }
+  }
+
+  // 2. Xử lý đơn PENDING mà quá thời gian check-in
+  const pendingReservations = await Reservation.find({ status: "PENDING" });
+  for (const r of pendingReservations) {
+    const checkinDate = new Date(r.checkInDate); // đảm bảo checkinDate là ngày giờ
+    if (now > checkinDate) {
+      r.status = "CANCELLED";
+      await r.save();
+      console.log(`Reservation ${r._id} đã bị hủy do quá thời gian check-in.`);
+    }
+  }
+
+  const bookedReservations = await Reservation.find({ status: "BOOKED" });
+  for (const r of bookedReservations) {
+    const checkinDate = new Date(r.checkInDate); // đảm bảo checkinDate là ngày giờ
+    const checkoutDate = new Date(r.checkOutDate); // đảm bảo checkinDate là ngày giờ
+
+    if (now > checkinDate && now < checkoutDate) {
+      r.status = "CHECKED IN";
+      await r.save();
+      console.log(`Reservation ${r._id} đã được chuyển sang trạng thái CHECKED IN.`);
+    }
+  }
+
+  const checkedInReservations = await Reservation.find({ status: "CHECKED IN" });
+  for (const r of checkedInReservations) {
+    const checkinDate = new Date(r.checkInDate); // đảm bảo checkinDate là ngày giờ
+    const checkoutDate = new Date(r.checkOutDate); // đảm bảo checkinDate là ngày giờ
+
+    if (now > checkinDate && now > checkoutDate) {
+      r.status = "CHECKED OUT";
+      await r.save();
+      console.log(`Reservation ${r._id} đã được chuyển sang trạng thái CHECKED OUT.`);
     }
   }
 });
+
+
 
 // setinterval auto run after each minutes
 cron.schedule(

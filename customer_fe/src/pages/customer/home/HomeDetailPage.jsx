@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Container,
   Row,
@@ -108,14 +108,19 @@ export default function HotelDetailPage() {
   const [shuffledHotels, setShuffledHotels] = useState([]);
   const [roomsByHotel, setRoomsByHotel] = useState({});
   const [feedbacks, setFeedbacks] = useState([]);
-  console.log("feedbacks: ", feedbacks);
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [ratingBreakdown, setRatingBreakdown] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
-  const [sort, setSort] = useState(0);
-  const [star, setStar] = useState(0);
+
+  const [searchParamsTemp] = useSearchParams();
+  const sortTemp = searchParamsTemp.get("sort");
+  const starTemp = searchParamsTemp.get("star");
+  const pageTemp = searchParamsTemp.get("page");
+  const [currentPage, setCurrentPage] = useState(Number(pageTemp) ?? 1);
+  const [sort, setSort] = useState(Number(sortTemp) ?? 0);
+  const [star, setStar] = useState(Number(starTemp) ?? 0);
+
   const [filterParams, setFilterParams] = useState({
     page: currentPage,
     sort: sort,
@@ -141,8 +146,26 @@ export default function HotelDetailPage() {
   );
   const [isSearching, setIsSearching] = useState(false);
 
+  // Update URL when filters change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams();
+      params.set("sort", sort.toString());
+      params.set("star", star.toString());
+      params.set("page", currentPage.toString() ?? 1);
+
+      // Use window.history to update URL without full page reload
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+      );
+
+      // Save filter to localStorage
+    }
+  }, [sort, star, currentPage]);
+
   const today = new Date().toISOString().split("T")[0];
-  console.log("Rooms: ", rooms);
   // Fetch hotel details
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -235,7 +258,6 @@ export default function HotelDetailPage() {
   const [searchRoom, setSearchRoom] = useState(false);
 
   const handleSearchRoom = () => {
-
     const adults = selectedAdults ? selectedAdults.value : 1;
     const childrens = selectedChildren ? selectedChildren.value : 0;
     const SearchInformationTemp = {
@@ -244,14 +266,13 @@ export default function HotelDetailPage() {
       checkoutDate,
       adults,
       childrens,
-    }
+    };
 
-    console.log("SearchInformationTemp: ",SearchInformationTemp)
+    console.log("SearchInformationTemp: ", SearchInformationTemp);
     dispatch({
       type: SearchActions.SAVE_SEARCH,
       payload: { SearchInformation: SearchInformationTemp },
     });
-
 
     setSearchRoom(true);
     dispatch({
@@ -445,8 +466,10 @@ export default function HotelDetailPage() {
     setThumbnailStartIndex(newStart);
   };
 
-  const handleRoomClick = (roomId) => {
-    navigate(`${Routers.RoomDetailPage}/${roomId}`);
+  const handleRoomClick = (roomId, availableQuantity) => {
+    navigate(`${Routers.RoomDetailPage}/${roomId}`, {
+      state: { availableQuantity: availableQuantity },
+    });
   };
 
   //booking room
@@ -735,16 +758,54 @@ export default function HotelDetailPage() {
                 )}
                 <h3 style={{ fontWeight: "bold" }}>Address Hotel</h3>
                 <p>{hotelDetail.address}</p>
-                <h3 style={{ fontWeight: "bold" }}>
+                <Row style={{ marginTop: "-40px" }}>
+                  <Col md={6}>
+                    <h3 style={{ fontWeight: "bold" }}>Check-in Time </h3>
+                  </Col>
+                  <Col md={6}>
+                    <h3 style={{ fontWeight: "bold" }}>Check-out Time </h3>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={6}>
+                    <p>
+                      {hotelDetail.checkInStart} - {hotelDetail.checkInEnd}
+                    </p>
+                  </Col>
+                  <Col md={6}>
+                    <p>
+                      {hotelDetail.checkOutStart} - {hotelDetail.checkOutEnd}
+                    </p>
+                  </Col>
+                </Row>
+
+                <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
                   Highlights of the property
                 </h3>
-                <ul className="highlights-list">
+
+                <ul
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    listStyleType: "disc",
+                    paddingLeft: "20px",
+                    marginTop: "10px",
+                  }}
+                >
                   {hotelDetail.services?.length > 0 ? (
                     hotelDetail.services.map((service, index) => (
-                      <li key={index}>{service.name}</li>
+                      <li
+                        key={index}
+                        style={{
+                          width: "50%",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {service.name}
+                      </li>
                     ))
                   ) : (
-                    <li>No highlights.</li>
+                    <li style={{ width: "100%" }}>No highlights.</li>
                   )}
                 </ul>
 
@@ -840,7 +901,7 @@ export default function HotelDetailPage() {
                         checkoutDate: e.target.value,
                       });
                     }}
-                    min={today}
+                    min={checkinDate + 1}
                     required
                   />
                 </InputGroup>
@@ -1017,7 +1078,12 @@ export default function HotelDetailPage() {
                           variant="top"
                           src={room.images?.[0] || "/default-room.jpg"}
                           alt={room.type}
-                          onClick={() => handleRoomClick(room.id || room._id)}
+                          onClick={() =>
+                            handleRoomClick(
+                              room.id || room._id,
+                              room.availableQuantity
+                            )
+                          }
                           style={{
                             height: "220px",
                             objectFit: "cover",
@@ -1059,7 +1125,7 @@ export default function HotelDetailPage() {
                             className="text-primary fw-bold"
                             style={{ fontSize: "1.4rem", marginBottom: "8px" }}
                           >
-                            ${room.price}
+                            {Utils.formatCurrency(room.price)}
                             <span
                               className="text-muted"
                               style={{ fontSize: "0.85rem", marginLeft: "4px" }}
@@ -1316,7 +1382,9 @@ export default function HotelDetailPage() {
                       <div className="price-container">
                         {firstRoom?.price && (
                           <>
-                            <span className="price">{firstRoom.price}$</span>
+                            <span className="price">
+                              {Utils.formatCurrency(firstRoom.price)}
+                            </span>
                             <span className="per-day">/Day</span>
                           </>
                         )}
@@ -1512,6 +1580,7 @@ export default function HotelDetailPage() {
                     sort: e.target.value,
                     page: 1,
                   });
+                  setCurrentPage(1);
                 }}
               >
                 <option value={0}>Date (Newest first)</option>
@@ -1696,7 +1765,7 @@ export default function HotelDetailPage() {
             ))
           )}
           {/* Pagination */}
-          {totalPages > 1 && (
+          {totalPages >= 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination
                 currentPage={currentPage}

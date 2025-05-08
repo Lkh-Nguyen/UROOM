@@ -14,6 +14,7 @@ const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
 const cron = require("node-cron");
 require("./src/route_controller/Reservations/ReservationsController"); // ✅ Import cron job
 const ReservationRouter = require("./src/route_controller/Reservations/ReservationsRouter");
+const RefundingReservationRouter = require("./src/route_controller/RefundingReservation/RefundingReservationRoute");
 
 
 const port = process.env.PORT || 5000;
@@ -46,6 +47,7 @@ app.use("/api/reservations", ReservationRouter);
 
 app.use("/api/payment", PaymentRouter);
 
+app.use("/api/refunding_reservation", RefundingReservationRouter);
 //from errorHandle
 app.use(errorHandler);
 

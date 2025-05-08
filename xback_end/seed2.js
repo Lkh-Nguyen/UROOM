@@ -840,6 +840,10 @@ for (let i = 0; i < 60; i++) {
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
       images: images,
+      checkInStart: "12:00",
+      checkInEnd: "13:00",
+      checkOutStart: "10:00",
+      checkOutEnd: "11:00"
     });
 
     hotelIds.push(hotel.insertedId);
@@ -922,6 +926,10 @@ for (let i = 0; i < hotelNames.length; i++) {
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
       images: images,
+      checkInStart: "12:00",
+      checkInEnd: "13:00",
+      checkOutStart: "10:00",
+      checkOutEnd: "11:00"
     });
 
     hotelIds.push(hotel.insertedId);
@@ -978,7 +986,7 @@ const reservationStatuses = [
   // "NOT PAID", // Chưa trả tiền
 ];
 
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 1500; i++) {
   let randomStatus =
     reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
 

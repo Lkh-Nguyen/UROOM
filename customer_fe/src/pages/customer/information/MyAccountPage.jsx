@@ -16,6 +16,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
 import * as Routers from "../../../utils/Routes";
+import RefundReservations from "./components/RefundReservation";
 
 function MyAccountPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
@@ -103,7 +104,7 @@ function MyAccountPage() {
                 {section == "favorite_hotel" && <FavoriteHotel />}
                 {section == "my_feedback" && <MyFeedback />}
                 {section == "my_report" && <FavoriteHotel />}
-                {section == "my_refund" && <MyFeedback />}
+                {section == "my_refund" && <RefundReservations/>}
               </Card>
             </Col>
           </Row>

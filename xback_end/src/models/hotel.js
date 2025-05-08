@@ -73,7 +73,24 @@ const hotelSchema = new Schema(
     },
     decisionDate: {
       type: Date
-    }
+    },
+    checkInStart: {
+      type: String,
+      default: "12:00"
+    },
+    checkInEnd: {
+      type: String,
+      default: "13:00"
+    },
+    checkOutStart: {
+      type: String,
+      default: "10:00"
+    },
+    checkOutEnd: {
+      type: String,
+      default: "11:00"
+    },
+
   },
   { versionKey: false }
 );

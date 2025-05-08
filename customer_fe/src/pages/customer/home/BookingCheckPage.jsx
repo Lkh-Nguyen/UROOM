@@ -29,6 +29,7 @@ const BookingCheckPage = () => {
   const hotelDetail = useAppSelector((state) => state.Search.hotelDetail);
   const navigate = useNavigate();
   const [bookingFor, setBookingFor] = useState("mainGuest");
+  
   // Star rating component
   const StarRating = ({ rating }) => {
     return (
@@ -103,6 +104,17 @@ const BookingCheckPage = () => {
   const handleConfirmBooking = () => {
     setShowAcceptModal(true);
   };
+
+  const formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -115,7 +127,7 @@ const BookingCheckPage = () => {
       <Header />
       <div
         className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper"
-        style={{ paddingTop: "50px", paddingBottom: "50px" }}
+        style={{ paddingTop: "65px", paddingBottom: "50px" }}
       >
         <Container className="mt-4">
           <Row className="justify-content-center">
@@ -227,13 +239,14 @@ const BookingCheckPage = () => {
                       <span>
                         {amount} x {room.name}:
                       </span>
-                      <span className="fw-bold">${room.price * amount}</span>
+                      <span className="fw-bold">{Utils.formatCurrency(room.price * amount)}</span>
                     </div>
                   ))}
 
                   <div className="small mb-3">
                     <a
                       className="text-blue text-decoration-none"
+                      style={{cursor: 'pointer'}}
                       onClick={() => {
                         navigate(-1);
                       }}
@@ -255,12 +268,7 @@ const BookingCheckPage = () => {
                 <div className="total-price">
                   <div className="d-flex justify-content-between align-items-center">
                     <h5 className="text-danger mb-0">
-                      Total: $
-                      {selectedRooms.reduce(
-                        (total, { room, amount }) =>
-                          total + room.price * amount,
-                        0
-                      )}
+                      Total: {Utils.formatCurrency(selectedRooms.reduce((total, { room, amount }) => total + room.price * amount,0))}
                     </h5>{" "}
                   </div>
                   <div className="small">Includes taxes and fees</div>

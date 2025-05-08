@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../../redux/store";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import RoomActions from "../../../redux/room/actions";
 import { showToast } from "components/ToastContainer";
 import NavigationBar from "../Header";
@@ -12,6 +12,8 @@ import * as FaIcons from "react-icons/fa";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
 import Banner from "../../../images/banner.jpg";
+import Utils from "../../../utils/Utils";
+import { Util } from "reactstrap";
 
 // CSS Styles
 const styles = {
@@ -440,8 +442,8 @@ const styles = {
     scrollbarColor: "#1a2b49 #f0f0f0",
   },
   thumbnailLarge: {
-    width: "100px", // Larger thumbnails
-    height: "75px",
+    width: "200px", // Larger thumbnails
+    height: "150px",
     flexShrink: 0,
     borderRadius: "8px",
     cursor: "pointer",
@@ -554,10 +556,13 @@ function App() {
 }
 
 function MainContent() {
+  const SearchInformation = useAppSelector(
+    (state) => state.Search.SearchInformation
+  );
   const { id: roomId } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
+  const location = useLocation();
   const [roomDetail, setRoomDetail] = useState({
     images: [],
     facilities: [],
@@ -661,7 +666,7 @@ function MainContent() {
               className="large-image-container"
             >
               <div style={styles.badge}>
-                <h4>{roomDetail.type || "Standard Room"}</h4>
+                <h4>{roomDetail.type || ""}</h4>
               </div>
 
               <img
@@ -695,16 +700,6 @@ function MainContent() {
                   />
                 ))}
             </div>
-
-            {/* View all photos button */}
-            <div
-              style={styles.viewAllPhotos}
-              className="view-all-photos"
-              onClick={() => setShowAllPhotos(true)}
-            >
-              <FaIcons.FaImages style={{ fontSize: "0.9rem" }} />
-              View all photos
-            </div>
           </div>
 
           {/* Main horizontal layout for info and booking */}
@@ -724,10 +719,7 @@ function MainContent() {
                   </h1>
                 </div>
                 <div style={styles.price}>
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: "USD",
-                  }).format(roomDetail.price || 0)}
+                  {Utils.formatCurrency(roomDetail.price)}
                   <span style={styles.priceUnit}>/day</span>
                 </div>
 
@@ -772,9 +764,9 @@ function MainContent() {
                         </span>
                         <span style={{ color: "#333333" }}>
                           {facility.name}
-                          </span>
-                        </div>
-                      )) || (
+                        </span>
+                      </div>
+                    )) || (
                       <div style={styles.noData}>No amenities available.</div>
                     )}
                   </div>
@@ -824,6 +816,7 @@ function MainContent() {
                       value={roomQuantity}
                       onChange={handleQuantityChange}
                       style={styles.quantityInput}
+                      max={location.state.availableQuantity}
                     />
                     <button
                       style={styles.quantityButton}
@@ -834,6 +827,31 @@ function MainContent() {
                     </button>
                   </div>
                 </div>
+                <div>
+                  {location.state.availableQuantity <= 3 ? (
+                    <div
+                      className="text-danger fw-semibold"
+                      style={{
+                        fontSize: "0.95rem",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Only {location.state.availableQuantity} rooms left for
+                      this room type!
+                    </div>
+                  ) : (
+                    <div
+                      className="fw-semibold"
+                      style={{
+                        fontSize: "0.95rem",
+                        marginBottom: "10px",
+                      }}
+                    >
+                      Have {location.state.availableQuantity} rooms left for
+                      this room type!
+                    </div>
+                  )}
+                </div>
 
                 <div style={styles.formGroup}>
                   <label style={styles.label}>Check-in Date</label>
@@ -841,7 +859,7 @@ function MainContent() {
                     type="date"
                     style={styles.input}
                     className="input"
-                    value={checkInDate}
+                    value={SearchInformation.checkinDate}
                     onChange={(e) => setCheckInDate(e.target.value)}
                     min={new Date().toISOString().split("T")[0]}
                   />
@@ -852,7 +870,7 @@ function MainContent() {
                     type="date"
                     style={styles.input}
                     className="input"
-                    value={checkOutDate}
+                    value={SearchInformation.checkoutDate}
                     onChange={(e) => setCheckOutDate(e.target.value)}
                     min={checkInDate || new Date().toISOString().split("T")[0]}
                   />
@@ -861,10 +879,7 @@ function MainContent() {
                 <div style={styles.totalPrice}>
                   Total:{" "}
                   <span style={styles.totalPriceValue}>
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    }).format(totalPrice || 0)}
+                    {Utils.formatCurrency(totalPrice)}
                   </span>
                   <div style={{ fontSize: "0.875rem", color: "#666666" }}>
                     {roomQuantity} {roomQuantity > 1 ? "rooms" : "room"} ×{" "}

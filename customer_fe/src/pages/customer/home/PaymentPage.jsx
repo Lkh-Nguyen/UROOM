@@ -16,8 +16,6 @@ const PaymentPage = () => {
 
   const location = useLocation();
   const { createdAt, totalPrice, idReservation, messageSuccess, messageError } = location.state || {};
-  console.log("createAt: ", createdAt)
-  console.log("idReservation: ", idReservation)
 
   const fetchReservation= async() => {
     try {
@@ -71,7 +69,7 @@ const PaymentPage = () => {
     try {
       const response = await Factories.accept_payment(idReservation);
       if (response?.status === 200) {
-        navigate(Routers.PaymentSuccessPage);
+        navigate(Routers.PaymentSuccessPage, { state: {totalPrice: totalPrice}});
       }
     } catch (error) {
       console.error("Error fetching hotels:", error);
@@ -129,6 +127,17 @@ const PaymentPage = () => {
   const handleCancelButton = () => {
     setShowDeleteModal(true);
   };
+
+  const formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(amount);
+};
+  
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -181,7 +190,7 @@ const PaymentPage = () => {
                   <h6 className="text-muted">Account number</h6>
                   <h5 className="mb-3">447771209309</h5>
                   <h6 className="text-muted">Amount</h6>
-                  <h5 className="mb-3">${totalPrice}</h5>
+                  <h5 className="mb-3">{formatCurrency(totalPrice)}</h5>
                   <h6 className="text-muted">Content</h6>
                   <h5>Payment for UROOM</h5>
                 </div>

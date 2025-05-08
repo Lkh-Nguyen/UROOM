@@ -31,6 +31,7 @@ import ReservationActions from "../../../redux/reservations/actions";
 import HotelActions from "../../../redux/hotel/actions";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import * as Routers from "../../../utils/Routes";
 
 const BookingBill = () => {
   const dispatch = useAppDispatch();
@@ -505,9 +506,9 @@ const BookingBill = () => {
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "N/A";
     try {
-      return new Intl.NumberFormat("vi-VN", {
+      return new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "VND",
+        currency: "USD",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
       }).format(amount);
@@ -527,6 +528,8 @@ const BookingBill = () => {
     }, 0);
   };
 
+
+
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -537,7 +540,7 @@ const BookingBill = () => {
       }}
     >
       <Header />
-      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper">
+      <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper" style={{paddingTop: '25px', paddingBottom: '25px'}}>
         <Container
           fluid
           className="booking-bill-container"
@@ -575,7 +578,10 @@ const BookingBill = () => {
                 <Col
                   md={5}
                   className="hotel-info-section"
-                  style={{ paddingTop: "20px", paddingLeft: "20px" }}
+                  style={{ paddingTop: "20px", paddingLeft: "20px", cursor: 'pointer' }}
+                  onClick={() => {
+                    navigate(`${Routers.Home_detail}/${reservationDetail.hotel?._id}`)
+                  }}
                 >
                   <Image
                     src={
@@ -726,7 +732,11 @@ const BookingBill = () => {
                   </div>
 
                   <div className="info-section">
-                    <h5 className="section-title">III. THÔNG TIN ĐẶT PHÒNG</h5>
+                    <Row className="mb-2">
+                      <Col md={12} className="info-label">
+                      <h5>III. BOOKING INFORMATION</h5>
+                      </Col>
+                    </Row>
                     <Table bordered className="booking-table">
                       <thead>
                         <tr>
@@ -745,7 +755,7 @@ const BookingBill = () => {
                               <td>{roomItem.room?.name || "Phòng"}</td>
                               <td>{roomItem.quantity || 1}</td>
                               <td>
-                                {formatCurrency(roomItem.room?.price || 0)}
+                                {formatCurrency(roomItem.room?.price * roomItem.quantity || 0)}
                               </td>
                             </tr>
                           ))

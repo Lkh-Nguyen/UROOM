@@ -15,7 +15,13 @@ import image from "../../images/image-removebg-preview.png";
 import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
-import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
+import {
+  clearIndexMyAccountPage,
+  clearToken,
+  getToken,
+  setIndexMyAccountPage,
+  setStatusBooking,
+} from "utils/handleToken";
 
 function NavigationBar() {
   // ✅ Nhận `header` từ props (hoặc có thể setState)
@@ -42,7 +48,7 @@ function NavigationBar() {
   }, []);
 
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  const dispatch= useDispatch();
+  const dispatch = useDispatch();
   return (
     <Navbar
       expand="lg"
@@ -53,16 +59,16 @@ function NavigationBar() {
       }}
     >
       <Container>
-         <Image
-            src={image}
-            width="100"
-            height="28"
-            className="ms-2 me-2"
-            onClick={() => {
-              navigate(Routers.Home)
-            }}
-            style={{cursor: "pointer"}}
-          />
+        <Image
+          src={image}
+          width="100"
+          height="28"
+          className="ms-2 me-2"
+          onClick={() => {
+            navigate(Routers.Home);
+          }}
+          style={{ cursor: "pointer" }}
+        />
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -88,9 +94,7 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(`${Routers.MyAccountPage}/my_feedback`)
-              }
+              onClick={() => navigate(`${Routers.MyAccountPage}/my_feedback`)}
             >
               My Feedback
             </Nav.Link>
@@ -104,17 +108,13 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(`${Routers.MyAccountPage}/my_report`)
-              }
+              onClick={() => navigate(`${Routers.MyAccountPage}/my_report`)}
             >
               My Reports
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(`${Routers.MyAccountPage}/my_refund`)
-              }
+              onClick={() => navigate(`${Routers.MyAccountPage}/my_refund`)}
             >
               My Refund
             </Nav.Link>
@@ -144,13 +144,23 @@ function NavigationBar() {
             </Dropdown.Menu>
           </Dropdown>
 
-          {Auth._id !== -1 ? ( 
+          {Auth._id !== -1 ? (
             <Dropdown align="end">
               <Dropdown.Toggle
                 variant="light"
                 className="login-btn d-flex align-items-center"
               >
-                {Auth.name}
+                <a
+                  style={{
+                    display: "inline-block",
+                    maxWidth: "150px", // hoặc width tùy bạn
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {Auth.name}
+                </a>{" "}
                 <Image
                   src={Auth.image.url}
                   roundedCircle

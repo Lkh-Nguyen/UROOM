@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { FaThumbsUp, FaThumbsDown } from "react-icons/fa"
 import { Container, Row, Col, Card, Form, Button, Image, Pagination, Modal } from "react-bootstrap"
@@ -8,18 +10,30 @@ import ConfirmationModal from "components/ConfirmationModal"
 import { useAppSelector, useAppDispatch } from "../../../../redux/store"
 import FeedbackActions from "../../../../redux/feedback/actions"
 import Utils from "../../../../utils/Utils"
+import * as Routers from "../../../../utils/Routes"
+
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
+
 const MyFeedback = () => {
   const dispatch = useAppDispatch()
   const Auth = useAppSelector((state) => state.Auth.Auth)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Get URL parameters with defaults
+  const pageParam = searchParams.get("page")
+  const sortParam = searchParams.get("sort")
+  const starsParam = searchParams.get("stars")
 
   const [feedbacks, setFeedbacks] = useState([])
   const [loading, setLoading] = useState(false)
-  const [activePage, setActivePage] = useState(1)
+  const [activePage, setActivePage] = useState(pageParam ? Number.parseInt(pageParam) : 1)
   const [totalPages, setTotalPages] = useState(1)
   const [showAcceptModal, setShowAcceptModal] = useState(false)
   const [selectedFeedbackId, setSelectedFeedbackId] = useState(null)
-  const [sortOption, setSortOption] = useState("date-desc")
-  const [starFilter, setStarFilter] = useState("all")
+  const [sortOption, setSortOption] = useState(sortParam || "date-desc")
+  const [starFilter, setStarFilter] = useState(starsParam || "all")
 
   // States for the feedback detail modal
   const [showDetailModal, setShowDetailModal] = useState(false)
@@ -30,15 +44,46 @@ const MyFeedback = () => {
     content: "",
   })
 
-  // Fetch user feedbacks on component mount
+  // Function to update URL with current filters and page
+  const updateURL = (params) => {
+    const newParams = new URLSearchParams(searchParams)
+
+    // Update or add parameters
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        newParams.set(key, value.toString())
+      } else {
+        newParams.delete(key)
+      }
+    })
+
+    // Update URL without reloading the page
+    setSearchParams(newParams)
+  }
+
+  // Sync component state with URL parameters when URL changes
+  useEffect(() => {
+    const newPage = pageParam ? Number.parseInt(pageParam) : 1
+    const newSort = sortParam || "date-desc"
+    const newStars = starsParam || "all"
+
+    if (newPage !== activePage) {
+      setActivePage(newPage)
+    }
+
+    if (newSort !== sortOption) {
+      setSortOption(newSort)
+    }
+
+    if (newStars !== starFilter) {
+      setStarFilter(newStars)
+    }
+  }, [pageParam, sortParam, starsParam])
+
+  // Fetch user feedbacks when filters change
   useEffect(() => {
     fetchUserFeedbacks()
   }, [dispatch, sortOption, starFilter])
-
-  // Add a separate useEffect to reset activePage when filters change
-  useEffect(() => {
-    setActivePage(1)
-  }, [starFilter, sortOption])
 
   const fetchUserFeedbacks = () => {
     setLoading(true)
@@ -49,7 +94,18 @@ const MyFeedback = () => {
         onSuccess: (data) => {
           console.log("Fetched user feedbacks:", data)
           setFeedbacks(data)
-          setTotalPages(Math.ceil(data.length / 4))
+
+          // Calculate total pages based on filtered data
+          const { totalFilteredCount } = getFilteredFeedbacks(data)
+          const newTotalPages = Math.ceil(totalFilteredCount / 4)
+          setTotalPages(newTotalPages)
+
+          // If current page is greater than total pages, adjust it
+          if (activePage > newTotalPages && newTotalPages > 0) {
+            setActivePage(newTotalPages)
+            updateURL({ page: newTotalPages })
+          }
+
           setLoading(false)
         },
         onFailed: (msg) => {
@@ -65,8 +121,8 @@ const MyFeedback = () => {
   }
 
   // Apply filters and pagination to feedbacks
-  const getFilteredFeedbacks = () => {
-    let filtered = [...feedbacks]
+  const getFilteredFeedbacks = (data = feedbacks) => {
+    let filtered = [...data]
 
     // Apply star filter
     if (starFilter !== "all") {
@@ -100,13 +156,40 @@ const MyFeedback = () => {
     }
   }
 
-  // Add a new useEffect to update totalPages when filters change
+  // Update totalPages when filters change
   useEffect(() => {
     if (feedbacks.length > 0) {
       const { totalFilteredCount } = getFilteredFeedbacks()
-      setTotalPages(Math.ceil(totalFilteredCount / 4))
+      const newTotalPages = Math.ceil(totalFilteredCount / 4)
+      setTotalPages(newTotalPages)
+
+      // If current page is greater than total pages, adjust it
+      if (activePage > newTotalPages && newTotalPages > 0) {
+        setActivePage(newTotalPages)
+        updateURL({ page: newTotalPages })
+      }
     }
   }, [feedbacks, starFilter, sortOption])
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setActivePage(newPage)
+    updateURL({ page: newPage })
+  }
+
+  // Handle sort option change
+  const handleSortChange = (newSort) => {
+    setSortOption(newSort)
+    setActivePage(1)
+    updateURL({ sort: newSort, page: 1 })
+  }
+
+  // Handle star filter change
+  const handleStarFilterChange = (newStarFilter) => {
+    setStarFilter(newStarFilter)
+    setActivePage(1)
+    updateURL({ stars: newStarFilter, page: 1 })
+  }
 
   const renderStars = (count, total = 5) => {
     const stars = []
@@ -155,6 +238,17 @@ const MyFeedback = () => {
           setFeedbacks(feedbacks.filter((feedback) => feedback._id !== selectedFeedbackId))
           showToast.success("Feedback deleted successfully!")
           setShowAcceptModal(false)
+
+          // Recalculate total pages after deletion
+          const updatedFeedbacks = feedbacks.filter((feedback) => feedback._id !== selectedFeedbackId)
+          const { totalFilteredCount } = getFilteredFeedbacks(updatedFeedbacks)
+          const newTotalPages = Math.ceil(totalFilteredCount / 4)
+
+          // If current page is now empty and not the first page, go to previous page
+          if (activePage > newTotalPages && activePage > 1) {
+            setActivePage(Math.max(1, activePage - 1))
+            updateURL({ page: Math.max(1, activePage - 1) })
+          }
         },
         onFailed: (msg) => {
           showToast.error(msg || "Failed to delete feedback")
@@ -226,6 +320,16 @@ const MyFeedback = () => {
     })
   }
 
+  // Navigate to hotel detail with return URL params
+  const navigateToHotelDetail = (hotelId) => {
+    navigate(`${Routers.Home_detail}/${hotelId}`, {
+      state: {
+        returnTo: location.pathname,
+        returnParams: searchParams.toString(),
+      },
+    })
+  }
+
   // Editable star rating component
   const EditableStars = ({ rating, onChange }) => {
     return (
@@ -251,7 +355,6 @@ const MyFeedback = () => {
 
   const { paginatedFeedbacks } = getFilteredFeedbacks()
 
-  console.log("selectedFeedback: ", selectedFeedback)
   return (
     <Container fluid className="bg-light py-4">
       <h2 className="fw-bold mb-4">My Feedback</h2>
@@ -265,7 +368,7 @@ const MyFeedback = () => {
             className="border-primary"
             style={{ width: "200px" }}
             value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
+            onChange={(e) => handleSortChange(e.target.value)}
           >
             <option value="score-high">Score (High to low)</option>
             <option value="score-low">Score (Low to high)</option>
@@ -274,7 +377,11 @@ const MyFeedback = () => {
           </Form.Select>
         </Col>
         <Col xs="auto">
-          <Form.Select style={{ width: "120px" }} value={starFilter} onChange={(e) => setStarFilter(e.target.value)}>
+          <Form.Select
+            style={{ width: "120px" }}
+            value={starFilter}
+            onChange={(e) => handleStarFilterChange(e.target.value)}
+          >
             <option value="all">All stars</option>
             <option value="1">1 star</option>
             <option value="2">2 stars</option>
@@ -314,7 +421,6 @@ const MyFeedback = () => {
                           src={
                             feedback.hotel?.images?.[0] ||
                             "https://via.placeholder.com/120x120?text=Hotel" ||
-                            "/placeholder.svg" ||
                             "/placeholder.svg" ||
                             "/placeholder.svg"
                           }
@@ -403,11 +509,14 @@ const MyFeedback = () => {
         ))
       )}
 
-      {totalPages > 1 && (
+      {totalPages > 0 && (
         <div className="d-flex justify-content-center mt-4">
           <Pagination>
-            <Pagination.First onClick={() => setActivePage(1)} disabled={activePage === 1} />
-            <Pagination.Prev onClick={() => setActivePage(Math.max(1, activePage - 1))} disabled={activePage === 1} />
+            <Pagination.First onClick={() => handlePageChange(1)} disabled={activePage === 1} />
+            <Pagination.Prev
+              onClick={() => handlePageChange(Math.max(1, activePage - 1))}
+              disabled={activePage === 1}
+            />
 
             {(() => {
               // Logic to show 5 pages at a time
@@ -431,7 +540,7 @@ const MyFeedback = () => {
               // Add first page with ellipsis if needed
               if (startPage > 1) {
                 pages.push(
-                  <Pagination.Item key={1} active={1 === activePage} onClick={() => setActivePage(1)}>
+                  <Pagination.Item key={1} active={1 === activePage} onClick={() => handlePageChange(1)}>
                     <b style={{ color: 1 === activePage ? "white" : "#0d6efd" }}>1</b>
                   </Pagination.Item>,
                 )
@@ -443,7 +552,7 @@ const MyFeedback = () => {
               // Add page numbers
               for (let i = startPage; i <= endPage; i++) {
                 pages.push(
-                  <Pagination.Item key={i} active={i === activePage} onClick={() => setActivePage(i)}>
+                  <Pagination.Item key={i} active={i === activePage} onClick={() => handlePageChange(i)}>
                     <b style={{ color: i === activePage ? "white" : "#0d6efd" }}>{i}</b>
                   </Pagination.Item>,
                 )
@@ -458,9 +567,15 @@ const MyFeedback = () => {
                   <Pagination.Item
                     key={totalPages}
                     active={totalPages === activePage}
-                    onClick={() => setActivePage(totalPages)}
+                    onClick={() => handlePageChange(totalPages)}
                   >
-                    <b style={{ color: totalPages === activePage ? "white" : "#0d6efd" }}>{totalPages}</b>
+                    <b
+                      style={{
+                        color: totalPages === activePage ? "white" : "#0d6efd",
+                      }}
+                    >
+                      {totalPages}
+                    </b>
                   </Pagination.Item>,
                 )
               }
@@ -469,10 +584,10 @@ const MyFeedback = () => {
             })()}
 
             <Pagination.Next
-              onClick={() => setActivePage(Math.min(totalPages, activePage + 1))}
+              onClick={() => handlePageChange(Math.min(totalPages, activePage + 1))}
               disabled={activePage === totalPages}
             />
-            <Pagination.Last onClick={() => setActivePage(totalPages)} disabled={activePage === totalPages} />
+            <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={activePage === totalPages} />
           </Pagination>
         </div>
       )}
@@ -487,14 +602,22 @@ const MyFeedback = () => {
             <Modal.Body>
               <Row>
                 {/* Hotel Information */}
-                <Col md={5} className="border-end">
+                <Col
+                  md={5}
+                  className="border-end"
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    navigateToHotelDetail(selectedFeedback.hotel?._id)
+                  }}
+                >
                   <h5 className="fw-bold mb-3">Hotel Information</h5>
                   <div className="mb-3">
                     <img
                       src={
                         selectedFeedback.hotel?.images?.[0] ||
                         "https://via.placeholder.com/300x200?text=Hotel" ||
-                        "/placeholder.svg" ||
                         "/placeholder.svg" ||
                         "/placeholder.svg"
                       }

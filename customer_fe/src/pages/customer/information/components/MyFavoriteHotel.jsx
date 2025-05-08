@@ -1,26 +1,19 @@
-import {
-  Card,
-  Row,
-  Col,
-  Button,
-  Pagination,
-  Container,
-  Spinner,
-  Form,
-} from "react-bootstrap";
-import { FaMapMarkerAlt, FaEye } from "react-icons/fa";
-import "../../../../css/customer/MyFavoriteHotel.css";
-import { useState, useEffect } from "react";
-import { Star, StarFill, X } from "react-bootstrap-icons";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import * as Routers from "../../../../utils/Routes";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import ConfirmationModal from "components/ConfirmationModal";
-import { useAppSelector, useAppDispatch } from "../../../../redux/store";
-import HotelActions from "../../../../redux/hotel/actions";
-import AuthActions from "../../../../redux/auth/actions";
-import Select from "react-select";
-import { cityOptionSelect, districtsByCity } from "utils/data";
+"use client"
+
+import { Card, Row, Col, Button, Pagination, Container, Spinner, Form } from "react-bootstrap"
+import { FaMapMarkerAlt, FaEye } from "react-icons/fa"
+import "../../../../css/customer/MyFavoriteHotel.css"
+import { useState, useEffect } from "react"
+import { Star, StarFill, X } from "react-bootstrap-icons"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import * as Routers from "../../../../utils/Routes"
+import { showToast, ToastProvider } from "components/ToastContainer"
+import ConfirmationModal from "components/ConfirmationModal"
+import { useAppSelector, useAppDispatch } from "../../../../redux/store"
+import HotelActions from "../../../../redux/hotel/actions"
+import AuthActions from "../../../../redux/auth/actions"
+import Select from "react-select"
+import { cityOptionSelect, districtsByCity } from "utils/data"
 
 const starOptions = [
   { value: "0", label: "All stars" },
@@ -29,14 +22,12 @@ const starOptions = [
   { value: "3", label: "3 stars" },
   { value: "4", label: "4 stars" },
   { value: "5", label: "5 stars" },
-];
+]
 const customStyles = {
   control: (provided, state) => ({
     ...provided,
     border: state.isFocused ? "1px solid #0d6efd" : "1px solid #ced4da",
-    boxShadow: state.isFocused
-      ? "0 0 0 0.25rem rgba(13, 110, 253, 0.25)"
-      : "none",
+    boxShadow: state.isFocused ? "0 0 0 0.25rem rgba(13, 110, 253, 0.25)" : "none",
     borderRadius: "0.375rem",
     backgroundColor: "#fff",
     padding: "2px 4px",
@@ -48,70 +39,101 @@ const customStyles = {
     ...provided,
     color: "#6c757d",
   }),
-};
+}
 
 const MyFavoriteHotel = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const Auth = useAppSelector((state) => state.Auth.Auth);
+  const navigate = useNavigate()
+  const dispatch = useAppDispatch()
+  const Auth = useAppSelector((state) => state.Auth.Auth)
 
-  const [searchParams] = useSearchParams();
-  const page = searchParams.get("page");
-  const city = searchParams.get("city");
-  const district = searchParams.get("district");
-  const star = searchParams.get("star");
+  const [searchParams] = useSearchParams()
+  const page = searchParams.get("page") || "1"
+  const city = searchParams.get("city") || ""
+  const district = searchParams.get("district") || ""
+  const star = searchParams.get("star") || "0"
 
-  const [hotels, setHotels] = useState([]);
-  const [activePage, setActivePage] = useState(Number(page));
-  let url = `${Routers.MyAccountPage}/favorite_hotel`;
+  const [hotels, setHotels] = useState([])
+  const [activePage, setActivePage] = useState(Number(page))
+  const [showAcceptModal, setShowAcceptModal] = useState(false)
+  const [selectedHotelId, setSelectedHotelId] = useState(null)
+  const [loading, setLoading] = useState(false)
 
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
-  const [selectedHotelId, setSelectedHotelId] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const itemsPerPage = 3;
-  const [selectedCity, setSelectedCity] = useState(
-    city ? { value: city, label: city } : ""
-  );
-  const [selectedDistrict, setSelectedDistrict] = useState(
-    district ? { value: district, label: district } : ""
-  );
+  const itemsPerPage = 3
+  const [selectedCity, setSelectedCity] = useState(city ? { value: city, label: city } : "")
+  const [selectedDistrict, setSelectedDistrict] = useState(district ? { value: district, label: district } : "")
   const [selectedStar, setSelectedStar] = useState(
-    star ? starOptions[star] : starOptions[0]
-  );
+    star ? starOptions.find((option) => option.value === star) || starOptions[0] : starOptions[0],
+  )
   const [paramsQuery, setParamQuery] = useState({
-    selectedCity: selectedCity.value,
-    selectedDistrict: selectedDistrict.value,
-    selectedStar: selectedStar.value,
-  });
+    selectedCity: city,
+    selectedDistrict: district,
+    selectedStar: star,
+  })
+
+  // Function to update URL with current filters
+  const updateURL = (newParams) => {
+    const params = new URLSearchParams()
+
+    if (newParams.page) {
+      params.set("page", newParams.page.toString())
+    }
+
+    if (newParams.city) {
+      params.set("city", newParams.city)
+    }
+
+    if (newParams.district) {
+      params.set("district", newParams.district)
+    }
+
+    if (newParams.star && newParams.star !== "0") {
+      params.set("star", newParams.star)
+    }
+
+    navigate(`${Routers.MyAccountPage}/favorite_hotel?${params.toString()}`, { replace: true })
+  }
+
+  // Sync activePage with URL when searchParams change
   useEffect(() => {
-    const favoriteHotelIds = Auth?.favorites || [];
+    if (page && Number(page) !== activePage) {
+      setActivePage(Number(page))
+    }
+  }, [page])
+
+  useEffect(() => {
+    const favoriteHotelIds = Auth?.favorites || []
     if (favoriteHotelIds.length > 0) {
-      setLoading(true);
+      setLoading(true)
       dispatch({
         type: HotelActions.FETCH_FAVORITE_HOTELS,
         payload: {
           ids: favoriteHotelIds,
           paramsQuery: paramsQuery,
-
           onSuccess: (data) => {
-            if(data.length == 0) {
-              if(activePage > 1){
-                setActivePage(activePage - 1);
-              }else{
-                setHotels(data);
+            if (data.length === 0) {
+              if (activePage > 1) {
+                const newPage = activePage - 1
+                setActivePage(newPage)
+                updateURL({
+                  page: newPage,
+                  city: paramsQuery.selectedCity,
+                  district: paramsQuery.selectedDistrict,
+                  star: paramsQuery.selectedStar,
+                })
+              } else {
+                setHotels(data)
               }
-            }else{
+            } else {
               setHotels(data)
             }
-            setLoading(false);
+            setLoading(false)
           },
         },
-      });
+      })
     } else {
-      setHotels([]);
+      setHotels([])
     }
-  }, [dispatch, Auth?.favorites, paramsQuery]);
+  }, [dispatch, Auth?.favorites, paramsQuery])
 
   const handleDelete = (hotelId) => {
     dispatch({
@@ -119,47 +141,105 @@ const MyFavoriteHotel = () => {
       payload: {
         hotelId,
         onSuccess: () => {
-          showToast.success("Deleted hotel from favorites successfully!");
+          showToast.success("Deleted hotel from favorites successfully!")
           setHotels((prev) => {
-            const updated = prev.filter((h) => h.hotel._id !== hotelId);
-            const maxPages = Math.ceil(updated.length / itemsPerPage);
-            if (activePage > maxPages) {
-              setActivePage(Math.max(activePage - 1, 1));
+            const updated = prev.filter((h) => h.hotel._id !== hotelId)
+            const maxPages = Math.ceil(updated.length / itemsPerPage)
+            if (activePage > maxPages && maxPages > 0) {
+              const newPage = Math.max(activePage - 1, 1)
+              setActivePage(newPage)
+              updateURL({
+                page: newPage,
+                city: paramsQuery.selectedCity,
+                district: paramsQuery.selectedDistrict,
+                star: paramsQuery.selectedStar,
+              })
             }
-            return updated;
-          });
+            return updated
+          })
         },
         onFailed: (msg) => {
-          showToast.error(`Failed to remove: ${msg}`);
+          showToast.error(`Failed to remove: ${msg}`)
         },
         onError: (error) => {
-          showToast.error("Something went wrong!");
-          console.error(error);
+          showToast.error("Something went wrong!")
+          console.error(error)
         },
       },
-    });
-  };
+    })
+  }
 
   const renderStars = (count) => {
     return Array.from({ length: 5 }, (_, i) =>
-      i < count ? (
-        <StarFill key={i} className="text-warning" />
-      ) : (
-        <Star key={i} className="text-warning" />
-      )
-    );
-  };
-
-  const indexOfLastItem = activePage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  let hotelsToShow = [];
-  hotelsToShow = hotels.slice(indexOfFirstItem, indexOfLastItem);
-  if(hotelsToShow.length === 0){
-    if(activePage > 1){
-      setActivePage(activePage - 1)
-    }
+      i < count ? <StarFill key={i} className="text-warning" /> : <Star key={i} className="text-warning" />,
+    )
   }
-  const totalPages = Math.ceil(hotels.length / itemsPerPage);
+
+  const indexOfLastItem = activePage * itemsPerPage
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage
+  const hotelsToShow = hotels.slice(indexOfFirstItem, indexOfLastItem)
+
+  const totalPages = Math.ceil(hotels.length / itemsPerPage)
+
+  const handleCityChange = (option) => {
+    setSelectedCity(option)
+    setSelectedDistrict("")
+    const newParams = {
+      page: "1",
+      city: option?.value || "",
+      district: "",
+      star: paramsQuery.selectedStar,
+    }
+    setParamQuery({
+      selectedCity: option?.value || "",
+      selectedDistrict: "",
+      selectedStar: paramsQuery.selectedStar,
+    })
+    setActivePage(1)
+    updateURL(newParams)
+  }
+
+  const handleDistrictChange = (option) => {
+    setSelectedDistrict(option)
+    const newParams = {
+      page: "1",
+      city: paramsQuery.selectedCity,
+      district: option?.value || "",
+      star: paramsQuery.selectedStar,
+    }
+    setParamQuery({
+      ...paramsQuery,
+      selectedDistrict: option?.value || "",
+    })
+    setActivePage(1)
+    updateURL(newParams)
+  }
+
+  const handleStarChange = (option) => {
+    setSelectedStar(option)
+    const newParams = {
+      page: "1",
+      city: paramsQuery.selectedCity,
+      district: paramsQuery.selectedDistrict,
+      star: option?.value || "0",
+    }
+    setParamQuery({
+      ...paramsQuery,
+      selectedStar: option?.value || "0",
+    })
+    setActivePage(1)
+    updateURL(newParams)
+  }
+
+  const handlePageChange = (pageNumber) => {
+    setActivePage(pageNumber)
+    updateURL({
+      page: pageNumber,
+      city: paramsQuery.selectedCity,
+      district: paramsQuery.selectedDistrict,
+      star: paramsQuery.selectedStar,
+    })
+  }
 
   return (
     <Container fluid className="bg-light py-4">
@@ -171,23 +251,7 @@ const MyFavoriteHotel = () => {
             <Select
               options={cityOptionSelect}
               value={selectedCity}
-              onChange={(option) => {
-                setSelectedCity(option);
-                setSelectedDistrict("");
-                setParamQuery({
-                  ...paramsQuery,
-                  selectedCity: option.value,
-                  selectedDistrict: "",
-                });
-                setActivePage(1);
-
-                if (true) url += `?page=${1}`;
-                if (option.value)
-                  url += `&city=${encodeURIComponent(option.value)}`;
-                if (star) url += `&star=${encodeURIComponent(star)}`;
-
-                navigate(url);
-              }}
+              onChange={handleCityChange}
               placeholder="Select City"
               isSearchable
               styles={customStyles}
@@ -200,21 +264,7 @@ const MyFavoriteHotel = () => {
             <Select
               options={districtsByCity[selectedCity?.value] || []}
               value={selectedDistrict}
-              onChange={(option) => {
-                setSelectedDistrict(option);
-                setParamQuery({
-                  ...paramsQuery,
-                  selectedDistrict: option.value,
-                });
-                setActivePage(1);
-                if (true) url += `?page=${1}`;
-                if (city) url += `&city=${encodeURIComponent(city)}`;
-                if (option.value)
-                  url += `&district=${encodeURIComponent(option.value)}`;
-                if (star) url += `&star=${encodeURIComponent(star)}`;
-
-                navigate(url);
-              }}
+              onChange={handleDistrictChange}
               placeholder="Select District"
               isSearchable
               styles={customStyles}
@@ -227,19 +277,7 @@ const MyFavoriteHotel = () => {
             <Select
               options={starOptions}
               value={selectedStar}
-              onChange={(option) => {
-                setSelectedStar(option);
-                setParamQuery({ ...paramsQuery, selectedStar: option.value });
-                setActivePage(1);
-                if (true) url += `?page=${1}`;
-                if (city) url += `&city=${encodeURIComponent(city)}`;
-                if (district)
-                  url += `&district=${encodeURIComponent(district)}`;
-                if (option.value)
-                  url += `&star=${encodeURIComponent(option.value)}`;
-
-                navigate(url);
-              }}
+              onChange={handleStarChange}
               placeholder="Select star"
               isSearchable
               styles={customStyles}
@@ -265,19 +303,16 @@ const MyFavoriteHotel = () => {
                           ? hotel.hotel.images[0]
                           : "/placeholder.svg?height=200&width=300"
                       }
-                      style={{ height: "220px" }}
+                      style={{ height: "220px", cursor: "pointer" }}
                       className="hotel-image"
+                      onClick={() => navigate(`${Routers.Home_detail}/${hotel.hotel._id}`)}
                     />
                   </Col>
 
                   <Col md={8}>
                     <Card.Body>
-                      <Card.Title className="hotel-name">
-                        {hotel.hotel.hotelName}
-                      </Card.Title>
-                      <div className="stars mb-2">
-                        {renderStars(hotel.hotel.star)}
-                      </div>
+                      <Card.Title className="hotel-name">{hotel.hotel.hotelName}</Card.Title>
+                      <div className="stars mb-2">{renderStars(hotel.hotel.star)}</div>
                       <div className="location mb-2">
                         <FaMapMarkerAlt className="me-1" />
                         <small>{hotel.hotel.address}</small>
@@ -305,14 +340,10 @@ const MyFavoriteHotel = () => {
                               >
                                 {hotel.avgValueRating.toFixed(1)}
                               </span>
-                              <span className="text-muted">
-                                {hotel.totalFeedbacks} feedbacks about hotel
-                              </span>
+                              <span className="text-muted">{hotel.totalFeedbacks} feedbacks about hotel</span>
                             </>
                           ) : (
-                            <span className="text-muted">
-                              No feedback about hotel
-                            </span>
+                            <span className="text-muted">No feedback about hotel</span>
                           )}
                         </p>
                       </div>
@@ -320,9 +351,7 @@ const MyFavoriteHotel = () => {
                         variant="link"
                         className="view-detail d-flex align-items-center gap-1 p-0 text-primary fw-medium"
                         style={{ fontSize: "16px", textDecoration: "none" }}
-                        onClick={() =>
-                          navigate(`${Routers.Home_detail}/${hotel.hotel._id}`)
-                        }
+                        onClick={() => navigate(`${Routers.Home_detail}/${hotel.hotel._id}`)}
                       >
                         <FaEye className="me-1" />
                         View Detail Hotel
@@ -332,8 +361,8 @@ const MyFavoriteHotel = () => {
                         className="text-dark p-0"
                         style={{ position: "absolute", top: 5, right: 5 }}
                         onClick={() => {
-                          setSelectedHotelId(hotel.hotel._id);
-                          setShowAcceptModal(true);
+                          setSelectedHotelId(hotel.hotel._id)
+                          setShowAcceptModal(true)
                         }}
                       >
                         <X size={20} />
@@ -353,9 +382,7 @@ const MyFavoriteHotel = () => {
                 onMouseOver={(e) => (e.currentTarget.style.opacity = 0.8)}
                 onMouseOut={(e) => (e.currentTarget.style.opacity = 0.6)}
               />
-              <p className="mt-4 text-secondary fs-5">
-                You haven't saved any favorite hotel yet.
-              </p>
+              <p className="mt-4 text-secondary fs-5">You haven't saved any favorite hotel yet.</p>
             </div>
           )}
 
@@ -363,15 +390,15 @@ const MyFavoriteHotel = () => {
           <ConfirmationModal
             show={showAcceptModal}
             onHide={() => {
-              setShowAcceptModal(false);
-              setSelectedHotelId(null);
+              setShowAcceptModal(false)
+              setSelectedHotelId(null)
             }}
             onConfirm={() => {
               if (selectedHotelId) {
-                handleDelete(selectedHotelId);
+                handleDelete(selectedHotelId)
               }
-              setShowAcceptModal(false);
-              setSelectedHotelId(null);
+              setShowAcceptModal(false)
+              setSelectedHotelId(null)
             }}
             title="Confirm Delete"
             message="Are you sure you want to delete this hotel from your favorites?"
@@ -380,75 +407,47 @@ const MyFavoriteHotel = () => {
           />
 
           {/* Pagination */}
-          {hotels.length > itemsPerPage && (
+          {hotels.length > 0 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination>
                 <Pagination.Prev
-                  onClick={() => {
-                    setActivePage((prev) => Math.max(Number(prev) - 1, 1));
-                    const number = Number(activePage) - 1;
-                    url += `?page=${number}`;
-                    if (city) url += `&city=${encodeURIComponent(city)}`;
-                    if (district)
-                      url += `&district=${encodeURIComponent(district)}`;
-                    if (star) url += `&star=${encodeURIComponent(star)}`;
-                    navigate(url);
-                  }}
-                  disabled={activePage == 1}
+                  onClick={() => handlePageChange(Math.max(activePage - 1, 1))}
+                  disabled={activePage === 1}
                 />
 
                 {(() => {
-                  const pages = [];
-                  let startPage = Math.max(activePage - 1, 1);
-                  let endPage = Math.min(startPage + 3, totalPages);
+                  const pages = []
+                  let startPage = Math.max(activePage - 1, 1)
+                  const endPage = Math.min(startPage + 3, totalPages)
 
                   if (endPage - startPage < 3 && startPage > 1) {
-                    startPage = Math.max(endPage - 3, 1);
+                    startPage = Math.max(endPage - 3, 1)
                   }
 
                   for (let number = startPage; number <= endPage; number++) {
                     pages.push(
                       <Pagination.Item
                         key={number}
-                        active={number == activePage}
-                        onClick={() => {
-                          setActivePage(number);
-                          if (number) url += `?page=${number}`;
-                          if (city) url += `&city=${encodeURIComponent(city)}`;
-                          if (district)
-                            url += `&district=${encodeURIComponent(district)}`;
-                          if (star) url += `&star=${encodeURIComponent(star)}`;
-                          navigate(url);
-                        }}
+                        active={number === activePage}
+                        onClick={() => handlePageChange(number)}
                       >
                         <b
                           style={{
-                            color: number == activePage ? "white" : "#0d6efd",
+                            color: number === activePage ? "white" : "#0d6efd",
                           }}
                         >
                           {number}
                         </b>
-                      </Pagination.Item>
-                    );
+                      </Pagination.Item>,
+                    )
                   }
 
-                  return pages;
+                  return pages
                 })()}
 
                 <Pagination.Next
-                  onClick={() => {
-                    setActivePage((prev) =>
-                      Math.min(Number(prev) + 1, totalPages)
-                    );
-                    const number = Number(activePage) + 1;
-                    url += `?page=${number}`;
-                    if (city) url += `&city=${encodeURIComponent(city)}`;
-                    if (district)
-                      url += `&district=${encodeURIComponent(district)}`;
-                    if (star) url += `&star=${encodeURIComponent(star)}`;
-                    navigate(url);
-                  }}
-                  disabled={activePage == totalPages}
+                  onClick={() => handlePageChange(Math.min(activePage + 1, totalPages))}
+                  disabled={activePage === totalPages}
                 />
               </Pagination>
             </div>
@@ -458,7 +457,7 @@ const MyFavoriteHotel = () => {
         </Col>
       </Row>
     </Container>
-  );
-};
+  )
+}
 
-export default MyFavoriteHotel;
+export default MyFavoriteHotel

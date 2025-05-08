@@ -151,7 +151,7 @@ const CreateFeedback = () => {
 
   // Xử lý hủy
   const handleCancel = () => {
-    navigate(Routers.MyAccountPage, { state: { id: 3 } })
+    navigate(-1)
   }
 
   // Xử lý lưu
@@ -202,7 +202,7 @@ const CreateFeedback = () => {
             })
           }
 
-          navigate(Routers.MyAccountPage, { state: { id: 3 } })
+          navigate(-1)
         },
         onFailed: (message) => {
           setIsSubmitting(false)
@@ -321,7 +321,7 @@ const CreateFeedback = () => {
     >
       <Header />
       <div className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper">
-        <Container className="py-4">
+        <Container className="py-4" style={{width: '1000px'}}>
           <Card className="feedback-card">
             <Card.Body>
               <div className="d-flex align-items-center mb-4">

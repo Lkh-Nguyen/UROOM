@@ -92,9 +92,7 @@ exports.cancelPayment = asyncHandler(async (req, res) => {
         error: true,
         message: "Reservation is already cancelled",
       });
-    }
-
-    if (reservation.status === "NOT PAID") {
+    }else{
       reservation.status = "CANCELLED";
       reservation.save();
     }
