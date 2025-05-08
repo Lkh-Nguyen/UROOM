@@ -3,6 +3,7 @@ import FeedbackActions from "./actions";
 const initialState = {
   feedbacks: [],
   error: null,
+  selectedFeedback: null,
 };
 
 const feedbackReducer = (state = initialState, action) => {
@@ -29,8 +30,14 @@ const feedbackReducer = (state = initialState, action) => {
     case FeedbackActions.CREATE_FEEDBACK_SUCCESS:
       return {
         ...state,
-        feedbacks: [action.payload, ...state.feedbacks], 
+        feedbacks: [action.payload, ...state.feedbacks],
       };
+    case FeedbackActions.FETCH_FEEDBACK_BY_ID_SUCCESS:
+      return {
+        ...state,
+        selectedFeedback: action.payload,
+      };
+
     default:
       return state;
   }

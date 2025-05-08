@@ -344,3 +344,32 @@ exports.createFeedback = async (req, res) => {
 };
 
 
+exports.getFeedbackById = async (req, res) => {
+  try {
+    const { feedbackId } = req.params;
+
+    const feedback = await Feedback.findById(feedbackId)
+      .populate("user") 
+      .populate("hotel")             
+      .populate("reservation");
+
+    if (!feedback) {
+      return res.status(404).json({
+        error: true,
+        message: "Feedback không tồn tại.",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: "Lấy thông tin feedback thành công.",
+      data: feedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin feedback theo ID:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi lấy thông tin feedback.",
+    });
+  }
+};

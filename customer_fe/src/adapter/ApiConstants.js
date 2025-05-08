@@ -20,6 +20,7 @@ const ApiConstants = {
   FETCH_FEEDBACK_BY_HOTELID: 'feedback/get-feedback-hotel/:hotelId',
   LIKE_FEEDBACK: 'feedback/like',
   DISLIKE_FEEDBACK: 'feedback/dislike',
+  FETCH_FEEDBACK_BY_ID:'feedback//getFeedbackById/:feedbackId',
 
   //CREATE_BOOKING:
   CREATE_BOOKING: 'payment/create-booking',
@@ -38,7 +39,11 @@ const ApiConstants = {
   FETCH_USER_RESERVATIONS: "reservations/get-reservation",
   FETCH_RESERVATION_DETAIL:"reservations/reservations-detail/:id",
 
-  UPDATE_RESERVATION:"reservations/update-reservations/:id"
+  UPDATE_RESERVATION:"reservations/update-reservations/:id",
+  ///REPORTFEEDBACK
+  REPORT_FEEDBACK:"reportFeedback/create_report_feedback",
+  FETCH_REPORTS_BY_USERID:"reportFeedback/my-reports",
+  DELETE_REPORTED_FEEDBACK:"reportFeedback/delete_report_feedback/:reportId"
 };
 
 export default ApiConstants;
