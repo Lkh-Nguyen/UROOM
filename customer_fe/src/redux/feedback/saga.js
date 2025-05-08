@@ -120,6 +120,35 @@ function* createFeedback() {
     }
   });
 }
+function* getFeedbackById() {
+  yield takeEvery(FeedbackActions.FETCH_FEEDBACK_BY_ID, function* (action) {
+    const { feedbackId, onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.getFeedbackById(feedbackId));
+
+      if (response?.status === 200 && response?.data?.error === false) {
+        const feedback = response.data?.data;
+        yield put({
+          type: FeedbackActions.FETCH_FEEDBACK_BY_ID_SUCCESS,
+          payload: feedback,
+        });
+        onSuccess?.(feedback);
+      } else {
+        onFailed?.(response?.data?.message || "Không thể lấy feedback");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Lỗi server";
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
 
 
 export default function* feedbackSaga() {
@@ -128,5 +157,6 @@ export default function* feedbackSaga() {
     fork(updateFeedback),
     fork(deleteFeedback),
     fork(createFeedback),
+    fork(getFeedbackById),
   ]);
 }

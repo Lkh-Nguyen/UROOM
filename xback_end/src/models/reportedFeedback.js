@@ -21,6 +21,11 @@ const ReportedFeedbackSchema = new Schema(
       type: String,
     },
     createdAt: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: ["PENDING", "APPROVED", "REJECT"],
+      default: "PENDING",
+    },
   },
   { versionKey: false }
 );

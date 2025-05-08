@@ -235,7 +235,6 @@ export default function HotelDetailPage() {
   const [searchRoom, setSearchRoom] = useState(false);
 
   const handleSearchRoom = () => {
-
     const adults = selectedAdults ? selectedAdults.value : 1;
     const childrens = selectedChildren ? selectedChildren.value : 0;
     const SearchInformationTemp = {
@@ -244,14 +243,13 @@ export default function HotelDetailPage() {
       checkoutDate,
       adults,
       childrens,
-    }
+    };
 
-    console.log("SearchInformationTemp: ",SearchInformationTemp)
+    console.log("SearchInformationTemp: ", SearchInformationTemp);
     dispatch({
       type: SearchActions.SAVE_SEARCH,
       payload: { SearchInformation: SearchInformationTemp },
     });
-
 
     setSearchRoom(true);
     dispatch({
@@ -1582,12 +1580,15 @@ export default function HotelDetailPage() {
                   >
                     <Col md={12}>
                       <Card className="border-0">
+                        {/* <h1>{review._id}</h1> */}
                         <Button
                           variant="link"
                           className="text-dark p-0"
                           style={{ position: "absolute", top: 15, right: 15 }}
                           onClick={() => {
-                            navigate(Routers.ReportedFeedback);
+                            navigate(
+                              `${Routers.ReportedFeedback}/${review._id}`
+                            );
                           }}
                         >
                           <ExclamationTriangleFill size={20} color="red" />

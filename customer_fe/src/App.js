@@ -58,7 +58,7 @@ function App() {
         <Route path={`${Routers.Home_detail}/:id`} element={<Home_detail />} />
         <Route path={`${Routers.RoomDetailPage}/:id`} element={<RoomDetailPage />} />
         <Route path={Routers.BookingCheckPage} element={<BookingCheckPage />} />
-        <Route path={Routers.ReportedFeedback} element={<ReportedFeedback />} />
+        <Route path={`${Routers.ReportedFeedback}/:id`} element={<ReportedFeedback />} />
         <Route path={Routers.PaymentPage} element={<PaymentPage />} />
         <Route
           path={Routers.PaymentSuccessPage}
