@@ -1651,12 +1651,15 @@ export default function HotelDetailPage() {
                   >
                     <Col md={12}>
                       <Card className="border-0">
+                        {/* <h1>{review._id}</h1> */}
                         <Button
                           variant="link"
                           className="text-dark p-0"
                           style={{ position: "absolute", top: 15, right: 15 }}
                           onClick={() => {
-                            navigate(Routers.ReportedFeedback);
+                            navigate(
+                              `${Routers.ReportedFeedback}/${review._id}`
+                            );
                           }}
                         >
                           <ExclamationTriangleFill size={20} color="red" />

@@ -5,6 +5,7 @@ import HotelReducer from './hotel/reducer';
 import RoomReducer from './room/reducer';
 import FeedbackReducer from './feedback/reducer';
 import ReservationReducer from './reservations/reducer';
+import ReportFeedbackReducer from './reportedFeedback/reducer';
 
 const rootReducer = combineReducers({
     Auth: AuthReducer,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
     hotel: HotelReducer,
     Room: RoomReducer,
     Feedback:FeedbackReducer,
-    Reservation:ReservationReducer
+    Reservation:ReservationReducer,
+    ReportFeedback:ReportFeedbackReducer
 });
 
 export default rootReducer;

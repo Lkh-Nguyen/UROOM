@@ -10,9 +10,10 @@ const HotelRouter = require("./src/route_controller/Hotel/HotelRoute");
 const FeedbackRouter = require("./src/route_controller/Feedback/FeedbackRoute");
 const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
+const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/ReportedFeedbackRoute");
 
 const cron = require("node-cron");
-require("./src/route_controller/Reservations/ReservationsController"); // ✅ Import cron job
+require("./src/route_controller/Reservations/ReservationsController"); 
 const ReservationRouter = require("./src/route_controller/Reservations/ReservationsRouter");
 const RefundingReservationRouter = require("./src/route_controller/RefundingReservation/RefundingReservationRoute");
 
@@ -46,6 +47,7 @@ app.use("/api/feedback", FeedbackRouter);
 app.use("/api/reservations", ReservationRouter);
 
 app.use("/api/payment", PaymentRouter);
+app.use("/api/reportFeedback", ReportedFeedbackRoute);
 
 app.use("/api/refunding_reservation", RefundingReservationRouter);
 //from errorHandle

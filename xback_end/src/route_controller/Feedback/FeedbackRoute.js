@@ -11,6 +11,7 @@ FeedbackRouter.get("/my-feedbacks", checkCustomer, FeedbackController.getFeedbac
 FeedbackRouter.put('/update-feedback/:feedbackId', checkCustomer, FeedbackController.updateFeedback);
 FeedbackRouter.delete('/delete-feedback/:feedbackId', checkCustomer, FeedbackController.deleteFeedback);
 FeedbackRouter.post("/create-feedback", checkCustomer, FeedbackController.createFeedback);
+FeedbackRouter.get("/getFeedbackById/:feedbackId",  FeedbackController.getFeedbackById);
 
 module.exports = FeedbackRouter;
 

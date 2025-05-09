@@ -11,6 +11,7 @@ import MyFeedback from "./components/MyFeedback";
 import FavoriteHotel from "./components/MyFavoriteHotel";
 import Banner from "../../../images/banner.jpg";
 import BookingHistory from "./components/BookingHistory";
+import MyReportFeedBack from "./components/MyReportFeedBack";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
@@ -103,8 +104,8 @@ function MyAccountPage() {
                 {section == "booking_history" && <BookingHistory />}
                 {section == "favorite_hotel" && <FavoriteHotel />}
                 {section == "my_feedback" && <MyFeedback />}
-                {section == "my_report" && <FavoriteHotel />}
-                {section == "my_refund" && <RefundReservations/>}
+                {section == "my_report" && <MyReportFeedBack />}
+                {section == "my_refund" && <RefundReservations />}
               </Card>
             </Col>
           </Row>

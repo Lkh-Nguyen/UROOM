@@ -43,6 +43,10 @@ const Factories = {
   createFeedback: (data) => {
     return api.post(ApiConstants.CREATE_FEEDBACK, data);
   },
+  getFeedbackById: (feedbackId) => {
+    const url = ApiConstants.FETCH_FEEDBACK_BY_ID.replace(":feedbackId", feedbackId);
+    return api.get(url);
+  },
 };
 
 export default Factories;
