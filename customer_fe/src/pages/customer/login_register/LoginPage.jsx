@@ -10,6 +10,7 @@ import AuthActions from "../../../redux/auth/actions";
 import { showToast, ToastProvider } from "components/ToastContainer";
 import { clearToken } from "utils/handleToken";
 import Utils from "utils/Utils";
+import GoogleLogin from "./GoogleLogin";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -48,22 +49,24 @@ const LoginPage = () => {
       setShowVerifyModal(false);
       return;
     }
-    
+
     setIsResending(true);
-    
+
     dispatch({
       type: AuthActions.RESEND_VERIFICATION,
       payload: {
         data: { email: unverifiedEmail },
         onSuccess: (data) => {
           setIsResending(false);
-          showToast.success("A new verification code has been sent to your email");
+          showToast.success(
+            "A new verification code has been sent to your email"
+          );
           setShowVerifyModal(false);
           navigate(Routers.VerifyCodeRegisterPage, {
             state: {
               message: "Please check your email for the verification code",
-              email: unverifiedEmail
-            }
+              email: unverifiedEmail,
+            },
           });
         },
         onFailed: (msg) => {
@@ -83,11 +86,15 @@ const LoginPage = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex = /^.{6,}$/; // tối thiểu 6 ký tự
     if (!formData.email || !formData.password) {
-      showToast.warning("Email and password is required. Please fill in completely !");
+      showToast.warning(
+        "Email and password is required. Please fill in completely !"
+      );
     } else if (!emailRegex.test(formData.email)) {
       showToast.warning("Invalid email format. Enter email again !!!");
     } else if (!passwordRegex.test(formData.password)) {
-      showToast.warning("Password must be at least 8 characters.  Enter password again !!!");
+      showToast.warning(
+        "Password must be at least 8 characters.  Enter password again !!!"
+      );
     } else {
       setIsLoading(true);
       dispatch({
@@ -100,7 +107,7 @@ const LoginPage = () => {
               navigate(Routers.BannedPage, {
                 state: {
                   reasonLocked: user.reasonLocked,
-                  dateLocked: Utils.getDate(user.dateLocked, 4)
+                  dateLocked: Utils.getDate(user.dateLocked, 4),
                 },
               });
               dispatch({ type: AuthActions.LOGOUT });
@@ -204,17 +211,7 @@ const LoginPage = () => {
                 </a>
               </div>
 
-              <Button
-                variant="outline-success"
-                className="w-100 mb-3 py-2 d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png"
-                  alt="Google"
-                  style={{ width: "20px", marginRight: "10px" }}
-                />
-                Continue with Google
-              </Button>
+              <GoogleLogin />
 
               <Button
                 variant="primary"
@@ -249,21 +246,28 @@ const LoginPage = () => {
           </Card.Body>
         </Card>
       </Container>
-      
+
       {/* Verification Modal */}
-      <Modal show={showVerifyModal} onHide={() => setShowVerifyModal(false)} centered>
+      <Modal
+        show={showVerifyModal}
+        onHide={() => setShowVerifyModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Account Not Verified</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Your account hasn't been verified yet. Would you like to receive a new verification code?</p>
+          <p>
+            Your account hasn't been verified yet. Would you like to receive a
+            new verification code?
+          </p>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowVerifyModal(false)}>
             Cancel
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             onClick={handleResendVerification}
             disabled={isResending}
           >

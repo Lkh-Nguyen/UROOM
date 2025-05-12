@@ -5,10 +5,11 @@ const User = require("../../models/user");
 const generateVerificationToken = require("../../utils/generateVerificationToken");
 const sendEmail = require("../../utils/sendEmail");
 const { emailVerificationTemplate } = require("../../utils/emailTemplates");
+const admin = require("../../config/firebaseAdminConfig").default;
 
 exports.loginCustomer = async (req, res) => {
   const { email, password } = req.body;
-  console.log('body: ', req.body)
+  console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
   if (user.role == "CUSTOMER") {
@@ -93,8 +94,8 @@ exports.changePassword = async (req, res) => {
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ MsgNo: "Confirm password does not match" });
     }
-    
-    user.password = newPassword
+
+    user.password = newPassword;
     user.updatedAt = new Date();
     await user.save();
 
@@ -103,7 +104,6 @@ exports.changePassword = async (req, res) => {
     console.error("Change password error:", error);
     res.status(500).json({ MsgNo: "Internal server error" });
   }
-
 };
 
 /**
@@ -121,7 +121,9 @@ exports.registerCustomer = async (req, res) => {
 
     // Generate 6-digit verification code
     const verificationToken = generateVerificationToken();
-    const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const verificationTokenExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    ); // 24 hours
 
     // Create new user
     const newUser = new User({
@@ -146,11 +148,14 @@ exports.registerCustomer = async (req, res) => {
     );
 
     if (!emailSent) {
-      return res.status(500).json({ MsgNo: "Failed to send verification email" });
+      return res
+        .status(500)
+        .json({ MsgNo: "Failed to send verification email" });
     }
 
     res.json({
-      MsgNo: "Registration successful! Please check your email for your verification code.",
+      MsgNo:
+        "Registration successful! Please check your email for your verification code.",
       Data: {
         user: {
           _id: newUser._id,
@@ -181,7 +186,9 @@ exports.verifyEmail = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({ MsgNo: "Invalid or expired verification code" });
+      return res
+        .status(400)
+        .json({ MsgNo: "Invalid or expired verification code" });
     }
 
     // Update user verification status
@@ -191,7 +198,7 @@ exports.verifyEmail = async (req, res) => {
 
     await user.save();
 
-    res.json({ 
+    res.json({
       MsgNo: "Email verified successfully. You can now log in.",
       Data: {
         user: {
@@ -228,12 +235,16 @@ exports.resendVerificationCode = async (req, res) => {
     }
 
     if (user.isVerified) {
-      return res.status(400).json({ MsgNo: "This account is already verified" });
+      return res
+        .status(400)
+        .json({ MsgNo: "This account is already verified" });
     }
 
     // Generate new verification code
     const verificationToken = generateVerificationToken();
-    const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    const verificationTokenExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    ); // 24 hours
 
     // Update user with new verification code
     user.verificationToken = verificationToken;
@@ -248,12 +259,14 @@ exports.resendVerificationCode = async (req, res) => {
     );
 
     if (!emailSent) {
-      return res.status(500).json({ MsgNo: "Failed to send verification email" });
+      return res
+        .status(500)
+        .json({ MsgNo: "Failed to send verification email" });
     }
 
     res.json({
       MsgNo: "A new verification code has been sent to your email",
-      Data: { email: user.email }
+      Data: { email: user.email },
     });
   } catch (error) {
     console.error("Resend verification code error:", error);
@@ -277,13 +290,13 @@ exports.updateAvatar = async (req, res) => {
     // Upload ảnh mới lên Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: `avatar_${userId}`, // tùy chọn: upload vào thư mục riêng
-        public_id: `avatar_${userId}`, // Đảm bảo tên tệp duy nhất
-      resource_type: 'image'
+      public_id: `avatar_${userId}`, // Đảm bảo tên tệp duy nhất
+      resource_type: "image",
     });
 
     const newImage = {
-      public_ID: result.public_id,      // không có .jpg/.png, ví dụ: "avatars/xyz123"
-      url: result.secure_url,           // URL chính thức từ Cloudinary
+      public_ID: result.public_id, // không có .jpg/.png, ví dụ: "avatars/xyz123"
+      url: result.secure_url, // URL chính thức từ Cloudinary
     };
 
     user.image = newImage;
@@ -298,5 +311,42 @@ exports.updateAvatar = async (req, res) => {
   } catch (err) {
     console.error("Update avatar error:", err);
     res.status(500).json({ MsgNo: "Server error" });
+  }
+};
+
+exports.googleLogin = async (req, res) => {
+  try {
+    const { tokenId } = req.body;
+    const decodedToken = await admin.auth().verifyIdToken(tokenId);
+    const { email, name, picture, uid: providerId } = decodedToken;
+
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      user = new User({
+        name,
+        email,
+        providerId,
+        image: {
+          public_ID: `google_${providerId}`,
+          url: picture,
+        },
+        isVerified: true,
+      });
+      await user.save();
+    }
+
+    const token = generateToken(user);
+
+    res.json({
+      MsgYes: "Login successful",
+      Data: {
+        token,
+        user,
+      },
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
   }
 };

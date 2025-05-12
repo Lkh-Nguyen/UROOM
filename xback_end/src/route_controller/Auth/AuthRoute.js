@@ -1,6 +1,6 @@
 const express = require("express");
-const  AuthController  = require("./AuthController");
-const checkCustomer = require("../../middlewares/checkCustomer"); 
+const AuthController = require("./AuthController");
+const checkCustomer = require("../../middlewares/checkCustomer");
 const authRouter = express.Router();
 
 // Registration and verification routes
@@ -11,15 +11,25 @@ authRouter.post("/resend-verification", AuthController.resendVerificationCode);
 // Existing routes
 authRouter.post("/login_customer", AuthController.loginCustomer);
 authRouter.post(
-    "/updateProfile_customer",
-    checkCustomer,
-    AuthController.updateCustomerProfile
-  );
-authRouter.post("/changePassword_customer", checkCustomer, AuthController.changePassword);
+  "/updateProfile_customer",
+  checkCustomer,
+  AuthController.updateCustomerProfile
+);
+authRouter.post(
+  "/changePassword_customer",
+  checkCustomer,
+  AuthController.changePassword
+);
+
+authRouter.post("/google_login", AuthController.googleLogin);
 
 //upload ảnh
 const upload = require("../../middlewares/uploadMiddleware");
-authRouter.put("/update_avatar", checkCustomer, upload.single("avatar"), AuthController.updateAvatar);
-
+authRouter.put(
+  "/update_avatar",
+  checkCustomer,
+  upload.single("avatar"),
+  AuthController.updateAvatar
+);
 
 module.exports = authRouter;

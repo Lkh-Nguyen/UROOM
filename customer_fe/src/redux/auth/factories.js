@@ -31,5 +31,9 @@ const Factories = {
   add_favorite_hotel: (hotelId) => {
     return api.post(ApiConstants.ADD_FAVORITE_HOTELS, { hotelId });
   },
+
+  google_login: (data) => {
+    return api.post(ApiConstants.GOOGLE_LOGIN, data);
+  },
 };
 export default Factories;

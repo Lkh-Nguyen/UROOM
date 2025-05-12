@@ -272,6 +272,33 @@ function*  addFavoriteHotel() {
   });
 }
 
+function* login_google() {
+  yield takeEvery(AuthActions.LOGIN_GOOGLE, function* (action) {
+    const { data, onSuccess, onFailed, onError } = action.payload;
+    try {
+      const response = yield call(() => Factories.google_login(data));
+      if (response?.status === 200) {
+        setToken(response.data.Data.token);
+        yield put({
+          type: AuthActions.LOGIN_GOOGLE_SUCCESS,
+          payload: { user: response.data.Data.user },
+        });
+        if (onSuccess) onSuccess(response.data.Data.user);
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.MsgNo;
+      console.log("status: ", status);
+      console.log("msg: ", msg);
+      if (status >= 500) {
+        if (onError) onError(error);
+      } else {
+        if (onFailed) onFailed(msg);
+      }
+    }
+  });
+}
+
 export default function* userSaga() {
   yield all([
     fork(login), 
@@ -283,5 +310,6 @@ export default function* userSaga() {
     fork(update_avatar),
     fork(removeFavoriteHotel),
     fork(addFavoriteHotel),
+    fork(login_google),
   ]);
 }
