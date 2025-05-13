@@ -627,28 +627,20 @@ const HotelBooking = () => {
 function RecommendHotels() {
   const hotels = [
     {
-      id: 1,
       city: "Hồ Chí Minh",
       image: travel4,
-      quantity: 20,
     },
     {
-      id: 2,
       city: "Hà Nội",
-      image: travel5,
-      quantity: 19,
-    },
-    {
-      id: 3,
-      city: "Đà Nẵng",
       image: travel6,
-      quantity: 12,
     },
     {
-      id: 4,
+      city: "Đà Nẵng",
+      image: travel5,
+    },
+    {
       city: "Hải Phòng",
       image: travel7,
-      quantity: 2,
     },
   ];
 
@@ -684,7 +676,6 @@ function RecommendHotels() {
                   payload: { SearchInformation },
                 });
                 navigate(Routers.HotelSearchPage);
-                console.log("1")
               }}
             >
               <div className="hotel-image-container">
@@ -702,11 +693,6 @@ function RecommendHotels() {
               </div>
               <Card.Body>
                 <Card.Title className="hotel-name">{hotel.city}</Card.Title>
-                <div className="room-info">
-                  <span className="room-type">
-                    {hotel.quantity} hotels currently operating
-                  </span>
-                </div>
               </Card.Body>
             </Card>
           </Col>

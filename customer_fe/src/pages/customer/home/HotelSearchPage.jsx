@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Container, Row, Col, Form, Button, Card, InputGroup, Alert, Modal } from "react-bootstrap"
 import {
   FaMapMarkerAlt,
@@ -41,20 +41,78 @@ const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
   label: `${i} Childrens`,
 }))
 
+// Custom hook for managing URL parameters
+const useUrlParams = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  
+  const updateUrlParams = useCallback((updates) => {
+    const newParams = new URLSearchParams(searchParams)
+    
+    // Process each parameter update
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null || value === undefined || 
+          (typeof value === 'string' && value === '') || 
+          (Array.isArray(value) && value.length === 0) || 
+          (typeof value === 'number' && value <= 0)) {
+        newParams.delete(key)
+      } else if (Array.isArray(value)) {
+        newParams.set(key, value.join(','))
+      } else if (typeof value === 'object' && value !== null && 'value' in value) {
+        newParams.set(key, value.value)
+      } else {
+        newParams.set(key, String(value))
+      }
+    })
+    
+    setSearchParams(newParams)
+  }, [searchParams, setSearchParams])
+  
+  const getParam = useCallback((key, defaultValue) => {
+    const value = searchParams.get(key)
+    return value !== null ? value : defaultValue
+  }, [searchParams])
+  
+  const getNumberParam = useCallback((key, defaultValue) => {
+    const value = searchParams.get(key)
+    return value !== null ? Number(value) : defaultValue
+  }, [searchParams])
+  
+  const getArrayParam = useCallback((key, defaultValue = []) => {
+    const value = searchParams.get(key)
+    return value !== null ? value.split(',') : defaultValue
+  }, [searchParams])
+  
+  return { 
+    searchParams, 
+    updateUrlParams, 
+    getParam, 
+    getNumberParam, 
+    getArrayParam 
+  }
+}
+
 const HotelSearchPage = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const [searchParams, setSearchParams] = useSearchParams()
   const dispatch = useDispatch()
   const SearchInformation = useAppSelector((state) => state.Search.SearchInformation)
   const today = new Date().toISOString().split("T")[0]
+  
+  // Use our custom URL params hook
+  const { 
+    searchParams, 
+    updateUrlParams, 
+    getParam, 
+    getNumberParam, 
+    getArrayParam 
+  } = useUrlParams()
 
   // Helper functions to get initial values from URL params
-  const getInitialStarFilter = () => Number.parseInt(searchParams.get("star") || "0")
-  const getInitialFacilities = () => searchParams.get("facilities")?.split(",") || []
-  const getInitialPage = () => Number.parseInt(searchParams.get("page") || "1")
+  const getInitialStarFilter = () => getNumberParam("star", 0)
+  const getInitialFacilities = () => getArrayParam("facilities", [])
+  const getInitialPage = () => getNumberParam("page", 1)
   const getInitialDistrict = () => {
-    const districtParam = searchParams.get("district")
+    const districtParam = getParam("district", null)
     if (!districtParam) return null
     const districtOptions = districtsByCity[SearchInformation.address] || []
     return districtOptions.find((option) => option.value === districtParam) || null
@@ -86,20 +144,6 @@ const HotelSearchPage = () => {
   const [showModalMap, setShowModalMap] = useState(false)
   const [addressMap, setAddressMap] = useState("")
 
-
-  // Update URL search params when filters or page changes
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams)
-
-    // Only set parameters that have values
-    currentPage > 1 ? params.set("page", currentPage.toString()) : params.delete("page")
-    starFilter > 0 ? params.set("star", starFilter.toString()) : params.delete("star")
-    selectedFacilities.length > 0 ? params.set("facilities", selectedFacilities.join(",")) : params.delete("facilities")
-    selectedDistrict ? params.set("district", selectedDistrict.value) : params.delete("district")
-
-    setSearchParams(params)
-  }, [currentPage, starFilter, selectedFacilities, selectedDistrict])
-
   // Search parameters object for API calls
   const [searchParamsObj, setSearchParamsObj] = useState({
     address: SearchInformation.address,
@@ -123,6 +167,10 @@ const HotelSearchPage = () => {
     }))
   }, [currentPage, starFilter, selectedFacilities, selectedDistrict])
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   // Fetch hotels when search parameters change
   useEffect(() => {
     const fetchHotels = async () => {
@@ -147,6 +195,30 @@ const HotelSearchPage = () => {
   // Handle page change in pagination
   const handlePageChange = (page) => {
     setCurrentPage(page)
+    // Update URL params directly
+    updateUrlParams({ page: page > 1 ? page : null })
+  }
+
+  // Handle star filter change
+  const handleStarFilterChange = (star) => {
+    setStarFilter(star)
+    setCurrentPage(1) // Reset to page 1 when changing filters
+    // Update URL params directly
+    updateUrlParams({ 
+      star: star > 0 ? star : null,
+      page: null // Reset page param
+    })
+  }
+
+  // Handle district filter change
+  const handleDistrictChange = (option) => {
+    setSelectedDistrict(option)
+    setCurrentPage(1) // Reset to page 1 when changing filters
+    // Update URL params directly
+    updateUrlParams({ 
+      district: option ? option.value : null,
+      page: null // Reset page param
+    })
   }
 
   // Handle facility filter changes
@@ -158,6 +230,11 @@ const HotelSearchPage = () => {
 
     setSelectedFacilities(updatedFacilities)
     setCurrentPage(1) // Reset to page 1 when changing filters
+    // Update URL params directly
+    updateUrlParams({ 
+      facilities: updatedFacilities.length > 0 ? updatedFacilities : null,
+      page: null // Reset page param
+    })
   }
 
   // Handle search form submission
@@ -213,6 +290,14 @@ const HotelSearchPage = () => {
         star: 0,
         district: "",
         selectedFacilities: [],
+      })
+
+      // Reset URL params directly
+      updateUrlParams({
+        page: null,
+        star: null,
+        facilities: null,
+        district: null
       })
 
       setIsSearching(false)
@@ -282,6 +367,7 @@ const HotelSearchPage = () => {
         backgroundImage: `url(${Banner})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
+        height: '1600px'
       }}
     >
       <Header />
@@ -470,10 +556,7 @@ const HotelSearchPage = () => {
                       id="star-all"
                       name="starRating"
                       label="All stars"
-                      onChange={() => {
-                        setStarFilter(0)
-                        setCurrentPage(1)
-                      }}
+                      onChange={() => handleStarFilterChange(0)}
                       checked={starFilter === 0}
                     />
                     {[5, 4, 3, 2, 1].map((star) => (
@@ -489,10 +572,7 @@ const HotelSearchPage = () => {
                             ))}
                           </div>
                         }
-                        onChange={() => {
-                          setStarFilter(star)
-                          setCurrentPage(1)
-                        }}
+                        onChange={() => handleStarFilterChange(star)}
                         checked={starFilter === star}
                       />
                     ))}
@@ -508,10 +588,7 @@ const HotelSearchPage = () => {
                       <Select
                         options={districtsByCity[selectedCity.value]}
                         value={selectedDistrict}
-                        onChange={(option) => {
-                          setSelectedDistrict(option)
-                          setCurrentPage(1)
-                        }}
+                        onChange={handleDistrictChange}
                         placeholder="Search District"
                         isSearchable
                         styles={selectStyles}
