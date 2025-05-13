@@ -15,7 +15,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "components/ConfirmationModal";
+import ConfirmationModal from "@components/ConfirmationModal";
 import { useAppSelector } from "../../../redux/store";
 import Utils from "../../../utils/Utils";
 import Factories from "../../../redux/search/factories";

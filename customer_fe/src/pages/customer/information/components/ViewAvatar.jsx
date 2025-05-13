@@ -4,9 +4,8 @@ import { Modal, Card, Form, Button } from "react-bootstrap";
 import AuthActions from "../../../../redux/auth/actions";
 import { useAppSelector } from "../../../../redux/store";
 import { useDispatch } from "react-redux";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import ConfirmationModal from "components/ConfirmationModal";
-import { set } from "date-fns";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 function ViewAvatar() {
   const Auth = useAppSelector((state) => state.Auth.Auth);

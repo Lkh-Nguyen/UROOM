@@ -4,7 +4,7 @@ import { Container, Form, Button, Card } from "react-bootstrap"
 import * as Routers from "../../../utils/Routes"
 import { useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg"
-import { showToast, ToastProvider } from "components/ToastContainer"
+import { showToast, ToastProvider } from "@components/ToastContainer"
 import { useLocation } from "react-router-dom"
 
 const VerifyCodeRegisterPage = () => {

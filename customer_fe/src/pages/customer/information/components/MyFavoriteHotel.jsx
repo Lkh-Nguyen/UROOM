@@ -7,13 +7,13 @@ import { useState, useEffect } from "react"
 import { Star, StarFill, X } from "react-bootstrap-icons"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import * as Routers from "../../../../utils/Routes"
-import { showToast, ToastProvider } from "components/ToastContainer"
-import ConfirmationModal from "components/ConfirmationModal"
+import { showToast, ToastProvider } from "@components/ToastContainer"
+import ConfirmationModal from "@components/ConfirmationModal"
 import { useAppSelector, useAppDispatch } from "../../../../redux/store"
 import HotelActions from "../../../../redux/hotel/actions"
 import AuthActions from "../../../../redux/auth/actions"
 import Select from "react-select"
-import { cityOptionSelect, districtsByCity } from "utils/data"
+import { cityOptionSelect, districtsByCity } from "@utils/data"
 
 const starOptions = [
   { value: "0", label: "All stars" },

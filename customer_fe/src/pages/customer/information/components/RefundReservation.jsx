@@ -9,7 +9,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import * as Routers from "../../../../utils/Routes";
-import { ToastProvider } from "components/ToastContainer";
+import { ToastProvider } from "@components/ToastContainer";
 import { useAppSelector, useAppDispatch } from "../../../../redux/store";
 import Factories from "../../../../redux/refunding_reservation/factories";
 import Utils from "../../../../utils/Utils";

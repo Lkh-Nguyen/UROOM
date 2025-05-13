@@ -7,9 +7,9 @@ import Banner from "../../../images/banner.jpg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import { clearToken } from "utils/handleToken";
-import Utils from "utils/Utils";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import { clearToken } from "@utils/handleToken";
+import Utils from "@utils/Utils";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -55,9 +55,7 @@ const LoginPage = () => {
               dispatch({ type: AuthActions.LOGOUT });
               clearToken();
             } else {
-              navigate(Routers.Home, {
-                state: { message: "Login account successfully!" },
-              });
+              navigate(-1);
             }
           },
           onFailed: (msg) => {

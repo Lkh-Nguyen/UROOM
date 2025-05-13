@@ -9,8 +9,8 @@ import {
 } from "react-bootstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import React, { useState } from "react";
-import ConfirmationModal from "components/ConfirmationModal";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../../redux/auth/actions"; 
  const ChangePassword = () => {

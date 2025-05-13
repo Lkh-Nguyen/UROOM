@@ -1,4 +1,6 @@
 const Reservation = require("../../models/reservation");
+const RefundingReservation = require("../../models/refundingReservation");
+
 const cron = require("node-cron");
 const asyncHandler = require("../../middlewares/asyncHandler");
 
@@ -117,6 +119,14 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
     if (now > checkinDate) {
       r.status = "CANCELLED";
       await r.save();
+
+    const refund = await RefundingReservation.create({
+      user: r.user,
+      reservation: r._id,
+      refundAmount: r.totalPrice,
+    });
+    refund.save();
+    
       console.log(`Reservation ${r._id} đã bị hủy do quá thời gian check-in.`);
     }
   }

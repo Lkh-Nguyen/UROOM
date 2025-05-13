@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../redux/store";
 import RoomActions from "../../../redux/room/actions";
-import { showToast } from "components/ToastContainer";
+import { showToast } from "@components/ToastContainer";
 import NavigationBar from "../Header";
 import Footer from "../Footer";
 import * as Routers from "../../../utils/Routes";
@@ -13,7 +13,7 @@ import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
 import Banner from "../../../images/banner.jpg";
 import Utils from "../../../utils/Utils";
-import { Util } from "reactstrap";
+import SearchActions from "../../../redux/search/actions";
 
 // CSS Styles
 const styles = {
@@ -308,7 +308,7 @@ const styles = {
     padding: "0.2rem 0.6rem",
     backgroundColor: "#e6f0ff",
     color: "#1a2b49",
-    borderRadius: "9999px",
+    borderRadius: "8px",
     fontSize: "0.75rem",
     fontWeight: "500",
     position: "absolute",
@@ -559,6 +559,23 @@ function MainContent() {
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
   );
+  const selectedRoomsTemps = useAppSelector(
+    (state) => state.Search.selectedRooms
+  );
+  console.log("selectedRoomsTemps: ", selectedRoomsTemps)
+  const Auth = useAppSelector(
+    (state) => state.Auth.Auth
+  );
+
+  const [searchParams, setSearchParams] = useState({
+    address: SearchInformation.address,
+    checkinDate: SearchInformation.checkinDate,
+    checkoutDate: SearchInformation.checkoutDate,
+    numberOfPeople: SearchInformation.adults + SearchInformation.childrens,
+    page: 1,
+    limit: 10,
+  });
+
   const { id: roomId } = useParams();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -575,11 +592,12 @@ function MainContent() {
     price: 0,
   });
   const [mainImage, setMainImage] = useState("");
-  const [roomQuantity, setRoomQuantity] = useState(1);
-  const [checkInDate, setCheckInDate] = useState("");
-  const [checkOutDate, setCheckOutDate] = useState("");
+  const [roomQuantity, setRoomQuantity] = useState(selectedRoomsTemps[0]?.room?._id == roomId ? selectedRoomsTemps[0]?.amount : 1);
+  const [checkInDate, setCheckInDate] = useState(SearchInformation.checkinDate);
+  const [checkOutDate, setCheckOutDate] = useState(
+    SearchInformation.checkoutDate
+  );
   const [nights, setNights] = useState(1);
-  const [showAllPhotos, setShowAllPhotos] = useState(false);
 
   const renderIcon = (iconName) => {
     const iconLibraries = { ...FaIcons, ...MdIcons, ...GiIcons };
@@ -588,7 +606,6 @@ function MainContent() {
       <IconComponent style={{ fontSize: "18px", color: "#1a2b49" }} />
     ) : null;
   };
-
   useEffect(() => {
     if (roomId) {
       dispatch({
@@ -606,6 +623,8 @@ function MainContent() {
             if (room?.images?.length > 0) {
               setMainImage(room.images[0]);
             }
+
+            setSelectedRooms([{ amount: 1, room: room }]);
           },
           onFailed: (msg) => {
             showToast.warning("Get room details failed!");
@@ -620,6 +639,11 @@ function MainContent() {
     }
   }, [roomId, dispatch]);
 
+  const [selectedRooms, setSelectedRooms] = useState([
+    { amount: 1, room: roomDetail },
+  ]);
+
+  console.log("selectRooms: ", selectedRooms);
   useEffect(() => {
     if (checkInDate && checkOutDate) {
       const start = new Date(checkInDate);
@@ -635,6 +659,7 @@ function MainContent() {
   const incrementQuantity = () => {
     if (roomQuantity < (roomDetail.quantity || 10)) {
       setRoomQuantity(roomQuantity + 1);
+      setSelectedRooms([{ amount: roomQuantity + 1, room: roomDetail }]);
     } else {
       showToast.warning(`Maximum available rooms: ${roomDetail.quantity}`);
     }
@@ -643,6 +668,7 @@ function MainContent() {
   const decrementQuantity = () => {
     if (roomQuantity > 1) {
       setRoomQuantity(roomQuantity - 1);
+      setSelectedRooms([{ amount: roomQuantity - 1, room: roomDetail }]);
     }
   };
 
@@ -650,6 +676,7 @@ function MainContent() {
     const value = Number.parseInt(e.target.value);
     if (!isNaN(value) && value >= 1 && value <= (roomDetail.quantity || 10)) {
       setRoomQuantity(value);
+      setSelectedRooms([{ amount: value, room: roomDetail }]);
     }
   };
 
@@ -859,8 +886,15 @@ function MainContent() {
                     type="date"
                     style={styles.input}
                     className="input"
-                    value={SearchInformation.checkinDate}
-                    onChange={(e) => setCheckInDate(e.target.value)}
+                    value={checkInDate}
+                    onChange={(e) => {
+                      setCheckInDate(e.target.value);
+                      setSearchParams({
+                        ...searchParams,
+                        checkinDate: e.target.value,
+                      });
+                    }}
+                    disabled
                     min={new Date().toISOString().split("T")[0]}
                   />
                 </div>
@@ -870,8 +904,15 @@ function MainContent() {
                     type="date"
                     style={styles.input}
                     className="input"
-                    value={SearchInformation.checkoutDate}
-                    onChange={(e) => setCheckOutDate(e.target.value)}
+                    value={checkOutDate}
+                    onChange={(e) => {
+                      setCheckOutDate(e.target.value);
+                      setSearchParams({
+                        ...searchParams,
+                        checkoutDate: e.target.value,
+                      });
+                    }}
+                    disabled
                     min={checkInDate || new Date().toISOString().split("T")[0]}
                   />
                 </div>
@@ -889,7 +930,30 @@ function MainContent() {
 
                 <div style={styles.buttonContainer}>
                   <button
-                    onClick={() => navigate(Routers.BookingCheckPage)}
+                    onClick={() => {
+                      if (selectedRooms.length == 0) {
+                      } else {
+                        if (Auth._id != -1) {
+                          dispatch({
+                            type: SearchActions.SAVE_SELECTED_ROOMS,
+                            payload: {
+                              selectedRooms: selectedRooms,
+                              hotelDetail: roomDetail.hotel,
+                            },
+                          });
+                          navigate(Routers.BookingCheckPage);
+                        } else {
+                          dispatch({
+                            type: SearchActions.SAVE_SELECTED_ROOMS,
+                            payload: {
+                              selectedRooms: selectedRooms,
+                              hotelDetail: roomDetail.hotel,
+                            },
+                          });
+                          navigate(Routers.LoginPage);
+                        }
+                      }
+                    }}
                     style={styles.button}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor = "#2c4373";

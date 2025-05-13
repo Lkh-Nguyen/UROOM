@@ -3,7 +3,7 @@ import { Container, Form, Button, Card } from "react-bootstrap";
 import { FaArrowLeft } from "react-icons/fa";
 import * as Routers from "../../../utils/Routes";
 import Banner from "../../../images/banner.jpg";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const VerifyCodePage = () => {

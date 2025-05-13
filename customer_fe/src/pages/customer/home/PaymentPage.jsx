@@ -6,7 +6,7 @@ import Footer from "../Footer";
 import Header from "../Header";
 import * as Routers from "../../../utils/Routes";
 import { useLocation, useNavigate } from "react-router-dom";
-import ConfirmationModal from "components/ConfirmationModal";
+import ConfirmationModal from "@components/ConfirmationModal";
 import Factories from "../../../redux/search/factories";
 import Factories2 from "../../../redux/reservation/factories";
 import { showToast, ToastProvider } from "../../../components/ToastContainer";
@@ -69,7 +69,7 @@ const PaymentPage = () => {
     try {
       const response = await Factories.accept_payment(idReservation);
       if (response?.status === 200) {
-        navigate(Routers.PaymentSuccessPage, { state: {totalPrice: totalPrice}});
+        navigate(Routers.PaymentSuccessPage, { state: {totalPrice: totalPrice, id: idReservation}});
       }
     } catch (error) {
       console.error("Error fetching hotels:", error);
