@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 
 const RegisterPage = () => {
   const navigate = useNavigate();

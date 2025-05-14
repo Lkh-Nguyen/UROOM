@@ -7,9 +7,9 @@ import Banner from "../../../images/banner.jpg";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import { clearToken } from "utils/handleToken";
-import Utils from "utils/Utils";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import { clearToken } from "@utils/handleToken";
+import Utils from "@utils/Utils";
 import GoogleLogin from "./GoogleLogin";
 
 const LoginPage = () => {

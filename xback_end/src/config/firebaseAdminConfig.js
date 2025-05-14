@@ -1,4 +1,5 @@
-import admin from "firebase-admin";
+// src/config/firebaseAdminConfig.js
+const admin = require("firebase-admin");
 
 const serviceAccount = {
   type: process.env.FIREBASE_TYPE,
@@ -20,4 +21,4 @@ if (!admin.apps.length) {
   });
 }
 
-export default admin;
+module.exports = admin;
