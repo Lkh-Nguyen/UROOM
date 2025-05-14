@@ -1,14 +1,14 @@
 import { Row, Col, Card, Form, Button, InputGroup } from "react-bootstrap";
 import React, { useEffect, useState } from "react";
-import ConfirmationModal from "components/ConfirmationModal";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useAppSelector } from "../../../../redux/store";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../../redux/auth/actions";
 
-import Utils from "utils/Utils";
+import Utils from "@utils/Utils";
 import "react-datepicker/dist/react-datepicker.css";
-import { getToken } from "utils/handleToken";
+import { getToken } from "@utils/handleToken";
 const ViewInformation = () => {
   const dispatch = useDispatch();
   const Auth = useAppSelector((state) => state.Auth.Auth);

@@ -3,17 +3,29 @@ import { Card, Button } from 'react-bootstrap';
 import { CheckCircle, ArrowLeft, ArrowRight } from 'react-feather';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Banner from '../../../images/banner.jpg';
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from '../Footer';
 import Header from '../Header';
 import * as Routers from "../../../utils/Routes";
 
 const PaymentSuccessPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const totalPrice = location.state?.totalPrice ?? 0;
+    const id = location.state?.id ?? 0;
+
     const goToMyAccount = () => {
-        navigate("/bookingbill_customer", {
-            // state: { id: 1}
-        });
+        navigate(`${Routers.BookingBill}/${id}`);
+    };
+
+    const formatCurrency = (amount) => {
+        if (amount === undefined || amount === null) return "$0";
+        return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+        }).format(amount);
     };
     return (
     <div 
@@ -55,7 +67,7 @@ const PaymentSuccessPage = () => {
                         Hello! You have completed your payment
                     </p>
                     <p className="mb-4" style={{ fontSize: '1.2rem', fontWeight: '500' }}>
-                        Amount Paid: <span style={{ color: '#2ecc71' }}>12,300$</span>
+                        Amount Paid: <span style={{ color: '#2ecc71' }}>{formatCurrency(totalPrice)}</span>
                     </p>
 
                     <div className="d-flex justify-content-between gap-3 mt-5">

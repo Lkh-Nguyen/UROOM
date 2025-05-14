@@ -1,11 +1,9 @@
 const Feedback = require("../../models/feedback");
-const Reservation = require("../../models/reservation");
-const Hotel = require("../../models/hotel");
 const asyncHandler = require("../../middlewares/asyncHandler");
-const { FEEDBACK } = require("../../utils/constantMessage");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const User = require("../../models/user");
 exports.calculateAvgRatingHotel = async (hotelId) => {
   // Sử dụng aggregate để tính trung bình rating và tổng số feedback
   const result = await Feedback.aggregate([
@@ -72,7 +70,6 @@ exports.getAllFeedBackByHotelId = asyncHandler(async (req, res) => {
       .sort(sortOption)
       .skip((page - 1) * limit)
       .limit(Number(limit));
-    
   } catch (err) {
     console.error("❌ Error when fetching listFeedback:", err);
     return res.status(500).json({
@@ -149,3 +146,230 @@ exports.getAllFeedBackByHotelId = asyncHandler(async (req, res) => {
         : "Get all feedback by hotel id success",
   });
 });
+
+
+
+exports.likeFeedback = async (req, res) => {
+  const feedbackId = req.params.id;
+  const userId = req.user._id;
+
+  try {
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    const hasLiked = feedback.likedBy.includes(userId);
+    const hasDisliked = feedback.dislikedBy.includes(userId);
+
+    if (hasLiked) {
+      // Nếu đã like thì bỏ like
+      feedback.likedBy.pull(userId);
+    } else {
+      // Nếu chưa like thì thêm vào và bỏ dislike nếu có
+      feedback.likedBy.push(userId);
+      if (hasDisliked) {
+        feedback.dislikedBy.pull(userId);
+      }
+    }
+
+    await feedback.save();
+
+    return res.status(200).json({
+      message: hasLiked ? "Like removed" : "Feedback liked",
+      feedback,
+    });
+  } catch (error) {
+    console.error("Error liking feedback:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.dislikeFeedback = async (req, res) => {
+  const feedbackId = req.params.id;
+  const userId = req.user._id;
+
+  try {
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ message: "Feedback not found" });
+    }
+
+    const hasDisliked = feedback.dislikedBy.includes(userId);
+    const hasLiked = feedback.likedBy.includes(userId);
+
+    if (hasDisliked) {
+      // Nếu đã dislike thì bỏ dislike
+      feedback.dislikedBy.pull(userId);
+    } else {
+      // Nếu chưa dislike thì thêm vào và bỏ like nếu có
+      feedback.dislikedBy.push(userId);
+      if (hasLiked) {
+        feedback.likedBy.pull(userId);
+      }
+    }
+
+    await feedback.save();
+
+    return res.status(200).json({
+      message: hasDisliked ? "Dislike removed" : "Feedback disliked",
+      feedback,
+    });
+  } catch (error) {
+    console.error("Error disliking feedback:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+exports.getFeedbackByUserId = async (req, res) => {
+  try {
+    const userId = Number(req.user._id); 
+
+    const feedbacks = await Feedback.find({ user: userId }) 
+      .populate("hotel")
+      .populate("reservation", "checkInDate checkOutDate")
+      .sort({ createdAt: -1 });
+
+    if (feedbacks.length === 0) {
+      return res.status(404).json({
+        error: true,
+        message: "Bạn chưa viết feedback nào.",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: "Lấy danh sách feedback thành công",
+      data: feedbacks,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy feedback theo user:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi lấy feedback người dùng",
+    });
+  }
+};
+exports.updateFeedback = async (req, res) => {
+  try {
+    const userId = Number(req.user._id);
+    const feedbackId = req.params.feedbackId;
+    const { content, rating } = req.body;
+
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ error: true, message: "Feedback không tồn tại." });
+    }
+
+    if (feedback.user !== userId) {
+      return res.status(403).json({ error: true, message: "Bạn không có quyền sửa feedback này." });
+    }
+
+    feedback.content = content || feedback.content;
+    feedback.rating = rating || feedback.rating;
+    feedback.updatedAt = new Date();
+
+    await feedback.save();
+
+    return res.status(200).json({
+      error: false,
+      message: "Cập nhật feedback thành công",
+      data: feedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi cập nhật feedback:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi cập nhật feedback",
+    });
+  }
+};
+exports.deleteFeedback = async (req, res) => {
+  try {
+    const userId = Number(req.user._id);
+    const feedbackId = req.params.feedbackId;
+
+    const feedback = await Feedback.findById(feedbackId);
+
+    if (!feedback) {
+      return res.status(404).json({ error: true, message: "Feedback không tồn tại." });
+    }
+
+    if (feedback.user !== userId) {
+      return res.status(403).json({ error: true, message: "Bạn không có quyền xoá feedback này." });
+    }
+
+    await Feedback.findByIdAndDelete(feedbackId);
+
+    return res.status(200).json({
+      error: false,
+      message: "Xoá feedback thành công",
+    });
+  } catch (error) {
+    console.error("Lỗi khi xoá feedback:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi xoá feedback",
+    });
+  }
+};
+exports.createFeedback = async (req, res) => {
+  try {
+    const { reservation, hotel, content, rating } = req.body;
+    const user = req.user._id;
+
+    if (!reservation || !hotel || !content || !rating) {
+      return res.status(400).json({
+        error: true,
+        message: "Vui lòng cung cấp đầy đủ thông tin feedback.",
+      });
+    }
+
+    const newFeedback = await Feedback.create({ user, reservation, hotel, content, rating });
+
+    res.status(201).json({
+      error: false,
+      message: "Tạo feedback thành công",
+      data: newFeedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi tạo feedback:", error);
+    res.status(500).json({
+      error: true,
+      message: "Lỗi server khi tạo feedback",
+    });
+  }
+};
+
+
+exports.getFeedbackById = async (req, res) => {
+  try {
+    const { feedbackId } = req.params;
+
+    const feedback = await Feedback.findById(feedbackId)
+      .populate("user") 
+      .populate("hotel")             
+      .populate("reservation");
+
+    if (!feedback) {
+      return res.status(404).json({
+        error: true,
+        message: "Feedback không tồn tại.",
+      });
+    }
+
+    return res.status(200).json({
+      error: false,
+      message: "Lấy thông tin feedback thành công.",
+      data: feedback,
+    });
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin feedback theo ID:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Lỗi server khi lấy thông tin feedback.",
+    });
+  }
+};

@@ -15,11 +15,21 @@ import image from "../../images/image-removebg-preview.png";
 import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
-import { clearIndexMyAccountPage, clearToken, getToken, setIndexMyAccountPage, setStatusBooking } from "utils/handleToken";
+import {
+  clearIndexMyAccountPage,
+  clearToken,
+  getToken,
+  setIndexMyAccountPage,
+  setStatusBooking,
+} from "@utils/handleToken";
+import SearchActions from "@redux/search/actions";
 
 const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
 
 function NavigationBar() {
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
   // ✅ Nhận `header` từ props (hoặc có thể setState)
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -44,7 +54,7 @@ function NavigationBar() {
   }, []);
 
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  const dispatch= useDispatch();
+  const dispatch = useDispatch();
   return (
     <Navbar
       expand="lg"
@@ -55,16 +65,16 @@ function NavigationBar() {
       }}
     >
       <Container>
-         <Image
-            src={image}
-            width="100"
-            height="28"
-            className="ms-2 me-2"
-            onClick={() => {
-              navigate(Routers.Home)
-            }}
-            style={{cursor: "pointer"}}
-          />
+        <Image
+          src={image}
+          width="100"
+          height="28"
+          className="ms-2 me-2"
+          onClick={() => {
+            navigate(Routers.Home);
+          }}
+          style={{ cursor: "pointer" }}
+        />
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto">
@@ -76,33 +86,75 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(Routers.ChatPage)}
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(Routers.ChatPage);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Message
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 3 } })
-              }
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/booking_history`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Transaction
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 5 } })
-              }
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_feedback`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               My Feedback
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(Routers.MyAccountPage, { state: { id: 4 } })
-              }
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/favorite_hotel`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Favorite hotels
+            </Nav.Link>
+            <Nav.Link
+              className="nav-link"
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_report`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
+            >
+              My Reports
+            </Nav.Link>
+            <Nav.Link
+              className="nav-link"
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_refund`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
+            >
+              My Refund
             </Nav.Link>
           </Nav>
 
@@ -130,15 +182,25 @@ function NavigationBar() {
             </Dropdown.Menu>
           </Dropdown>
 
-          {Auth._id !== -1 ? ( 
+          {Auth._id !== -1 ? (
             <Dropdown align="end">
               <Dropdown.Toggle
                 variant="light"
                 className="login-btn d-flex align-items-center"
               >
-                {Auth.name}
+                <a
+                  style={{
+                    display: "inline-block",
+                    maxWidth: "150px", // hoặc width tùy bạn
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {Auth.name}
+                </a>{" "}
                 <Image
-                  src={Auth.image?.url || defaultImage}
+                  src={(Auth.image.url != "" && Auth.image.url ? Auth.image.url : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg")}
                   roundedCircle
                   width="30"
                   height="30"
@@ -148,7 +210,7 @@ function NavigationBar() {
               <Dropdown.Menu>
                 <Dropdown.Item
                   onClick={() =>
-                    navigate(Routers.MyAccountPage, { state: { id: 0 } })
+                    navigate(`${Routers.MyAccountPage}/view_information`)
                   }
                 >
                   View Information
@@ -162,8 +224,21 @@ function NavigationBar() {
                     dispatch({
                       type: AuthActions.LOGOUT,
                     });
+                    dispatch({
+                      type: SearchActions.SAVE_SELECTED_ROOMS,
+                      payload: {
+                        SearchInformation: {
+                          address: "",
+                          checkinDate: today.toISOString().split("T")[0], // yyyy-mm-dd format
+                          checkoutDate: tomorrow.toISOString().split("T")[0], // yyyy-mm-dd format
+                          adults: 2,
+                          childrens: 1,
+                        },
+                        selectedRooms: [],
+                        hotelDetail: {},
+                      },
+                    });
                     clearToken();
-                    setIndexMyAccountPage(0);
                     setStatusBooking(0);
                   }}
                 >

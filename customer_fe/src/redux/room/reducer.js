@@ -12,7 +12,12 @@ const RoomReducer = (state = initialState, action) => {
         ...state,
         rooms: action.payload,
         error: null, 
-      };   
+      };  
+      case RoomActions.FETCH_ROOM_DETAIL_SUCCESS:
+        return {
+          ...state,
+          rooms: action.payload,
+        }; 
     default:
       return state;
   }

@@ -1,7 +1,7 @@
 import { all, call, fork, put, takeEvery } from "@redux-saga/core/effects";
 import AuthActions from "./actions";
 import Factories from "./factories";
-import { setToken } from "utils/handleToken";
+import { setToken } from "@utils/handleToken";
 
 function* login() {
   yield takeEvery(AuthActions.LOGIN, function* (action) {

@@ -840,6 +840,10 @@ for (let i = 0; i < 60; i++) {
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
       images: images,
+      checkInStart: "12:00",
+      checkInEnd: "13:00",
+      checkOutStart: "10:00",
+      checkOutEnd: "11:00"
     });
 
     hotelIds.push(hotel.insertedId);
@@ -860,7 +864,7 @@ for (let i = 0; i < 50; i++) {
       images.push(randomImage);
     }
 
-    let shuffledFacilities = hotelfacilityIds
+    let shuffledFacilities = roomFacilityIds
       .map((facility) => ({ facility, sort: Math.random() })) // Thêm giá trị ngẫu nhiên
       .sort((a, b) => a.sort - b.sort) // Sắp xếp theo giá trị ngẫu nhiên
       .slice(0, Math.floor(Math.random() * 3) + 3) // Chọn từ 3-5 phần tử
@@ -922,6 +926,10 @@ for (let i = 0; i < hotelNames.length; i++) {
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
       images: images,
+      checkInStart: "12:00",
+      checkInEnd: "13:00",
+      checkOutStart: "10:00",
+      checkOutEnd: "11:00"
     });
 
     hotelIds.push(hotel.insertedId);
@@ -969,16 +977,16 @@ for (let i = 0; i < 20; i++) {
 const now = new Date();
 // Trạng thái của Reservation
 const reservationStatuses = [
-  "BOOKED", // Đã đặt, trả tiền nhưng chưa check-in
-  "CHECKED IN", // Đang ở, đã check-in
   "CHECKED OUT", // Đã check-out, có thể để lại phản hồi
   "COMPLETED", // Hoàn thành, đã phản hồi
+  "BOOKED", // Đã đặt, trả tiền nhưng chưa check-in
+  "CHECKED IN", // Đang ở, đã check-in
   "PENDING", // Chờ xử lý hoặc xác nhận
   "CANCELLED", // Đã hủy
-  "NOT PAID", // Chưa trả tiền
+  // "NOT PAID", // Chưa trả tiền
 ];
 
-for (let i = 0; i < 750; i++) {
+for (let i = 0; i < 1500; i++) {
   let randomStatus =
     reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
 
@@ -1048,7 +1056,7 @@ for (let i = 0; i < 750; i++) {
   let hotelPricePerNight = hotelData ? hotelData.pricePerNight || 0 : 0;
 
   for (let k = 0; k < selectedRooms.length; k++) {
-    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });
+    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });  
     let roomPrice = roomData ? roomData.price : 0;
     totalPrice += roomPrice * selectedRooms[k].quantity * numNights;
   }

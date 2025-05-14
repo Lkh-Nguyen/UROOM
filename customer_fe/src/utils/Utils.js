@@ -68,7 +68,17 @@ static getDate(
     }
     return result;
   }
+  static formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(amount);
+  };
 }
+
 
 
 export const cloudName = "dnel8ng9g";

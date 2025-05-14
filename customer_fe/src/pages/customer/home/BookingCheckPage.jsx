@@ -15,11 +15,21 @@ import Header from "../Header";
 import Footer from "../Footer";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
-import ConfirmationModal from "components/ConfirmationModal";
+import ConfirmationModal from "@components/ConfirmationModal";
+import { useAppSelector } from "../../../redux/store";
+import Utils from "../../../utils/Utils";
+import Factories from "../../../redux/search/factories";
 
 const BookingCheckPage = () => {
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  const SearchInformation = useAppSelector(
+    (state) => state.Search.SearchInformation
+  );
+  const selectedRooms = useAppSelector((state) => state.Search.selectedRooms);
+  const hotelDetail = useAppSelector((state) => state.Search.hotelDetail);
   const navigate = useNavigate();
   const [bookingFor, setBookingFor] = useState("mainGuest");
+  
   // Star rating component
   const StarRating = ({ rating }) => {
     return (
@@ -36,13 +46,75 @@ const BookingCheckPage = () => {
   };
 
   const [showAcceptModal, setShowAcceptModal] = useState(false);
+
+  const createBooking = async () => {
+
+    const totalPrice= selectedRooms.reduce(
+      (total, { room, amount }) =>
+        total + room.price * amount,
+      0
+    );
+
+    const params= {
+      hotelId: hotelDetail._id,
+      checkOutDate: SearchInformation.checkoutDate,
+      checkInDate: SearchInformation.checkinDate,
+      totalPrice: totalPrice,
+      roomDetails: selectedRooms
+    }
+
+    try {
+      const response = await Factories.create_booking(params);
+      if (response?.status === 201) {
+        const reservation= response?.data.reservation
+        console.log("reservation: ", reservation)
+        navigate(Routers.PaymentPage,
+          {
+            state: {
+              createdAt: reservation.createdAt,
+              totalPrice: totalPrice,
+              idReservation: reservation._id,
+              messageSuccess: response?.data.message
+            }
+          }
+        )
+      }else{
+        console.log("unpaidReservation: ", response?.data.unpaidReservation)
+        navigate(Routers.PaymentPage,
+          {
+            state: {
+              createdAt: response?.data.unpaidReservation.createdAt,
+              totalPrice: response?.data.unpaidReservation.totalPrice,
+              idReservation: response?.data.unpaidReservation._id,
+              messageError: response?.data.message
+            }
+          }
+        )
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  };
+
   const handleAccept = () => {
-    navigate(Routers.PaymentPage);
+    createBooking();
   };
 
   const handleConfirmBooking = () => {
     setShowAcceptModal(true);
   };
+
+  const formatCurrency = (amount) => {
+    if (amount === undefined || amount === null) return "$0";
+    return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -55,7 +127,7 @@ const BookingCheckPage = () => {
       <Header />
       <div
         className="flex-grow-1 d-flex align-items-center justify-content-center content-wrapper"
-        style={{ paddingTop: "50px", paddingBottom: "50px" }}
+        style={{ paddingTop: "65px", paddingBottom: "50px" }}
       >
         <Container className="mt-4">
           <Row className="justify-content-center">
@@ -77,13 +149,15 @@ const BookingCheckPage = () => {
                     justifyItems: "self-start",
                   }}
                 >
-                  <StarRating rating={4} />
+                  <StarRating rating={hotelDetail.star} />
                 </div>
 
-                <h4 className="hotel-name mb-1">Hotel Paradise</h4>
+                <h4 className="hotel-name mb-1">
+                  {hotelDetail.hotelName ?? ""}
+                </h4>
 
                 <p className="hotel-address small mb-4">
-                  123 Bien Kinh Street, Central District, Da Nang City, Vietnam
+                  {hotelDetail.address ?? ""}
                 </p>
 
                 <div
@@ -106,7 +180,9 @@ const BookingCheckPage = () => {
                       >
                         Checkin
                       </div>
-                      <div className="time">12:00:00 2/3/2025</div>
+                      <div className="time">
+                        {Utils.getDate(SearchInformation.checkinDate, 1)}
+                      </div>
                     </div>
                   </Col>
                   <Col xs={6}>
@@ -117,7 +193,9 @@ const BookingCheckPage = () => {
                       >
                         Checkout
                       </div>
-                      <div className="time">10:00:00 2/3/2025</div>
+                      <div className="time">
+                        {Utils.getDate(SearchInformation.checkoutDate, 1)}
+                      </div>
                     </div>
                   </Col>
                 </Row>
@@ -125,11 +203,19 @@ const BookingCheckPage = () => {
                 <div className="stay-info mb-2">
                   <div className="d-flex justify-content-between mb-2">
                     <span>Total length of stay:</span>
-                    <span className="fw-bold">1 night</span>
+                    <span className="fw-bold">
+                      {(new Date(SearchInformation.checkoutDate) -
+                        new Date(SearchInformation.checkinDate)) /
+                        (1000 * 60 * 60 * 24)}{" "}
+                      night
+                    </span>{" "}
                   </div>
                   <div className="d-flex justify-content-between mb-3">
                     <span>Total number of people:</span>
-                    <span className="fw-bold">2 people</span>
+                    <span className="fw-bold">
+                      {SearchInformation.adults} Adults -{" "}
+                      {SearchInformation.childrens} Childrens
+                    </span>
                   </div>
                 </div>
 
@@ -144,15 +230,25 @@ const BookingCheckPage = () => {
 
                 <div className="selected-room mb-2">
                   <h5 className="mb-4">You selected</h5>
-                  <div className="d-flex justify-content-between align-items-center mb-1">
-                    <span>1 x Family Room:</span>
-                    <span className="fw-bold">$400</span>
-                  </div>
+
+                  {selectedRooms.map(({ room, amount }) => (
+                    <div
+                      key={room._id}
+                      className="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <span>
+                        {amount} x {room.name}:
+                      </span>
+                      <span className="fw-bold">{Utils.formatCurrency(room.price * amount)}</span>
+                    </div>
+                  ))}
+
                   <div className="small mb-3">
                     <a
                       className="text-blue text-decoration-none"
+                      style={{cursor: 'pointer'}}
                       onClick={() => {
-                        navigate(Routers.Home_detail);
+                        navigate(-1);
                       }}
                     >
                       Change your selection
@@ -171,7 +267,9 @@ const BookingCheckPage = () => {
 
                 <div className="total-price">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="text-danger mb-0">Total: $400</h5>
+                    <h5 className="text-danger mb-0">
+                      Total: {Utils.formatCurrency(selectedRooms.reduce((total, { room, amount }) => total + room.price * amount,0))}
+                    </h5>{" "}
                   </div>
                   <div className="small">Includes taxes and fees</div>
                 </div>
@@ -196,7 +294,7 @@ const BookingCheckPage = () => {
                     <Form.Label>Full name</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Nguyen Van X"
+                      value={Auth.name}
                       className="bg-transparent text-white"
                       style={{
                         border: "1px solid rgba(255,255,255,0.3)",
@@ -209,6 +307,7 @@ const BookingCheckPage = () => {
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                       type="email"
+                      value={Auth.email}
                       placeholder="nguyenvanx@gmail.com"
                       className="bg-transparent text-white"
                       style={{
@@ -222,6 +321,7 @@ const BookingCheckPage = () => {
                     <Form.Label>Phone</Form.Label>
                     <Form.Control
                       type="tel"
+                      value={Auth.phoneNumber}
                       placeholder="0912345678"
                       className="bg-transparent text-white"
                       style={{

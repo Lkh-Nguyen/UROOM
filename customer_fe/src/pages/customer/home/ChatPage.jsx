@@ -939,13 +939,7 @@ function CustomerChat() {
         <div style={styles.sidebar}>
           <div style={styles.sidebarHeader}>
             <h5 style={styles.sidebarTitle}>
-              <FaArrowLeft 
-                onClick={() => {
-                  navigate(-1);
-                }}
-                style={{ marginRight: "10px", cursor: "pointer" }} 
-              />
-              Tin nhắn
+              Chat box
             </h5>
             <div style={styles.search}>
               <i style={styles.searchIcon} className="bi bi-search"></i>

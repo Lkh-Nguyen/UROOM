@@ -23,7 +23,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     return pageNumbers
   }
 
-  if (totalPages <= 1) return null
+  if (totalPages < 1) return null
 
   return (
     <BootstrapPagination className="justify-content-center mt-4">

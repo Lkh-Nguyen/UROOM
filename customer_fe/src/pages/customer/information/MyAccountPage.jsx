@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, ListGroup } from "react-bootstrap";
-import { FaKey, FaImage, FaHistory, FaHeart, FaComment } from "react-icons/fa";
+import { FaKey, FaImage, FaHistory, FaHeart, FaComment, FaExclamationTriangle, FaMoneyBillWave } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/customer/MyAccountPage.css";
@@ -11,54 +11,28 @@ import MyFeedback from "./components/MyFeedback";
 import FavoriteHotel from "./components/MyFavoriteHotel";
 import Banner from "../../../images/banner.jpg";
 import BookingHistory from "./components/BookingHistory";
+import MyReportFeedBack from "./components/MyReportFeedBack";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
-import {
-  getIndexMyAccountPage,
-  setIndexMyAccountPage,
-} from "utils/handleToken";
+import * as Routers from "../../../utils/Routes";
+import RefundReservations from "./components/RefundReservation";
+
 function MyAccountPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  const [formData, setFormData] = useState(Auth);
-  const location = useLocation();
-  const { id } = location.state || {};
-  const [indexActive, setIndexActive] = useState(0);
-  console.log('id: ', id)
+  const {section}= useParams();
   const navigate = useNavigate() // cần thêm dòng này
-
-  useEffect(() => {
-    const fetchIndex = async () => {
-      const result = await getIndexMyAccountPage();
-      setIndexActive(Number(result));
-    };
-    if(id == undefined){
-      fetchIndex()
-    }
-  },[])
-  useEffect(() => {
-    if (id != undefined) {
-      setIndexActive(id);
-    }
-    navigate(location.pathname, { replace: true })
-
-  }, [location.state?.id]);
   
-  const handleMenuClick = (index) => {
-    setIndexActive(index);
-    setIndexMyAccountPage(index);
-  };
-  const handleAvatarUpdate = (newAvatarURL) => {
-    setFormData((prev) => ({ ...prev, avatarURL: newAvatarURL }));
-  };
   const menuItems = [
-    { name: "My Account", icon: <IoSettingsSharp /> },
-    { name: "Change Password", icon: <FaKey /> },
-    { name: "View Avatar", icon: <FaImage /> },
-    { name: "Booking History", icon: <FaHistory /> },
-    { name: "Favorite Hotel", icon: <FaHeart /> },
-    { name: "My Feedback", icon: <FaComment /> },
+    { name: "My Account", icon: <IoSettingsSharp />, link: "view_information"},
+    { name: "Change Password", icon: <FaKey /> , link: "change_password"},
+    { name: "View Avatar", icon: <FaImage /> , link: "view_avatar"},
+    { name: "Booking History", icon: <FaHistory /> , link: "booking_history"},
+    { name: "Favorite Hotel", icon: <FaHeart /> , link: "favorite_hotel"},
+    { name: "My Feedback", icon: <FaComment /> , link: "my_feedback"},
+    { name: "My Report", icon: <FaExclamationTriangle/>, link: "my_report" },         // báo cáo
+    { name: "My Refund", icon: <FaMoneyBillWave/>, link: "my_refund" }               // hoàn tiền
   ];
 
   return (
@@ -104,29 +78,34 @@ function MyAccountPage() {
                     <ListGroup.Item
                       key={item.name}
                       className={`menu-item ${
-                        index === indexActive ? "active" : ""
+                        item.link === section ? "active" : ""
                       }`}
-                      onClick={() => handleMenuClick(index)}
+                      onClick={() => {
+                        if(item.link == "favorite_hotel"){
+                          navigate(`${Routers.MyAccountPage}/${item.link}?page=1`)
+                        }else{
+                          navigate(`${Routers.MyAccountPage}/${item.link}`)
+                        }
+                      }}
                     >
                       <span className="menu-icon">{item.icon}</span>
                       <span className="menu-text">{item.name}</span>
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
+                
               </Card>
             </Col>
             <Col md={9}>
               <Card style={{ backgroundColor: "rgba(255, 255, 255,0.9)" }}>
-                {indexActive == 0 && <ViewInformation />}
-                {indexActive == 1 && <ChangePassword />}
-                {indexActive === 2 && (
-                  <ViewAvatar
-                   
-                  />
-                )}
-                {indexActive == 3 && <BookingHistory />}
-                {indexActive == 4 && <FavoriteHotel />}
-                {indexActive == 5 && <MyFeedback />}
+                {section == "view_information" && <ViewInformation />}
+                {section == "change_password" && <ChangePassword />}
+                {section === "view_avatar" && <ViewAvatar/>}
+                {section == "booking_history" && <BookingHistory />}
+                {section == "favorite_hotel" && <FavoriteHotel />}
+                {section == "my_feedback" && <MyFeedback />}
+                {section == "my_report" && <MyReportFeedBack />}
+                {section == "my_refund" && <RefundReservations />}
               </Card>
             </Col>
           </Row>

@@ -7,22 +7,11 @@ const authRouter = express.Router();
 authRouter.post("/register_customer", AuthController.registerCustomer);
 authRouter.post("/verify-email", AuthController.verifyEmail);
 authRouter.post("/resend-verification", AuthController.resendVerificationCode);
-
-// Existing routes
-authRouter.post("/login_customer", AuthController.loginCustomer);
-authRouter.post(
-  "/updateProfile_customer",
-  checkCustomer,
-  AuthController.updateCustomerProfile
-);
-authRouter.post(
-  "/changePassword_customer",
-  checkCustomer,
-  AuthController.changePassword
-);
-
 authRouter.post("/google_login", AuthController.googleLogin);
 
+authRouter.post("/login_customer", AuthController.loginCustomer);
+authRouter.post("/updateProfile_customer",checkCustomer, AuthController.updateCustomerProfile);
+authRouter.post("/changePassword_customer", checkCustomer, AuthController.changePassword);
 //upload ảnh
 const upload = require("../../middlewares/uploadMiddleware");
 authRouter.put(

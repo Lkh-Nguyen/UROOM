@@ -113,9 +113,7 @@ const LoginPage = () => {
               dispatch({ type: AuthActions.LOGOUT });
               clearToken();
             } else {
-              navigate(Routers.Home, {
-                state: { message: "Login account successfully!" },
-              });
+              navigate(-1);
             }
           },
           onFailed: (msg) => {

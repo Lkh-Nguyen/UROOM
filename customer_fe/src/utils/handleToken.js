@@ -10,19 +10,6 @@ export const clearToken = () => {
   localStorage.removeItem("token");
 };
 
-
-export const getIndexMyAccountPage = async () => {
-  return localStorage.getItem("IndexMyAccountPage") ?? 0;
-};
-
-export const setIndexMyAccountPage = (index) => {
-  localStorage.setItem("IndexMyAccountPage", index);
-};
-
-export const clearIndexMyAccountPage = () => {
-  localStorage.removeItem("IndexMyAccountPage");
-};
-
 export const getStatusBooking = async () => {
   return localStorage.getItem("StatusBooking") ?? 0;
 };

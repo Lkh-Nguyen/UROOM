@@ -1,5 +1,7 @@
+"use client";
+
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Route } from "react-router-dom";
 import {
   Container,
   Row,
@@ -12,14 +14,13 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import Pagination from "components/Pagination";
+import Pagination from "@components/Pagination";
 import {
   FaStar,
   FaSearch,
   FaCalendarAlt,
   FaChild,
   FaUser,
-  FaQuoteLeft,
   FaThumbsUp,
   FaThumbsDown,
   FaArrowRight,
@@ -30,7 +31,7 @@ import {
 import * as FaIcons from "react-icons/fa";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
-import { ExclamationTriangleFill, X } from "react-bootstrap-icons";
+import { ExclamationTriangleFill } from "react-bootstrap-icons";
 import Select from "react-select";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/css/customer/Home_detail.css";
@@ -46,10 +47,12 @@ import { useAppSelector, useAppDispatch } from "../../../redux/store";
 import HotelActions from "../../../redux/hotel/actions";
 import RoomActions from "../../../redux/room/actions";
 import AuthActions from "../../../redux/auth/actions";
-import { showToast } from "components/ToastContainer";
+import { showToast } from "@components/ToastContainer";
 import Factories from "../../../redux/search/factories";
 import Factories2 from "../../../redux/feedback/factories";
 import Utils from "../../../utils/Utils";
+import ErrorModal from "@components/ErrorModal";
+import SearchActions from "../../../redux/search/actions";
 
 // Options for select inputs
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -95,6 +98,9 @@ export default function HotelDetailPage() {
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
   );
+  const selectedRoomsTemps = useAppSelector(
+    (state) => state.Search.selectedRooms
+  );
 
   // State variables
   const [hotelDetail, setHotelDetail] = useState(null);
@@ -108,15 +114,24 @@ export default function HotelDetailPage() {
   const [totalFeedback, setTotalFeedback] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
   const [ratingBreakdown, setRatingBreakdown] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState();
-  const [sort, setSort] = useState(0);
-  const [star, setStar] = useState(0);
+
+  const [searchParamsTemp] = useSearchParams();
+  const sortTemp = searchParamsTemp.get("sort");
+  const starTemp = searchParamsTemp.get("star");
+  const pageTemp = searchParamsTemp.get("page");
+  const [currentPage, setCurrentPage] = useState(Number(pageTemp) ?? 1);
+  const [sort, setSort] = useState(Number(sortTemp) ?? 0);
+  const [star, setStar] = useState(Number(starTemp) ?? 0);
+
   const [filterParams, setFilterParams] = useState({
     page: currentPage,
     sort: sort,
     star: star,
   });
+  const [showModal, setShowModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Search state
   const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
   const [checkoutDate, setCheckoutDate] = useState(
@@ -134,11 +149,40 @@ export default function HotelDetailPage() {
   );
   const [isSearching, setIsSearching] = useState(false);
 
-  const today = new Date().toISOString().split("T")[0];
+  useEffect(() => {
+    setSelectedRooms([]);
+    dispatch({
+      type: SearchActions.SAVE_SELECTED_ROOMS,
+      payload: {
+        selectedRooms: [],
+      },
+    });
+  }, [hotelId]);
+  // Update URL when filters change
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams();
+      params.set("sort", sort.toString());
+      params.set("star", star.toString());
+      params.set("page", currentPage.toString() ?? 1);
 
+      // Use window.history to update URL without full page reload
+      window.history.replaceState(
+        {},
+        "",
+        `${window.location.pathname}?${params.toString()}`
+      );
+
+      // Save filter to localStorage
+    }
+  }, [sort, star, currentPage]);
+
+  const today = new Date().toISOString().split("T")[0];
   // Fetch hotel details
   useEffect(() => {
     window.scrollTo(0, 0);
+
+    let isMounted = true;
 
     if (hotelId) {
       dispatch({
@@ -147,21 +191,31 @@ export default function HotelDetailPage() {
           hotelId,
           userId: Auth._id,
           onSuccess: (hotel, isFavorite) => {
-            setHotelDetail(hotel);
-            setIsFavorite(isFavorite);
-            if (hotel.images && hotel.images.length > 0) {
-              setMainImage(hotel.images[0]);
+            if (isMounted) {
+              setHotelDetail(hotel);
+              setIsFavorite(isFavorite);
+              if (hotel.images && hotel.images.length > 0) {
+                setMainImage(hotel.images[0]);
+              }
             }
           },
           onFailed: (msg) => {
-            showToast.warning("Get hotel details failed");
+            if (isMounted) {
+              showToast.warning("Get hotel details failed");
+            }
           },
           onError: (err) => {
-            showToast.warning("Server error");
+            if (isMounted) {
+              showToast.warning("Server error");
+            }
           },
         },
       });
     }
+
+    return () => {
+      isMounted = false;
+    };
   }, [hotelId, dispatch, Auth._id]);
 
   const [searchParams, setSearchParams] = useState({
@@ -172,9 +226,10 @@ export default function HotelDetailPage() {
     page: 1,
     limit: 10,
   });
-
   // Fetch rooms
   useEffect(() => {
+    let isMounted = true;
+
     if (hotelId) {
       dispatch({
         type: RoomActions.FETCH_ROOM,
@@ -182,21 +237,52 @@ export default function HotelDetailPage() {
           hotelId,
           query: searchParams,
           onSuccess: (roomList) => {
-            if (Array.isArray(roomList)) {
-              setRooms(roomList);
-            } else {
-              console.warn("Unexpected data format received:", roomList);
+            if (isMounted) {
+              if (Array.isArray(roomList)) {
+                setRooms(roomList);
+              } else {
+                console.warn("Unexpected data format received:", roomList);
+              }
             }
           },
-          onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
-          onError: (err) => console.error("Server error:", err),
+          onFailed: (msg) => {
+            if (isMounted) {
+              console.error("Failed to fetch rooms:", msg);
+            }
+          },
+          onError: (err) => {
+            if (isMounted) {
+              console.error("Server error:", err);
+            }
+          },
         },
       });
     }
-  }, [hotelId, dispatch]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [hotelId, dispatch, searchParams]);
 
   const [searchRoom, setSearchRoom] = useState(false);
+
   const handleSearchRoom = () => {
+    const adults = selectedAdults ? selectedAdults.value : 1;
+    const childrens = selectedChildren ? selectedChildren.value : 0;
+    const SearchInformationTemp = {
+      address: SearchInformation.address,
+      checkinDate,
+      checkoutDate,
+      adults,
+      childrens,
+    };
+
+    console.log("SearchInformationTemp: ", SearchInformationTemp);
+    dispatch({
+      type: SearchActions.SAVE_SEARCH,
+      payload: { SearchInformation: SearchInformationTemp },
+    });
+
     setSearchRoom(true);
     dispatch({
       type: RoomActions.FETCH_ROOM,
@@ -228,45 +314,16 @@ export default function HotelDetailPage() {
     });
   };
 
-  const fetchHotels = async () => {
-    try {
-      const response = await Factories.searchHotel(searchParams);
-      if (response?.status === 200) {
-        const shuffled = [...response.data.hotels].sort(
-          () => 0.5 - Math.random()
-        );
-        setShuffledHotels(shuffled);
-
-        // Fetch rooms for each hotel
-        shuffled.forEach((hotel) => {
-          dispatch({
-            type: RoomActions.FETCH_ROOM,
-            payload: {
-              hotelId: hotel.hotel._id,
-              query: searchParams,
-              onSuccess: (roomList) => {
-                setRoomsByHotel((prev) => ({
-                  ...prev,
-                  [hotel.hotel._id]: roomList,
-                }));
-              },
-              onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
-              onError: (err) => console.error("Server error:", err),
-            },
-          });
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching hotels:", error);
-    } finally {
-    }
-  };
-
   const scrollRef = useRef(null);
+  const scrollRefRoom = useRef(null);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = 0;
     }
+    return () => {
+      // No cleanup needed for this simple DOM manipulation
+    };
   }, [shuffledHotels]);
   const scrollLeft = () => {
     scrollRef.current.scrollBy({ left: -400, behavior: "smooth" });
@@ -277,8 +334,61 @@ export default function HotelDetailPage() {
   };
 
   useEffect(() => {
-    fetchHotels();
-  }, [searchRoom]);
+    let isMounted = true;
+
+    const fetchHotelsData = async () => {
+      try {
+        const response = await Factories.searchHotel(searchParams);
+        if (response?.status === 200 && isMounted) {
+          const shuffled = [...response.data.hotels].sort(
+            () => 0.5 - Math.random()
+          );
+          setShuffledHotels(shuffled);
+
+          // Fetch rooms for each hotel
+          shuffled.forEach((hotel) => {
+            if (isMounted) {
+              dispatch({
+                type: RoomActions.FETCH_ROOM,
+                payload: {
+                  hotelId: hotel.hotel._id,
+                  query: searchParams,
+                  onSuccess: (roomList) => {
+                    if (isMounted) {
+                      setRoomsByHotel((prev) => ({
+                        ...prev,
+                        [hotel.hotel._id]: roomList,
+                      }));
+                    }
+                  },
+                  onFailed: (msg) => {
+                    if (isMounted) {
+                      console.error("Failed to fetch rooms:", msg);
+                    }
+                  },
+                  onError: (err) => {
+                    if (isMounted) {
+                      console.error("Server error:", err);
+                    }
+                  },
+                },
+              });
+            }
+          });
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching hotels:", error);
+        }
+      }
+    };
+
+    fetchHotelsData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [searchRoom, dispatch, searchParams]);
 
   const fetchFeedbacks = async () => {
     try {
@@ -301,8 +411,35 @@ export default function HotelDetailPage() {
   };
 
   useEffect(() => {
-    fetchFeedbacks();
-  }, [filterParams]);
+    let isMounted = true;
+
+    const fetchFeedbacksData = async () => {
+      try {
+        const response = await Factories2.get_feedback_by_hotelId(
+          hotelId,
+          filterParams
+        );
+        if (response?.status === 200 && isMounted) {
+          setFeedbacks(response?.data.listFeedback);
+          setTotalFeedback(response?.data.totalFeedback);
+          setAverageRating(response?.data.averageRating);
+          setRatingBreakdown(response?.data.ratingBreakdown);
+          setTotalPages(response?.data.totalPages);
+          setCurrentPage(response?.data.currentPage);
+        }
+      } catch (error) {
+        if (isMounted) {
+          console.error("Error fetching feedbacks:", error);
+        }
+      }
+    };
+
+    fetchFeedbacksData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [filterParams, hotelId]);
   // Event handlers
   const handleChangeFavorite = (isFavorite, hotelId) => {
     if (isFavorite) {
@@ -337,32 +474,76 @@ export default function HotelDetailPage() {
     setThumbnailStartIndex(newStart);
   };
 
-  const handleRoomClick = (roomId) => {
-    navigate(`${Routers.RoomDetailPage}/${roomId}`);
+  const handleRoomClick = (roomId, availableQuantity) => {
+    navigate(`${Routers.RoomDetailPage}/${roomId}`, {
+      state: { availableQuantity: availableQuantity },
+    });
   };
 
   //booking room
-  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState(selectedRoomsTemps ?? []);
   console.log("selectedRooms: ", selectedRooms);
-  const handleAmountChange = (roomId, amount) => {
+  const handleAmountChange = (room, amount) => {
     setSelectedRooms((prevSelected) => {
-      // Nếu chọn lại 0 thì xóa khỏi danh sách
       if (amount === 0) {
-        return prevSelected.filter((item) => item.id !== roomId);
+        return prevSelected.filter((item) => item.room._id !== room._id);
       }
-  
-      const existing = prevSelected.find((item) => item.id === roomId);
+
+      const existing = prevSelected.find((item) => item.room._id === room._id);
       if (existing) {
         // Nếu đã có thì cập nhật amount
         return prevSelected.map((item) =>
-          item.id === roomId ? { ...item, amount } : item
+          item.room._id === room._id ? { ...item, amount } : item
         );
       } else {
         // Nếu chưa có thì thêm mới
-        return [...prevSelected, { id: roomId, amount }];
+        return [...prevSelected, { room, amount }];
       }
     });
   };
+
+  //feedback
+  const handleLike = async (feedbackId) => {
+    try {
+      const response = await Factories2.like_feedback(feedbackId);
+      if (response?.status === 200) {
+        fetchFeedbacks();
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  };
+
+  const handleDisLike = async (feedbackId) => {
+    try {
+      const response = await Factories2.dislike_feedback(feedbackId);
+      if (response?.status === 200) {
+        fetchFeedbacks();
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  };
+
+  // Add this function to get the amount for a specific room from selectedRoomsTemps
+  const getRoomAmountFromRedux = (roomId) => {
+    if (!selectedRoomsTemps) return 0;
+
+    const foundRoom = selectedRooms.find(
+      (item) => item.room._id === roomId || item.room.id === roomId
+    );
+    return foundRoom ? foundRoom.amount : 0;
+  };
+
+  // Initialize selectedRooms with data from Redux when component mounts
+  useEffect(() => {
+    if (selectedRoomsTemps && selectedRoomsTemps.length > 0) {
+      setSelectedRooms(selectedRoomsTemps);
+    }
+  }, [selectedRoomsTemps]);
+
   if (!hotelDetail) {
     return (
       <div
@@ -473,6 +654,13 @@ export default function HotelDetailPage() {
       }
     }
     return stars;
+  };
+
+  const getRoomAmount = (roomId) => {
+    const room = selectedRooms.find(
+      (item) => item.room._id === roomId || item.room.id === roomId
+    );
+    return room ? room.amount : 0;
   };
 
   return (
@@ -602,16 +790,54 @@ export default function HotelDetailPage() {
                 )}
                 <h3 style={{ fontWeight: "bold" }}>Address Hotel</h3>
                 <p>{hotelDetail.address}</p>
-                <h3 style={{ fontWeight: "bold" }}>
+                <Row style={{ marginTop: "-40px" }}>
+                  <Col md={6}>
+                    <h3 style={{ fontWeight: "bold" }}>Check-in Time </h3>
+                  </Col>
+                  <Col md={6}>
+                    <h3 style={{ fontWeight: "bold" }}>Check-out Time </h3>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col md={6}>
+                    <p>
+                      {hotelDetail.checkInStart} - {hotelDetail.checkInEnd}
+                    </p>
+                  </Col>
+                  <Col md={6}>
+                    <p>
+                      {hotelDetail.checkOutStart} - {hotelDetail.checkOutEnd}
+                    </p>
+                  </Col>
+                </Row>
+
+                <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
                   Highlights of the property
                 </h3>
-                <ul className="highlights-list">
+
+                <ul
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    listStyleType: "disc",
+                    paddingLeft: "20px",
+                    marginTop: "10px",
+                  }}
+                >
                   {hotelDetail.services?.length > 0 ? (
                     hotelDetail.services.map((service, index) => (
-                      <li key={index}>{service.name}</li>
+                      <li
+                        key={index}
+                        style={{
+                          width: "50%",
+                          marginBottom: "8px",
+                        }}
+                      >
+                        {service.name}
+                      </li>
                     ))
                   ) : (
-                    <li>No highlights.</li>
+                    <li style={{ width: "100%" }}>No highlights.</li>
                   )}
                 </ul>
 
@@ -707,7 +933,11 @@ export default function HotelDetailPage() {
                         checkoutDate: e.target.value,
                       });
                     }}
-                    min={today}
+                    min={
+                      new Date(new Date(checkinDate).getTime() + 86400000)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     required
                   />
                 </InputGroup>
@@ -789,21 +1019,66 @@ export default function HotelDetailPage() {
           </div>
         ) : (
           <>
-            <div
-              className="d-flex gap-4 overflow-auto px-2 rooms-scroll"
-              style={{
-                scrollSnapType: "x mandatory",
-                WebkitOverflowScrolling: "touch",
-              }}
-            >
-              {rooms.length === 0 ? (
-                <div className="text-center w-100">
-                  <p style={{ color: "#999", fontSize: "1.2rem" }}>
-                    No rooms available for this hotel.
-                  </p>
-                </div>
-              ) : (
-                rooms.map((room) => (
+            <div style={{ position: "relative" }}>
+              {/* Nút trái */}
+              <Button
+                variant="light"
+                onClick={() => {
+                  scrollRefRoom.current.scrollBy({
+                    left: -400,
+                    behavior: "smooth",
+                  });
+                }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "-20px",
+                  transform: "translateY(-50%)",
+                  zIndex: 10,
+                  borderRadius: "50%",
+                  padding: "10px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                }}
+              >
+                <FaChevronLeft />
+              </Button>
+
+              {/* Nút phải */}
+              <Button
+                variant="light"
+                onClick={() => {
+                  scrollRefRoom.current.scrollBy({
+                    left: 400,
+                    behavior: "smooth",
+                  });
+                }}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "-20px",
+                  transform: "translateY(-50%)",
+                  zIndex: 10,
+                  borderRadius: "50%",
+                  padding: "10px",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                }}
+              >
+                <FaChevronRight />
+              </Button>
+
+              {/* Danh sách khách sạn */}
+              <div
+                ref={scrollRefRoom}
+                className="horizontal-scroll mt-5"
+                style={{
+                  display: "flex",
+                  overflowX: "hidden", // ❌ ẩn scroll
+                  scrollSnapType: "x mandatory",
+                  gap: "20px",
+                  paddingBottom: "20px",
+                }}
+              >
+                {rooms.map((room) => (
                   <div
                     key={room.id || room._id}
                     style={{
@@ -839,7 +1114,12 @@ export default function HotelDetailPage() {
                           variant="top"
                           src={room.images?.[0] || "/default-room.jpg"}
                           alt={room.type}
-                          onClick={() => handleRoomClick(room.id || room._id)}
+                          onClick={() =>
+                            handleRoomClick(
+                              room.id || room._id,
+                              room.availableQuantity
+                            )
+                          }
                           style={{
                             height: "220px",
                             objectFit: "cover",
@@ -867,7 +1147,21 @@ export default function HotelDetailPage() {
                               cursor: "pointer",
                             }}
                           >
-                            {room?.type}
+                            {room?.name}
+                            {getRoomAmount(room._id || room.id) > 0 && (
+                              <span
+                                className="ms-2 badge"
+                                style={{
+                                  backgroundColor: "#1a2b49",
+                                  color: "white",
+                                  fontSize: "0.75rem",
+                                  padding: "0.25rem 0.5rem",
+                                  borderRadius: "20px",
+                                }}
+                              >
+                                {getRoomAmount(room._id || room.id)} selected
+                              </span>
+                            )}
                           </Card.Title>
 
                           <div className="d-flex align-items-center text-muted mb-2">
@@ -881,7 +1175,7 @@ export default function HotelDetailPage() {
                             className="text-primary fw-bold"
                             style={{ fontSize: "1.4rem", marginBottom: "8px" }}
                           >
-                            ${room.price}
+                            {Utils.formatCurrency(room.price)}
                             <span
                               className="text-muted"
                               style={{ fontSize: "0.85rem", marginLeft: "4px" }}
@@ -892,7 +1186,7 @@ export default function HotelDetailPage() {
                         </div>
 
                         <div>
-                          {room.quantity <= 3 ? (
+                          {room.availableQuantity <= 3 ? (
                             <div
                               className="text-danger fw-semibold"
                               style={{
@@ -900,8 +1194,8 @@ export default function HotelDetailPage() {
                                 marginBottom: "10px",
                               }}
                             >
-                              Only {room.quantity} rooms left for this room
-                              type!
+                              Only {room.availableQuantity} rooms left for this
+                              room type!
                             </div>
                           ) : (
                             <div
@@ -911,8 +1205,8 @@ export default function HotelDetailPage() {
                                 marginBottom: "10px",
                               }}
                             >
-                              Have {room.quantity} rooms left for this room
-                              type!
+                              Have {room.availableQuantity} rooms left for this
+                              room type!
                             </div>
                           )}
                           <div className="mt-2 d-flex justify-content-between align-items-center">
@@ -925,15 +1219,15 @@ export default function HotelDetailPage() {
                             <select
                               className="form-select w-auto"
                               style={{ fontSize: "0.9rem" }}
+                              value={getRoomAmountFromRedux(
+                                room._id || room.id
+                              )}
                               onChange={(e) =>
-                                handleAmountChange(
-                                  room._id,
-                                  Number(e.target.value)
-                                )
+                                handleAmountChange(room, Number(e.target.value))
                               }
                             >
                               {Array.from(
-                                { length: room.quantity + 1 },
+                                { length: room.availableQuantity + 1 },
                                 (_, n) => (
                                   <option key={n} value={n}>
                                     {n}
@@ -946,14 +1240,41 @@ export default function HotelDetailPage() {
                       </Card.Body>
                     </Card>
                   </div>
-                ))
-              )}
+                ))}
+              </div>
             </div>
 
             <div className="text-center mt-5">
               <Button
                 variant="primary"
-                onClick={() => navigate(Routers.BookingCheckPage)}
+                onClick={() => {
+                  if (selectedRooms.length == 0) {
+                    setErrorMessage(
+                      "Please select a room to proceed with your booking"
+                    );
+                    setShowModal(true);
+                  } else {
+                    if (Auth._id != -1) {
+                      dispatch({
+                        type: SearchActions.SAVE_SELECTED_ROOMS,
+                        payload: {
+                          selectedRooms: selectedRooms,
+                          hotelDetail: hotelDetail,
+                        },
+                      });
+                      navigate(Routers.BookingCheckPage);
+                    } else {
+                      dispatch({
+                        type: SearchActions.SAVE_SELECTED_ROOMS,
+                        payload: {
+                          selectedRooms: selectedRooms,
+                          hotelDetail: hotelDetail,
+                        },
+                      });
+                      navigate(Routers.LoginPage);
+                    }
+                  }
+                }}
                 style={{
                   padding: "0.8rem 4rem",
                   borderRadius: "30px",
@@ -973,36 +1294,25 @@ export default function HotelDetailPage() {
                 Book Now
               </Button>
             </div>
+            <ErrorModal
+              show={showModal}
+              onClose={() => {
+                setShowModal(false);
+              }}
+              message={errorMessage}
+            />
           </>
         )}
       </Container>
       {/* Other Hotels */}
-      <Container className="other-hotels-section position-relative">
-        <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
-          Special Offers Just For You
-        </h1>
 
-        {searchRoom ? (
-          <div className="text-center py-5">
-            <Spinner
-              animation="border"
-              role="status"
-              variant="primary"
-              style={{ width: "3rem", height: "3rem" }}
-            >
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-            <p className="mt-3" style={{ color: "#666", fontSize: "1.1rem" }}>
-              Loading Special Offers Rooms For you...
-            </p>
-          </div>
-        ) : shuffledHotels.length === 0 ? (
-          <div className="text-center w-100">
-            <p style={{ color: "#999", fontSize: "1.2rem" }}>
-              No rooms available for this hotel.
-            </p>
-          </div>
-        ) : (
+      {searchRoom ? (
+        <div></div>
+      ) : (
+        <Container className="other-hotels-section position-relative">
+          <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
+            Special Offers Just For You
+          </h1>
           <div style={{ position: "relative" }}>
             {/* Nút trái */}
             <Button
@@ -1136,7 +1446,9 @@ export default function HotelDetailPage() {
                       <div className="price-container">
                         {firstRoom?.price && (
                           <>
-                            <span className="price">{firstRoom.price}$</span>
+                            <span className="price">
+                              {Utils.formatCurrency(firstRoom.price)}
+                            </span>
                             <span className="per-day">/Day</span>
                           </>
                         )}
@@ -1162,8 +1474,8 @@ export default function HotelDetailPage() {
               })}
             </div>
           </div>
-        )}
-      </Container>
+        </Container>
+      )}
       <div
         className="d-flex flex-column"
         style={{
@@ -1332,6 +1644,7 @@ export default function HotelDetailPage() {
                     sort: e.target.value,
                     page: 1,
                   });
+                  setCurrentPage(1);
                 }}
               >
                 <option value={0}>Date (Newest first)</option>
@@ -1402,12 +1715,19 @@ export default function HotelDetailPage() {
                   >
                     <Col md={12}>
                       <Card className="border-0">
+                        {/* <h1>{review._id}</h1> */}
                         <Button
                           variant="link"
                           className="text-dark p-0"
                           style={{ position: "absolute", top: 15, right: 15 }}
                           onClick={() => {
-                            navigate(Routers.ReportedFeedback);
+                            if(Auth._id != -1){
+                              navigate(
+                                `${Routers.ReportedFeedback}/${review._id}`
+                              );
+                            }else{
+                              navigate(Routers.LoginPage);
+                            }
                           }}
                         >
                           <ExclamationTriangleFill size={20} color="red" />
@@ -1416,7 +1736,9 @@ export default function HotelDetailPage() {
                           <div className="d-flex justify-content-between align-items-start mb-2">
                             <div className="d-flex align-items-center">
                               <Image
-                                src={review.user?.image?.url}
+                                src={
+                                  review.user?.image?.url || "/placeholder.svg"
+                                }
                                 roundedCircle
                                 style={{
                                   width: "50px",
@@ -1437,35 +1759,73 @@ export default function HotelDetailPage() {
                           </div>
                           <p>{review.content}</p>
                           <div>
-                            <a
-                              variant="outline-primary"
+                            <span
                               className="p-0 me-3"
                               style={{
                                 textDecoration: "none",
-                                cursor: "pointer",
+                                cursor: review.likedBy.includes(Auth._id)
+                                  ? "pointer"
+                                  : "pointer",
                                 color: review.likedBy.includes(Auth._id)
                                   ? "blue"
-                                  : "black", // tô màu nếu đã like
+                                  : "black",
+                                userSelect: "none",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!review.likedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "#0d6efd";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!review.likedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "black";
+                                }
+                              }}
+                              onClick={() => {
+                                if (Auth._id !== -1) {
+                                  handleLike(review._id);
+                                } else {
+                                  navigate(Routers.LoginPage);
+                                }
                               }}
                             >
                               <FaThumbsUp className="me-2" />
                               {review.likedBy.length} like
-                            </a>
+                            </span>
 
-                            <a
-                              variant="outline-danger"
+                            <span
                               className="p-0"
                               style={{
                                 textDecoration: "none",
-                                cursor: "pointer",
+                                cursor: review.dislikedBy.includes(Auth._id)
+                                  ? "pointer"
+                                  : "pointer",
                                 color: review.dislikedBy.includes(Auth._id)
                                   ? "red"
-                                  : "black", // tô màu nếu đã dislike
+                                  : "black",
+                                userSelect: "none",
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!review.dislikedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "#dc3545";
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!review.dislikedBy.includes(Auth._id)) {
+                                  e.currentTarget.style.color = "black";
+                                }
+                              }}
+                              onClick={() => {
+                                if (Auth._id !== -1) {
+                                  handleDisLike(review._id);
+                                } else {
+                                  navigate(Routers.LoginPage);
+                                }
                               }}
                             >
                               <FaThumbsDown className="me-2" />
                               {review.dislikedBy.length} dislike
-                            </a>
+                            </span>
                           </div>
                         </Card.Body>
                       </Card>
@@ -1476,7 +1836,7 @@ export default function HotelDetailPage() {
             ))
           )}
           {/* Pagination */}
-          {totalPages > 1 && (
+          {totalPages >= 1 && (
             <div className="d-flex justify-content-center mt-4">
               <Pagination
                 currentPage={currentPage}

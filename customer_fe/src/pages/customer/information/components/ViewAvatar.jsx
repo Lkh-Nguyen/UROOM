@@ -4,9 +4,8 @@ import { Modal, Card, Form, Button } from "react-bootstrap";
 import AuthActions from "../../../../redux/auth/actions";
 import { useAppSelector } from "../../../../redux/store";
 import { useDispatch } from "react-redux";
-import { showToast, ToastProvider } from "components/ToastContainer";
-import ConfirmationModal from "components/ConfirmationModal";
-import { set } from "date-fns";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 function ViewAvatar() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
@@ -60,7 +59,7 @@ function ViewAvatar() {
       <h2 className="fw-bold mb-4">View Avatar</h2>
       <div className="text-center">
         <img
-          src={selectedImage}
+          src={(selectedImage != "" && selectedImage) ? selectedImage : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"}
           className="rounded-circle mb-2"
           style={{ width: "150px", height: "150px", objectFit: "cover" }}
           alt="avatar"
@@ -134,7 +133,7 @@ function ViewAvatar() {
         </Modal.Header>
         <Modal.Body className="text-center p-4">
           <img
-            src={selectedImage}
+            src={(selectedImage != "" && selectedImage) ? selectedImage : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"}
             alt="Customer avatar"
             className="img-fluid"
             style={{ height: "480px", width: "480px" }}
