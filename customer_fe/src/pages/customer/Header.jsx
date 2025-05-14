@@ -24,6 +24,8 @@ import {
 } from "@utils/handleToken";
 import SearchActions from "@redux/search/actions";
 
+const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
+
 function NavigationBar() {
   const today = new Date();
   const tomorrow = new Date();

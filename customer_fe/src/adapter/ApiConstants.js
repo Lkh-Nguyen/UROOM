@@ -1,6 +1,12 @@
 const ApiConstants = {
   //AUTH:
   LOGIN_CUSTOMER: "/auth/login_customer",
+  GOOGLE_LOGIN: "./auth/google_login",
+  REGISTER_CUSTOMER: "/auth/register_customer",
+  UPDATE_PROFILE: "/auth/updateProfile_customer",
+  CHANGE_PASSWORD: "/auth/changePassword_customer",
+  VERIFY_EMAIL: "/auth/verify-email",
+  RESEND_VERIFICATION: "/auth/resend-verification",
   UPDATE_PROFILE: "/auth/updateProfile_customer",
   CHANGE_PASSWORD: "/auth/changePassword_customer",
   UPDATE_AVATAR: "/auth/update_avatar",
@@ -14,6 +20,8 @@ const ApiConstants = {
   FETCH_DETAIL_HOTELS: "/hotel/hotel_detail/:hotelId",
   FETCH_ROOM: "/room/rooms_information/:hotelId",
   FETCH_ALL_HOTEL: "/hotel/get-all-hotel",
+
+  //FEEDBACK:
   FETCH_ROOM_DETAIL: "/room/rooms_detail/:roomId",
 
   //FEEDBACK:

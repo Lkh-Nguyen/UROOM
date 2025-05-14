@@ -9,6 +9,7 @@ const UserSchema = new Schema(
     _id: {
       type: Number,
     },
+    providerId: { type: String },
     name: { type: String, required: true },
     email: {
       type: String,
@@ -22,7 +23,12 @@ const UserSchema = new Schema(
     //vì select: false nên lúc findOne sẽ không ra password mà phải dùng select như trên
     password: {
       type: String,
-      required: [true, "Password is required!"],
+      required: [
+        function () {
+          return !this.providerId; // Password is required only if providerId is not provided
+        },
+        "Password is required!",
+      ],
       select: false,
     },
     phoneNumber: {
@@ -70,13 +76,13 @@ const UserSchema = new Schema(
       },
     }, //avatar
     //MẢNG BUSSINESS DOCUMENT
-    isVerified: { 
-      type: Boolean, 
-      default: false 
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
-    isLocked: { 
-      type: Boolean, 
-      default: false 
+    isLocked: {
+      type: Boolean,
+      default: false,
     },
     reasonLocked: {
       type: String,
@@ -88,12 +94,12 @@ const UserSchema = new Schema(
     },
     birthDate: {
       type: Date,
-      default: new Date('2000-01-01'),
+      default: new Date("2000-01-01"),
     },
     gender: {
       type: String,
       enum: ["MALE", "FEMALE"],
-      default: "MALE"
+      default: "MALE",
     },
     resetPasswordToken: String,
     resetPasswordExpiresAt: Date,
