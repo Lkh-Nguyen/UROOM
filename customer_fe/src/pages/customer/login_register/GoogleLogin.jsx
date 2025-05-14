@@ -1,12 +1,12 @@
-import { auth, provider, signInWithPopup } from "libs/firebaseConfig";
+import { auth, provider, signInWithPopup } from "@libs/firebaseConfig";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
-import { clearToken } from "utils/handleToken";
-import Utils from "utils/Utils";
-import { showToast } from "components/ToastContainer";
+import { clearToken } from "@utils/handleToken";
+import Utils from "@utils/Utils";
+import { showToast } from "@components/ToastContainer";
 const GoogleLogin = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
