@@ -8,6 +8,7 @@ import Banner from "../../../images/banner.jpg";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
 import { showToast, ToastProvider } from "@components/ToastContainer";
+import GoogleLogin from "./GoogleLogin";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -183,18 +184,8 @@ const RegisterPage = () => {
                 </div>
               </Form.Group>
 
-              <Button
-                variant="outline-success"
-                className="w-100 mb-3 py-2 d-flex align-items-center justify-content-center"
-              >
-                <img
-                  src="https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png"
-                  alt="Google"
-                  style={{ width: "20px", marginRight: "10px" }}
-                />
-                Continue with Google
-              </Button>
-
+              <GoogleLogin/>
+              
               <Button
                 variant="primary"
                 type="submit"

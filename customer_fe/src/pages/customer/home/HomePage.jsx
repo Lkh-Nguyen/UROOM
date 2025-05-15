@@ -42,6 +42,10 @@ import travel5 from "../../../images/nhatrang.jpg";
 import travel6 from "../../../images/hanoi.jpg";
 import travel7 from "../../../images/phuquoc.jpg";
 import chatbox from "../../../images/chatbox.png";
+import onePrize from "../../../images/prize1.png";
+import twoPrize from "../../../images/prize2.png";
+import threePrize from "../../../images/prize3.png";
+
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
 import { showToast, ToastProvider } from "@components/ToastContainer";
@@ -54,6 +58,7 @@ import ErrorModal from "../../../components/ErrorModal";
 import { useAppSelector, useAppDispatch } from "../../../redux/store";
 import HotelActions from "../../../redux/hotel/actions";
 import RoomActions from "../../../redux/room/actions";
+import Utils from "@utils/Utils";
 function Home() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -400,6 +405,7 @@ function OtherHotels() {
   const navigate = useNavigate();
   const [hotels, setHotels] = useState([]);
 
+  console.log("Hotels: ", hotels);
   useEffect(() => {
     dispatch({
       type: HotelActions.FETCH_TOP3_HOTEL,
@@ -423,7 +429,7 @@ function OtherHotels() {
         Special Offers Just For You
       </h1>
       <Row className="g-4">
-        {hotels.map((hotel) => {
+        {hotels.map((hotel, index) => {
           const hotelId = hotel.hotelId;
 
           return (
@@ -444,6 +450,36 @@ function OtherHotels() {
                     overflow: "hidden",
                   }}
                 >
+                  {index == 0 ? (
+                    <Image
+                      src={onePrize}
+                      width="60px"
+                      height="60px"
+                      style={{ position: "absolute", top: 10, left: 10 }}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                  {index == 1 ? (
+                    <Image
+                      src={twoPrize}
+                      width="60px"
+                      height="60px"
+                      style={{ position: "absolute", top: 10, left: 10 }}
+                    />
+                  ) : (
+                    <></>
+                  )}
+                  {index == 2 ? (
+                    <Image
+                      src={threePrize}
+                      width="60px"
+                      height="60px"
+                      style={{ position: "absolute", top: 10, left: 10 }}
+                    />
+                  ) : (
+                    <></>
+                  )}
                   <Image
                     src={hotel.images?.[0] || "/placeholder.svg"}
                     alt="Hotel"
@@ -496,10 +532,10 @@ function OtherHotels() {
                           fontWeight: "600",
                         }}
                       >
-                        ${hotel.pricePerNight}
+                        {Utils.formatCurrency(hotel.pricePerNight)}
                         <span
                           style={{
-                            fontSize: "0.85rem",
+                            fontSize: "0.95rem",
                             color: "#888",
                             marginLeft: "4px",
                           }}
@@ -509,7 +545,20 @@ function OtherHotels() {
                       </span>
                     </div>
                   </Card.Title>
-
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      color: "#555",
+                      fontSize: "0.95rem",
+                      marginTop: '-20px',
+                      marginBottom: "12px",
+                    }}
+                  >
+                    <FaCalendarAlt style={{ color: "#0d6efd" }} />
+                    <span style={{fontSize: '16px'}}>{hotel.totalBookings} bookings this month</span>
+                  </div>
                   <Button
                     variant="outline-primary"
                     style={{

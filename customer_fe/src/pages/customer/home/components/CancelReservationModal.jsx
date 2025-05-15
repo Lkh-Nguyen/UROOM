@@ -1,7 +1,7 @@
-import { Modal, Button, Badge } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useEffect } from "react";
 import Utils from "../../../../utils/Utils";
+import { Form, Badge, Row, Col } from "react-bootstrap";
 
 // Combined component with inline styles
 function CancelReservationModal({
@@ -35,7 +35,7 @@ function CancelReservationModal({
   };
   function parseCurrency(formatted) {
     if (!formatted) return 0; // hoặc null tùy vào yêu cầu
-    const numericString = formatted.replace(/[^\d]/g, '');
+    const numericString = formatted.replace(/[^\d]/g, "");
     return Number(numericString);
   }
 
@@ -52,8 +52,8 @@ function CancelReservationModal({
   // Calculate refund policy based on days until check-in
   const calculateRefundPolicy = () => {
     const daysUntilCheckIn = calculateDaysUntilCheckIn();
-    const totalPrice= parseCurrency(selectedReservation?.totalPrice);
-    if(selectedReservation?.status === "PENDING"){
+    const totalPrice = parseCurrency(selectedReservation?.totalPrice);
+    if (selectedReservation?.status === "PENDING") {
       return {
         refundPercentage: 100,
         refundAmount: totalPrice,
@@ -61,7 +61,7 @@ function CancelReservationModal({
         alertClass: "refund-alert full-refund",
         daysUntilCheckIn,
       };
-    }else{
+    } else {
       if (daysUntilCheckIn < 1) {
         return {
           refundPercentage: 50,
@@ -170,7 +170,12 @@ function CancelReservationModal({
       <Modal show={show} onHide={onHide} centered>
         <Modal.Header>
           <Modal.Title>Cancel Reservation</Modal.Title>
-          <Button variant="link" className="close-button" onClick={onHide} style={{position: 'absolute', top: 5, right: 15}}>
+          <Button
+            variant="link"
+            className="close-button"
+            onClick={onHide}
+            style={{ position: "absolute", top: 5, right: 15 }}
+          >
             <span aria-hidden="true">&times;</span>
           </Button>
         </Modal.Header>
@@ -221,6 +226,60 @@ function CancelReservationModal({
           </div>
 
           <div className="cancellation-section">
+            <h5>Information Banking Refunding</h5>
+
+            <Form className="mt-4">
+              <Row className="mb-3">
+                <Col md={12}>
+                  <Form.Group controlId="accountHolderName">
+                    <Form.Label>Account Holder Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter account holder name"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              
+              <Row className="mb-3">
+                                <Col md={12}>
+                  <Form.Group controlId="accountNumber">
+                    <Form.Label>Account Number</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter account number"
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Row className="mb-3">
+                <Col md={12}>
+                  <Form.Group controlId="bankName">
+                    <Form.Label>Bank Name</Form.Label>
+                    <Form.Select>
+                      <option value="">Select a bank</option>
+                      <option value="Vietcombank">Vietcombank</option>
+                      <option value="VietinBank">VietinBank</option>
+                      <option value="BIDV">BIDV</option>
+                      <option value="Techcombank">Techcombank</option>
+                      <option value="ACB">ACB</option>
+                      <option value="Sacombank">Sacombank</option>
+                      <option value="TPBank">TPBank</option>
+                      <option value="MB Bank">MB Bank</option>
+                      <option value="VPBank">VPBank</option>
+                      <option value="SHB">SHB</option>
+                      {/* Thêm các ngân hàng khác nếu cần */}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Form>
+          </div>
+
+          <div className="cancellation-section">
             <h5>Cancellation Policy</h5>
 
             <div className={refundPolicy.alertClass}>
@@ -235,16 +294,18 @@ function CancelReservationModal({
             <div className="detail-row">
               <span>Refund amount:</span>
               <span>
-                {formatCurrency(refundPolicy.refundAmount)} ({refundPolicy.refundPercentage}%)
+                {formatCurrency(refundPolicy.refundAmount)} (
+                {refundPolicy.refundPercentage}%)
               </span>
             </div>
 
             <div className="policy-details mt-2">
               <h4>Cancellation Policy</h4>
 
-
               <ul>
-                <li style={{listStyle: "none", fontSize: 16}}>For orders with status: <code>BOOKED</code></li>
+                <li style={{ listStyle: "none", fontSize: 16 }}>
+                  For orders with status: <code>BOOKED</code>
+                </li>
                 <li>
                   Less than 1 day before check-in: <strong>50% penalty</strong>
                 </li>
@@ -256,7 +317,9 @@ function CancelReservationModal({
                 </li>
               </ul>
               <ul>
-                <li style={{listStyle: "none", fontSize: 16}}>For orders with status: <code>PENDING</code></li>
+                <li style={{ listStyle: "none", fontSize: 16 }}>
+                  For orders with status: <code>PENDING</code>
+                </li>
                 <li>
                   Any time: <strong>Full refund</strong>
                 </li>

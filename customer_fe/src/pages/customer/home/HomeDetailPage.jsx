@@ -138,6 +138,17 @@ export default function HotelDetailPage() {
     SearchInformation.checkoutDate
   );
 
+useEffect(() => {
+  const checkin = new Date(checkinDate);
+  const checkout = new Date(checkoutDate);
+
+  if (checkin.getTime() === checkout.getTime()) {
+    const nextDay = new Date(checkin);
+    nextDay.setDate(checkin.getDate() + 1);
+    setCheckoutDate(nextDay.toISOString().split("T")[0]); // format as yyyy-mm-dd
+  }
+}, [checkoutDate, checkinDate]);
+
   const [selectedAdults, setSelectedAdults] = useState(
     adultsOptions.find((option) => option.value === SearchInformation.adults) ||
       adultsOptions[0]
@@ -1737,7 +1748,7 @@ export default function HotelDetailPage() {
                             <div className="d-flex align-items-center">
                               <Image
                                 src={
-                                  review.user?.image?.url || "/placeholder.svg"
+                                  review.user?.image?.url || "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                                 }
                                 roundedCircle
                                 style={{

@@ -6,14 +6,14 @@ const asyncHandler = require("../../middlewares/asyncHandler");
 
 exports.getReservationsByUserId = async (req, res) => {
   try {
-    const userId = Number(req.user._id); 
+    const userId = Number(req.user._id);
 
     const reservations = await Reservation.find({ user: userId })
       .populate("hotel")
-      .populate("rooms.room") 
+      .populate("rooms.room")
       .sort({ createdAt: -1 });
 
-      console.log("reservations: ", reservations)
+    console.log("reservations: ", reservations);
     if (reservations.length === 0) {
       return res.status(404).json({
         error: true,
@@ -64,10 +64,9 @@ exports.getReservationById = async (req, res) => {
   }
 };
 
-
 exports.getReservationDetailById = asyncHandler(async (req, res) => {
   const { reservationId } = req.params;
-  console.log("abc")
+  console.log("abc");
   if (!reservationId) {
     return res.status(400).json({
       message: RESERVATION.INVALID_STATUS,
@@ -95,7 +94,6 @@ exports.getReservationDetailById = asyncHandler(async (req, res) => {
   }
 });
 
-
 const autoUpdateNotPaidReservation = asyncHandler(async () => {
   const reservations = await Reservation.find({ status: "NOT PAID" });
 
@@ -108,26 +106,44 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
     if (diffInMinutes >= 5 && r.status === "NOT PAID") {
       r.status = "CANCELLED";
       await r.save();
-      console.log(`Reservation ${r._id} đã bị hủy do quá 5 phút chưa thanh toán.`);
+      console.log(
+        `Reservation ${r._id} đã bị hủy do quá 5 phút chưa thanh toán.`
+      );
     }
   }
 
   // 2. Xử lý đơn PENDING mà quá thời gian check-in
   const pendingReservations = await Reservation.find({ status: "PENDING" });
   for (const r of pendingReservations) {
-    const checkinDate = new Date(r.checkInDate); // đảm bảo checkinDate là ngày giờ
-    if (now > checkinDate) {
-      r.status = "CANCELLED";
-      await r.save();
+    try {
+      const checkinDate = new Date(r.checkInDate);
 
-    const refund = await RefundingReservation.create({
-      user: r.user,
-      reservation: r._id,
-      refundAmount: r.totalPrice,
-    });
-    refund.save();
-    
-      console.log(`Reservation ${r._id} đã bị hủy do quá thời gian check-in.`);
+      // Tạo 12:00 PM cùng ngày với ngày check-in
+      const noonOfCheckinDate = new Date(
+        checkinDate.getFullYear(),
+        checkinDate.getMonth(),
+        checkinDate.getDate(),
+        12,
+        0,
+        0 // 12:00:00 PM
+      );
+
+      if (now > noonOfCheckinDate) {
+        r.status = "CANCELLED";
+        await r.save();
+
+        await RefundingReservation.create({
+          user: r.user,
+          reservation: r._id,
+          refundAmount: r.totalPrice,
+        });
+
+        console.log(
+          `Reservation ${r._id} đã bị hủy do quá 12h trưa ngày check-in.`
+        );
+      }
+    } catch (error) {
+      console.error(`Lỗi khi xử lý reservation ${r._id}:`, error);
     }
   }
 
@@ -139,11 +155,15 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
     if (now > checkinDate && now < checkoutDate) {
       r.status = "CHECKED IN";
       await r.save();
-      console.log(`Reservation ${r._id} đã được chuyển sang trạng thái CHECKED IN.`);
+      console.log(
+        `Reservation ${r._id} đã được chuyển sang trạng thái CHECKED IN.`
+      );
     }
   }
 
-  const checkedInReservations = await Reservation.find({ status: "CHECKED IN" });
+  const checkedInReservations = await Reservation.find({
+    status: "CHECKED IN",
+  });
   for (const r of checkedInReservations) {
     const checkinDate = new Date(r.checkInDate); // đảm bảo checkinDate là ngày giờ
     const checkoutDate = new Date(r.checkOutDate); // đảm bảo checkinDate là ngày giờ
@@ -151,12 +171,12 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
     if (now > checkinDate && now > checkoutDate) {
       r.status = "CHECKED OUT";
       await r.save();
-      console.log(`Reservation ${r._id} đã được chuyển sang trạng thái CHECKED OUT.`);
+      console.log(
+        `Reservation ${r._id} đã được chuyển sang trạng thái CHECKED OUT.`
+      );
     }
   }
 });
-
-
 
 // setinterval auto run after each minutes
 cron.schedule(
@@ -177,15 +197,20 @@ exports.updateReservationById = async (req, res) => {
       req.params.id,
       req.body,
       { new: true }
-    ).populate("hotel").populate("rooms.room");
-    updated.up
+    )
+      .populate("hotel")
+      .populate("rooms.room");
+    updated.up;
     if (!updated)
-      return res.status(404).json({ error: true, message: "Không tìm thấy đơn đặt phòng." });
+      return res
+        .status(404)
+        .json({ error: true, message: "Không tìm thấy đơn đặt phòng." });
 
-    res.status(200).json({ error: false, message: "Cập nhật thành công.", data: updated });
+    res
+      .status(200)
+      .json({ error: false, message: "Cập nhật thành công.", data: updated });
   } catch (err) {
     console.error("Lỗi cập nhật:", err);
     res.status(500).json({ error: true, message: "Lỗi server." });
   }
 };
-

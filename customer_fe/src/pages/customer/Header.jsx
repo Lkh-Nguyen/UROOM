@@ -16,15 +16,10 @@ import { useAppSelector } from "../../redux/store";
 import AuthActions from "../../redux/auth/actions";
 import { useDispatch } from "react-redux";
 import {
-  clearIndexMyAccountPage,
   clearToken,
-  getToken,
-  setIndexMyAccountPage,
   setStatusBooking,
 } from "@utils/handleToken";
 import SearchActions from "@redux/search/actions";
-
-const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
 
 function NavigationBar() {
   const today = new Date();
@@ -158,7 +153,7 @@ function NavigationBar() {
             </Nav.Link>
           </Nav>
 
-          <Dropdown style={{ marginRight: "10px" }}>
+          {/* <Dropdown style={{ marginRight: "10px" }}>
             <Dropdown.Toggle
               style={{
                 backgroundColor: "transparent",
@@ -166,9 +161,9 @@ function NavigationBar() {
                 boxShadow: "none",
               }}
             >
-              <FaBell style={{ color: "white" }} />{" "}
+              <FaBell style={{ color: "white" }} />{" "} */}
               {/* Đổi màu chuông nếu cần */}
-            </Dropdown.Toggle>
+            {/* </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item>You have a new message</Dropdown.Item>
               <Dropdown.Divider />
@@ -180,7 +175,7 @@ function NavigationBar() {
                 You have a new message
               </Dropdown.Item>
             </Dropdown.Menu>
-          </Dropdown>
+          </Dropdown> */}
 
           {Auth._id !== -1 ? (
             <Dropdown align="end">

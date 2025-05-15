@@ -220,7 +220,7 @@ const BookingBill = () => {
       // Add a border to the page
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
-      doc.rect(10, 10, 190, 277);
+      doc.rect(10, 10, 190, 220);
 
       // Add header with logo/branding
       doc.setFillColor(33, 43, 73); // Dark blue color
@@ -247,7 +247,7 @@ const BookingBill = () => {
       const createdDate = reservationDetail.createdAt
         ? formatDate(reservationDetail.createdAt)
         : "N/A";
-      doc.text(`Date created: ${createdDate}`, 180, 52, { align: "right" });
+      doc.text(`Date created: ${createdDate}`, 150, 52, { align: "right" });
 
       // Add reference number
       doc.text(`Booking code: ${id || "N/A"}`, 180, 57, { align: "right" });
@@ -255,7 +255,7 @@ const BookingBill = () => {
       // Add hotel information in a box
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
-      doc.rect(15, 60, 85, 45);
+      doc.rect(15, 60, 85, 48);
 
       doc.setTextColor(33, 43, 73);
       doc.setFontSize(12);
@@ -272,13 +272,13 @@ const BookingBill = () => {
       doc.text("Name:", 20, currentY);
       currentY = addWrappedText(hotelName, 35, currentY, 60);
 
-      const hotelAddress = hotelDetail?.address || "N/A";
+      const hotelAddress = hotelDetail?.address1 || "77 Le Duan, Phuong Pham Ngu Lao, Quan 1, Ho Chi Minh City";
       doc.text("Address:", 20, currentY);
       currentY = addWrappedText(hotelAddress, 35, currentY, 60);
 
       const hotelPhone =
         hotelDetail?.phoneNumber || ownerContact.phone || "N/A";
-      doc.text("Phone number:", 20, currentY);
+      doc.text("Phone:", 20, currentY);
       currentY = addWrappedText(hotelPhone, 35, currentY, 60);
 
       const hotelEmail = hotelDetail?.email || ownerContact.email || "N/A";
@@ -288,7 +288,7 @@ const BookingBill = () => {
       // Add customer information in a box
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
-      doc.rect(110, 60, 85, 45);
+      doc.rect(110, 60, 85, 48);  
 
       doc.setTextColor(33, 43, 73);
       doc.setFontSize(12);
@@ -300,19 +300,19 @@ const BookingBill = () => {
       doc.setFont("helvetica", "normal");
 
       currentY = 75;
-      doc.text("Tên:", 115, currentY);
-      currentY = addWrappedText(Auth?.name || "N/A", 130, currentY, 60);
+      doc.text("Name Customer:", 115, currentY);
+      currentY = addWrappedText(Auth?.name || "N/A", 145, currentY, 60);
 
-      doc.text("Điện thoại:", 115, currentY);
-      currentY = addWrappedText(Auth?.phoneNumber || "N/A", 130, currentY, 60);
+      doc.text("Phone Customer:", 115, currentY);
+      currentY = addWrappedText(Auth?.phoneNumber || "N/A", 145, currentY, 60);
 
-      doc.text("Email:", 115, currentY);
-      currentY = addWrappedText(Auth?.email || "N/A", 130, currentY, 60);
+      doc.text("Email Customer:", 115, currentY);
+      currentY = addWrappedText(Auth?.email || "N/A", 145, currentY, 60);
 
       // Add booking details in a box
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
-      doc.rect(15, 115, 180, 25);
+      doc.rect(15, 115, 180, 28);
 
       doc.setTextColor(33, 43, 73);
       doc.setFontSize(12);
@@ -332,75 +332,11 @@ const BookingBill = () => {
 
       doc.text(`Check-in date: ${checkInDate}`, 20, 130);
       doc.text(`Check-out date: ${checkOutDate}`, 115, 130);
-
-      // Add room details table with improved styling
-      let finalY = 150;
-      if (reservationDetail.rooms && Array.isArray(reservationDetail.rooms)) {
-        try {
-          // Prepare data for the table
-          const tableRows = reservationDetail.rooms.map((roomItem, index) => [
-            (index + 1).toString(),
-            roomItem.room?.name || "Room",
-            roomItem.quantity?.toString() || "1",
-            formatCurrency(roomItem.room?.price || 0),
-          ]);
-
-          // Add total row
-          const totalAmount =
-            reservationDetail.totalAmount ||
-            calculateTotalPrice(reservationDetail.rooms);
-
-          // Use autoTable with specific settings for Vietnamese text
-          doc.autoTable({
-            head: [["STT", "Room name", "Quantity", "Price"]],
-            body: tableRows,
-            startY: 150,
-            theme: "grid",
-            styles: {
-              font: "helvetica",
-              fontSize: 10,
-              cellPadding: 5,
-              overflow: "linebreak",
-              cellWidth: "wrap",
-              halign: "left",
-              valign: "middle",
-            },
-            columnStyles: {
-              0: { cellWidth: 15, halign: "center" },
-              1: { cellWidth: "auto" },
-              2: { cellWidth: 25, halign: "center" },
-              3: { cellWidth: 40, halign: "right" },
-            },
-            headStyles: {
-              fillColor: [33, 43, 73],
-              textColor: [255, 255, 255],
-              fontStyle: "bold",
-              halign: "center",
-            },
-            alternateRowStyles: { fillColor: [245, 245, 245] },
-            foot: [["", "Total Amount", "", formatCurrency(totalAmount)]],
-            footStyles: {
-              fillColor: [33, 43, 73],
-              textColor: [255, 255, 255],
-              fontStyle: "bold",
-              halign: "center",
-            },
-            didDrawPage: (data) => {
-              finalY = data.cursor.y;
-            },
-          });
-        } catch (tableError) {
-          console.error("Error creating table:", tableError);
-          finalY = 180; // Fallback position if table fails
-        }
-      } else {
-        doc.text("Không có thông tin phòng", 20, 160);
-        finalY = 170;
-      }
+      doc.text(`Total amount: $${reservationDetail.totalAmount || calculateTotalPrice(reservationDetail.rooms)}`, 20, 138);
+      doc.text(`Admin contact: uroom@web.com`, 115, 138);
+      let finalY= 155;
 
       // Add signature section with improved styling
-      finalY = Math.max(finalY + 15, 220);
-
       doc.setDrawColor(200, 200, 200);
       doc.setLineWidth(0.5);
       doc.rect(15, finalY, 85, 40);
@@ -437,7 +373,7 @@ const BookingBill = () => {
 
       // Add footer
       doc.setFillColor(33, 43, 73); // Dark blue color
-      doc.rect(10, 277, 190, 10, "F");
+      doc.rect(10, 212, 190, 10, "F");
 
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(8);
@@ -447,7 +383,7 @@ const BookingBill = () => {
           "vi-VN"
         )} |UROOM - Online booking system`,
         105,
-        283,
+        218,
         {
           align: "center",
         }
@@ -592,7 +528,7 @@ const BookingBill = () => {
                       "/placeholder.svg" ||
                       "/placeholder.svg" ||
                       "/placeholder.svg"
-                    }
+                     || "/placeholder.svg"}
                     alt="Hotel Room"
                     style={{
                       height: "510px",
