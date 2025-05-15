@@ -11,7 +11,7 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import Sidebar from "../Sidebar";
 import { useNavigate } from "react-router-dom";
-import Room from "pages/room/Room";
+import Room from "@pages/room/Room";
 
 function RoomListingPage() {
   const navigate = useNavigate();

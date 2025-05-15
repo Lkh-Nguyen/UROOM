@@ -7,7 +7,7 @@ const HotelHostDashboard = '/HotelHostDashboard';
 const Transaction = '/Transaction';
 const BookingSchedule = '/BookingSchedule';
 const TransactionDetail = '/TransactionDetail';
-const HomeHotel = '/home_hotelhost';
+const HomeHotel = '/';
 const BookingRegistration = '/BookingRegistration';
 const BookingPropertyName = '/BookingPropertyName';
 const BookingPropertyLocation = '/BookingPropertyLocation';
@@ -25,9 +25,15 @@ const MyAccountHotelPage = '/myaccount_hotelhost';
 const ListFeedbackHotelPage = '/feedback_hotelhost';
 const ReportedFeedbackHotel = '/reportedfeedback_hotelhost';
 const DocumentUpload = '/documentupload_hotelhost';
-const DataAnalysisAI = '/';
-
-
+const DataAnalysisAI = '/data';
+const CreateRoom = '/CreateRoom';
+const RoomNamingForm = '/RoomNamingForm';
+const PricingSetupForm = '/PricingSetupForm';
+const RoomImageForm = '/RoomImageForm';
+const RoomListingPage = '/RoomListingPage';
+const AdditionalServicesPage = '/AdditionalServicesPage';
+const Room= '/Room';
+const HotelManagement= '/HotelManagement';
 export {
   BannedPage,
   ErrorPage,
@@ -46,7 +52,8 @@ export {
   BookingPropertyCheckInOut,
   BookingPropertyDescription,
   BookingPropertyChecklist,
-
+  HotelManagement,
+  
   LoginHotelPage,
   RegisterHotelPage,
   ForgetPasswordHotelPage,
@@ -58,4 +65,12 @@ export {
   DocumentUpload,
   DataAnalysisAI,
 
+  // Newly Added
+  CreateRoom,
+  RoomNamingForm,
+  PricingSetupForm,
+  RoomImageForm,
+  RoomListingPage,
+  AdditionalServicesPage,
+  Room
 };

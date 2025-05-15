@@ -13,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FiArrowLeft } from "react-icons/fi";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 
 function BookingPropertyDescription() {
   const navigate = useNavigate();
