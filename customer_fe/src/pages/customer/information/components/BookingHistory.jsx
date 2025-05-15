@@ -457,7 +457,7 @@ const BookingHistory = () => {
                   <Row>
                     <Col md={8}>
                       <div className="reservation-details">
-                        <h5 className="mb-3">ID: {reservation.id}</h5>
+                        {/* <h5 className="mb-3">ID: {reservation.id}</h5> */}
                         <p>
                           <strong>Status:</strong>
                           <span

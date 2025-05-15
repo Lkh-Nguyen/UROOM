@@ -10,12 +10,12 @@ const ApiConstants = {
   FETCH_FAVORITE_HOTELS: "/hotel/get-hotel-byId",
   REMOVE_FAVORITE_HOTELS: "/hotel/remove-favorite",
   ADD_FAVORITE_HOTELS: "/hotel/add-favorite",
-
+  //HOTEL
   FETCH_DETAIL_HOTELS: "/hotel/hotel_detail/:hotelId",
   FETCH_ROOM: "/room/rooms_information/:hotelId",
   FETCH_ALL_HOTEL: "/hotel/get-all-hotel",
   FETCH_ROOM_DETAIL: "/room/rooms_detail/:roomId",
-
+  FETCH_TOP3_HOTEL:"hotel/top-bookings",
   //FEEDBACK:
   FETCH_FEEDBACK_BY_HOTELID: 'feedback/get-feedback-hotel/:hotelId',
   LIKE_FEEDBACK: 'feedback/like',

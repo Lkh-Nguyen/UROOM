@@ -4,6 +4,7 @@ const initialState = {
   hotels: [],
   hotelDetail: null,
   error: null,
+  top3Hotels: [],
 };
 
 const favoriteHotelReducer = (state = initialState, action) => {
@@ -22,7 +23,13 @@ const favoriteHotelReducer = (state = initialState, action) => {
         return {
           ...state,
           hotels: action.payload,
-        };      
+        };    
+        case HotelActions.FETCH_TOP3_HOTEL_SUCCESS: 
+        return {
+          ...state,
+          top3Hotels: action.payload,
+        };
+    
     default:
       return state;
   }
