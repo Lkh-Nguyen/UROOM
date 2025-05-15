@@ -28,7 +28,10 @@ const Factories = {
   
   get_all_hotels: () => {
     return api.get(ApiConstants.FETCH_ALL_HOTEL);
-  }
+  },
+  get_top3_hotels: () => {
+    return api.get(ApiConstants.FETCH_TOP3_HOTEL);
+  },
 };
 
 export default Factories;

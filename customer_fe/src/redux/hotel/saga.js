@@ -101,11 +101,47 @@ function* getAllHotels() {
     }
   });
 }
+function* getTop3Hotels() {
+  yield takeEvery(HotelActions.FETCH_TOP3_HOTEL, function* (action) {
+    const { onSuccess, onFailed, onError } = action.payload;
+
+    try {
+      const response = yield call(() => Factories.get_top3_hotels());
+
+      console.log("Top 3 hotels response:", response);
+
+      if (response?.status === 200) {
+        const topHotels = response.data || []; 
+
+        yield put({
+          type: HotelActions.FETCH_TOP3_HOTEL_SUCCESS,
+          payload: topHotels,
+        });
+
+        onSuccess?.(topHotels);
+      } else {
+        onFailed?.(response?.data?.message || "Không lấy được top 3 khách sạn");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Có lỗi xảy ra khi lấy top 3 khách sạn";
+
+      console.log("Top 3 hotels error:", msg);
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
 
 export default function* userSaga() {
   yield all([
     fork(getFavoriteHotels),
     fork(getHotelDetails),
     fork(getAllHotels),
+    fork(getTop3Hotels),
   ]);
 }

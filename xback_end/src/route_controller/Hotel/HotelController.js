@@ -3,6 +3,7 @@ const User = require("../../models/user");
 const asyncHandler = require("../../middlewares/asyncHandler");
 const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
+const Reservation  = require("../../models/reservation");
 
 // exports.getAllHotels = asyncHandler(async (req, res) => {
 //     const {page= 1, limit= 5}= req.query;
@@ -234,3 +235,64 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
     message: "Get hotel details success",
   });
 });
+exports.getTop3HotelsThisMonth = async (req, res) => {
+  try {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(startOfMonth);
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+    const topHotels = await Reservation.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startOfMonth, $lt: endOfMonth },
+          status: { $in: ["COMPLETED", "CHECKED IN", "CHECKED OUT"] },
+        },
+      },
+      {
+        $group: {
+          _id: "$hotel",
+          totalBookings: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { totalBookings: -1 },
+      },
+      {
+        $limit: 3,
+      },
+      {
+        $lookup: {
+          from: "hotels", 
+          localField: "_id",
+          foreignField: "_id",
+          as: "hotelInfo",
+        },
+      },
+      {
+        $unwind: "$hotelInfo",
+      },
+      {
+        $project: {
+          _id: 0,
+          hotelId: "$_id",
+          totalBookings: 1,
+          hotelName: "$hotelInfo.hotelName",
+          address: "$hotelInfo.address",
+          rating: "$hotelInfo.rating",
+          star: "$hotelInfo.star",
+          pricePerNight: "$hotelInfo.pricePerNight",
+          images: "$hotelInfo.images",
+        },
+      },
+    ]);
+
+    return res.status(200).json(topHotels);
+  } catch (error) {
+    console.error("Error getting top 3 hotels:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+

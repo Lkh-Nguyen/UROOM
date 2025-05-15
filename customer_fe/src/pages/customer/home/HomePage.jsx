@@ -44,16 +44,18 @@ import travel7 from "../../../images/phuquoc.jpg";
 import chatbox from "../../../images/chatbox.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
-import { showToast, ToastProvider } from "@components/ToastContainer";
+import { showToast, ToastProvider } from "components/ToastContainer";
 import Select from "react-select";
 import { useDispatch } from "react-redux";
-import { cityOptionSelect } from "@utils/data";
+import { cityOptionSelect } from "utils/data";
 import SearchActions from "../../../redux/search/actions";
 // Import the ErrorModal component at the top of the file with the other imports
 import ErrorModal from "../../../components/ErrorModal";
-import { useAppDispatch } from "@redux/store";
-
+import { useAppSelector, useAppDispatch } from "../../../redux/store";
+import HotelActions from "../../../redux/hotel/actions";
+import RoomActions from "../../../redux/room/actions";
 function Home() {
+  const dispatch = useDispatch();
   const location = useLocation();
   const navigate = useNavigate(); // cần thêm dòng này
 
@@ -393,117 +395,154 @@ export const SearchBar = () => {
   );
 };
 
+
 function OtherHotels() {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const hotels = [
-    {
-      id: 1,
-      name: "Hotel Paradise",
-      roomType: "Deluxe Room",
-      price: 300,
-      guests: 2,
-      image: image4,
-      sale: "Sale 30%",
-    },
-    {
-      id: 2,
-      name: "Royal Pearl Hotel",
-      roomType: "Executive Room",
-      price: 700,
-      guests: 2,
-      image: image5,
-      sale: "Sale 40%",
-    },
-    {
-      id: 3,
-      name: "Blue Horizon Resort",
-      roomType: "Sea View Room",
-      price: 340,
-      guests: 2,
-      image: image6,
-      sale: "Sale 50%",
-    },
-  ];
+  const [hotels, setHotels] = useState([]);
+
+  useEffect(() => {
+    dispatch({
+      type: HotelActions.FETCH_TOP3_HOTEL,
+      payload: {
+        onSuccess: (hotelList) => {
+          setHotels(hotelList);
+        },
+        onFailed: (msg) => {
+          console.error("Failed to fetch hotels:", msg);
+        },
+        onError: (err) => {
+          console.error("Server error:", err);
+        },
+      },
+    });
+  }, [dispatch]);
 
   return (
-    <Container className="other-hotels-section" style={{ marginTop: "8%" }}>
-      <h1 className="section-title_1" style={{ fontSize: "2.5rem" }}>
+    <Container style={{ marginTop: "8%", marginBottom: "5%" }}>
+      <h1
+        style={{
+          fontSize: "2.5rem",
+          fontWeight: "600",
+          marginBottom: "3rem",
+          textAlign: "center",
+        }}
+      >
         Special Offers Just For You
       </h1>
-      <Row className="mt-5">
-        {hotels.map((hotel) => (
-          <Col md={4} key={hotel.id}>
-            <Card className="hotel-card">
-              <div
+      <Row className="g-4">
+        {hotels.map((hotel) => {
+          const hotelId = hotel.hotelId;
+
+          return (
+            <Col md={4} key={hotelId}>
+              <Card
                 style={{
-                  padding: "20px",
-                  height: "250px",
-                  paddingRight: "40px",
+                  border: "none",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                  borderRadius: "20px",
                 }}
               >
-                <Image
-                  md={4}
-                  variant="top"
-                  src={hotel.image || "/placeholder.svg"}
-                  className="hotel-image"
-                  style={{ borderRadius: "20px" }}
-                />
-
                 <div
-                  className="rating-overlay"
-                  style={{ paddingRight: "30px", paddingTop: "10px" }}
-                >
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} className="star-icon" />
-                  ))}
-                </div>
-                <span
-                  className="price"
                   style={{
-                    color: "gray",
-                    position: "absolute",
-                    transform: "rotate(90deg)",
-                    transformOrigin: "left bottom",
-                    width: "1000px",
-                    letterSpacing: "6px", // Điều chỉnh điểm xoay nếu cần
+                    position: "relative",
+                    height: "250px",
+                    borderTopLeftRadius: "20px",
+                    borderTopRightRadius: "20px",
+                    overflow: "hidden",
                   }}
                 >
-                  {hotel.sale}
-                </span>
-              </div>
-              <Card.Body style={{ marginLeft: "10px" }}>
-                <Card.Title className="hotel-name">{hotel.name}</Card.Title>
-                <div className="room-info">
-                  <span className="room-type">{hotel.roomType}</span>
-                  <span className="guests-count">
-                    <FaUser /> {hotel.guests}
-                  </span>
+                  <Image
+                    src={hotel.images?.[0] || "/placeholder.svg"}
+                    alt="Hotel"
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
+                  />
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "15px",
+                      right: "20px",
+                      display: "flex",
+                      gap: "3px",
+                    }}
+                  >
+                    {[...Array(5)].map((_, i) =>
+                      i < (hotel.star || 0) ? (
+                        <FaStar
+                          key={i}
+                          style={{ color: "#f5b50a", fontSize: "1.4rem" }}
+                        />
+                      ) : null
+                    )}
+                  </div>
                 </div>
-                <div className="price-container">
-                  <span className="price">{hotel.price}$</span>
-                  <span className="per-day">/Day</span>
+                <Card.Body style={{ padding: "1.5rem" }}>
+                  <Card.Title
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: "600",
+                      marginBottom: "10px",
+                      minHeight: "48px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span>{hotel.hotelName}</span>
+                      <span
+                        style={{
+                          fontSize: "1.1rem",
+                          color: "#0d6efd",
+                          fontWeight: "600",
+                        }}
+                      >
+                        ${hotel.pricePerNight}
+                        <span
+                          style={{
+                            fontSize: "0.85rem",
+                            color: "#888",
+                            marginLeft: "4px",
+                          }}
+                        >
+                          / Day
+                        </span>
+                      </span>
+                    </div>
+                  </Card.Title>
+
                   <Button
                     variant="outline-primary"
                     style={{
-                      marginLeft: "auto",
-                      padding: "0.7rem 4.5rem",
+                      width: "100%",
+                      padding: "0.7rem",
                       fontWeight: "500",
+                      borderRadius: "10px",
+                      fontSize: "1rem",
                     }}
                     onClick={() => {
-                      navigate(Routers.Home_detail);
+                      navigate(`${Routers.Home_detail}/${hotelId}`);
                     }}
                   >
                     Book Now
                   </Button>
-                </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
+                </Card.Body>
+              </Card>
+            </Col>
+          );
+        })}
       </Row>
     </Container>
   );
 }
+
 const AboutUs = () => {
   return (
     <Container
