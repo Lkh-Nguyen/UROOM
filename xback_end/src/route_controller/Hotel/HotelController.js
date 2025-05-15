@@ -238,11 +238,16 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
 exports.getTop3HotelsThisMonth = async (req, res) => {
   try {
     const startOfMonth = new Date();
+    startOfMonth.setMonth(startOfMonth.getMonth() - 2)
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const endOfMonth = new Date(startOfMonth);
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+    const endOfMonth = new Date();
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1)
+    endOfMonth.setDate(1);
+    endOfMonth.setHours(0, 0, 0, 0);
+    console.log("startOfMonth: ",startOfMonth);
+    console.log("endOfMonth: ", endOfMonth);
 
     const topHotels = await Reservation.aggregate([
       {

@@ -51,7 +51,7 @@ const LoginPage = () => {
     }
 
     setIsResending(true);
-
+    console.log("ABC")
     dispatch({
       type: AuthActions.RESEND_VERIFICATION,
       payload: {
@@ -123,13 +123,13 @@ const LoginPage = () => {
               setUnverifiedEmail(formData.email);
               setShowVerifyModal(true);
             } else {
-              showToast.warning(msg);
+              showToast.warning("Email or password is not correct");
               setFormData({ ...formData, password: "" });
             }
           },
           onError: (error) => {
             setIsLoading(false);
-            showToast.error(error);
+            showToast.error("Email or password is not correct");
           },
         },
       });

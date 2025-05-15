@@ -67,8 +67,7 @@ function MyAccountPage() {
                         height: "80px",
                         objectFit: "cover",
                       }}
-                      alt="avatar"
-                    />
+                   />
                   </div>
                   <h5 className="mt-2 mb-0">{Auth.name}</h5>
                   <small className="text-muted">Google</small>

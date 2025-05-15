@@ -84,7 +84,7 @@ function NavigationBar() {
             >
               Home
             </Nav.Link>
-            <Nav.Link
+            {/* <Nav.Link
               className="nav-link"
               onClick={() => {
                 if (Auth._id != -1) {
@@ -95,7 +95,7 @@ function NavigationBar() {
               }}
             >
               Message
-            </Nav.Link>
+            </Nav.Link> */}
             <Nav.Link
               className="nav-link"
               onClick={() => {
@@ -200,7 +200,7 @@ function NavigationBar() {
                   {Auth.name}
                 </a>{" "}
                 <Image
-                  src={(Auth?.image?.url != "" && Auth?.image?.url ? Auth?.image?.url : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg")}
+                  src={(Auth?.image?.url != "" && Auth?.image?.url != undefined) ? Auth?.image?.url : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"}
                   roundedCircle
                   width="30"
                   height="30"

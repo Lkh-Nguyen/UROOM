@@ -27,9 +27,9 @@ function Footer() {
             <div className="footer-links">
               <a href="#about_us">About Us</a>
               <a
-                onClick={() => {
-                  navigate(Routers.ChatPage);
-                }}
+                // onClick={() => {
+                //   navigate(Routers.ChatPage);
+                // }}
               >
                 Contact
               </a>

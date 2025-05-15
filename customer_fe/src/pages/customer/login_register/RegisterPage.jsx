@@ -84,6 +84,7 @@ const RegisterPage = () => {
       payload: {
         data: formData,
         onSuccess: (Data) => {
+          console.log('abc');
           setIsLoading(false);
           showToast.success("Register successfully");
           navigate(Routers.VerifyCodeRegisterPage, {

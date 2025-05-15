@@ -44,10 +44,10 @@ import travel7 from "../../../images/phuquoc.jpg";
 import chatbox from "../../../images/chatbox.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 import Select from "react-select";
 import { useDispatch } from "react-redux";
-import { cityOptionSelect } from "utils/data";
+import { cityOptionSelect } from "@utils/data";
 import SearchActions from "../../../redux/search/actions";
 // Import the ErrorModal component at the top of the file with the other imports
 import ErrorModal from "../../../components/ErrorModal";
@@ -395,7 +395,6 @@ export const SearchBar = () => {
   );
 };
 
-
 function OtherHotels() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -418,16 +417,9 @@ function OtherHotels() {
     });
   }, [dispatch]);
 
-  return (
+  return hotels.length != 0 ? (
     <Container style={{ marginTop: "8%", marginBottom: "5%" }}>
-      <h1
-        style={{
-          fontSize: "2.5rem",
-          fontWeight: "600",
-          marginBottom: "3rem",
-          textAlign: "center",
-        }}
-      >
+      <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
         Special Offers Just For You
       </h1>
       <Row className="g-4">
@@ -540,6 +532,8 @@ function OtherHotels() {
         })}
       </Row>
     </Container>
+  ) : (
+    <></>
   );
 }
 
@@ -683,8 +677,8 @@ function RecommendHotels() {
     },
   ];
 
-  const dispatch= useAppDispatch();
-  const navigate= useNavigate();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const todayDate = new Date(); // Date object
   const tomorrowDate = new Date();
   tomorrowDate.setDate(todayDate.getDate() + 1);
@@ -700,9 +694,9 @@ function RecommendHotels() {
           <Col md={3} key={hotel.id}>
             <Card
               className="hotel-card"
-              style={{cursor: 'pointer'}}
+              style={{ cursor: "pointer" }}
               onClick={() => {
-                console.log("Abc")
+                console.log("Abc");
                 const SearchInformation = {
                   address: hotel.city,
                   checkinDate: today,
