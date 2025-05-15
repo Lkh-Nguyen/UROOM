@@ -5,7 +5,7 @@ import { FaEye, FaEyeSlash, FaArrowLeft } from "react-icons/fa";
 import * as Routers from "../../../utils/Routes";
 import { Route, useLocation, useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 
 const ResetPasswordPage = () => {
   const navigate = useNavigate();

@@ -21,9 +21,15 @@ import {
   getToken,
   setIndexMyAccountPage,
   setStatusBooking,
-} from "utils/handleToken";
+} from "@utils/handleToken";
+import SearchActions from "@redux/search/actions";
+
+const defaultImage = "https://cdn.pixabay.com/photo/2016/04/13/14/27/google-chrome-1326908_640.png";
 
 function NavigationBar() {
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
   // ✅ Nhận `header` từ props (hoặc có thể setState)
   const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
@@ -80,41 +86,73 @@ function NavigationBar() {
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(Routers.ChatPage)}
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(Routers.ChatPage);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Message
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(`${Routers.MyAccountPage}/booking_history`)
-              }
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/booking_history`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Transaction
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(`${Routers.MyAccountPage}/my_feedback`)}
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_feedback`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               My Feedback
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() =>
-                navigate(`${Routers.MyAccountPage}/favorite_hotel`)
-              }
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/favorite_hotel`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               Favorite hotels
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(`${Routers.MyAccountPage}/my_report`)}
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_report`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               My Reports
             </Nav.Link>
             <Nav.Link
               className="nav-link"
-              onClick={() => navigate(`${Routers.MyAccountPage}/my_refund`)}
+              onClick={() => {
+                if (Auth._id != -1) {
+                  navigate(`${Routers.MyAccountPage}/my_refund`);
+                } else {
+                  navigate(Routers.LoginPage);
+                }
+              }}
             >
               My Refund
             </Nav.Link>
@@ -162,7 +200,7 @@ function NavigationBar() {
                   {Auth.name}
                 </a>{" "}
                 <Image
-                  src={Auth.image.url}
+                  src={(Auth?.image?.url != "" && Auth?.image?.url ? Auth?.image?.url : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg")}
                   roundedCircle
                   width="30"
                   height="30"
@@ -185,6 +223,20 @@ function NavigationBar() {
                     });
                     dispatch({
                       type: AuthActions.LOGOUT,
+                    });
+                    dispatch({
+                      type: SearchActions.SAVE_SELECTED_ROOMS,
+                      payload: {
+                        SearchInformation: {
+                          address: "",
+                          checkinDate: today.toISOString().split("T")[0], // yyyy-mm-dd format
+                          checkoutDate: tomorrow.toISOString().split("T")[0], // yyyy-mm-dd format
+                          adults: 2,
+                          childrens: 1,
+                        },
+                        selectedRooms: [],
+                        hotelDetail: {},
+                      },
                     });
                     clearToken();
                     setStatusBooking(0);

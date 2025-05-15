@@ -13,9 +13,9 @@ import { FaThumbsUp, FaThumbsDown } from "react-icons/fa";
 import { useAppSelector, useAppDispatch } from "../../../../redux/store";
 import ReportFeedbacksActions from "../../../../redux/reportedFeedback/actions";
 import FeedbackActions from "../../../../redux/feedback/actions";
-import { showToast } from "components/ToastContainer";
+import { showToast } from "@components/ToastContainer";
 import { Star, StarFill, X, Pencil, Trash } from "react-bootstrap-icons";
-import ConfirmationModal from "components/ConfirmationModal";
+import ConfirmationModal from "@components/ConfirmationModal";
 import Utils from "../../../../utils/Utils";
 
 const STATUS_OPTIONS = ["All", "Pending", "Approved", "Rejected"];
@@ -30,6 +30,7 @@ const MyReportFeedbacks = () => {
   const itemsPerPage = 3;
   const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [selectedFeedbackId, setSelectedFeedbackId] = useState(null);
+
 
   useEffect(() => {
     if (Auth._id) fetchUserReports(Auth._id);
@@ -117,6 +118,8 @@ const MyReportFeedbacks = () => {
         pages.push(page);
       }
     }
+
+
 
     return (
       <div className="d-flex justify-content-center mt-4">
@@ -216,6 +219,11 @@ const MyReportFeedbacks = () => {
     }
     return stars;
   };
+  useEffect(() => {
+    if (paginatedReports.length == 0 && currentPage > 1) {
+      setCurrentPage(prev => prev - 1);
+    }
+  }, [paginatedReports, currentPage]);
 
   return (
     <Container fluid className="bg-light py-4">
@@ -267,10 +275,9 @@ const MyReportFeedbacks = () => {
               style={{ width: 80, height: 80, opacity: 0.75 }}
             />
           </div>
-          <h5 className="text-muted fw-semibold">No reported Yet</h5>
-          <p className="text-secondary mb-0" style={{ maxWidth: 300 }}>
-            You haven't had any  reported
-            yet.
+          <h5 className="text-muted fw-semibold">No Reported {sortOption} Yet</h5>
+          <p className="text-secondary mb-0" style={{ maxWidth: 350 }}>
+            You Haven't Had Any Reported {sortOption} Yet.
           </p>
         </div>
       ) : (
@@ -309,14 +316,14 @@ const MyReportFeedbacks = () => {
                       {report.feedback?.content || "No feedback content"}
                     </p>
                     <div className="d-flex gap-3 mt-2">
-                      <span className="text-primary">
+                      < b className="text-primary p-0 me-3">
                         <FaThumbsUp className="me-1" />
-                        {report.feedback?.likedBy?.length || 0}
-                      </span>
-                      <span className="text-danger">
+                        {report.feedback?.likedBy?.length || 0} likes
+                      </b>
+                      <b className="text-danger p-0">
                         <FaThumbsDown className="me-1" />
-                        {report.feedback?.dislikedBy?.length || 0}
-                      </span>
+                        {report.feedback?.dislikedBy?.length || 0} dislikes
+                      </b>
                     </div>
                   </Col>
 
@@ -381,7 +388,7 @@ const MyReportFeedbacks = () => {
         onHide={() => setShowAcceptModal(false)}
         onConfirm={confirmDeleteFeedback}
         title="Confirm Deletion"
-        message="Are you sure you want to delete this feedback?"
+        message="Are you sure you want to delete this reported feedback?"
       />
     </Container>
   );

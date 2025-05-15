@@ -26,7 +26,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "../Header";
 import Footer from "../Footer";
 import { useAppSelector, useAppDispatch } from "../../../redux/store";
-import { showToast } from "components/ToastContainer";
+import { showToast } from "@components/ToastContainer";
 import ReservationActions from "../../../redux/reservations/actions";
 import HotelActions from "../../../redux/hotel/actions";
 import jsPDF from "jspdf";

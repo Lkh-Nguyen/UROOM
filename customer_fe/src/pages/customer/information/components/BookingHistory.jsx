@@ -9,8 +9,8 @@ import {
   Form,
 } from "react-bootstrap";
 import Select from "react-select";
-import CancelReservationModal from "pages/customer/home/components/CancelReservationModal";
-import { showToast, ToastProvider } from "components/ToastContainer";
+import CancelReservationModal from "@pages/customer/home/components/CancelReservationModal";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useAppSelector, useAppDispatch } from "../../../../redux/store";
 import ReservationActions from "../../../../redux/reservations/actions";
 import * as Routers from "../../../../utils/Routes";

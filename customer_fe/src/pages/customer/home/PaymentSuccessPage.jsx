@@ -12,10 +12,10 @@ const PaymentSuccessPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const totalPrice = location.state?.totalPrice ?? 0;
+    const id = location.state?.id ?? 0;
 
     const goToMyAccount = () => {
-        navigate("/bookingbill_customer", {
-        });
+        navigate(`${Routers.BookingBill}/${id}`);
     };
 
     const formatCurrency = (amount) => {

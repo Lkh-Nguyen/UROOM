@@ -28,7 +28,7 @@ import NavigationBar from "../Header";
 import Footer from "../Footer";
 import "../../../css/customer/home.css";
 import "../../../css/customer/ChatBox.css";
-import image4 from "../../../images/image_3.png";
+import image4 from "@images/image_3.png";
 import image5 from "../../../images/image-1.png";
 import image6 from "../../../images/unsplash_7uXn7nudorc_1.png";
 import image7 from "../../../images/unsplash_7uXn7nudorc_1.png";
@@ -78,7 +78,6 @@ function Home() {
       <SearchBar />
       <OtherHotels />
       <RecommendHotels />
-      <CustomerReviews />
       <AboutUs />
       <HotelBooking />
       <ChatBox />
@@ -396,141 +395,6 @@ export const SearchBar = () => {
   );
 };
 
-// function OtherHotels() {
-//   const dispatch = useAppDispatch();
-//   const navigate = useNavigate();
-
-//   // const hotels = useAppSelector((state) => state.hotel.top3Hotels);
-//   // const rooms = useAppSelector((state) => state.room.room || []);
-
-//   useEffect(() => {
-//     dispatch({
-
-//       payload: {
-//         onSuccess: (hotels) => {
-//           type: HotelActions.FETCH_TOP3_HOTEL,
-
-//             });
-//           });
-//         },
-//       },
-//     });
-//   }, [dispatch]);
-//   useEffect(() => {
-//     let isMounted = true;
-
-//     if (hotelId) {
-//       dispatch({
-//         type: RoomActions.FETCH_ROOM,
-//         payload: {
-//           hotelId,
-//           query: searchParams,
-//           onSuccess: (roomList) => {
-//             if (isMounted) {
-//               if (Array.isArray(roomList)) {
-//                 setRooms(roomList);
-//               } else {
-//                 console.warn("Unexpected data format received:", roomList);
-//               }
-//             }
-//           },
-//           onFailed: (msg) => {
-//             if (isMounted) {
-//               console.error("Failed to fetch rooms:", msg);
-//             }
-//           },
-//           onError: (err) => {
-//             if (isMounted) {
-//               console.error("Server error:", err);
-//             }
-//           },
-//         },
-//       });
-//     }
-//   return (
-//     <Container className="other-hotels-section" style={{ marginTop: "8%" }}>
-//       <h1 className="section-title_1" style={{ fontSize: "2.5rem" }}>
-//         Special Offers Just For You
-//       </h1>
-//       <Row className="mt-5">
-//         {hotels?.map((hotel) => {
-//           const hotelRooms = rooms.filter((room) => room.hotel === hotel._id);
-//           const firstRoom = hotelRooms.length > 0 ? hotelRooms[0] : null;
-
-//           return (
-//             <Col md={4} key={hotel._id}>
-//               <Card className="hotel-card">
-//                 <div
-//                   style={{
-//                     padding: "20px",
-//                     height: "250px",
-//                     paddingRight: "40px",
-//                     position: "relative",
-//                   }}
-//                 >
-//                   <Image
-//                     variant="top"
-//                     src={hotel.image || "/placeholder.svg"}
-//                     className="hotel-image"
-//                     style={{ borderRadius: "20px", width: "100%", height: "100%", objectFit: "cover" }}
-//                   />
-//                   <div className="rating-overlay" style={{ position: "absolute", top: 10, right: 30 }}>
-//                     {[...Array(5)].map((_, i) => (
-//                       <FaStar key={i} className="star-icon" />
-//                     ))}
-//                   </div>
-//                   <span
-//                     className="price"
-//                     style={{
-//                       color: "gray",
-//                       position: "absolute",
-//                       transform: "rotate(90deg)",
-//                       transformOrigin: "left bottom",
-//                       left: "-90px",
-//                       top: "60px",
-//                       fontWeight: "bold",
-//                       letterSpacing: "6px",
-//                     }}
-//                   >
-//                     {hotel.sale || "Hot Deal"}
-//                   </span>
-//                 </div>
-//                 <Card.Body style={{ marginLeft: "10px" }}>
-//                   <Card.Title className="hotel-name">{hotel.name}</Card.Title>
-//                   <div className="room-info">
-//                     <span className="room-type">{firstRoom?.type || "Loading..."}</span>
-//                     <span className="guests-count">
-//                       <FaUser /> {firstRoom?.capacity || "?"}
-//                     </span>
-//                   </div>
-//                   <div className="price-container d-flex align-items-center">
-//                     <span className="price">
-//                       {firstRoom?.price ? `${firstRoom.price}$` : "N/A"}
-//                     </span>
-//                     <span className="per-day">&nbsp;/Day</span>
-//                     <Button
-//                       variant="outline-primary"
-//                       style={{
-//                         marginLeft: "auto",
-//                         padding: "0.7rem 4.5rem",
-//                         fontWeight: "500",
-//                       }}
-//                       onClick={() => {
-//                         navigate(Routers.Home_detail.replace(":id", hotel._id));
-//                       }}
-//                     >
-//                       Book Now
-//                     </Button>
-//                   </div>
-//                 </Card.Body>
-//               </Card>
-//             </Col>
-//           );
-//         })}
-//       </Row>
-//     </Container>
-//   );
-// }
 
 function OtherHotels() {
   const dispatch = useAppDispatch();
@@ -681,7 +545,11 @@ function OtherHotels() {
 
 const AboutUs = () => {
   return (
-    <Container className="about-us-container_1" style={{ marginTop: "8%" }}>
+    <Container
+      id="about_us"
+      className="about-us-container_1"
+      style={{ marginTop: "8%" }}
+    >
       <Row className="justify-content-center text-center">
         <Col md={8}>
           <h2 className="about-title_1">About Us</h2>
@@ -798,53 +666,57 @@ const HotelBooking = () => {
 function RecommendHotels() {
   const hotels = [
     {
-      id: 1,
-      name: "Novotel Saigon Centre",
-      roomType: "Sai gon",
-
+      city: "Hồ Chí Minh",
       image: travel4,
     },
     {
-      id: 2,
-      name: "Vinpearl Resort Nha Trang",
-      roomType: "Nha trang",
-
-      image: travel5,
-    },
-    {
-      id: 3,
-      name: "Sofitel Legend Metropole",
-      roomType: "Ha Noi",
-
+      city: "Hà Nội",
       image: travel6,
     },
     {
-      id: 4,
-      name: "Fusion Resort",
-      roomType: "Phu Quoc",
-
+      city: "Đà Nẵng",
+      image: travel5,
+    },
+    {
+      city: "Hải Phòng",
       image: travel7,
     },
   ];
 
+  const dispatch= useAppDispatch();
+  const navigate= useNavigate();
+  const todayDate = new Date(); // Date object
+  const tomorrowDate = new Date();
+  tomorrowDate.setDate(todayDate.getDate() + 1);
+  const today = todayDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const tomorrow = tomorrowDate.toISOString().split("T")[0];
   return (
     <Container className="other-hotels-section_2" style={{ marginTop: "8%" }}>
-      <h2
-        className="section-title"
-        style={{
-          textAlign: "center",
-          fontSize: "2rem",
-          fontWeight: "bold",
-          marginBottom: "3rem",
-          color: "#1a2b49",
-        }}
-      >
-        Recommended Hotels
-      </h2>
+      <h1 className="section-title" style={{ fontSize: "2.5rem" }}>
+        Hotels for domestic tourists
+      </h1>
       <Row>
         {hotels.map((hotel) => (
           <Col md={3} key={hotel.id}>
-            <Card className="hotel-card">
+            <Card
+              className="hotel-card"
+              style={{cursor: 'pointer'}}
+              onClick={() => {
+                console.log("Abc")
+                const SearchInformation = {
+                  address: hotel.city,
+                  checkinDate: today,
+                  checkoutDate: tomorrow,
+                  adults: 1,
+                  childrens: 0,
+                };
+                dispatch({
+                  type: SearchActions.SAVE_SEARCH,
+                  payload: { SearchInformation },
+                });
+                navigate(Routers.HotelSearchPage);
+              }}
+            >
               <div className="hotel-image-container">
                 <Card.Img
                   variant="top"
@@ -859,10 +731,7 @@ function RecommendHotels() {
                 </div>
               </div>
               <Card.Body>
-                <Card.Title className="hotel-name">{hotel.name}</Card.Title>
-                <div className="room-info">
-                  <span className="room-type">{hotel.roomType}</span>
-                </div>
+                <Card.Title className="hotel-name">{hotel.city}</Card.Title>
               </Card.Body>
             </Card>
           </Col>
@@ -876,14 +745,14 @@ function CustomerReviews() {
     {
       id: 1,
       text: "Great experience! Professional service, clean and modern room.",
-      author: "Vand D",
+      author: "Nguyen Van B",
       rating: 4.5,
       image: image9,
     },
     {
       id: 2,
       text: "Quick booking process, many attractive offers",
-      author: "Tru Vio",
+      author: "Huynh Van B",
       rating: 4.8,
       image: image10,
     },

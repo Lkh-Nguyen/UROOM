@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, Route } from "react-router-dom";
 import {
   Container,
   Row,
@@ -14,7 +14,7 @@ import {
   ProgressBar,
   Spinner,
 } from "react-bootstrap";
-import Pagination from "components/Pagination";
+import Pagination from "@components/Pagination";
 import {
   FaStar,
   FaSearch,
@@ -47,11 +47,11 @@ import { useAppSelector, useAppDispatch } from "../../../redux/store";
 import HotelActions from "../../../redux/hotel/actions";
 import RoomActions from "../../../redux/room/actions";
 import AuthActions from "../../../redux/auth/actions";
-import { showToast } from "components/ToastContainer";
+import { showToast } from "@components/ToastContainer";
 import Factories from "../../../redux/search/factories";
 import Factories2 from "../../../redux/feedback/factories";
 import Utils from "../../../utils/Utils";
-import ErrorModal from "components/ErrorModal";
+import ErrorModal from "@components/ErrorModal";
 import SearchActions from "../../../redux/search/actions";
 
 // Options for select inputs
@@ -97,6 +97,9 @@ export default function HotelDetailPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
+  );
+  const selectedRoomsTemps = useAppSelector(
+    (state) => state.Search.selectedRooms
   );
 
   // State variables
@@ -146,6 +149,15 @@ export default function HotelDetailPage() {
   );
   const [isSearching, setIsSearching] = useState(false);
 
+  useEffect(() => {
+    setSelectedRooms([]);
+    dispatch({
+      type: SearchActions.SAVE_SELECTED_ROOMS,
+      payload: {
+        selectedRooms: [],
+      },
+    });
+  }, [hotelId]);
   // Update URL when filters change
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -214,9 +226,6 @@ export default function HotelDetailPage() {
     page: 1,
     limit: 10,
   });
-
-  console.log("Rooms: ", rooms);
-
   // Fetch rooms
   useEffect(() => {
     let isMounted = true;
@@ -312,7 +321,6 @@ export default function HotelDetailPage() {
     if (scrollRef.current) {
       scrollRef.current.scrollLeft = 0;
     }
-
     return () => {
       // No cleanup needed for this simple DOM manipulation
     };
@@ -473,7 +481,7 @@ export default function HotelDetailPage() {
   };
 
   //booking room
-  const [selectedRooms, setSelectedRooms] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState(selectedRoomsTemps ?? []);
   console.log("selectedRooms: ", selectedRooms);
   const handleAmountChange = (room, amount) => {
     setSelectedRooms((prevSelected) => {
@@ -518,6 +526,23 @@ export default function HotelDetailPage() {
     } finally {
     }
   };
+
+  // Add this function to get the amount for a specific room from selectedRoomsTemps
+  const getRoomAmountFromRedux = (roomId) => {
+    if (!selectedRoomsTemps) return 0;
+
+    const foundRoom = selectedRooms.find(
+      (item) => item.room._id === roomId || item.room.id === roomId
+    );
+    return foundRoom ? foundRoom.amount : 0;
+  };
+
+  // Initialize selectedRooms with data from Redux when component mounts
+  useEffect(() => {
+    if (selectedRoomsTemps && selectedRoomsTemps.length > 0) {
+      setSelectedRooms(selectedRoomsTemps);
+    }
+  }, [selectedRoomsTemps]);
 
   if (!hotelDetail) {
     return (
@@ -629,6 +654,13 @@ export default function HotelDetailPage() {
       }
     }
     return stars;
+  };
+
+  const getRoomAmount = (roomId) => {
+    const room = selectedRooms.find(
+      (item) => item.room._id === roomId || item.room.id === roomId
+    );
+    return room ? room.amount : 0;
   };
 
   return (
@@ -901,7 +933,11 @@ export default function HotelDetailPage() {
                         checkoutDate: e.target.value,
                       });
                     }}
-                    min={checkinDate + 1}
+                    min={
+                      new Date(new Date(checkinDate).getTime() + 86400000)
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     required
                   />
                 </InputGroup>
@@ -1112,6 +1148,20 @@ export default function HotelDetailPage() {
                             }}
                           >
                             {room?.name}
+                            {getRoomAmount(room._id || room.id) > 0 && (
+                              <span
+                                className="ms-2 badge"
+                                style={{
+                                  backgroundColor: "#1a2b49",
+                                  color: "white",
+                                  fontSize: "0.75rem",
+                                  padding: "0.25rem 0.5rem",
+                                  borderRadius: "20px",
+                                }}
+                              >
+                                {getRoomAmount(room._id || room.id)} selected
+                              </span>
+                            )}
                           </Card.Title>
 
                           <div className="d-flex align-items-center text-muted mb-2">
@@ -1169,6 +1219,9 @@ export default function HotelDetailPage() {
                             <select
                               className="form-select w-auto"
                               style={{ fontSize: "0.9rem" }}
+                              value={getRoomAmountFromRedux(
+                                room._id || room.id
+                              )}
                               onChange={(e) =>
                                 handleAmountChange(room, Number(e.target.value))
                               }
@@ -1201,14 +1254,25 @@ export default function HotelDetailPage() {
                     );
                     setShowModal(true);
                   } else {
-                    dispatch({
-                      type: SearchActions.SAVE_SELECTED_ROOMS,
-                      payload: {
-                        selectedRooms: selectedRooms,
-                        hotelDetail: hotelDetail,
-                      },
-                    });
-                    navigate(Routers.BookingCheckPage);
+                    if (Auth._id != -1) {
+                      dispatch({
+                        type: SearchActions.SAVE_SELECTED_ROOMS,
+                        payload: {
+                          selectedRooms: selectedRooms,
+                          hotelDetail: hotelDetail,
+                        },
+                      });
+                      navigate(Routers.BookingCheckPage);
+                    } else {
+                      dispatch({
+                        type: SearchActions.SAVE_SELECTED_ROOMS,
+                        payload: {
+                          selectedRooms: selectedRooms,
+                          hotelDetail: hotelDetail,
+                        },
+                      });
+                      navigate(Routers.LoginPage);
+                    }
                   }
                 }}
                 style={{
@@ -1657,9 +1721,13 @@ export default function HotelDetailPage() {
                           className="text-dark p-0"
                           style={{ position: "absolute", top: 15, right: 15 }}
                           onClick={() => {
-                            navigate(
-                              `${Routers.ReportedFeedback}/${review._id}`
-                            );
+                            if(Auth._id != -1){
+                              navigate(
+                                `${Routers.ReportedFeedback}/${review._id}`
+                              );
+                            }else{
+                              navigate(Routers.LoginPage);
+                            }
                           }}
                         >
                           <ExclamationTriangleFill size={20} color="red" />
