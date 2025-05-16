@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate, useSearchParams, Route } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useSearchParams,
+  Route,
+} from "react-router-dom";
 import {
   Container,
   Row,
@@ -13,6 +18,7 @@ import {
   Image,
   ProgressBar,
   Spinner,
+  Modal,
 } from "react-bootstrap";
 import Pagination from "@components/Pagination";
 import {
@@ -138,16 +144,16 @@ export default function HotelDetailPage() {
     SearchInformation.checkoutDate
   );
 
-useEffect(() => {
-  const checkin = new Date(checkinDate);
-  const checkout = new Date(checkoutDate);
+  useEffect(() => {
+    const checkin = new Date(checkinDate);
+    const checkout = new Date(checkoutDate);
 
-  if (checkin.getTime() === checkout.getTime()) {
-    const nextDay = new Date(checkin);
-    nextDay.setDate(checkin.getDate() + 1);
-    setCheckoutDate(nextDay.toISOString().split("T")[0]); // format as yyyy-mm-dd
-  }
-}, [checkoutDate, checkinDate]);
+    if (checkin.getTime() === checkout.getTime()) {
+      const nextDay = new Date(checkin);
+      nextDay.setDate(checkin.getDate() + 1);
+      setCheckoutDate(nextDay.toISOString().split("T")[0]); // format as yyyy-mm-dd
+    }
+  }, [checkoutDate, checkinDate]);
 
   const [selectedAdults, setSelectedAdults] = useState(
     adultsOptions.find((option) => option.value === SearchInformation.adults) ||
@@ -474,6 +480,19 @@ useEffect(() => {
         },
       });
     }
+  };
+
+  const [showModalService, setShowModalService] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+
+  const handleServiceClickService = (service) => {
+    setSelectedService(service);
+    setShowModalService(true);
+  };
+
+  const handleCloseModalService = () => {
+    setShowModalService(false);
+    setSelectedService(null);
   };
 
   const handleThumbnailClick = (image, index) => {
@@ -823,7 +842,7 @@ useEffect(() => {
                 </Row>
 
                 <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
-                  Highlights of the property
+                  Highlights of the services
                 </h3>
 
                 <ul
@@ -840,11 +859,14 @@ useEffect(() => {
                       <li
                         key={index}
                         style={{
-                          width: "50%",
+                          width: "100%",
                           marginBottom: "8px",
+                          cursor: "pointer",
                         }}
+                        onClick={() => handleServiceClickService(service)}
                       >
-                        {service.name}
+                        {service.name} - {Utils.formatCurrency(service.price)}/
+                        {service.type}
                       </li>
                     ))
                   ) : (
@@ -1732,11 +1754,11 @@ useEffect(() => {
                           className="text-dark p-0"
                           style={{ position: "absolute", top: 15, right: 15 }}
                           onClick={() => {
-                            if(Auth._id != -1){
+                            if (Auth._id != -1) {
                               navigate(
                                 `${Routers.ReportedFeedback}/${review._id}`
                               );
-                            }else{
+                            } else {
                               navigate(Routers.LoginPage);
                             }
                           }}
@@ -1748,7 +1770,8 @@ useEffect(() => {
                             <div className="d-flex align-items-center">
                               <Image
                                 src={
-                                  review.user?.image?.url || "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                                  review.user?.image?.url ||
+                                  "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                                 }
                                 roundedCircle
                                 style={{
@@ -1859,6 +1882,36 @@ useEffect(() => {
         </Container>
       </div>
       <Footer />
+      <Modal
+        show={showModalService}
+        onHide={handleCloseModalService}
+        centered // Giúp modal hiện ở giữa màn hình
+        size="lg" // Có thể chọn "sm", "lg", "xl"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Service: {selectedService?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p>
+            <b>Description:</b> {selectedService?.description}
+          </p>
+          <p>
+            <b>Price: </b>
+            {selectedService ? Utils.formatCurrency(selectedService.price) : ""}
+            /{selectedService?.type ?? "person"}
+          </p>
+          <p>
+            <b>Note: </b>
+            <a style={{color: 'red'}}>Accompanying</a> services can be ordered once you check in. <a style={{color: 'red'}}>Alternatively</a>, 
+            you may message the hotel host after booking torequest the service in advance.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModalService}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }

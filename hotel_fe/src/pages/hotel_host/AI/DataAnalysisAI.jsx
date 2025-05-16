@@ -549,8 +549,8 @@ function App() {
                 href="#"
                 onClick={() => setActiveTab("feedbacks")}
               >
-                <i className="bi bi-gear nav-icon"></i>
-                <span>Đánh giá khách sạn</span>
+                <i className="bi-chat-left-text"/>
+                <span style={{marginLeft: '10px'}}>Đánh giá khách sạn</span>
               </a>
             </li>
             <li className="nav-item">
@@ -561,6 +561,16 @@ function App() {
               >
                 <i className="bi bi-robot nav-icon"></i>
                 <span>Tin nhắn</span>
+              </a>
+            </li>
+            <li className="nav-item">
+              <a
+                className={`nav-link ${activeTab === "setting" ? "active" : ""}`}
+                href="#"
+                onClick={() => setActiveTab("setting")}
+              >
+                <i className="bi bi-gear nav-icon"></i>
+                <span>Cài đặt</span>
               </a>
             </li>
           </ul>
@@ -640,7 +650,9 @@ function App() {
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
                       <Dropdown.Item
-                        onClick={() =>{}}
+                        onClick={() =>{
+                          navigate(Routers.MyAccountHotelPage)
+                        }}
                       >
                         View Information
                       </Dropdown.Item>
@@ -1139,6 +1151,11 @@ function App() {
             {activeTab === "mess" && (
               <>
                 <Chat />
+              </>
+            )}
+            {activeTab === "setting" && (
+              <>
+                <MyAccountHotelPage />
               </>
             )}
 

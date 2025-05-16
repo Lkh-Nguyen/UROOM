@@ -3,7 +3,6 @@ const ErrorPage = '/error';
 const WaitPendingPage = '/waitpending';
 
 // Hotel Host
-const HotelHostDashboard = '/HotelHostDashboard';
 const Transaction = '/Transaction';
 const BookingSchedule = '/BookingSchedule';
 const TransactionDetail = '/TransactionDetail';
@@ -34,13 +33,13 @@ const RoomListingPage = '/RoomListingPage';
 const AdditionalServicesPage = '/AdditionalServicesPage';
 const Room= '/Room';
 const HotelManagement= '/HotelManagement';
+
 export {
   BannedPage,
   ErrorPage,
   WaitPendingPage,
 
   // Hotel Host
-  HotelHostDashboard,
   Transaction,
   BookingSchedule,
   TransactionDetail,
@@ -72,5 +71,5 @@ export {
   RoomImageForm,
   RoomListingPage,
   AdditionalServicesPage,
-  Room
+  Room,
 };

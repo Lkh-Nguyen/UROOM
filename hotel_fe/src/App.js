@@ -21,7 +21,6 @@ import BookingPropertyChecklist from "@pages/hotel_host/create_hotel/BookingProp
 import ErrorPage from "@pages/ErrorPage";
 import BannedPage from "@pages/BannedPage";
 import DocumentUpload from "@pages/hotel_host/login_register/DocumentUpload";
-import HotelHostDashboard from "@pages/hotel_host/Dashboard";
 import Transaction from "@pages/hotel_host/Transaction";
 import RoomAvailabilityCalendar from "@pages/hotel_host/RoomAvailabilityCalendar";
 import TransactionDetail from "@pages/hotel_host/TransactionDetail";
@@ -34,6 +33,7 @@ import AdditionalServicesPage from "@pages/hotel_host/service/AdditionalServices
 import DataAnalysisAI from "@pages/hotel_host/AI/DataAnalysisAI";
 import HotelManagement from "@pages/hotel_host/hotel/HotelManagement";
 import Room from "@pages/room/Room";
+import ViewInformation from "@pages/hotel_host/information/components/ViewInformationHotel";
 
 function App() {
   return (
@@ -44,7 +44,6 @@ function App() {
         <Route path={Routers.WaitPendingPage} element={<WaitPendingPage />} />
 
         {/*|Hotel Host */}
-        <Route path={Routers.HotelHostDashboard} element={<HotelHostDashboard />}/>
         <Route path={Routers.Transaction} element={<Transaction />} />
         <Route path={Routers.BookingSchedule} element={<RoomAvailabilityCalendar />} />
         <Route path={Routers.TransactionDetail} element={<TransactionDetail />} />
@@ -76,6 +75,8 @@ function App() {
         <Route path={Routers.DocumentUpload} element={<DocumentUpload/>} />
         <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI/>} />
         <Route path={Routers.Room} element={<Room/>} />
+
+        <Route path={Routers.MyAccountHotelPage} element={<MyAccountHotelPage/>} />
 
       </Routes>
     </Router>

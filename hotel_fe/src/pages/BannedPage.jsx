@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { Container, Button } from 'react-bootstrap';
 import { FaLock } from 'react-icons/fa';
 import '../css/BannedPage.css'
+import { useNavigate } from 'react-router-dom';
+import * as Routers from "@utils/Routes";
 
 const BannedPage = () => {
+  const navigate= useNavigate();
 
-  
   return (
     <Container fluid className="banned-container">
       <div className="banned-content text-center">
@@ -29,7 +31,12 @@ const BannedPage = () => {
         </div>
         
         <div className="banned-actions">
-          <Button variant="primary" className="home-btn" style={{width: '140px'}}>
+          <Button
+            onClick={() => {
+              navigate(Routers.HomeHotel)
+            }}
+            variant="primary" className="home-btn" style={{width: '140px'}}
+          >
             Home Page
           </Button>
           <Button variant="danger" className="contact-btn" style={{width: '140px'}}>

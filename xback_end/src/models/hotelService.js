@@ -12,6 +12,10 @@ const HotelServiceSchema = new Schema(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      require: true,
+    },
     price: {
       type: Number,
       required: true,
