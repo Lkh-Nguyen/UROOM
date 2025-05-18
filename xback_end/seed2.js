@@ -1,3 +1,236 @@
+const { MongoClient, ObjectId } = require("mongodb");
+const bcrypt = require("bcryptjs");
+require("dotenv").config();
+const usersData = [
+  // 10 OWNER
+  {
+    name: "Khách Sạn One",
+    email: "hot1@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726001",
+    address: "123 Trần Cao Vân, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012301",
+    image: {
+      public_ID: "avatar_owner1",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Two",
+    email: "hot2@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726002",
+    address: "456 Hùng Vương, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012302",
+    image: {
+      public_ID: "avatar_owner2",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Three",
+    email: "hot3@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726003",
+    address: "789 Nguyễn Văn Linh, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012303",
+    image: {
+      public_ID: "avatar_owner3",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Four",
+    email: "hot4@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726004",
+    address: "101 Phan Châu Trinh, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012304",
+    image: {
+      public_ID: "avatar_owner4",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Five",
+    email: "hot5@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726005",
+    address: "88 Trưng Nữ Vương, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012305",
+    image: {
+      public_ID: "avatar_owner5",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Six",
+    email: "hot6@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726006",
+    address: "64 Nguyễn Văn Linh, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012306",
+    image: {
+      public_ID: "avatar_owner6",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Seven",
+    email: "hot7@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726007",
+    address: "35 Điện Biên Phủ, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012307",
+    image: {
+      public_ID: "avatar_owner7",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Eight",
+    email: "hot8@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726008",
+    address: "12 Quang Trung, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012308",
+    image: {
+      public_ID: "avatar_owner8",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Nine",
+    email: "hot9@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726009",
+    address: "99 Lê Duẩn, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012309",
+    image: {
+      public_ID: "avatar_owner9",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+  {
+    name: "Khách Sạn Ten",
+    email: "hot10@gm.com",
+    password: "12345678",
+    role: "OWNER",
+    phoneNumber: "0934726010",
+    address: "10 Lý Thường Kiệt, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012310",
+    image: {
+      public_ID: "avatar_owner10",
+      url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+    },
+  },
+
+  // 2 CUSTOMER (cuối danh sách)
+  {
+    name: "Nguyễn Văn A",
+    email: "cus1@gm.com",
+    password: "12345678",
+    role: "CUSTOMER",
+    phoneNumber: "0934726071",
+    address: "123 Trần Cao Vân, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012311",
+    image: {
+      public_ID: "avatar_customer1",
+      url: "https://cdn11.dienmaycholon.vn/filewebdmclnew/public/userupload/files/Image%20FP_2024/avatar-cute-54.png",
+    },
+  },
+  {
+    name: "Nguyễn Văn B",
+    email: "cus2@gm.com",
+    password: "12345678",
+    role: "CUSTOMER",
+    phoneNumber: "0934726072",
+    address: "456 Hùng Vương, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012312",
+    image: {
+      public_ID: "avatar_customer2",
+      url: "https://i.pinimg.com/736x/00/40/22/00402207be828983fee5889803fd5d00.jpg",
+    },
+  },
+  {
+    name: "Nguyễn Văn C",
+    email: "cus3@gm.com",
+    password: "12345678",
+    role: "CUSTOMER",
+    phoneNumber: "0934726071",
+    address: "123 Trần Cao Vân, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012311",
+    image: {
+      public_ID: "avatar_customer1",
+      url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-58.jpg",
+    },
+  },
+  {
+    name: "Nguyễn Văn D",
+    email: "cus4@gm.com",
+    password: "12345678",
+    role: "CUSTOMER",
+    phoneNumber: "0934726072",
+    address: "456 Hùng Vương, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012312",
+    image: {
+      public_ID: "avatar_customer2",
+      url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-53.jpg",
+    },
+  },
+  {
+    name: "Nguyễn Văn E",
+    email: "cus5@gm.com",
+    password: "12345678",
+    role: "CUSTOMER",
+    phoneNumber: "0934726072",
+    address: "456 Hùng Vương, Đà Nẵng",
+    isVerified: true,
+    isLocked: false,
+    cmnd: "047003012312",
+    image: {
+      public_ID: "avatar_customer2",
+      url: "https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/anh-avatar-cute-71.jpg",
+    },
+  },
+];
 const feedbackContents = [
   "Excellent service! Friendly and responsive staff.",
   "The hotel is clean, well-equipped, and very comfortable.",
@@ -621,7 +854,7 @@ const servicesName = [
   "Asian-European Buffet Night",
   "Luxury Couple Spa Suite",
   "Sunrise Fitness Studio",
-  "Hourly Motorbike Hire"
+  "Hourly Motorbike Hire",
 ];
 
 const serviceDescriptions = [
@@ -666,26 +899,9 @@ const serviceDescriptions = [
   "Taste culinary fusions with rotating dishes each night of the week.",
   "Designed for couples, this spa suite offers privacy and pampering.",
   "Morning classes and equipment with beach sunrise views.",
-  "Need just a few hours? Our flexible motorbike rental plans got you."
+  "Need just a few hours? Our flexible motorbike rental plans got you.",
 ];
 
-
-//Bỏ Facility dùng HotelFacility - bỏ trường HotelID
-//Bỏ RoomID trong roomFacility
-
-// Reset database
-
-//Tự tạo USER nếu chạy local
-const userIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-const hotelIds = [];
-const serviceIds = [];
-const roomIds = [];
-const reservationIds = [];
-const hotelfacilityIds = [];
-const roomFacilityIds = [];
-
-// Danh sách loại giường cố định
 const bedTypes = [
   {
     name: "Single Bed",
@@ -705,11 +921,6 @@ const bedTypes = [
   },
 ];
 
-// Insert Beds
-const bedDocs = db.beds.insertMany(bedTypes);
-const bedIds = Object.values(bedDocs.insertedIds);
-
-// Danh sách facility có sẵn
 const facilitiesName = [
   {
     name: "Free Wi-Fi",
@@ -826,385 +1037,249 @@ const roomFacilities = [
   },
 ];
 
-//Tránh giá trị trùng lặp và tạo đủ với dữ liệu
-let insertedRoomFacilities = new Set();
+const seed = async () => {
+  const client = new MongoClient(
+    process.env.MONGODB_URI || "mongodb://localhost:27017/new",
+    { useUnifiedTopology: true }
+  );
+  await client.connect();
+  const db = client.db();
 
-//Insert Room Facility
-for (let i = 0; i < roomFacilities.length; i++) {
-  if (!insertedRoomFacilities.has(roomFacilities[i].name)) {
-    let roomFacility = db.roomfacilities.insertOne({
-      name: roomFacilities[i].name,
-      description: roomFacilities[i].description,
-      icon: roomFacilities[i].icon,
-    });
+  // Xóa dữ liệu cũ
+  await db.collection("users").deleteMany({});
+  await db.collection("beds").deleteMany({});
+  await db.collection("roomfacilities").deleteMany({});
+  await db.collection("hotelfacilities").deleteMany({});
+  await db.collection("hotelservices").deleteMany({});
+  await db.collection("hotels").deleteMany({});
+  await db.collection("rooms").deleteMany({});
+  await db.collection("reservations").deleteMany({});
+  await db.collection("feedbacks").deleteMany({});
 
-    roomFacilityIds.push(roomFacility.insertedId);
-    insertedRoomFacilities.add(roomFacilities[i].name);
+  // Hash passwords before inserting users
+  const usersDataWithHashedPasswords = await Promise.all(
+    usersData.map(async (user) => {
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+      return { ...user, password: hashedPassword };
+    })
+  );
+
+  const users = await db
+    .collection("users")
+    .insertMany(usersDataWithHashedPasswords);
+
+  // Insert Beds
+  const bedDocs = await db.collection("beds").insertMany(bedTypes);
+  const bedIds = Object.values(bedDocs.insertedIds);
+
+  // Insert Room Facilities
+  let insertedRoomFacilities = new Set();
+  let roomFacilityIds = [];
+  for (let i = 0; i < roomFacilities.length; i++) {
+    if (!insertedRoomFacilities.has(roomFacilities[i].name)) {
+      let roomFacility = await db
+        .collection("roomfacilities")
+        .insertOne(roomFacilities[i]);
+      roomFacilityIds.push(roomFacility.insertedId);
+      insertedRoomFacilities.add(roomFacilities[i].name);
+    }
   }
-}
 
-//Insert facility
-let insertedFacilities = new Set();
-
-for (let i = 0; i < facilitiesName.length; i++) {
-  let facilityName = facilitiesName[i].name; // Kiểm tra nếu chưa tồn tại mới insert
-
-  if (!insertedFacilities.has(facilitiesName[i].name)) {
-    let facility = db.hotelfacilities.insertOne({
-      name: facilityName,
-      description: facilitiesName[i].description,
-      icon: facilitiesName[i].icon,
-    });
-
-    hotelfacilityIds.push(facility.insertedId);
-    insertedFacilities.add(facilitiesName[i].name);
+  // Insert Hotel Facilities
+  let insertedFacilities = new Set();
+  let hotelfacilityIds = [];
+  for (let i = 0; i < facilitiesName.length; i++) {
+    if (!insertedFacilities.has(facilitiesName[i].name)) {
+      let facility = await db
+        .collection("hotelfacilities")
+        .insertOne(facilitiesName[i]);
+      hotelfacilityIds.push(facility.insertedId);
+      insertedFacilities.add(facilitiesName[i].name);
+    }
   }
-}
 
-// Insert hotel service
-for (let i = 0; i < 42; i++) {
-  let randomPrice = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
-  let existingService = db.hotelservices.findOne({ name: servicesName[i] });
-
-  if (!existingService) {
-    let hotelService = db.hotelservices.insertOne({
+  // Insert Hotel Services
+  let serviceIds = [];
+  for (let i = 0; i < servicesName.length; i++) {
+    let hotelService = await db.collection("hotelservices").insertOne({
       name: servicesName[i],
-      description: serviceDescriptions[i], // Match index correctly
+      description: serviceDescriptions[i],
       type: servicesName[i].includes("Buffet") ? "person" : "service",
-      price: randomPrice,
+      price: Math.floor(Math.random() * (100 - 10 + 1)) + 10,
     });
     serviceIds.push(hotelService.insertedId);
   }
-}
-
-//Insert hotel
-for (let i = 0; i < 60; i++) {
-  let randomIndex = i % hotelNames.length;
-
-  let hotelFacilityIds = hotelfacilityIds
-    .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 3) + 3);
-
-  let hotelServiceIds = [serviceIds]
-  .sort(() => 0.5 - Math.random())
-  .slice(0, Math.floor(Math.random() * 3) + 3);
-
-  let images = [];
-  let numImages = 5;
-  for (let k = 0; k < numImages; k++) {
-    let hotelImageUrl =
-      hotelImage[Math.floor(Math.random() * hotelImage.length)];
-    images.push(hotelImageUrl);
-  } // **🛑 Kiểm tra khách sạn có bị trùng không trước khi insert**
-
-  let existingHotel = db.hotels.findOne({
-    hotelName: hotelNames[i],
-    address: hotelAddresses[i],
-  });
-
-  if (!existingHotel) {
-    let hotel = db.hotels.insertOne({
+  console.log("User:", JSON.stringify(users));
+  const addUser = () => {
+    // Chọn ngẫu nhiên một user có role là "OWNER"
+    const ownerUsers = usersData
+      .map((user, idx) => ({ ...user, _id: users.insertedIds[idx] }))
+      .filter((user) => user.role === "OWNER");
+    const randomIndex = Math.floor(Math.random() * ownerUsers.length);
+    return ownerUsers[randomIndex];
+  };
+  // Insert Hotels
+  let hotelIds = [];
+  for (let i = 0; i < hotelNames.length; i++) {
+    let images = [];
+    let user = addUser();
+    for (let k = 0; k < 5; k++) {
+      images.push(hotelImage[Math.floor(Math.random() * hotelImage.length)]);
+    }
+    let hotel = await db.collection("hotels").insertOne({
       hotelName: hotelNames[i],
-      owner: i + 1,
-      description: hotelDescriptions[randomIndex],
-      address: hotelAddresses[i],
+      owner: user._id,
+      description: hotelDescriptions[i % hotelDescriptions.length],
+      address: hotelAddresses[i % hotelAddresses.length],
       adminStatus: "APPROVED",
       ownerStatus: "ACTIVE",
-      services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
-      facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
-      rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
+      services: serviceIds.slice(i * 3, i * 3 + 3),
+      facilities: hotelfacilityIds.slice(
+        i % hotelfacilityIds.length,
+        (i % hotelfacilityIds.length) + 3
+      ),
+      star: Math.floor(Math.random() * 4) + 2,
+      rating: Math.floor(Math.random() * 5) + 1,
       pricePerNight:
-      Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
+        Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
       images: images,
       checkInStart: "12:00",
       checkInEnd: "13:00",
       checkOutStart: "10:00",
       checkOutEnd: "11:00",
     });
-
     hotelIds.push(hotel.insertedId);
+    if (user.ownedHotels) {
+      user.ownedHotels.push(hotel.insertedId);
+    } else {
+      user.ownedHotels = [hotel.insertedId];
+    }
+    db.collection("users").updateOne(
+      { _id: user._id },
+      { $addToSet: { ownedHotels: hotel.insertedId } }
+    );
   }
-}
 
-for (let i = 0; i < 50; i++) {
-  for (let j = 0; j < 3; j++) {
-    let selectedBeds = Array.from({ length: 3 }, () => ({
-      bed: bedIds[Math.floor(Math.random() * bedIds.length)],
+  // Insert Rooms
+  let roomIds = [];
+  for (let i = 0; i < hotelIds.length; i++) {
+    for (let j = 0; j < 3; j++) {
+      let selectedBeds = Array.from({ length: 3 }, () => ({
+        bed: bedIds[Math.floor(Math.random() * bedIds.length)],
+        quantity: Math.floor(Math.random() * 3) + 1,
+      }));
+      let images = [];
+      for (let k = 0; k < 3; k++) {
+        images.push(roomImage[Math.floor(Math.random() * roomImage.length)]);
+      }
+      let shuffledFacilities = roomFacilityIds
+        .map((facility) => ({ facility, sort: Math.random() }))
+        .sort((a, b) => a.sort - b.sort)
+        .slice(0, 3)
+        .map(({ facility }) => facility);
+      let room = await db.collection("rooms").insertOne({
+        name: roomNames[Math.floor(Math.random() * roomNames.length)],
+        type: roomTypes[Math.floor(Math.random() * roomTypes.length)],
+        price: Math.floor(Math.random() * ((1000 - 100) / 10 + 1)) * 10 + 100,
+        capacity: Math.floor(Math.random() * 4) + 1,
+        description:
+          roomDescriptions[Math.floor(Math.random() * roomDescriptions.length)],
+        images: images,
+        quantity: Math.floor(Math.random() * 10) + 1,
+        hotel: hotelIds[i],
+        facilities: shuffledFacilities,
+        bed: selectedBeds,
+      });
+      roomIds.push(room.insertedId);
+    }
+  }
+
+  // Insert Reservations
+  let reservationIds = [];
+  const now = new Date();
+  const reservationStatuses = [
+    "CHECKED OUT",
+    "COMPLETED",
+    "BOOKED",
+    "CHECKED IN",
+    "PENDING",
+    "CANCELLED",
+  ];
+  for (let i = 0; i < 200; i++) {
+    let randomStatus =
+      reservationStatuses[
+        Math.floor(Math.random() * reservationStatuses.length)
+      ];
+    let selectedRoomIds = [];
+    while (selectedRoomIds.length < 3) {
+      let randomRoom = roomIds[Math.floor(Math.random() * roomIds.length)];
+      if (!selectedRoomIds.includes(randomRoom)) {
+        selectedRoomIds.push(randomRoom);
+      }
+    }
+    let selectedRooms = selectedRoomIds.map((roomId) => ({
+      room: roomId,
       quantity: Math.floor(Math.random() * 3) + 1,
     }));
-
-    let images = [];
-    let numImages = 5; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
-    for (let k = 0; k < numImages; k++) {
-      let randomImage = roomImage[Math.floor(Math.random() * roomImage.length)];
-      images.push(randomImage);
+    let checkInDate = new Date(now);
+    let checkOutDate = new Date(now);
+    checkInDate.setDate(now.getDate() + Math.floor(Math.random() * 60 + 1));
+    checkOutDate.setDate(
+      checkInDate.getDate() + Math.floor(Math.random() * 5 + 1)
+    );
+    let numNights = Math.ceil(
+      (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
+    );
+    let totalPrice = 0;
+    let hotelId = hotelIds[i % hotelIds.length];
+    for (let k = 0; k < selectedRooms.length; k++) {
+      totalPrice += 100 * selectedRooms[k].quantity * numNights;
     }
-
-    let shuffledFacilities = roomFacilityIds
-      .map((facility) => ({ facility, sort: Math.random() })) // Thêm giá trị ngẫu nhiên
-      .sort((a, b) => a.sort - b.sort) // Sắp xếp theo giá trị ngẫu nhiên
-      .slice(0, Math.floor(Math.random() * 3) + 3) // Chọn từ 3-5 phần tử
-      .map(({ facility }) => facility); // Lấy lại giá trị gốc
-
-    let room = db.rooms.insertOne({
-      name: roomNames[Math.floor(Math.random() * roomNames.length)],
-      type: roomTypes[Math.floor(Math.random() * roomTypes.length)],
-      price: Math.floor(Math.random() * ((1000 - 100) / 10 + 1)) * 10 + 100,
-      capacity: Math.floor(Math.random() * 4) + 1,
-      description:
-      roomDescriptions[Math.floor(Math.random() * roomDescriptions.length)],
-      images: images,
-      facilities: shuffledFacilities,
-      quantity: Math.floor(Math.random() * 5) + 3,
-      hotel: hotelIds[i % hotelIds.length],
-      bed: selectedBeds,
-    });
-    roomIds.push(room.insertedId);
-  }
-}
-
-// Insert 100 hotels (Mỗi khách sạn có 5 ảnh và 3-5 facility)
-for (let i = 0; i < hotelNames.length; i++) {
-  let randomIndex = i % hotelNames.length;
-
-  let hotelFacilityIds = hotelfacilityIds
-    .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 3) + 3);
-
-  let hotelServiceIds = serviceIds
-    .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 3) + 3);
-
-  let images = [];
-  let numImages = 5; // 4-11 hình ảnh mỗi khách sạn
-  for (let k = 0; k < numImages; k++) {
-    let hotelImageUrl =
-      hotelImage[Math.floor(Math.random() * hotelImage.length)];
-    images.push(hotelImageUrl);
-  } // **🛑 Kiểm tra khách sạn có bị trùng không trước khi insert**
-
-  let existingHotel = db.hotels.findOne({
-    hotelName: hotelNames[i],
-    address: hotelAddresses[i],
-  });
-
-  if (!existingHotel) {
-    let hotel = db.hotels.insertOne({
-      hotelName: hotelNames[i],
-      owner: i + 1,
-      description: hotelDescriptions[randomIndex],
-      address: hotelAddresses[i],
-      adminStatus: "APPROVED",
-      ownerStatus: "ACTIVE",
-      services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
-      facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
-      rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
-      pricePerNight:
-        Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
-      images: images,
-      checkInStart: "12:00",
-      checkInEnd: "13:00",
-      checkOutStart: "10:00",
-      checkOutEnd: "11:00",
-    });
-
-    hotelIds.push(hotel.insertedId);
-  }
-}
-
-// Insert 60 rooms (Mỗi phòng có 3 ảnh)
-for (let i = 0; i < 20; i++) {
-  for (let j = 0; j < 3; j++) {
-    let selectedBeds = Array.from({ length: 3 }, () => ({
-      bed: bedIds[Math.floor(Math.random() * bedIds.length)],
-      quantity: Math.floor(Math.random() * 3) + 1,
-    }));
-
-    let images = [];
-    let numImages = 5; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
-    for (let k = 0; k < numImages; k++) {
-      let randomImage = roomImage[Math.floor(Math.random() * roomImage.length)];
-      images.push(randomImage);
-    }
-
-    let shuffledFacilities = roomFacilityIds
-      .map((facility) => ({ facility, sort: Math.random() })) // Thêm giá trị ngẫu nhiên
-      .sort((a, b) => a.sort - b.sort) // Sắp xếp theo giá trị ngẫu nhiên
-      .slice(0, Math.floor(Math.random() * 3) + 3) // Chọn từ 3-5 phần tử
-      .map(({ facility }) => facility); // Lấy lại giá trị gốc
-
-    let room = db.rooms.insertOne({
-      name: roomNames[Math.floor(Math.random() * roomNames.length)],
-      type: roomTypes[Math.floor(Math.random() * roomTypes.length)],
-      price: Math.floor(Math.random() * ((1000 - 100) / 10 + 1)) * 10 + 100,
-      capacity: Math.floor(Math.random() * 4) + 1,
-      description:
-        roomDescriptions[Math.floor(Math.random() * roomDescriptions.length)],
-      images: images,
-      quantity: Math.floor(Math.random() * 10) + 1,
-      hotel: hotelIds[i % hotelIds.length],
-      facilities: shuffledFacilities,
-      bed: selectedBeds,
-    });
-    roomIds.push(room.insertedId);
-  }
-}
-
-const now = new Date();
-// Trạng thái của Reservation
-const reservationStatuses = [
-  "CHECKED OUT", // Đã check-out, có thể để lại phản hồi
-  "COMPLETED", // Hoàn thành, đã phản hồi
-  "BOOKED", // Đã đặt, trả tiền nhưng chưa check-in
-  "CHECKED IN", // Đang ở, đã check-in
-  "PENDING", // Chờ xử lý hoặc xác nhận
-  "CANCELLED", // Đã hủy
-  // "NOT PAID", // Chưa trả tiền
-];
-
-for (let i = 0; i < 2000; i++) {
-  let randomStatus =
-    reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
-
-  let selectedRoomIds = [];
-  while (selectedRoomIds.length < 3) {
-    let randomRoom = roomIds[Math.floor(Math.random() * roomIds.length)];
-    if (!selectedRoomIds.includes(randomRoom)) {
-      selectedRoomIds.push(randomRoom);
-    }
-  }
-
-  let selectedRooms = selectedRoomIds.map((roomId) => ({
-    room: roomId,
-    quantity: Math.floor(Math.random() * 3) + 1,
-  }));
-
-  let checkInDate, checkOutDate;
-
-  // Tạo ngày createdAt ngẫu nhiên trong quá khứ
-  let createdAt = new Date(now);
-  createdAt.setDate(now.getDate() - Math.floor(Math.random() * 100 + 40));
-
-  switch (randomStatus) {
-    case "BOOKED":
-    case "PENDING":
-    case "CANCELLED":
-    case "NOT PAID":
-      checkInDate = new Date(now);
-      checkInDate.setDate(now.getDate() + Math.floor(Math.random() * 60 + 1));
-      checkOutDate = new Date(checkInDate);
-      checkOutDate.setDate(
-        checkInDate.getDate() + Math.floor(Math.random() * 5 + 1)
-      );
-      break;
-
-    case "CHECKED IN":
-      checkInDate = new Date(now);
-      checkInDate.setDate(now.getDate() - Math.floor(Math.random() * 3 + 2));
-      checkOutDate = new Date(now);
-      checkOutDate.setDate(
-        checkInDate.getDate() + Math.floor(Math.random() * 3 + 2)
-      );
-      if (checkInDate >= now) checkInDate.setDate(now.getDate() - 1); // đảm bảo check-in < hiện tại
-      if (checkOutDate < now) checkOutDate.setDate(now.getDate() + 1); // đảm bảo check-out > hiện tại
-      break;
-
-    case "CHECKED OUT":
-    case "COMPLETED":
-      checkInDate = new Date(createdAt);
-      checkInDate.setDate(
-        createdAt.getDate() + Math.floor(Math.random() * 30 + 1)
-      );
-      checkOutDate = new Date(checkInDate);
-      checkOutDate.setDate(
-        checkInDate.getDate() + Math.floor(Math.random() * 7 + 1)
-      );
-      if (checkOutDate <= now) checkOutDate.setDate(now.getDate() + 10); // đảm bảo checkOut > hiện tại
-      if (checkInDate <= now) checkInDate.setDate(now.getDate() + 5); // đảm bảo checkIn > hiện tại
-      break;
-  }
-
-  let numNights = Math.ceil(
-    (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
-  );
-  let totalPrice = 0;
-
-  let hotelId = hotelIds[i % hotelIds.length];
-  let hotelData = db.hotels.findOne({ _id: hotelId });
-  let hotelPricePerNight = hotelData ? hotelData.pricePerNight || 0 : 0;
-
-  for (let k = 0; k < selectedRooms.length; k++) {
-    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });
-    let roomPrice = roomData ? roomData.price : 0;
-    totalPrice += roomPrice * selectedRooms[k].quantity * numNights;
-  }
-
-  totalPrice += hotelPricePerNight * numNights;
-
-  if (isNaN(totalPrice)) {
-    console.error(`❌ Lỗi: totalPrice = NaN tại lượt thứ ${i + 1}`);
-    console.error({
+    totalPrice += 500 * numNights;
+    // Pick a random CUSTOMER user from inserted users
+    const customerUserIndexes = usersData
+      .map((user, idx) => ({ ...user, idx }))
+      .filter((user) => user.role === "CUSTOMER")
+      .map((user) => user.idx);
+    const randomCustomerIdx =
+      customerUserIndexes[
+        Math.floor(Math.random() * customerUserIndexes.length)
+      ];
+    let reservation = await db.collection("reservations").insertOne({
+      user: users.insertedIds[randomCustomerIdx],
+      hotel: hotelId,
+      rooms: selectedRooms,
       checkInDate,
       checkOutDate,
-      numNights,
-      selectedRooms,
-      hotelPricePerNight,
+      status: randomStatus,
       totalPrice,
+      createdAt: new Date(),
     });
-    continue;
+    reservationIds.push(reservation.insertedId);
   }
 
-  const randomUserId = Math.floor(Math.random() * 5) + 11;
-
-  let reservation = db.reservations.insertOne({
-    user: randomUserId,
-    hotel: hotelId,
-    rooms: selectedRooms,
-    checkInDate,
-    checkOutDate,
-    status: randomStatus,
-    totalPrice,
-    createdAt,
-  });
-
-  reservationIds.push(reservation.insertedId);
-}
-
-function getRandomDateWithinDays(days) {
-  const now = new Date();
-  const past = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
-  return new Date(
-    past.getTime() + Math.random() * (now.getTime() - past.getTime())
-  );
-}
-
-// Insert 10 Feedbacks - chỉ áp dụng với reservation có trạng thái hợp lệ
-reservationIds.forEach((resId) => {
-  let reservation = db.reservations.findOne({ _id: resId });
-  if (reservation && reservation.status === "COMPLETED") {
-    db.feedbacks.insertOne({
-      user: reservation.user, // Lấy thông tin user từ reservation
-      reservation: resId,
-      hotel: reservation.hotel, // Lấy thông tin khách sạn từ reservation
-      content:
-        feedbackContents[Math.floor(Math.random() * feedbackContents.length)],
-      likedBy: [3, 4, 5, 6, 11, 12, 13, 14],
-      dislikedBy: [1, 2, 7, 8, 9, 10, 15],
-      rating: Math.floor(Math.random() * 5) + 1,
-      createdAt: getRandomDateWithinDays(30), // Random trong 30 ngày gần nhất
-    });
+  // Insert Feedbacks
+  for (let i = 0; i < reservationIds.length; i++) {
+    let reservation = await db
+      .collection("reservations")
+      .findOne({ _id: reservationIds[i] });
+    if (reservation && reservation.status === "COMPLETED") {
+      await db.collection("feedbacks").insertOne({
+        user: reservation.user,
+        reservation: reservation._id,
+        hotel: reservation.hotel,
+        content:
+          feedbackContents[Math.floor(Math.random() * feedbackContents.length)],
+        likedBy: [3, 4, 5, 6, 11, 12, 13, 14],
+        dislikedBy: [1, 2, 7, 8, 9, 10, 15],
+        rating: Math.floor(Math.random() * 5) + 1,
+        createdAt: new Date(),
+      });
+    }
   }
-});
 
-const hotelId = hotelIds.map((id) => ObjectId(id));
+  console.log("Seed thành công!");
+  await client.close();
+};
 
-db.users.updateOne(
-  { _id: 11 }, // thay 1 bằng id thực tế
-  {
-    $addToSet: {
-      favorites: { $each: hotelId },
-    },
-  }
-);
+seed().catch(console.error);
