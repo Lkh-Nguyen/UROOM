@@ -18,8 +18,6 @@ import "../../../css/hotelHost/ListFeedbackHotelPage.css";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
 import { ExclamationTriangleFill } from "react-bootstrap-icons";
-import Sidebar from "../Sidebar";
-import TransactionDetail from "../TransactionDetail";
 import ReportedFeedbackHotel from "./ReportedFeedbackHotel";
 
 const ListFeedbackHotelPage = () => {

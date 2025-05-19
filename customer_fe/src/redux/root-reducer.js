@@ -14,7 +14,7 @@ const rootReducer = combineReducers({
     Room: RoomReducer,
     Feedback:FeedbackReducer,
     Reservation:ReservationReducer,
-    ReportFeedback:ReportFeedbackReducer
+    ReportFeedback:ReportFeedbackReducer,
 });
 
 export default rootReducer;

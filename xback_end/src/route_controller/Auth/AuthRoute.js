@@ -21,4 +21,9 @@ authRouter.put(
   AuthController.updateAvatar
 );
 
+
+
+//hotel host
+authRouter.post("/login_owner", AuthController.loginOwner);
+
 module.exports = authRouter;

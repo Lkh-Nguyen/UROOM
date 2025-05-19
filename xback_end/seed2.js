@@ -189,24 +189,24 @@ const hotelNames = [
 
 const hotelAddresses = [
   "12 Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Lê Lợi, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
+  "45 Lê Lợi, Phường Bến Thành, Quận 3, Thành phố Hồ Chí Minh",
   "78 Hoàng Diệu, Phường 12, Quận 4, Thành phố Hồ Chí Minh",
   "23 Trần Hưng Đạo, Phường 6, Quận 5, Thành phố Hồ Chí Minh",
   "90 Phan Xích Long, Phường 3, Quận Phú Nhuận, Thành phố Hồ Chí Minh",
   "56 Võ Văn Kiệt, Phường Thạnh Mỹ Lợi, Thành phố Thủ Đức, Thành phố Hồ Chí Minh",
   "34 Tôn Đức Thắng, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh",
-  "67 Bùi Viện, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
+  "67 Bùi Viện, Phường Phạm Ngũ Lão, Quận 6, Thành phố Hồ Chí Minh",
   "11 Đinh Tiên Hoàng, Phường 3, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "102 Pasteur, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
-  "72 Nguyễn Văn Cừ, Phường An Khánh, Quận 5, Thành phố Hồ Chí Minh",
-  "33 Lê Quang Định, Phường 7, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "21 Mai Thị Lựu, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "101 Nguyễn Thái Học, Phường Tân Định, Quận 1, Thành phố Hồ Chí Minh",
-  "8 Cao Thắng, Phường 12, Quận 10, Thành phố Hồ Chí Minh",
-  "59 Xô Viết Nghệ Tĩnh, Phường 21, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "12 Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "83 Ngô Quyền, Phường 12, Quận 5, Thành phố Hồ Chí Minh",
+  "102 Pasteur, Phường Bến Nghé, Quận 8, Thành phố Hồ Chí Minh",
+  "45 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 10, Thành phố Hồ Chí Minh",
+  "72 Nguyễn Văn Cừ, Phường An Khánh, Quận 11, Thành phố Hồ Chí Minh",
+  "33 Lê Quang Định, Phường 7, Quận Bình Tân, Thành phố Hồ Chí Minh",
+  "21 Mai Thị Lựu, Phường Đa Kao, Quận Bình Chánh, Thành phố Hồ Chí Minh",
+  "101 Nguyễn Thái Học, Phường Tân Định, Quận Củ Chi, Thành phố Hồ Chí Minh",
+  "8 Cao Thắng, Phường 12, Quận Gò Vấp, Thành phố Hồ Chí Minh",
+  "59 Xô Viết Nghệ Tĩnh, Phường 21, Quận Cần Giờ, Thành phố Hồ Chí Minh",
+  "12 Nguyễn Thị Minh Khai, Phường Đa Kao, Quận Tân Phú, Thành phố Hồ Chí Minh",
+  "83 Ngô Quyền, Phường 12, Quận Tân Bình, Thành phố Hồ Chí Minh",
   "77 Lê Duẩn, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
   "130 Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
   "99 Nguyễn Đình Chiểu, Phường 6, Quận 3, Thành phố Hồ Chí Minh",
@@ -226,20 +226,20 @@ const hotelAddresses = [
   "56 Minh Khai, Phường Minh Khai, Quận Hai Bà Trưng, Thành phố Hà Nội",
   "72 Trường Chinh, Phường Khương Mai, Quận Thanh Xuân, Thành phố Hà Nội",
   "100 Nguyễn Chí Thanh, Phường Trung Liệt, Quận Đống Đa, Thành phố Hà Nội",
-  "102 Võ Nguyên Giáp, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "102 Võ Nguyên Giáp, Phường Phước Mỹ, Quận Hoàng Sa, Thành phố Đà Nẵng",
   "200 Bạch Đằng, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
-  "17 Nguyễn Văn Linh, Phường Nam Dương, Quận Hải Châu, Thành phố Đà Nẵng",
+  "17 Nguyễn Văn Linh, Phường Nam Dương, Quận Cẩm Lệ, Thành phố Đà Nẵng",
   "65 Phan Châu Trinh, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
-  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Ngũ Hành Sơn, Thành phố Đà Nẵng",
   "57 Hùng Vương, Phường Bình Hiên, Quận Hải Châu, Thành phố Đà Nẵng",
-  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Hoàng Sa, Thành phố Đà Nẵng",
   "38 Bùi Thị Xuân, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
   "12 Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
-  "44 Lý Tự Trọng, Phường Hòa Cường Nam, Quận Hải Châu, Thành phố Đà Nẵng",
-  "71 Cách Mạng Tháng 8, Phường Thanh Bình, Quận Hải Châu, Thành phố Đà Nẵng",
+  "44 Lý Tự Trọng, Phường Hòa Cường Nam, Quận Hòa Vang, Thành phố Đà Nẵng",
+  "71 Cách Mạng Tháng 8, Phường Thanh Bình, Quận Hòa Vang, Thành phố Đà Nẵng",
   "50 Nguyễn Công Trứ, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
-  "39 Hải Phòng, Phường Thuận Phước, Quận Hải Châu, Thành phố Đà Nẵng",
-  "61 Trần Phú, Phường Thạch Thang, Quận Hải Châu, Thành phố Đà Nẵng",
+  "39 Hải Phòng, Phường Thuận Phước, Quận Thanh Khê, Thành phố Đà Nẵng",
+  "61 Trần Phú, Phường Thạch Thang, Quận Thanh Khê, Thành phố Đà Nẵng",
 ];
 
 const roomTypes = [
@@ -580,20 +580,95 @@ const hotelImage = [
 ];
 
 const servicesName = [
-  "Breakfast",
-  "Breakfast Buffet",
-  "Dinner Buffet",
-  "Spa & Massage",
-  "Fitness Gym",
+  "In-room Breakfast",
+  "International Breakfast Buffet",
+  "Evening Seafood Buffet",
+  "Traditional Vietnamese Spa",
+  "SkyView Fitness Center",
+  "City Explorer Motorbike Rental",
+  "Healthy Morning Set",
+  "Continental Breakfast Selection",
+  "BBQ Dinner by the Pool",
+  "Luxury Aromatherapy Spa",
+  "24/7 Fitness Hub",
+  "Daily City Tour Bike Rental",
+  "Local Flavor Breakfast",
+  "Pan-Asian Breakfast Buffet",
+  "Chef’s Special Dinner Buffet",
+  "Hot Stone Spa Therapy",
+  "Indoor Strength Gym",
+  "Coastal Ride Motorbike Rental",
+  "Organic Breakfast Experience",
+  "Eco-Farm Breakfast Buffet",
+  "Cultural Cuisine Dinner Buffet",
+  "Deep Tissue Massage & Spa",
+  "Fitness Lounge with Sauna",
+  "Adventure Scooter Rentals",
+  "Floating Breakfast Service",
+  "Fusion Breakfast Buffet",
+  "Romantic Candlelight Dinner",
+  "Tropical Herbal Spa",
+  "Mountain View Fitness Zone",
+  "Weekend Motorbike Tours",
+  "Gluten-free Morning Set",
+  "French-Inspired Breakfast Bar",
+  "Live Grill Night Buffet",
+  "Ocean Therapy Spa",
+  "High-End Tech Gym",
+  "Countryside Bike Rental",
+  "Kid-friendly Breakfast Service",
+  "Multi-cuisine Morning Feast",
+  "Asian-European Buffet Night",
+  "Luxury Couple Spa Suite",
+  "Sunrise Fitness Studio",
+  "Hourly Motorbike Hire"
 ];
 
 const serviceDescriptions = [
-  "Enjoy a variety of delicious morning meals delivered straight to your room.",
-  "Start your day with a diverse buffet of local and international breakfast options.",
-  "Indulge in a rich and satisfying dinner buffet with a rotating menu of dishes.",
-  "Relax and rejuvenate with our premium spa treatments and professional massage services.",
-  "Stay fit with our modern gym facilities and guidance from experienced trainers.",
+  "Enjoy a personalized breakfast served directly to your room at your preferred time.",
+  "Start your morning with a range of international cuisines and fresh fruit stations.",
+  "Indulge in freshly grilled seafood under the stars, right by the beachfront.",
+  "Relax in a calming spa with traditional herbal treatments and local ingredients.",
+  "Work out while overlooking the city skyline in our panoramic rooftop gym.",
+  "Discover the city with our easy-to-rent scooters, including helmets and maps.",
+  "Fresh fruits, oats, and detox juices for a health-conscious start to your day.",
+  "Bread, cheese, eggs, and more – all you need for a classic European-style breakfast.",
+  "Join our open-air BBQ every evening, featuring live music and grilled delights.",
+  "Soak in calming scents and let our masseuses pamper you with essential oils.",
+  "Stay active anytime with our fully equipped 24/7 indoor training facility.",
+  "Roam the nearby landmarks with a rental bike and a complimentary city guide.",
+  "Wake up to a traditional Vietnamese breakfast with pho and bánh mì.",
+  "A wide selection of Asian and Western breakfast dishes to suit all tastes.",
+  "Dine on rotating themes, from Italian nights to Vietnamese comfort food.",
+  "Our signature therapy includes hot stones and acupressure techniques.",
+  "Our gym offers bodyweight zones, resistance machines, and yoga mats.",
+  "Perfect for scenic drives along the coast or exploring nearby rural towns.",
+  "Locally sourced and organic ingredients define this nourishing breakfast.",
+  "Enjoy breakfast made with produce straight from our eco-friendly farm.",
+  "Savor regional dishes prepared to showcase Vietnamese heritage.",
+  "Recharge with a firm massage focused on relieving deep muscle tension.",
+  "Includes weights, cardio machines, sauna, and relaxation area.",
+  "Take scenic scooter trips with GPS-equipped bikes and fuel included.",
+  "Floating trays served in your private pool with fruits and pastries.",
+  "Modern fusion dishes blending Asian spices and Western classics.",
+  "A perfect dinner setting with live violin music and wine pairings.",
+  "Relieve stress with tropical fruit-based scrubs and warm compresses.",
+  "Train with a view of the surrounding mountains and fresh air.",
+  "Curated motorbike tours on weekends with local guides.",
+  "Ideal for dietary needs: gluten-free, dairy-free, and allergen-free.",
+  "Inspired by Parisian cafés, enjoy croissants and espresso daily.",
+  "Our live station buffet brings sizzling flavors right to your table.",
+  "Natural sea salt scrubs and water therapies for total relaxation.",
+  "High-tech machines, fitness tracking, and smart mirrors included.",
+  "Cycle through nature trails and quiet villages with ease.",
+  "With pancakes, cereals, and fun snacks, your kids will love breakfast.",
+  "Includes everything from dim sum to eggs benedict in one buffet.",
+  "Taste culinary fusions with rotating dishes each night of the week.",
+  "Designed for couples, this spa suite offers privacy and pampering.",
+  "Morning classes and equipment with beach sunrise views.",
+  "Need just a few hours? Our flexible motorbike rental plans got you."
 ];
+
 
 //Bỏ Facility dùng HotelFacility - bỏ trường HotelID
 //Bỏ RoomID trong roomFacility
@@ -787,7 +862,7 @@ for (let i = 0; i < facilitiesName.length; i++) {
 }
 
 // Insert hotel service
-for (let i = 0; i < servicesName.length; i++) {
+for (let i = 0; i < 42; i++) {
   let randomPrice = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
   let existingService = db.hotelservices.findOne({ name: servicesName[i] });
 
@@ -795,6 +870,7 @@ for (let i = 0; i < servicesName.length; i++) {
     let hotelService = db.hotelservices.insertOne({
       name: servicesName[i],
       description: serviceDescriptions[i], // Match index correctly
+      type: servicesName[i].includes("Buffet") ? "person" : "service",
       price: randomPrice,
     });
     serviceIds.push(hotelService.insertedId);
@@ -809,12 +885,12 @@ for (let i = 0; i < 60; i++) {
     .sort(() => 0.5 - Math.random())
     .slice(0, Math.floor(Math.random() * 3) + 3);
 
-  let hotelServiceIds = serviceIds
-    .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 3) + 3);
+  let hotelServiceIds = [serviceIds]
+  .sort(() => 0.5 - Math.random())
+  .slice(0, Math.floor(Math.random() * 3) + 3);
 
   let images = [];
-  let numImages = Math.floor(Math.random() * 8) + 4; // 4-11 hình ảnh mỗi khách sạn
+  let numImages = 5;
   for (let k = 0; k < numImages; k++) {
     let hotelImageUrl =
       hotelImage[Math.floor(Math.random() * hotelImage.length)];
@@ -829,21 +905,22 @@ for (let i = 0; i < 60; i++) {
   if (!existingHotel) {
     let hotel = db.hotels.insertOne({
       hotelName: hotelNames[i],
-      owner: userIds[i % userIds.length],
+      owner: i + 1,
       description: hotelDescriptions[randomIndex],
       address: hotelAddresses[i],
       adminStatus: "APPROVED",
       ownerStatus: "ACTIVE",
-      services: hotelServiceIds,
+      services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
       facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
+      star: Math.floor(Math.random() * 5) + 1, // 2-5 sao
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
-      pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
+      pricePerNight:
+      Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
       images: images,
       checkInStart: "12:00",
       checkInEnd: "13:00",
       checkOutStart: "10:00",
-      checkOutEnd: "11:00"
+      checkOutEnd: "11:00",
     });
 
     hotelIds.push(hotel.insertedId);
@@ -858,7 +935,7 @@ for (let i = 0; i < 50; i++) {
     }));
 
     let images = [];
-    let numImages = Math.floor(Math.random() * 4) + 2; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
+    let numImages = 5; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
     for (let k = 0; k < numImages; k++) {
       let randomImage = roomImage[Math.floor(Math.random() * roomImage.length)];
       images.push(randomImage);
@@ -876,7 +953,7 @@ for (let i = 0; i < 50; i++) {
       price: Math.floor(Math.random() * ((1000 - 100) / 10 + 1)) * 10 + 100,
       capacity: Math.floor(Math.random() * 4) + 1,
       description:
-        roomDescriptions[Math.floor(Math.random() * roomDescriptions.length)],
+      roomDescriptions[Math.floor(Math.random() * roomDescriptions.length)],
       images: images,
       facilities: shuffledFacilities,
       quantity: Math.floor(Math.random() * 5) + 3,
@@ -900,7 +977,7 @@ for (let i = 0; i < hotelNames.length; i++) {
     .slice(0, Math.floor(Math.random() * 3) + 3);
 
   let images = [];
-  let numImages = Math.floor(Math.random() * 8) + 4; // 4-11 hình ảnh mỗi khách sạn
+  let numImages = 5; // 4-11 hình ảnh mỗi khách sạn
   for (let k = 0; k < numImages; k++) {
     let hotelImageUrl =
       hotelImage[Math.floor(Math.random() * hotelImage.length)];
@@ -915,21 +992,22 @@ for (let i = 0; i < hotelNames.length; i++) {
   if (!existingHotel) {
     let hotel = db.hotels.insertOne({
       hotelName: hotelNames[i],
-      owner: userIds[i % userIds.length],
+      owner: i + 1,
       description: hotelDescriptions[randomIndex],
       address: hotelAddresses[i],
       adminStatus: "APPROVED",
       ownerStatus: "ACTIVE",
-      services: hotelServiceIds,
+      services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
       facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
+      star: Math.floor(Math.random() * 5) + 1, // 2-5 sao
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
-      pricePerNight: Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
+      pricePerNight:
+        Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
       images: images,
       checkInStart: "12:00",
       checkInEnd: "13:00",
       checkOutStart: "10:00",
-      checkOutEnd: "11:00"
+      checkOutEnd: "11:00",
     });
 
     hotelIds.push(hotel.insertedId);
@@ -945,7 +1023,7 @@ for (let i = 0; i < 20; i++) {
     }));
 
     let images = [];
-    let numImages = Math.floor(Math.random() * 4) + 4; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
+    let numImages = 5; // Chọn ngẫu nhiên từ 1-3 hình ảnh cho mỗi phòng
     for (let k = 0; k < numImages; k++) {
       let randomImage = roomImage[Math.floor(Math.random() * roomImage.length)];
       images.push(randomImage);
@@ -986,7 +1064,7 @@ const reservationStatuses = [
   // "NOT PAID", // Chưa trả tiền
 ];
 
-for (let i = 0; i < 1500; i++) {
+for (let i = 0; i < 2000; i++) {
   let randomStatus =
     reservationStatuses[Math.floor(Math.random() * reservationStatuses.length)];
 
@@ -1036,7 +1114,9 @@ for (let i = 0; i < 1500; i++) {
     case "CHECKED OUT":
     case "COMPLETED":
       checkInDate = new Date(createdAt);
-      checkInDate.setDate(createdAt.getDate() + Math.floor(Math.random() * 30 + 1));
+      checkInDate.setDate(
+        createdAt.getDate() + Math.floor(Math.random() * 30 + 1)
+      );
       checkOutDate = new Date(checkInDate);
       checkOutDate.setDate(
         checkInDate.getDate() + Math.floor(Math.random() * 7 + 1)
@@ -1056,7 +1136,7 @@ for (let i = 0; i < 1500; i++) {
   let hotelPricePerNight = hotelData ? hotelData.pricePerNight || 0 : 0;
 
   for (let k = 0; k < selectedRooms.length; k++) {
-    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });  
+    let roomData = db.rooms.findOne({ _id: selectedRooms[k].room });
     let roomPrice = roomData ? roomData.price : 0;
     totalPrice += roomPrice * selectedRooms[k].quantity * numNights;
   }
@@ -1110,8 +1190,8 @@ reservationIds.forEach((resId) => {
       hotel: reservation.hotel, // Lấy thông tin khách sạn từ reservation
       content:
         feedbackContents[Math.floor(Math.random() * feedbackContents.length)],
-      likedBy: [3,4,5,6,11,12,13,14],
-      dislikedBy: [1,2,7,8,9,10,15],
+      likedBy: [3, 4, 5, 6, 11, 12, 13, 14],
+      dislikedBy: [1, 2, 7, 8, 9, 10, 15],
       rating: Math.floor(Math.random() * 5) + 1,
       createdAt: getRandomDateWithinDays(30), // Random trong 30 ngày gần nhất
     });

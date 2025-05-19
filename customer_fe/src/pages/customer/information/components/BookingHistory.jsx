@@ -26,7 +26,7 @@ const BookingHistory = () => {
   const dispatch = useAppDispatch();
   const Auth = useAppSelector((state) => state.Auth.Auth);
 
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   // Get filter and page from URL params or use defaults
   const getUrlParam = (name, defaultValue) => {
     if (typeof window !== "undefined") {
@@ -43,8 +43,10 @@ const BookingHistory = () => {
   console.log("Page: ", page);
   const [activeFilter, setActiveFilter] = useState(Number(filter) ?? 0);
   const [dateFilter, setDateFilter] = useState(date ?? "NEWEST");
-  const [activePage, setActivePage] = useState(Number(page) == 0 ? 1 : Number(page));
-  console.log("activePage: ", activeFilter)
+  const [activePage, setActivePage] = useState(
+    Number(page) == 0 ? 1 : Number(page)
+  );
+  console.log("activePage: ", activeFilter);
   const [itemsPerPage, setItemsPerPage] = useState(3); // 3 columns x 2 rows = 6 items per page
   const [totalPages, setTotalPages] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -52,6 +54,9 @@ const BookingHistory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [filterBill, setFilterBill] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [accountHolderName, setAccountHolderName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [bankName, setBankName] = useState("");
 
   // Filter options
   const filters = [
@@ -74,11 +79,10 @@ const BookingHistory = () => {
     "#DC3545", // CANCELLED - Đỏ (hủy bỏ, lỗi)
   ];
 
-
   // Update URL when filters change
   useEffect(() => {
     if (typeof window !== "undefined") {
-      console.log("active123: ", activePage)
+      console.log("active123: ", activePage);
       const params = new URLSearchParams();
       params.set("filter", activeFilter.toString());
       params.set("date", dateFilter);
@@ -155,10 +159,10 @@ const BookingHistory = () => {
 
   function parseCurrency(formatted) {
     if (!formatted) return 0; // hoặc null tùy vào yêu cầu
-    const numericString = formatted.replace(/[^\d]/g, '');
+    const numericString = formatted.replace(/[^\d]/g, "");
     return Number(numericString);
   }
-  
+
   // Format currency for display
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "$0";
@@ -238,9 +242,9 @@ const BookingHistory = () => {
       activePage > Math.ceil(filterBill.length / itemsPerPage) &&
       filterBill.length > 0
     ) {
-      if(totalPages > 1){
+      if (totalPages > 1) {
         setActivePage(totalPages - 1);
-      }else{
+      } else {
         setActivePage(1);
       }
     }
@@ -251,40 +255,52 @@ const BookingHistory = () => {
     setActivePage(pageNumber);
   };
 
-
   const handleCancelBooking = async (id) => {
-    setShowModal(false);
-    try {
-      const response = await Factories.cancel_payment(id);
-      if (response?.status === 200) {
-        console.log("Response: ", response)
-        showToast.success("Cancel reservation successfully !!!");
+    console.log("A: ", accountHolderName);
+    console.log("A: ", accountNumber);
+    console.log("A: ", bankName);
+
+    if (!accountHolderName || !accountNumber || !bankName) {
+      showToast.error("Please input full information banking");
+    } else {
+      setShowModal(false);
+      try {
+        const response = await Factories.cancel_payment(id);
+        if (response?.status === 200) {
+          console.log("Response: ", response);
+          showToast.success("Cancel reservation successfully !!!");
+        }
+      } catch (error) {
+        console.error("Error fetching hotels:", error);
+      } finally {
       }
-    } catch (error) {
-      console.error("Error fetching hotels:", error);
-    } finally {
+
+      const refundPolicy = calculateRefundPolicy();
+
+      try {
+        const response = await Factories1.create_refunding_reservation(
+          id,
+          refundPolicy.refundAmount,
+          accountHolderName,
+          accountNumber,
+          bankName
+        );
+        if (response?.status === 200) {
+          console.log("Response: ", response);
+          showToast.success("Cancel reservation successfully !!!");
+        }
+        console.log("ABC");
+      } catch (error) {
+        console.error("Error fetching hotels:", error);
+      } finally {
+      }
+      fetchUserReservations();
     }
-
-    const refundPolicy = calculateRefundPolicy();
-
-    try {
-      const response = await Factories1.create_refunding_reservation(id, refundPolicy.refundAmount);
-      if (response?.status === 200) {
-        console.log("Response: ", response)
-        showToast.success("Cancel reservation successfully !!!");
-      }
-      console.log("ABC")
-    } catch (error) {
-      console.error("Error fetching hotels:", error);
-    } finally {
-    }  
-     fetchUserReservations();
-  }
-
+  };
 
   function parseCurrency(formatted) {
     if (!formatted) return 0; // hoặc null tùy vào yêu cầu
-    const numericString = formatted.replace(/[^\d]/g, '');
+    const numericString = formatted.replace(/[^\d]/g, "");
     return Number(numericString);
   }
 
@@ -314,8 +330,8 @@ const BookingHistory = () => {
 
   const calculateRefundPolicy = () => {
     const daysUntilCheckIn = calculateDaysUntilCheckIn();
-    const totalPrice= parseCurrency(selectedReservation?.totalPrice);
-    if(selectedReservation?.status === "PENDING"){
+    const totalPrice = parseCurrency(selectedReservation?.totalPrice);
+    if (selectedReservation?.status === "PENDING") {
       return {
         refundPercentage: 100,
         refundAmount: totalPrice,
@@ -323,7 +339,7 @@ const BookingHistory = () => {
         alertClass: "refund-alert full-refund",
         daysUntilCheckIn,
       };
-    }else{
+    } else {
       if (daysUntilCheckIn < 1) {
         return {
           refundPercentage: 50,
@@ -457,7 +473,9 @@ const BookingHistory = () => {
                   <Row>
                     <Col md={8}>
                       <div className="reservation-details">
-                        <h5 className="mb-3">Reservation ID: {reservation.id}</h5>
+                        <h5 className="mb-3">
+                          Reservation ID: {reservation.id}
+                        </h5>
                         <p>
                           <strong>Status:</strong>
                           <span
@@ -491,12 +509,11 @@ const BookingHistory = () => {
                           </Col>
                           <Col md={6}>
                             <p>
-                              <strong>Created-at:</strong> {Utils.getDate(reservation.createdAt, 1)}
+                              <strong>Created-at:</strong>{" "}
+                              {Utils.getDate(reservation.createdAt, 1)}
                             </p>
                           </Col>
                         </Row>
-
-
                       </div>
                     </Col>
                     <Col
@@ -524,7 +541,7 @@ const BookingHistory = () => {
                         </Button>
                       )}
 
-                      {(activeFilter === 0) && (
+                      {activeFilter === 0 && (
                         <Button
                           variant="outline-success"
                           onClick={() => {}}
@@ -534,7 +551,7 @@ const BookingHistory = () => {
                         </Button>
                       )}
 
-                      {(activeFilter == 2) && (
+                      {activeFilter == 2 && (
                         <Button
                           variant="outline-success"
                           onClick={() => {}}
@@ -553,11 +570,8 @@ const BookingHistory = () => {
                         </Button>
                       )}
 
-                      {(activeFilter === 6) && (
-                        <Button
-                          variant="outline-danger"
-                          disabled={true}
-                        >
+                      {activeFilter === 6 && (
+                        <Button variant="outline-danger" disabled={true}>
                           Already Cancelled
                         </Button>
                       )}
@@ -567,15 +581,15 @@ const BookingHistory = () => {
                           onClick={() => {
                             console.log(reservation);
                             // Store state in sessionStorage for complex state passing
-                            navigate(Routers.PaymentPage,
-                              {
-                                state: {
-                                  createdAt: reservation.createdAt,
-                                  idReservation: reservation.id,
-                                  totalPrice: parseCurrency(reservation.totalPrice),
-                                }
-                              }
-                            )
+                            navigate(Routers.PaymentPage, {
+                              state: {
+                                createdAt: reservation.createdAt,
+                                idReservation: reservation.id,
+                                totalPrice: parseCurrency(
+                                  reservation.totalPrice
+                                ),
+                              },
+                            });
                           }}
                         >
                           Pay Money
@@ -670,7 +684,15 @@ const BookingHistory = () => {
         selectedReservation={selectedReservation}
         show={showModal}
         onHide={() => setShowModal(false)}
-        onConfirm={() => {handleCancelBooking(selectedReservation.id)}}
+        onConfirm={() => {
+          handleCancelBooking(selectedReservation.id);
+        }}
+        accountHolderName={accountHolderName}
+        accountNumber={accountNumber}
+        bankName={bankName}
+        setAccountHolderName={setAccountHolderName}
+        setAccountNumber={setAccountNumber}
+        setBankName={setBankName}
       />
     </Container>
   );

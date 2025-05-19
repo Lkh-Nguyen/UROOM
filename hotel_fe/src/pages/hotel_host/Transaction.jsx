@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Row, Col, Table, Form, Button, Card, Alert } from "react-bootstrap"
 import "bootstrap/dist/css/bootstrap.min.css"
-import { showToast, ToastProvider } from "components/ToastContainer"
+import { showToast, ToastProvider } from "@components/ToastContainer"
 import { useNavigate } from "react-router-dom"
 import TransactionDetail from "./TransactionDetail"
 

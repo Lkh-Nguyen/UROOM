@@ -2,6 +2,7 @@ import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Utils from "../../../../utils/Utils";
 import { Form, Badge, Row, Col } from "react-bootstrap";
+import { useState } from "react";
 
 // Combined component with inline styles
 function CancelReservationModal({
@@ -9,6 +10,12 @@ function CancelReservationModal({
   show,
   onHide,
   onConfirm,
+  accountHolderName,
+  accountNumber,
+  bankName,
+  setAccountHolderName,
+  setAccountNumber,
+  setBankName,
 }) {
   const calculateDaysUntilCheckIn = () => {
     if (!selectedReservation?.checkIn) {
@@ -91,7 +98,6 @@ function CancelReservationModal({
   };
 
   const refundPolicy = calculateRefundPolicy();
-
   return (
     <>
       {/* CSS Styles */}
@@ -236,20 +242,24 @@ function CancelReservationModal({
                     <Form.Control
                       type="text"
                       placeholder="Enter account holder name"
+                      value={accountHolderName}
+                      onChange={(e) => setAccountHolderName(e.target.value)}
                       required
                     />
                   </Form.Group>
                 </Col>
               </Row>
-              
+
               <Row className="mb-3">
-                                <Col md={12}>
+                <Col md={12}>
                   <Form.Group controlId="accountNumber">
                     <Form.Label>Account Number</Form.Label>
                     <Form.Control
                       type="text"
                       placeholder="Enter account number"
                       required
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
                     />
                   </Form.Group>
                 </Col>
@@ -259,7 +269,10 @@ function CancelReservationModal({
                 <Col md={12}>
                   <Form.Group controlId="bankName">
                     <Form.Label>Bank Name</Form.Label>
-                    <Form.Select>
+                    <Form.Select
+                      value={bankName}
+                      onChange={(e) => setBankName(e.target.value)}
+                    >
                       <option value="">Select a bank</option>
                       <option value="Vietcombank">Vietcombank</option>
                       <option value="VietinBank">VietinBank</option>

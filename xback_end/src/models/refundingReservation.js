@@ -27,6 +27,18 @@ const refundingReservationSchema = new Schema(
       type: String,
       default: null
     },
+    accountHolderName: {
+      type: String,
+      required: true,
+    },
+    accountNumber: {
+      type: String,
+      required: true,
+    },
+    bankName: {
+      type: String,
+      required: true,
+    },
     requestDate: {
       type: Date,
       default: Date.now,

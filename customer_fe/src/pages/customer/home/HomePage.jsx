@@ -552,12 +552,14 @@ function OtherHotels() {
                       gap: "8px",
                       color: "#555",
                       fontSize: "0.95rem",
-                      marginTop: '-20px',
+                      marginTop: "-20px",
                       marginBottom: "12px",
                     }}
                   >
                     <FaCalendarAlt style={{ color: "#0d6efd" }} />
-                    <span style={{fontSize: '16px'}}>{hotel.totalBookings} bookings this month</span>
+                    <span style={{ fontSize: "16px" }}>
+                      {hotel.totalBookings} bookings this month
+                    </span>
                   </div>
                   <Button
                     variant="outline-primary"
@@ -767,11 +769,6 @@ function RecommendHotels() {
                   className="hotel-image"
                   style={{ height: "250px" }}
                 />
-                <div className="rating-overlay">
-                  {[...Array(5)].map((_, i) => (
-                    <FaStar key={i} className="star-icon" />
-                  ))}
-                </div>
               </div>
               <Card.Body>
                 <Card.Title className="hotel-name">{hotel.city}</Card.Title>
@@ -894,7 +891,16 @@ const ChatBox = () => {
       {isOpen && (
         <div className="chatbox">
           <div className="chatbox-header">
-            <span>Chatbox</span>
+            <span>
+            <img
+              src={chatbox || "/placeholder.svg"}
+              alt="AI Chat"
+              width="20"
+              height="20"
+              className="me-2"
+            />
+              Chatbox
+            </span>
             <FaTimes className="close-icon" onClick={toggleChat} />
           </div>
           <div className="chatbox-messages">

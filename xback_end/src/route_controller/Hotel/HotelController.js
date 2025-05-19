@@ -95,7 +95,6 @@ exports.getHotelsByIds = asyncHandler(async (req, res) => {
     .populate("services")
     .populate("facilities");
 
-    console.log("hotel: ", listHotels)
   // Tính trung bình rating
   const finalHotelTemps = await Promise.all(
     listHotels.map(async (hotel) => {
@@ -246,8 +245,7 @@ exports.getTop3HotelsThisMonth = async (req, res) => {
     endOfMonth.setMonth(endOfMonth.getMonth() + 1)
     endOfMonth.setDate(1);
     endOfMonth.setHours(0, 0, 0, 0);
-    console.log("startOfMonth: ",startOfMonth);
-    console.log("endOfMonth: ", endOfMonth);
+
 
     const topHotels = await Reservation.aggregate([
       {

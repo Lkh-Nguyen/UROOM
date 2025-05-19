@@ -15,8 +15,8 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import RoomAvailabilityCalendar from "pages/hotel_host/RoomAvailabilityCalendar";
-import Transaction from "pages/hotel_host/Transaction";
+import RoomAvailabilityCalendar from "@pages/hotel_host/RoomAvailabilityCalendar";
+import Transaction from "@pages/hotel_host/Transaction";
 import AdditionalServicesPage from "../service/AdditionalServicesPage";
 import RoomListingPage from "../create_hotel/RoomListingPage";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +26,11 @@ import * as Routers from "../../../utils/Routes";
 import MyAccountHotelPage from "../information/MyAccountHotelPage";
 import HotelManagement from "../hotel/HotelManagement";
 import ListFeedbackHotelPage from "../Feedback/ListFeedbackHotelPage";
-import  Chat  from "../Chat"
+import Chat from "../Chat";
+import { useAppSelector } from "@redux/store";
+import { Dropdown, Image } from "react-bootstrap";
+import { useAppDispatch } from "@redux/store";
+import AuthActions from "@redux/auth/actions";
 
 ChartJS.register(
   CategoryScale,
@@ -43,7 +47,10 @@ ChartJS.register(
 
 function App() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  console.log("Auth: ", Auth);
   const navigate = useNavigate();
+  const dispatch= useAppDispatch();
   // Dữ liệu biểu đồ doanh thu
   const revenueData = {
     labels: [
@@ -542,8 +549,8 @@ function App() {
                 href="#"
                 onClick={() => setActiveTab("feedbacks")}
               >
-                <i className="bi bi-gear nav-icon"></i>
-                <span>Đánh giá khách sạn</span>
+                <i className="bi-chat-left-text"/>
+                <span style={{marginLeft: '10px'}}>Đánh giá khách sạn</span>
               </a>
             </li>
             <li className="nav-item">
@@ -556,7 +563,16 @@ function App() {
                 <span>Tin nhắn</span>
               </a>
             </li>
-            
+            <li className="nav-item">
+              <a
+                className={`nav-link ${activeTab === "setting" ? "active" : ""}`}
+                href="#"
+                onClick={() => setActiveTab("setting")}
+              >
+                <i className="bi bi-gear nav-icon"></i>
+                <span>Cài đặt</span>
+              </a>
+            </li>
           </ul>
 
           <div className="mt-auto p-3">
@@ -602,64 +618,59 @@ function App() {
                     </span>
                   </button>
                 </div>
-                <div className="dropdown">
-                  <a
-                    href="#"
-                    className="d-flex align-items-center text-decoration-none dropdown-toggle"
-                    id="userDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    <img
-                      src="https://scontent.fhan20-1.fna.fbcdn.net/v/t39.30808-1/481223386_649334790801725_8801908443559005726_n.jpg?stp=dst-jpg_s200x200_tt6&_nc_cat=103&ccb=1-7&_nc_sid=e99d92&_nc_ohc=ZChh7VAqW_IQ7kNvgGKtXUC&_nc_oc=AdlCt8np4tl2lUIo3dnp-dIz3OXB-51ZihOgTZhg_xhyOPDZYMRcRwWg6FOpN1Dzyfc&_nc_zt=24&_nc_ht=scontent.fhan20-1.fna&_nc_gid=8FSVh04MreKDnt1haXp86A&oh=00_AYE612vGKDzzuC7keL_GPC9ej8kSnY6I-gyYMBP9oewOcA&oe=67E018D6"
-                      className="rounded-circle me-2"
-                      alt="Admin"
-                      style={{ width: "50px", height: "50px" }}
-                    />
-                    <div>
-                      <div className="fw-bold" style={{ fontSize: "16px" }}>
-                        Nguyễn Quản Lý
-                      </div>
-                      <div
-                        className="small text-muted"
-                        style={{ fontSize: "14px" }}
+                {Auth._id !== -1 && (
+                  <Dropdown align="end">
+                    <Dropdown.Toggle
+                      variant="light"
+                      className="login-btn d-flex align-items-center"
+                    >
+                      <a
+                        style={{
+                          display: "inline-block",
+                          maxWidth: "150px", // hoặc width tùy bạn
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
                       >
-                        Quản lý khách sạn
-                      </div>
-                    </div>
-                  </a>
-
-                  {/* Dropdown Menu */}
-                  <ul
-                    className="dropdown-menu dropdown-menu-end"
-                    aria-labelledby="userDropdown"
-                  >
-                    {/* <li>
-                      <a 
-                        className="dropdown-item"
-                        onClick={() => {
+                        {Auth.name}
+                      </a>{" "}
+                      <Image
+                        src={
+                          Auth?.image?.url != "" &&
+                          Auth?.image?.url != undefined
+                            ? Auth?.image?.url
+                            : "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                        }
+                        roundedCircle
+                        width="30"
+                        height="30"
+                        className="ms-2 me-2"
+                      />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() =>{
                           navigate(Routers.MyAccountHotelPage)
                         }}
                       >
-                        <i className="bi bi-person-circle me-2"></i> Thông tin
-                        cá nhân
-                      </a>
-                    </li>
-                    <li>
-                      <hr className="dropdown-divider" />
-                    </li> */}
-                    <li>
-                      <button
-                        className="dropdown-item text-danger"
+                        View Information
+                      </Dropdown.Item>
+                      <Dropdown.Divider />
+                      <Dropdown.Item
                         onClick={() => {
-                          navigate(Routers.HomeHotel);
+                          navigate(Routers.HomeHotel, {
+                            state: {
+                              message: "Logout account successfully !!!",
+                            },
+                          });
                         }}
                       >
-                        <i className="bi bi-box-arrow-right me-2"></i> Đăng xuất
-                      </button>
-                    </li>
-                  </ul>
-                </div>
+                        Logout
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
               </div>
             </div>
           </nav>
@@ -1137,10 +1148,14 @@ function App() {
                 <ListFeedbackHotelPage />
               </>
             )}
-              {activeTab === "mess" && (
+            {activeTab === "mess" && (
               <>
-              <Chat/>
-                
+                <Chat />
+              </>
+            )}
+            {activeTab === "setting" && (
+              <>
+                <MyAccountHotelPage />
               </>
             )}
 
