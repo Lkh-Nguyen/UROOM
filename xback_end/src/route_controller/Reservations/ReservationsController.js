@@ -13,7 +13,6 @@ exports.getReservationsByUserId = async (req, res) => {
       .populate("rooms.room")
       .sort({ createdAt: -1 });
 
-    console.log("reservations: ", reservations);
     if (reservations.length === 0) {
       return res.status(404).json({
         error: true,
@@ -66,7 +65,6 @@ exports.getReservationById = async (req, res) => {
 
 exports.getReservationDetailById = asyncHandler(async (req, res) => {
   const { reservationId } = req.params;
-  console.log("abc");
   if (!reservationId) {
     return res.status(400).json({
       message: RESERVATION.INVALID_STATUS,
@@ -113,29 +111,26 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
   }
 
   // 2. Xử lý đơn PENDING mà quá thời gian check-in
-  const pendingReservations = await Reservation.find({ status: "PENDING" });
+  const pendingReservations = await Reservation.find({ status: "PENDING" }).populate('user');
   for (const r of pendingReservations) {
     try {
       const checkinDate = new Date(r.checkInDate);
 
       // Tạo 12:00 PM cùng ngày với ngày check-in
-      const noonOfCheckinDate = new Date(
-        checkinDate.getFullYear(),
-        checkinDate.getMonth(),
-        checkinDate.getDate(),
-        12,
-        0,
-        0 // 12:00:00 PM
-      );
+      const oneDayLater = new Date(now);
+      oneDayLater.setDate(oneDayLater.getDate() + 1 );
 
-      if (now > noonOfCheckinDate) {
+      if (oneDayLater > checkinDate) {
         r.status = "CANCELLED";
         await r.save();
 
         await RefundingReservation.create({
-          user: r.user,
+          user: r.user._id,
           reservation: r._id,
           refundAmount: r.totalPrice,
+          accountHolderName: r.user.accountHolderName ?? "Hoang Nguyen",
+          accountNumber: r.user.accountNumber ?? "Le Kim Hoang Nguyen",
+          bankName:  r.user.bankName ?? "Techcom Bank",
         });
 
         console.log(

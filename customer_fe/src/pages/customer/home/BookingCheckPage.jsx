@@ -92,7 +92,8 @@ const BookingCheckPage = () => {
         )
       }
     } catch (error) {
-      console.error("Error fetching hotels:", error);
+      console.error("Error create payment: ", error);
+      navigate(Routers.ErrorPage,)
     } finally {
     }
   };

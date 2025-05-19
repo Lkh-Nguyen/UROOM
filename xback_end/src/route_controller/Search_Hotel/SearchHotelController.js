@@ -115,7 +115,6 @@ exports.searchAndFilterHotels = async (req, res) => {
             ],
           }).populate("rooms.room");
 
-          console.log("overlappingReservations: ", overlappingReservations);
           const allRooms = await Room.find({ hotel: hotel._id });
 
           // Calculate total booked quantity per room

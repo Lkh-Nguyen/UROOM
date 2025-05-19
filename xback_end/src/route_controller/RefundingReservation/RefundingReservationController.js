@@ -4,15 +4,7 @@ const asyncHandler = require("../../middlewares/asyncHandler");
 const createRefundingReservation = asyncHandler(async (req, res) => {
   const { idReservation, refundAmount, accountHolderName, accountNumber, bankName } = req.body;
   const user = req.user;
-
-  console.log("user: ", user);
-  console.log("idReservation: ", idReservation);
-  console.log("refundAmount: ", refundAmount);
-  console.log("accountHolderName: ", accountHolderName);
-  console.log("accountNumber: ", accountNumber);
-  console.log("bankName: ", bankName);
-
-
+  
   if (!user || !idReservation || !refundAmount) {
     return res.status(400).json({ message: "Missing required fields." });
   }

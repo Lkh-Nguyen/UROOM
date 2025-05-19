@@ -189,24 +189,24 @@ const hotelNames = [
 
 const hotelAddresses = [
   "12 Nguyễn Huệ, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Lê Lợi, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
+  "45 Lê Lợi, Phường Bến Thành, Quận 3, Thành phố Hồ Chí Minh",
   "78 Hoàng Diệu, Phường 12, Quận 4, Thành phố Hồ Chí Minh",
   "23 Trần Hưng Đạo, Phường 6, Quận 5, Thành phố Hồ Chí Minh",
   "90 Phan Xích Long, Phường 3, Quận Phú Nhuận, Thành phố Hồ Chí Minh",
   "56 Võ Văn Kiệt, Phường Thạnh Mỹ Lợi, Thành phố Thủ Đức, Thành phố Hồ Chí Minh",
   "34 Tôn Đức Thắng, Phường Tân Phú, Quận 7, Thành phố Hồ Chí Minh",
-  "67 Bùi Viện, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
+  "67 Bùi Viện, Phường Phạm Ngũ Lão, Quận 6, Thành phố Hồ Chí Minh",
   "11 Đinh Tiên Hoàng, Phường 3, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "102 Pasteur, Phường Bến Nghé, Quận 1, Thành phố Hồ Chí Minh",
-  "45 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 1, Thành phố Hồ Chí Minh",
-  "72 Nguyễn Văn Cừ, Phường An Khánh, Quận 5, Thành phố Hồ Chí Minh",
-  "33 Lê Quang Định, Phường 7, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "21 Mai Thị Lựu, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "101 Nguyễn Thái Học, Phường Tân Định, Quận 1, Thành phố Hồ Chí Minh",
-  "8 Cao Thắng, Phường 12, Quận 10, Thành phố Hồ Chí Minh",
-  "59 Xô Viết Nghệ Tĩnh, Phường 21, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
-  "12 Nguyễn Thị Minh Khai, Phường Đa Kao, Quận 1, Thành phố Hồ Chí Minh",
-  "83 Ngô Quyền, Phường 12, Quận 5, Thành phố Hồ Chí Minh",
+  "102 Pasteur, Phường Bến Nghé, Quận 8, Thành phố Hồ Chí Minh",
+  "45 Nguyễn Thị Minh Khai, Phường Bến Thành, Quận 10, Thành phố Hồ Chí Minh",
+  "72 Nguyễn Văn Cừ, Phường An Khánh, Quận 11, Thành phố Hồ Chí Minh",
+  "33 Lê Quang Định, Phường 7, Quận Bình Tân, Thành phố Hồ Chí Minh",
+  "21 Mai Thị Lựu, Phường Đa Kao, Quận Bình Chánh, Thành phố Hồ Chí Minh",
+  "101 Nguyễn Thái Học, Phường Tân Định, Quận Củ Chi, Thành phố Hồ Chí Minh",
+  "8 Cao Thắng, Phường 12, Quận Gò Vấp, Thành phố Hồ Chí Minh",
+  "59 Xô Viết Nghệ Tĩnh, Phường 21, Quận Cần Giờ, Thành phố Hồ Chí Minh",
+  "12 Nguyễn Thị Minh Khai, Phường Đa Kao, Quận Tân Phú, Thành phố Hồ Chí Minh",
+  "83 Ngô Quyền, Phường 12, Quận Tân Bình, Thành phố Hồ Chí Minh",
   "77 Lê Duẩn, Phường Phạm Ngũ Lão, Quận 1, Thành phố Hồ Chí Minh",
   "130 Nguyễn Hữu Cảnh, Phường 22, Quận Bình Thạnh, Thành phố Hồ Chí Minh",
   "99 Nguyễn Đình Chiểu, Phường 6, Quận 3, Thành phố Hồ Chí Minh",
@@ -226,20 +226,20 @@ const hotelAddresses = [
   "56 Minh Khai, Phường Minh Khai, Quận Hai Bà Trưng, Thành phố Hà Nội",
   "72 Trường Chinh, Phường Khương Mai, Quận Thanh Xuân, Thành phố Hà Nội",
   "100 Nguyễn Chí Thanh, Phường Trung Liệt, Quận Đống Đa, Thành phố Hà Nội",
-  "102 Võ Nguyên Giáp, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "102 Võ Nguyên Giáp, Phường Phước Mỹ, Quận Hoàng Sa, Thành phố Đà Nẵng",
   "200 Bạch Đằng, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
-  "17 Nguyễn Văn Linh, Phường Nam Dương, Quận Hải Châu, Thành phố Đà Nẵng",
+  "17 Nguyễn Văn Linh, Phường Nam Dương, Quận Cẩm Lệ, Thành phố Đà Nẵng",
   "65 Phan Châu Trinh, Phường Phước Ninh, Quận Hải Châu, Thành phố Đà Nẵng",
-  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "25 Nguyễn Văn Linh, Phường An Hải Bắc, Quận Ngũ Hành Sơn, Thành phố Đà Nẵng",
   "57 Hùng Vương, Phường Bình Hiên, Quận Hải Châu, Thành phố Đà Nẵng",
-  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Sơn Trà, Thành phố Đà Nẵng",
+  "80 Nguyễn Thị Minh Khai, Phường An Hải Đông, Quận Hoàng Sa, Thành phố Đà Nẵng",
   "38 Bùi Thị Xuân, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
   "12 Ngô Quyền, Phường An Hải Bắc, Quận Sơn Trà, Thành phố Đà Nẵng",
-  "44 Lý Tự Trọng, Phường Hòa Cường Nam, Quận Hải Châu, Thành phố Đà Nẵng",
-  "71 Cách Mạng Tháng 8, Phường Thanh Bình, Quận Hải Châu, Thành phố Đà Nẵng",
+  "44 Lý Tự Trọng, Phường Hòa Cường Nam, Quận Hòa Vang, Thành phố Đà Nẵng",
+  "71 Cách Mạng Tháng 8, Phường Thanh Bình, Quận Hòa Vang, Thành phố Đà Nẵng",
   "50 Nguyễn Công Trứ, Phường Phước Mỹ, Quận Sơn Trà, Thành phố Đà Nẵng",
-  "39 Hải Phòng, Phường Thuận Phước, Quận Hải Châu, Thành phố Đà Nẵng",
-  "61 Trần Phú, Phường Thạch Thang, Quận Hải Châu, Thành phố Đà Nẵng",
+  "39 Hải Phòng, Phường Thuận Phước, Quận Thanh Khê, Thành phố Đà Nẵng",
+  "61 Trần Phú, Phường Thạch Thang, Quận Thanh Khê, Thành phố Đà Nẵng",
 ];
 
 const roomTypes = [
@@ -912,7 +912,7 @@ for (let i = 0; i < 60; i++) {
       ownerStatus: "ACTIVE",
       services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
       facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
+      star: Math.floor(Math.random() * 5) + 1, // 2-5 sao
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight:
       Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500,
@@ -999,7 +999,7 @@ for (let i = 0; i < hotelNames.length; i++) {
       ownerStatus: "ACTIVE",
       services: i <= 14 ? serviceIds.slice(i * 3, i * 3 + 3) : [],
       facilities: hotelFacilityIds,
-      star: Math.floor(Math.random() * 4) + 2, // 2-5 sao
+      star: Math.floor(Math.random() * 5) + 1, // 2-5 sao
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight:
         Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
