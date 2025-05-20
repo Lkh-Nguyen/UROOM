@@ -1,7 +1,7 @@
 import HotelActions from "./actions";
 
 const initialState = {
-  hotels: [],
+  hotel: null,
   hotelDetail: null,
   error: null,
   top3Hotels: [],
@@ -14,10 +14,11 @@ const favoriteHotelReducer = (state = initialState, action) => {
         ...state,
         hotels: action.payload,
       };
-    case HotelActions.FETCH_HOTELS_BY_IDS_SUCCESS:
+    case HotelActions.FETCH_HOTEL_BY_OWNER_ID_SUCCESS:
+      console.log(action.payload.hotels);
       return {
         ...state,
-        hotels: action.payload.hotels,
+        hotel: action.payload.hotels[0],
       };
     case HotelActions.FETCH_All_HOTEL_SUCCESS:
       return {

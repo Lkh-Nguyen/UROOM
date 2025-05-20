@@ -4,7 +4,7 @@ const ApiConstants = {
   //FEEDBACK:
   FEEDBACK_HOTEL: "/feedback/get-feedback-hotel/:hotelId",
   //HOTEL:
-  FETCH_HOTELS_BY_IDS: "/hotel/get-hotel-byId",
+  FETCH_HOTEL_BY_OWNER_ID: "/hotel/get-hotel-by-ownerId",
   ///REPORTFEEDBACK
   REPORT_FEEDBACK: "reportFeedback/create_report_feedback_owner",
   FETCH_REPORTS_BY_USERID: "reportFeedback/my-reports",

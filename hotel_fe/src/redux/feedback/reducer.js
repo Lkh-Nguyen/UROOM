@@ -5,8 +5,11 @@ const initialState = {
   total: 0,
   page: 1,
   limit: 3,
+  totalFeedback: 0,
   error: null,
   selectedFeedback: null,
+  averageRating: 0,
+  ratingBreakdown: {},
 };
 
 const feedbackReducer = (state = initialState, action) => {
@@ -47,8 +50,11 @@ const feedbackReducer = (state = initialState, action) => {
         ...state,
         feedbacks: action.payload.listFeedback,
         total: action.payload.totalPages,
+        totalFeedback: action.payload.totalFeedback,
         page: action.payload.currentPage,
         limit: action.payload.limit,
+        averageRating: action.payload.averageRating,
+        ratingBreakdown: action.payload.ratingBreakdown,
       };
 
     default:

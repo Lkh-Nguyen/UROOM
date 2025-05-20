@@ -20,9 +20,9 @@ const Factories = {
     return api.post(ApiConstants.FETCH_FAVORITE_HOTELS, { ids, params });
   },
 
-  fetch_hotels_by_ids: (ids) => {
-    const url = ApiConstants.FETCH_HOTELS_BY_IDS;
-    return api.post(url, { ids });
+  fetch_hotels_by_owner_id: (id) => {
+    const url = ApiConstants.FETCH_HOTEL_BY_OWNER_ID;
+    return api.post(url, { id });
   },
 
   get_all_hotels: () => {

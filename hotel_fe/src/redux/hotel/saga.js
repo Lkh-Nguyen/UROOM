@@ -40,16 +40,16 @@ function* getFavoriteHotels() {
   });
 }
 
-function* getHotelsByIds() {
-  yield takeEvery(HotelActions.FETCH_HOTELS_BY_IDS, function* (action) {
-    const { ids, onSuccess, onFailed, onError } = action.payload;
+function* getHotelsByOwnerId() {
+  yield takeEvery(HotelActions.FETCH_HOTEL_BY_OWNER_ID, function* (action) {
+    const { id, onSuccess, onFailed, onError } = action.payload;
 
     try {
-      const response = yield call(() => Factories.fetch_hotels_by_ids(ids));
+      const response = yield call(() => Factories.fetch_hotels_by_owner_id(id));
       if (response?.status === 200) {
         const data = response.data;
         yield put({
-          type: HotelActions.FETCH_HOTELS_BY_IDS_SUCCESS,
+          type: HotelActions.FETCH_HOTEL_BY_OWNER_ID_SUCCESS,
           payload: data,
         });
         onSuccess?.(data);
@@ -143,7 +143,7 @@ function* getTop3Hotels() {
 export default function* userSaga() {
   yield all([
     fork(getFavoriteHotels),
-    fork(getHotelsByIds),
+    fork(getHotelsByOwnerId),
     fork(getAllHotels),
     fork(getTop3Hotels),
   ]);

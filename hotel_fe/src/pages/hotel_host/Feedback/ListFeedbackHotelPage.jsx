@@ -22,31 +22,21 @@ const ListFeedbackHotelPage = () => {
   const dispatch = useDispatch();
   const feedbacks = useSelector((state) => state.Feedback);
   const auth = useSelector((state) => state.Auth.Auth);
-  const hotels = useSelector((state) => state.Hotel.hotels);
+  const hotel = useSelector((state) => state.Hotel.hotel);
 
   const [showModal, setShowModal] = useState(false);
   const [activePage, setActivePage] = useState(1);
-  const [selectedHotel, setSelectedHotel] = useState();
   const [selectedStar, setSelectedStar] = useState(0);
   const [selectedFeedbackId, setSelectedFeedbackId] = useState();
-  const hotelOptions = useMemo(() => {
-    return Array.isArray(hotels)
-      ? hotels.map((hoteldata, idx) => (
-          <option key={idx} value={idx}>
-            {hoteldata?.hotel?.hotelName || ""}
-          </option>
-        ))
-      : [];
-  }, [hotels]);
 
-  const feedbackStats = useMemo(() => {
-    if (!Array.isArray(feedbacks.feedbacks)) return [0, 0, 0, 0, 0];
-    const result = [0, 0, 0, 0, 0];
-    for (const fb of feedbacks.feedbacks) {
-      if (fb.rating >= 1 && fb.rating <= 5) result[fb.rating - 1]++;
-    }
-    return result;
-  }, [feedbacks.feedbacks]);
+  const ratingLabels = ["Cơ bản", "Tiêu Chuẩn", "Khá Tốt", "Tốt", "Rất Tốt"];
+  const feedbackStats = [
+    feedbacks.ratingBreakdown.oneStar || 0,
+    feedbacks.ratingBreakdown.twoStar || 0,
+    feedbacks.ratingBreakdown.threeStar || 0,
+    feedbacks.ratingBreakdown.fourStar || 0,
+    feedbacks.ratingBreakdown.fiveStar || 0,
+  ];
 
   const filteredFeedbacks = useMemo(() => {
     if (!Array.isArray(feedbacks.feedbacks)) return [];
@@ -56,29 +46,22 @@ const ListFeedbackHotelPage = () => {
   }, [feedbacks.feedbacks, selectedStar]);
 
   useEffect(() => {
-    if (auth?.ownedHotels?.length > 0) {
+    if (auth) {
       dispatch({
-        type: HotelActions.FETCH_HOTELS_BY_IDS,
-        payload: { ids: auth.ownedHotels },
+        type: HotelActions.FETCH_HOTEL_BY_OWNER_ID,
+        payload: { id: auth._id },
       });
     }
-  }, [auth.id, auth.ownedHotels, dispatch]);
+  }, [auth, dispatch]);
 
   useEffect(() => {
-    if (hotels?.length > 0 && !selectedHotel) {
-      setSelectedHotel(hotels[0]);
-    }
-  }, [hotels, selectedHotel]);
-
-  useEffect(() => {
-    const hotelId = selectedHotel?.hotel?._id;
-    if (!hotelId) return;
+    if (!hotel) return;
 
     dispatch({
       type: FeedbackActions.FETCH_FEEDBACK_BY_HOTELID,
-      payload: { hotelId, query: { page: activePage } },
+      payload: { hotelId: hotel._id, query: { page: activePage } },
     });
-  }, [activePage, selectedHotel?.hotel?._id, dispatch]);
+  }, [activePage, dispatch, hotel]);
 
   const renderStars = useCallback((count, total = 5) => {
     return Array.from({ length: total }).map((_, i) =>
@@ -109,18 +92,12 @@ const ListFeedbackHotelPage = () => {
 
   return (
     <div className="main-content_1 p-3">
-      <Form.Select
-        onChange={(event) => setSelectedHotel(hotels[event.target.value])}
-      >
-        {hotelOptions}
-      </Form.Select>
-
       <h2 className="fw-bold my-4">
-        Những review khách của du khách về {selectedHotel?.hotel?.hotelName}
+        Những review khách của du khách về {hotel?.hotelName}
       </h2>
 
       <p className="text-muted mb-4">
-        Xếp hạng và đánh giá tổng thể {selectedHotel?.hotel?.hotelName}
+        Xếp hạng và đánh giá tổng thể {hotel?.hotelName}
       </p>
 
       <Row className="mb-4 justify-content-center align-items-center">
@@ -131,17 +108,17 @@ const ListFeedbackHotelPage = () => {
               <Card className="rating-box border-4 shadow-sm">
                 <Card.Body className="d-flex align-items-center justify-content-center p-2">
                   <span className="rating-number">
-                    {selectedHotel?.avgValueRating}
+                    {feedbacks?.averageRating}
                   </span>
                 </Card.Body>
               </Card>
             </Col>
             <Col>
               <h2 className="rating-title mb-0">
-                {handleRating(Math.round(selectedHotel?.avgValueRating || 0))}
+                {handleRating(Math.round(feedbacks?.averageRating || 0))}
               </h2>
               <p className="rating-count mb-1">
-                Từ {selectedHotel?.totalFeedbacks || 0} đánh giá
+                Từ {feedbacks?.totalFeedback || 0} đánh giá
               </p>
               <div className="rating-source">
                 Bởi khách du lịch trong{" "}
@@ -152,24 +129,21 @@ const ListFeedbackHotelPage = () => {
           </Row>
         </Col>
         <Col md={4}>
-          {["Cơ bản", "Tiêu Chuẩn", "Khá Tốt", "Tốt", "Rất Tốt"].map(
-            (label, idx) => (
-              <div key={idx} className="rating-item">
-                <div className="d-flex justify-content-between mb-1">
-                  <span>{label}</span>
-                  <span>{feedbackStats[idx]}</span>
-                </div>
-                <ProgressBar
-                  now={
-                    selectedHotel?.totalFeedbacks
-                      ? (feedbackStats[idx] / selectedHotel.totalFeedbacks) *
-                        100
-                      : 0
-                  }
-                />
+          {ratingLabels.map((label, idx) => (
+            <div key={idx} className="rating-item">
+              <div className="d-flex justify-content-between mb-1">
+                <span>{label}</span>
+                <span>{feedbackStats[idx]}</span>
               </div>
-            )
-          )}
+              <ProgressBar
+                now={
+                  feedbacks && feedbacks.length
+                    ? (feedbackStats[idx] / feedbacks.feedbacks.length) * 100
+                    : 0
+                }
+              />
+            </div>
+          ))}
         </Col>
         <Col md={2} />
       </Row>
