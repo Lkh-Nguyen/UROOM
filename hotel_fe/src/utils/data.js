@@ -1,4 +1,17 @@
-import { FaWifi, FaSwimmingPool, FaParking, FaConciergeBell, FaUtensils, FaDumbbell, FaShuttleVan, FaSpa, FaChalkboardTeacher, FaDog, FaWineBottle, FaHandsWash } from "react-icons/fa";
+import {
+  FaWifi,
+  FaSwimmingPool,
+  FaParking,
+  FaConciergeBell,
+  FaUtensils,
+  FaDumbbell,
+  FaShuttleVan,
+  FaSpa,
+  FaChalkboardTeacher,
+  FaDog,
+  FaWineBottle,
+  FaHandsWash,
+} from "react-icons/fa";
 
 export const cityOptionSelect = [
   { value: "Hà Nội", label: "Hà Nội" },
@@ -63,7 +76,7 @@ export const cityOptionSelect = [
   { value: "Tuyên Quang", label: "Tuyên Quang" },
   { value: "Vĩnh Long", label: "Vĩnh Long" },
   { value: "Vĩnh Phúc", label: "Vĩnh Phúc" },
-  { value: "Yên Bái", label: "Yên Bái" }
+  { value: "Yên Bái", label: "Yên Bái" },
 ];
 
 export const districtsByCity = {
@@ -134,18 +147,77 @@ export const districtsByCity = {
   ],
 };
 
-
 export const listFacilities = [
-  { name: "Free Wi-Fi", icon: "FaWifi", description: "Free high-speed internet for guests.", iconTemp: FaWifi },
-  { name: "Swimming Pool", icon: "FaSwimmingPool", description: "Spacious, clean, and modern swimming pool.", iconTemp: FaSwimmingPool },
-  { name: "Parking Lot", icon: "FaParking", description: "Free parking available for staying guests.", iconTemp: FaParking },
-  { name: "24/7 Room Service", icon: "FaConciergeBell", description: "Room service available at all times.", iconTemp: FaConciergeBell },
-  { name: "Restaurant", icon: "FaUtensils", description: "Restaurant serving a wide variety of delicious dishes.", iconTemp: FaUtensils },
-  { name: "Fitness Center", icon: "FaDumbbell", description: "Gym fully equipped with modern facilities.", iconTemp: FaDumbbell },
-  { name: "Airport Shuttle", icon: "FaShuttleVan", description: "Convenient airport transfer service for guests.", iconTemp: FaShuttleVan },
-  { name: "Spa & Wellness Center", icon: "FaSpa", description: "Relaxing spa treatments and wellness options.", iconTemp: FaSpa },
-  { name: "Laundry Service", icon: "FaHandsWash", description: "Professional laundry and dry-cleaning service.", iconTemp: FaHandsWash },
-  { name: "Conference Room", icon: "FaChalkboardTeacher", description: "Spacious and well-equipped conference facilities.", iconTemp: FaChalkboardTeacher },
-  { name: "Pet-Friendly", icon: "FaDog", description: "Pets are welcome in designated rooms.", iconTemp: FaDog },
-  { name: "Mini Bar", icon: "FaWineBottle", description: "In-room mini bar with snacks and beverages.", iconTemp: FaWineBottle }
+  {
+    name: "Free Wi-Fi",
+    icon: "FaWifi",
+    description: "Free high-speed internet for guests.",
+    iconTemp: FaWifi,
+  },
+  {
+    name: "Swimming Pool",
+    icon: "FaSwimmingPool",
+    description: "Spacious, clean, and modern swimming pool.",
+    iconTemp: FaSwimmingPool,
+  },
+  {
+    name: "Parking Lot",
+    icon: "FaParking",
+    description: "Free parking available for staying guests.",
+    iconTemp: FaParking,
+  },
+  {
+    name: "24/7 Room Service",
+    icon: "FaConciergeBell",
+    description: "Room service available at all times.",
+    iconTemp: FaConciergeBell,
+  },
+  {
+    name: "Restaurant",
+    icon: "FaUtensils",
+    description: "Restaurant serving a wide variety of delicious dishes.",
+    iconTemp: FaUtensils,
+  },
+  {
+    name: "Fitness Center",
+    icon: "FaDumbbell",
+    description: "Gym fully equipped with modern facilities.",
+    iconTemp: FaDumbbell,
+  },
+  {
+    name: "Airport Shuttle",
+    icon: "FaShuttleVan",
+    description: "Convenient airport transfer service for guests.",
+    iconTemp: FaShuttleVan,
+  },
+  {
+    name: "Spa & Wellness Center",
+    icon: "FaSpa",
+    description: "Relaxing spa treatments and wellness options.",
+    iconTemp: FaSpa,
+  },
+  {
+    name: "Laundry Service",
+    icon: "FaHandsWash",
+    description: "Professional laundry and dry-cleaning service.",
+    iconTemp: FaHandsWash,
+  },
+  {
+    name: "Conference Room",
+    icon: "FaChalkboardTeacher",
+    description: "Spacious and well-equipped conference facilities.",
+    iconTemp: FaChalkboardTeacher,
+  },
+  {
+    name: "Pet-Friendly",
+    icon: "FaDog",
+    description: "Pets are welcome in designated rooms.",
+    iconTemp: FaDog,
+  },
+  {
+    name: "Mini Bar",
+    icon: "FaWineBottle",
+    description: "In-room mini bar with snacks and beverages.",
+    iconTemp: FaWineBottle,
+  },
 ];

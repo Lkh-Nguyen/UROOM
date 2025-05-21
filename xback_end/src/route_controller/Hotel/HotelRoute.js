@@ -3,6 +3,7 @@ const HotelRouter = express.Router();
 const HotelController = require("./HotelController");
 const checkCustomer = require("../../middlewares/checkCustomer");
 const checkGuest = require("../../middlewares/cheskGuest");
+const checkOwner = require("../../middlewares/checkOwner");
 
 HotelRouter.get("/get-all-hotel", HotelController.getAllHotels);
 HotelRouter.post("/get-hotel-byId", HotelController.getHotelsByIds);
@@ -10,4 +11,6 @@ HotelRouter.post("/remove-favorite", checkCustomer, HotelController.removeFavori
 HotelRouter.post("/add-favorite", checkCustomer, HotelController.addFavoriteHotel);
 HotelRouter.get("/hotel_detail/:hotelId", checkGuest, HotelController.getHotelDetails);
 HotelRouter.get("/top-bookings", checkGuest,HotelController.getTop3HotelsThisMonth);
+HotelRouter.get("/owner-hotels", checkOwner, HotelController.getHotelsByOwner);
+HotelRouter.put("/update-hotel/:hotelId",checkOwner,  HotelController.updateHotelInfo);
 module.exports = HotelRouter;
