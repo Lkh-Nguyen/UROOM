@@ -22,8 +22,9 @@ import {
   FaPaperPlane,
   FaTimes,
   FaArrowRight,
+  FaTrash,
 } from "react-icons/fa";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NavigationBar from "../Header";
 import Footer from "../Footer";
 import "../../../css/customer/home.css";
@@ -45,6 +46,7 @@ import chatbox from "../../../images/chatbox.png";
 import onePrize from "../../../images/prize1.png";
 import twoPrize from "../../../images/prize2.png";
 import threePrize from "../../../images/prize3.png";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 import { useLocation, useNavigate } from "react-router-dom";
 import * as Routers from "../../../utils/Routes";
@@ -59,6 +61,12 @@ import { useAppSelector, useAppDispatch } from "../../../redux/store";
 import HotelActions from "../../../redux/hotel/actions";
 import RoomActions from "../../../redux/room/actions";
 import Utils from "@utils/Utils";
+import qaData, {
+  CancellationPolicy,
+  ChatSupportCard,
+  ListHotel,
+} from "@utils/qaData";
+import ChatboxActions from "@redux/chatbox/actions";
 function Home() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -571,6 +579,10 @@ function OtherHotels() {
                       fontSize: "1rem",
                     }}
                     onClick={() => {
+                      dispatch({
+                        type: SearchActions.SAVE_SELECTED_ROOMS,
+                        payload: { selectedRooms: [] },
+                      });
                       navigate(`${Routers.Home_detail}/${hotelId}`);
                     }}
                   >
@@ -853,27 +865,85 @@ function CustomerReviews() {
 }
 
 const ChatBox = () => {
+  const dispatch = useDispatch();
+  const Messages = useAppSelector((state) => state.ChatBox.Messages);
+  console.log("Messages123: ", Messages);
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(Messages ?? []);
   const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 200);
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, 400);
+    }
+  }, [isOpen]);
+
   const sendMessage = () => {
     if (input.trim() !== "") {
+      const userMessage = input.trim().toLowerCase();
       setMessages([...messages, { text: input, sender: "user" }]);
+      dispatch({
+        type: ChatboxActions.ADD_MESSAGE,
+        payload: {
+          message: { text: input, sender: "user" },
+        },
+      });
       setInput("");
-      // Giả lập phản hồi của bot
+
       setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { text: "Xin chào! Tôi có thể giúp gì cho bạn?", sender: "bot" },
-        ]);
+        const matchedQA = qaData.find((qa) =>
+          qa.questions.some((q) =>
+            userMessage.toLowerCase().includes(q.toLowerCase())
+          )
+        );
+
+        if (matchedQA) {
+          const botReplies = matchedQA.answer;
+          const newMessages = botReplies.map((reply) => ({
+            text: reply,
+            sender: "bot",
+          }));
+
+          setMessages((prev) => [...prev, ...newMessages]);
+
+          newMessages.forEach((message) => {
+            dispatch({
+              type: ChatboxActions.ADD_MESSAGE,
+              payload: { message },
+            });
+          });
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            { text: "Sorry, I don't understand your question.", sender: "bot" },
+          ]);
+          dispatch({
+            type: ChatboxActions.ADD_MESSAGE,
+            payload: {
+              message: {
+                text: "Sorry, I don't understand your question.",
+                sender: "bot",
+              },
+            },
+          });
+        }
       }, 1000);
     }
   };
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="chatbox-container">
@@ -887,33 +957,76 @@ const ChatBox = () => {
           />
         </button>
       )}
-
+      <ConfirmationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        onConfirm={() => {
+          dispatch({
+            type: ChatboxActions.CLEAR_MESSAGES,
+            payload: {},
+          });
+          setIsOpen(false);
+          setMessages([]);
+        }}
+        title="Confirm clear messages"
+        message="Are you sure you want to clear this messages ?"
+        confirmButtonText="Confirm"
+        type="danger"
+      />
       {isOpen && (
         <div className="chatbox">
           <div className="chatbox-header">
             <span>
-            <img
-              src={chatbox || "/placeholder.svg"}
-              alt="AI Chat"
-              width="20"
-              height="20"
-              className="me-2"
-            />
+              <img
+                src={chatbox || "/placeholder.svg"}
+                alt="AI Chat"
+                width="20"
+                height="20"
+                className="me-2"
+              />
               Chatbox
             </span>
-            <FaTimes className="close-icon" onClick={toggleChat} />
+            <div>
+              <FaTrash
+                className="me-2"
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  if (messages.length != 0) {
+                    setShowModal(true);
+                  }
+                }}
+              />
+              <FaTimes className="close-icon" onClick={toggleChat} />
+            </div>
           </div>
           <div className="chatbox-messages">
             {messages.map((msg, index) => (
               <div key={index} className={`message ${msg.sender}`}>
-                {msg.text}
+                {msg.text === "ChatSupportCard" && <ChatSupportCard />}
+                {msg.text === "CancellationPolicy" && <CancellationPolicy />}
+                {msg.text === "ListHotelDaNang" && (
+                  <ListHotel address="Đà Nẵng" />
+                )}
+                {msg.text === "ListHotelHoChiMinh" && (
+                  <ListHotel address="Hồ Chí Minh" />
+                )}
+                {msg.text === "ListHotelHaNoi" && (
+                  <ListHotel address="Hà Nội" />
+                )}
+                {msg.text !== "ChatSupportCard" &&
+                  msg.text !== "CancellationPolicy" &&
+                  msg.text !== "ListHotelDaNang" &&
+                  msg.text !== "ListHotelHoChiMinh" &&
+                  msg.text !== "ListHotelHaNoi" &&
+                  msg.text}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
           <div className="chatbox-input">
             <input
               type="text"
-              placeholder="Enter the message ..."
+              placeholder="Enter the message"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && sendMessage()}

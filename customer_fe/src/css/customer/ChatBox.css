@@ -89,3 +89,12 @@
     cursor: pointer;
   }
   
+.hotel-link {
+  text-decoration: none;
+  color: black;
+  transition: color 0.2s ease;
+}
+
+.hotel-link:hover {
+  color: blue;
+}

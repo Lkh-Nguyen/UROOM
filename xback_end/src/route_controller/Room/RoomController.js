@@ -38,42 +38,49 @@ const getRoomsByHotel = async (req, res) => {
     // Get all rooms for this hotel
     const allRooms = await Room.find({ hotel: hotelId });
 
-    // Calculate total booked quantity per room
     const roomBookedQuantities = {};
-    const roomDateRanges = {}; // để lưu khoảng ngày của roomId
-    
+
+    // Create a day-by-day occupancy map for each room
+    const dailyOccupancy = {};
+
     overlappingReservations.forEach((res) => {
       const resCheckIn = new Date(res.checkInDate);
       const resCheckOut = new Date(res.checkOutDate);
-    
+
       res.rooms.forEach((roomItem) => {
         const roomId = roomItem.room._id.toString();
         const quantity = roomItem.quantity;
-    
-        const currentRange = roomDateRanges[roomId];
-        const currentQuantity = roomBookedQuantities[roomId] || 0;
-    
-        if (
-          currentRange &&
-          resCheckIn <= currentRange.checkOut
-        ) {
-          // nằm trong khoảng → cộng dồn
-          roomBookedQuantities[roomId] = currentQuantity + quantity;
-        } else {
-          // ngoài khoảng → lấy max
-          if (quantity > currentQuantity) {
-            roomBookedQuantities[roomId] = quantity;
-            roomDateRanges[roomId] = { checkIn: resCheckIn, checkOut: resCheckOut };
-          }
+
+        if (!dailyOccupancy[roomId]) {
+          dailyOccupancy[roomId] = {};
+        }
+
+        // Mark each day of this reservation with the booked quantity
+        let currentDate = new Date(resCheckIn);
+        while (currentDate < resCheckOut) {
+          const dateKey = currentDate.toISOString().split("T")[0];
+
+          // If multiple reservations on same day, add them up
+          dailyOccupancy[roomId][dateKey] =
+            (dailyOccupancy[roomId][dateKey] || 0) + quantity;
+
+          // Move to next day
+          currentDate.setDate(currentDate.getDate() + 1);
         }
       });
     });
 
+    // Find the maximum occupancy for each room across the entire period
+    for (const roomId in dailyOccupancy) {
+      const maxOccupancy = Math.max(...Object.values(dailyOccupancy[roomId]));
+      roomBookedQuantities[roomId] = maxOccupancy;
+    }
+
     // Determine available rooms with remaining quantity
     const availableRooms = allRooms
       .map((room) => {
-
         const booked = roomBookedQuantities[room._id.toString()] || 0;
+        console.log("booked: ", booked);
         const available = room.quantity - booked;
         return {
           ...room.toObject(),
@@ -112,7 +119,6 @@ const getRoomById = async (req, res) => {
       .populate("hotel")
       .populate("facilities")
       .populate("bed.bed", "bedType capacity name");
-  
 
     if (!room) {
       return res
