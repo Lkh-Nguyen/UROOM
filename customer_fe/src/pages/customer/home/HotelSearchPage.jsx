@@ -1,5 +1,15 @@
-import { useCallback, useEffect, useState } from "react"
-import { Container, Row, Col, Form, Button, Card, InputGroup, Alert, Modal } from "react-bootstrap"
+import { useCallback, useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  Card,
+  InputGroup,
+  Alert,
+  Modal,
+} from "react-bootstrap";
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -11,138 +21,176 @@ import {
   FaHeart,
   FaChild,
   FaUser,
-} from "react-icons/fa"
-import "bootstrap/dist/css/bootstrap.min.css"
-import "../../../css/customer/HotelSearchPage.css"
-import Footer from "../Footer"
-import Header from "../Header"
-import Banner from "../../../images/banner.jpg"
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom"
-import * as Routers from "../../../utils/Routes"
-import Select from "react-select"
-import { cityOptionSelect, districtsByCity, listFacilities } from "../../../utils/data"
-import { useDispatch } from "react-redux"
-import { useAppSelector } from "../../../redux/store"
-import SearchActions from "../../../redux/search/actions"
-import Factories from "../../../redux/search/factories"
-import { showToast, ToastProvider } from "../../../components/ToastContainer"
-import Pagination from "@components/Pagination"
-import MapComponent from "@pages/MapLocation"
-import AuthActions from "../../../redux/auth/actions"
+} from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../../../css/customer/HotelSearchPage.css";
+import Footer from "../Footer";
+import Header from "../Header";
+import Banner from "../../../images/banner.jpg";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import * as Routers from "../../../utils/Routes";
+import Select from "react-select";
+import {
+  cityOptionSelect,
+  districtsByCity,
+  listFacilities,
+} from "../../../utils/data";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "../../../redux/store";
+import SearchActions from "../../../redux/search/actions";
+import Factories from "../../../redux/search/factories";
+import { showToast, ToastProvider } from "../../../components/ToastContainer";
+import Pagination from "@components/Pagination";
+import MapComponent from "@pages/MapLocation";
+import AuthActions from "../../../redux/auth/actions";
 
 // Options for adults and children select
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
   value: i + 1,
   label: `${i + 1} Adults`,
-}))
+}));
 
 const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
   value: i,
   label: `${i} Childrens`,
-}))
+}));
 
 // Custom hook for managing URL parameters
 const useUrlParams = () => {
-  const [searchParams, setSearchParams] = useSearchParams()
-  
-  const updateUrlParams = useCallback((updates) => {
-    const newParams = new URLSearchParams(searchParams)
-    
-    // Process each parameter update
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === null || value === undefined || 
-          (typeof value === 'string' && value === '') || 
-          (Array.isArray(value) && value.length === 0) || 
-          (typeof value === 'number' && value <= 0)) {
-        newParams.delete(key)
-      } else if (Array.isArray(value)) {
-        newParams.set(key, value.join(','))
-      } else if (typeof value === 'object' && value !== null && 'value' in value) {
-        newParams.set(key, value.value)
-      } else {
-        newParams.set(key, String(value))
-      }
-    })
-    
-    setSearchParams(newParams)
-  }, [searchParams, setSearchParams])
-  
-  const getParam = useCallback((key, defaultValue) => {
-    const value = searchParams.get(key)
-    return value !== null ? value : defaultValue
-  }, [searchParams])
-  
-  const getNumberParam = useCallback((key, defaultValue) => {
-    const value = searchParams.get(key)
-    return value !== null ? Number(value) : defaultValue
-  }, [searchParams])
-  
-  const getArrayParam = useCallback((key, defaultValue = []) => {
-    const value = searchParams.get(key)
-    return value !== null ? value.split(',') : defaultValue
-  }, [searchParams])
-  
-  return { 
-    searchParams, 
-    updateUrlParams, 
-    getParam, 
-    getNumberParam, 
-    getArrayParam 
-  }
-}
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const updateUrlParams = useCallback(
+    (updates) => {
+      const newParams = new URLSearchParams(searchParams);
+
+      // Process each parameter update
+      Object.entries(updates).forEach(([key, value]) => {
+        if (
+          value === null ||
+          value === undefined ||
+          (typeof value === "string" && value === "") ||
+          (Array.isArray(value) && value.length === 0) ||
+          (typeof value === "number" && value <= 0)
+        ) {
+          newParams.delete(key);
+        } else if (Array.isArray(value)) {
+          newParams.set(key, value.join(","));
+        } else if (
+          typeof value === "object" &&
+          value !== null &&
+          "value" in value
+        ) {
+          newParams.set(key, value.value);
+        } else {
+          newParams.set(key, String(value));
+        }
+      });
+
+      setSearchParams(newParams);
+    },
+    [searchParams, setSearchParams]
+  );
+
+  const getParam = useCallback(
+    (key, defaultValue) => {
+      const value = searchParams.get(key);
+      return value !== null ? value : defaultValue;
+    },
+    [searchParams]
+  );
+
+  const getNumberParam = useCallback(
+    (key, defaultValue) => {
+      const value = searchParams.get(key);
+      return value !== null ? Number(value) : defaultValue;
+    },
+    [searchParams]
+  );
+
+  const getArrayParam = useCallback(
+    (key, defaultValue = []) => {
+      const value = searchParams.get(key);
+      return value !== null ? value.split(",") : defaultValue;
+    },
+    [searchParams]
+  );
+
+  return {
+    searchParams,
+    updateUrlParams,
+    getParam,
+    getNumberParam,
+    getArrayParam,
+  };
+};
 
 const HotelSearchPage = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const dispatch = useDispatch()
-  const SearchInformation = useAppSelector((state) => state.Search.SearchInformation)
-  const today = new Date().toISOString().split("T")[0]
-  
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dispatch = useDispatch();
+  const SearchInformation = useAppSelector(
+    (state) => state.Search.SearchInformation
+  );
+  const today = new Date().toISOString().split("T")[0];
+
   // Use our custom URL params hook
-  const { 
-    searchParams, 
-    updateUrlParams, 
-    getParam, 
-    getNumberParam, 
-    getArrayParam 
-  } = useUrlParams()
+  const {
+    searchParams,
+    updateUrlParams,
+    getParam,
+    getNumberParam,
+    getArrayParam,
+  } = useUrlParams();
 
   // Helper functions to get initial values from URL params
-  const getInitialStarFilter = () => getNumberParam("star", 0)
-  const getInitialFacilities = () => getArrayParam("facilities", [])
-  const getInitialPage = () => getNumberParam("page", 1)
+  const getInitialStarFilter = () => getNumberParam("star", 0);
+  const getInitialFacilities = () => getArrayParam("facilities", []);
+  const getInitialPage = () => getNumberParam("page", 1);
   const getInitialDistrict = () => {
-    const districtParam = getParam("district", null)
-    if (!districtParam) return null
-    const districtOptions = districtsByCity[SearchInformation.address] || []
-    return districtOptions.find((option) => option.value === districtParam) || null
-  }
+    const districtParam = getParam("district", null);
+    if (!districtParam) return null;
+    const districtOptions = districtsByCity[SearchInformation.address] || [];
+    return (
+      districtOptions.find((option) => option.value === districtParam) || null
+    );
+  };
 
   // State for search form
   const [selectedCity, setSelectedCity] = useState(
-    cityOptionSelect.find((option) => option.value === SearchInformation.address) || "",
-  )
-  const [selectedDistrict, setSelectedDistrict] = useState(getInitialDistrict())
-  const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate)
-  const [checkoutDate, setCheckoutDate] = useState(SearchInformation.checkoutDate)
+    cityOptionSelect.find(
+      (option) => option.value === SearchInformation.address
+    ) || ""
+  );
+  const [selectedDistrict, setSelectedDistrict] = useState(
+    getInitialDistrict()
+  );
+  const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
+  const [checkoutDate, setCheckoutDate] = useState(
+    SearchInformation.checkoutDate
+  );
   const [selectedAdults, setSelectedAdults] = useState(
-    adultsOptions.find((option) => option.value === SearchInformation.adults) || adultsOptions[0],
-  )
+    adultsOptions.find((option) => option.value === SearchInformation.adults) ||
+      adultsOptions[0]
+  );
   const [selectedChildren, setSelectedChildren] = useState(
-    childrenOptions.find((option) => option.value === SearchInformation.childrens) || childrenOptions[0],
-  )
+    childrenOptions.find(
+      (option) => option.value === SearchInformation.childrens
+    ) || childrenOptions[0]
+  );
 
   // State for search results and filters
-  const [loading, setLoading] = useState(true)
-  const [searchHotel, setSearchHotel] = useState([])
-  const [currentPage, setCurrentPage] = useState(getInitialPage())
-  const [totalPages, setTotalPages] = useState(1)
-  const [starFilter, setStarFilter] = useState(getInitialStarFilter())
-  const [selectedFacilities, setSelectedFacilities] = useState(getInitialFacilities())
-  const [formErrors, setFormErrors] = useState({})
-  const [isSearching, setIsSearching] = useState(false)
-  const [showModalMap, setShowModalMap] = useState(false)
-  const [addressMap, setAddressMap] = useState("")
+  const [loading, setLoading] = useState(true);
+  const [searchHotel, setSearchHotel] = useState([]);
+  const [currentPage, setCurrentPage] = useState(getInitialPage());
+  const [totalPages, setTotalPages] = useState(1);
+  const [starFilter, setStarFilter] = useState(getInitialStarFilter());
+  const [selectedFacilities, setSelectedFacilities] = useState(
+    getInitialFacilities()
+  );
+  const [formErrors, setFormErrors] = useState({});
+  const [isSearching, setIsSearching] = useState(false);
+  const [showModalMap, setShowModalMap] = useState(false);
+  const [addressMap, setAddressMap] = useState("");
 
   // Search parameters object for API calls
   const [searchParamsObj, setSearchParamsObj] = useState({
@@ -154,7 +202,7 @@ const HotelSearchPage = () => {
     star: starFilter,
     district: selectedDistrict?.value || "",
     selectedFacilities: selectedFacilities,
-  })
+  });
 
   // Update search parameters when filters change
   useEffect(() => {
@@ -164,99 +212,103 @@ const HotelSearchPage = () => {
       star: starFilter,
       district: selectedDistrict?.value || "",
       selectedFacilities: selectedFacilities,
-    }))
-  }, [currentPage, starFilter, selectedFacilities, selectedDistrict])
+    }));
+  }, [currentPage, starFilter, selectedFacilities, selectedDistrict]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   // Fetch hotels when search parameters change
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        setLoading(true)
-        const response = await Factories.searchHotel(searchParamsObj)
+        setLoading(true);
+        const response = await Factories.searchHotel(searchParamsObj);
         if (response?.status === 200) {
-          setSearchHotel(response?.data.hotels)
-          setCurrentPage(response?.data.currentPage)
-          setTotalPages(response?.data.totalPages)
+          setSearchHotel(response?.data.hotels);
+          setCurrentPage(response?.data.currentPage);
+          setTotalPages(response?.data.totalPages);
         }
       } catch (error) {
-        console.error("Error fetching hotels:", error)
+        console.error("Error fetching hotels:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchHotels()
-  }, [searchParamsObj])
+    fetchHotels();
+  }, [searchParamsObj]);
 
   // Handle page change in pagination
   const handlePageChange = (page) => {
-    setCurrentPage(page)
+    setCurrentPage(page);
     // Update URL params directly
-    updateUrlParams({ page: page > 1 ? page : null })
-  }
+    updateUrlParams({ page: page > 1 ? page : null });
+  };
 
   // Handle star filter change
   const handleStarFilterChange = (star) => {
-    setStarFilter(star)
-    setCurrentPage(1) // Reset to page 1 when changing filters
+    setStarFilter(star);
+    setCurrentPage(1); // Reset to page 1 when changing filters
     // Update URL params directly
-    updateUrlParams({ 
+    updateUrlParams({
       star: star > 0 ? star : null,
-      page: null // Reset page param
-    })
-  }
+      page: null, // Reset page param
+    });
+  };
 
   // Handle district filter change
   const handleDistrictChange = (option) => {
-    setSelectedDistrict(option)
-    setCurrentPage(1) // Reset to page 1 when changing filters
+    setSelectedDistrict(option);
+    setCurrentPage(1); // Reset to page 1 when changing filters
     // Update URL params directly
-    updateUrlParams({ 
+    updateUrlParams({
       district: option ? option.value : null,
-      page: null // Reset page param
-    })
-  }
+      page: null, // Reset page param
+    });
+  };
 
   // Handle facility filter changes
   const handleFacilityChange = (e, name) => {
-    const isChecked = e.target.checked
+    const isChecked = e.target.checked;
     const updatedFacilities = isChecked
       ? [...selectedFacilities, name]
-      : selectedFacilities.filter((item) => item !== name)
+      : selectedFacilities.filter((item) => item !== name);
 
-    setSelectedFacilities(updatedFacilities)
-    setCurrentPage(1) // Reset to page 1 when changing filters
+    setSelectedFacilities(updatedFacilities);
+    setCurrentPage(1); // Reset to page 1 when changing filters
     // Update URL params directly
-    updateUrlParams({ 
+    updateUrlParams({
       facilities: updatedFacilities.length > 0 ? updatedFacilities : null,
-      page: null // Reset page param
-    })
-  }
+      page: null, // Reset page param
+    });
+  };
 
   // Handle search form submission
   const handleSearch = () => {
     // Reset district filter
-    setSelectedDistrict(null)
+    setSelectedDistrict(null);
 
     // Validate check-in date is before check-out date
-    if (checkinDate && checkoutDate && new Date(checkinDate) >= new Date(checkoutDate)) {
-      showToast.warning("Check-in date cannot be later than check-out date.")
-      return
+    if (
+      checkinDate &&
+      checkoutDate &&
+      new Date(checkinDate) >= new Date(checkoutDate)
+    ) {
+      showToast.warning("Check-in date cannot be later than check-out date.");
+      return;
     }
 
     // Clear previous errors and set loading state
-    setFormErrors({})
-    setIsSearching(true)
+    setFormErrors({});
+    setIsSearching(true);
 
     // Get values from form
-    const adults = selectedAdults?.value || 1
-    const childrens = selectedChildren?.value || 0
-    const numberOfPeople = adults + childrens
-    const address = selectedCity?.value || ""
+    const adults = selectedAdults?.value || 1;
+    const childrens = selectedChildren?.value || 0;
+    const numberOfPeople = adults + childrens;
+    const address = selectedCity?.value || "";
 
     // Create search information object
     const searchInfo = {
@@ -265,7 +317,7 @@ const HotelSearchPage = () => {
       checkoutDate,
       adults,
       childrens,
-    }
+    };
 
     // Simulate loading delay (1 second)
     setTimeout(() => {
@@ -273,12 +325,12 @@ const HotelSearchPage = () => {
       dispatch({
         type: SearchActions.SAVE_SEARCH,
         payload: { SearchInformation: searchInfo },
-      })
+      });
 
       // Reset filters and page
-      setCurrentPage(1)
-      setStarFilter(0)
-      setSelectedFacilities([])
+      setCurrentPage(1);
+      setStarFilter(0);
+      setSelectedFacilities([]);
 
       // Update search parameters
       setSearchParamsObj({
@@ -290,23 +342,25 @@ const HotelSearchPage = () => {
         star: 0,
         district: "",
         selectedFacilities: [],
-      })
+      });
 
       // Reset URL params directly
       updateUrlParams({
         page: null,
         star: null,
         facilities: null,
-        district: null
-      })
+        district: null,
+      });
 
-      setIsSearching(false)
-    }, 1000)
-  }
+      setIsSearching(false);
+    }, 1000);
+  };
 
   // Handle favorite hotel toggle
   const handleChangeFavorite = (isFavorite, hotelId) => {
-    const actionType = isFavorite ? AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST : AuthActions.ADD_FAVORITE_HOTEL_REQUEST
+    const actionType = isFavorite
+      ? AuthActions.REMOVE_FAVORITE_HOTEL_REQUEST
+      : AuthActions.ADD_FAVORITE_HOTEL_REQUEST;
 
     dispatch({
       type: actionType,
@@ -316,38 +370,48 @@ const HotelSearchPage = () => {
           // Refresh hotel list to update favorite status
           const fetchHotels = async () => {
             try {
-              const response = await Factories.searchHotel(searchParamsObj)
+              const response = await Factories.searchHotel(searchParamsObj);
               if (response?.status === 200) {
-                setSearchHotel(response?.data.hotels)
+                setSearchHotel(response?.data.hotels);
               }
             } catch (error) {
-              console.error("Error fetching hotels:", error)
+              console.error("Error fetching hotels:", error);
             }
-          }
-          fetchHotels()
+          };
+          fetchHotels();
         },
         onFailed: (msg) => {},
         onError: (error) => console.error(error),
       },
-    })
-  }
+    });
+  };
 
   // Navigate to hotel detail with return URL params
   const navigateToHotelDetail = (hotelId) => {
+    dispatch({
+      type: SearchActions.SAVE_SELECTED_ROOMS,
+      payload: { selectedRooms: [] },
+    });
     navigate(`${Routers.Home_detail}/${hotelId}`, {
       state: {
         returnTo: location.pathname,
         returnParams: searchParams.toString(),
       },
-    })
-  }
+    });
+  };
 
   // Render star rating
   const renderStars = (count) => {
     return Array(5)
       .fill(0)
-      .map((_, i) => <FaStar key={i} className={i < count ? "text-warning" : "text-muted"} size={23} />)
-  }
+      .map((_, i) => (
+        <FaStar
+          key={i}
+          className={i < count ? "text-warning" : "text-muted"}
+          size={23}
+        />
+      ));
+  };
 
   // Select component styles
   const selectStyles = {
@@ -358,7 +422,7 @@ const HotelSearchPage = () => {
       boxShadow: "none",
       width: "100%",
     }),
-  }
+  };
 
   return (
     <div
@@ -367,11 +431,14 @@ const HotelSearchPage = () => {
         backgroundImage: `url(${Banner})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        height: '1600px'
+        height: "1600px",
       }}
     >
       <Header />
-      <div className="flex-grow-1 d-flex justify-content-center" style={{ paddingTop: "50px", paddingBottom: "50px" }}>
+      <div
+        className="flex-grow-1 d-flex justify-content-center"
+        style={{ paddingTop: "50px", paddingBottom: "50px" }}
+      >
         <Container
           style={{
             paddingTop: "50px",
@@ -382,8 +449,22 @@ const HotelSearchPage = () => {
           <ToastProvider />
 
           {/* Search Bar Container */}
-          <div style={{ maxWidth: "100%", margin: "0 auto", marginTop: "-4.5%", marginBottom: "50px" }}>
-            <div style={{ borderRadius: "20%", display: "flex", flexDirection: "column", gap: "5px" }}>
+          <div
+            style={{
+              maxWidth: "100%",
+              margin: "0 auto",
+              marginTop: "-4.5%",
+              marginBottom: "50px",
+            }}
+          >
+            <div
+              style={{
+                borderRadius: "20%",
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px",
+              }}
+            >
               {/* Hotel Title */}
               <div
                 className="px-5 py-2 bg-white d-flex align-items-center pt-3"
@@ -401,7 +482,9 @@ const HotelSearchPage = () => {
                 }}
               >
                 <FaHotel style={{ color: "#2D74FF", fontSize: "24px" }} />
-                <span style={{ color: "black", marginLeft: "10px" }}>Hotel</span>
+                <span style={{ color: "black", marginLeft: "10px" }}>
+                  Hotel
+                </span>
               </div>
 
               {/* Search Bar */}
@@ -415,7 +498,10 @@ const HotelSearchPage = () => {
               >
                 {/* Location Input */}
                 <Col md={3}>
-                  <InputGroup className="border" style={{ borderRadius: "10px" }}>
+                  <InputGroup
+                    className="border"
+                    style={{ borderRadius: "10px" }}
+                  >
                     <InputGroup.Text className="bg-transparent border-0">
                       <FaMapMarkerAlt />
                     </InputGroup.Text>
@@ -434,7 +520,10 @@ const HotelSearchPage = () => {
                     </InputGroup.Text>
                   </InputGroup>
                   {formErrors.location && (
-                    <div className="text-danger mt-1" style={{ fontSize: "0.875rem" }}>
+                    <div
+                      className="text-danger mt-1"
+                      style={{ fontSize: "0.875rem" }}
+                    >
                       {formErrors.location}
                     </div>
                   )}
@@ -444,7 +533,10 @@ const HotelSearchPage = () => {
                 <Col md={4}>
                   <Row className="align-items-center">
                     <Col className="d-flex flex-grow-1">
-                      <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
+                      <InputGroup
+                        className="border w-100"
+                        style={{ borderRadius: "10px" }}
+                      >
                         <InputGroup.Text className="bg-transparent border-0">
                           <FaCalendarAlt />
                         </InputGroup.Text>
@@ -458,18 +550,29 @@ const HotelSearchPage = () => {
                         />
                       </InputGroup>
                       {formErrors.checkinDate && (
-                        <div className="text-danger mt-1" style={{ fontSize: "0.875rem" }}>
+                        <div
+                          className="text-danger mt-1"
+                          style={{ fontSize: "0.875rem" }}
+                        >
                           {formErrors.checkinDate}
                         </div>
                       )}
                     </Col>
 
-                    <Col xs="auto" className="d-flex align-items-center justify-content-center">
-                      <FaArrowRight style={{ fontSize: "1.2rem", color: "#555" }} />
+                    <Col
+                      xs="auto"
+                      className="d-flex align-items-center justify-content-center"
+                    >
+                      <FaArrowRight
+                        style={{ fontSize: "1.2rem", color: "#555" }}
+                      />
                     </Col>
 
                     <Col className="d-flex flex-grow-1">
-                      <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
+                      <InputGroup
+                        className="border w-100"
+                        style={{ borderRadius: "10px" }}
+                      >
                         <InputGroup.Text className="bg-transparent border-0">
                           <FaCalendarAlt />
                         </InputGroup.Text>
@@ -483,7 +586,10 @@ const HotelSearchPage = () => {
                         />
                       </InputGroup>
                       {formErrors.checkoutDate && (
-                        <div className="text-danger mt-1" style={{ fontSize: "0.875rem" }}>
+                        <div
+                          className="text-danger mt-1"
+                          style={{ fontSize: "0.875rem" }}
+                        >
                           {formErrors.checkoutDate}
                         </div>
                       )}
@@ -493,7 +599,10 @@ const HotelSearchPage = () => {
 
                 {/* Guests Input */}
                 <Col md={4} className="px-3">
-                  <InputGroup className="border" style={{ borderRadius: "10px", padding: "2px" }}>
+                  <InputGroup
+                    className="border"
+                    style={{ borderRadius: "10px", padding: "2px" }}
+                  >
                     <InputGroup.Text className="bg-transparent border-0">
                       <FaUser />
                     </InputGroup.Text>
@@ -526,7 +635,11 @@ const HotelSearchPage = () => {
                 <Col xs="auto" className="px-2">
                   <Button
                     variant="primary"
-                    style={{ width: "60px", height: "45px", borderRadius: "15px" }}
+                    style={{
+                      width: "60px",
+                      height: "45px",
+                      borderRadius: "15px",
+                    }}
                     onClick={handleSearch}
                     disabled={isSearching}
                   >
@@ -543,7 +656,11 @@ const HotelSearchPage = () => {
             <Col md={3}>
               <div
                 className="shadow-sm mb-4"
-                style={{ backgroundColor: "white", padding: "16px", borderRadius: "10px" }}
+                style={{
+                  backgroundColor: "white",
+                  padding: "16px",
+                  borderRadius: "10px",
+                }}
               >
                 <h5 className="mb-3">Filter Hotels</h5>
 
@@ -580,7 +697,10 @@ const HotelSearchPage = () => {
 
                   {/* District Filter */}
                   <h6 className="mt-2">District select</h6>
-                  <InputGroup className="border" style={{ borderRadius: "10px" }}>
+                  <InputGroup
+                    className="border"
+                    style={{ borderRadius: "10px" }}
+                  >
                     <InputGroup.Text className="bg-transparent border-0">
                       <FaMapMarkerAlt />
                     </InputGroup.Text>
@@ -602,7 +722,7 @@ const HotelSearchPage = () => {
                   {/* Facilities Filter */}
                   <h6 className="mt-4">Facilities select</h6>
                   {listFacilities.map((item, index) => {
-                    const FacilityIcon = item.iconTemp
+                    const FacilityIcon = item.iconTemp;
                     return (
                       <div className="form-check" key={index}>
                         <input
@@ -613,12 +733,17 @@ const HotelSearchPage = () => {
                           checked={selectedFacilities.includes(item.name)}
                           onChange={(e) => handleFacilityChange(e, item.name)}
                         />
-                        <label className="form-check-label" htmlFor={`facility-${index}`}>
-                          {FacilityIcon && <FacilityIcon style={{ marginRight: "8px" }} />}
+                        <label
+                          className="form-check-label"
+                          htmlFor={`facility-${index}`}
+                        >
+                          {FacilityIcon && (
+                            <FacilityIcon style={{ marginRight: "8px" }} />
+                          )}
                           {item.name}
                         </label>
                       </div>
-                    )
+                    );
                   })}
                 </div>
               </div>
@@ -627,7 +752,10 @@ const HotelSearchPage = () => {
             {/* Hotel Results */}
             <Col md={9}>
               {isSearching || loading ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "300px" }}
+                >
                   <div className="spinner-border text-primary" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
@@ -636,7 +764,7 @@ const HotelSearchPage = () => {
                 <>
                   {/* Hotel Cards */}
                   {searchHotel.map((hotel, index) => {
-                    const inforHotel = hotel.hotel
+                    const inforHotel = hotel.hotel;
                     return (
                       <Card key={hotel.id || index} className="mb-3 shadow-sm">
                         <Row className="g-0" style={{ height: "350px" }}>
@@ -649,7 +777,9 @@ const HotelSearchPage = () => {
                                   height: "35px",
                                   borderRadius: "50%",
                                   borderWidth: "2px",
-                                  borderColor: hotel.isFavorite ? "red" : "white",
+                                  borderColor: hotel.isFavorite
+                                    ? "red"
+                                    : "white",
                                   borderStyle: "solid",
                                   position: "absolute",
                                   top: 10,
@@ -660,7 +790,12 @@ const HotelSearchPage = () => {
                                 }}
                               >
                                 <FaHeart
-                                  onClick={() => handleChangeFavorite(hotel.isFavorite, inforHotel._id)}
+                                  onClick={() =>
+                                    handleChangeFavorite(
+                                      hotel.isFavorite,
+                                      inforHotel._id
+                                    )
+                                  }
                                   style={{
                                     fontSize: "20px",
                                     color: hotel.isFavorite ? "red" : "white",
@@ -669,7 +804,11 @@ const HotelSearchPage = () => {
                                 />
                               </div>
                               <img
-                                src={inforHotel.images ? inforHotel.images[0] : "/placeholder.svg"}
+                                src={
+                                  inforHotel.images
+                                    ? inforHotel.images[0]
+                                    : "/placeholder.svg"
+                                }
                                 alt={hotel.name || "Unnamed Hotel"}
                                 className="img-fluid rounded-start hotel-image"
                                 style={{
@@ -687,13 +826,15 @@ const HotelSearchPage = () => {
                               <div className="d-flex justify-content-between align-items-start">
                                 <div>
                                   {/* Hotel Name and Location */}
-                                  <h5 className="card-title">{inforHotel.hotelName || "No Name"}</h5>
+                                  <h5 className="card-title">
+                                    {inforHotel.hotelName || "No Name"}
+                                  </h5>
                                   <p className="text-muted mb-1">
                                     {selectedCity.value || "Unknown Location"} -{" "}
                                     <a
                                       onClick={() => {
-                                        setAddressMap(inforHotel.address)
-                                        setShowModalMap(true)
+                                        setAddressMap(inforHotel.address);
+                                        setShowModalMap(true);
                                       }}
                                       className="text-primary"
                                       style={{ cursor: "pointer" }}
@@ -703,7 +844,8 @@ const HotelSearchPage = () => {
                                   </p>
                                   <p className="text-muted small mb-2">
                                     <FaMapMarkerAlt className="me-1 text-secondary" />
-                                    {inforHotel.address || "No Address Provided"}
+                                    {inforHotel.address ||
+                                      "No Address Provided"}
                                   </p>
 
                                   {/* Rating */}
@@ -729,67 +871,107 @@ const HotelSearchPage = () => {
                                         >
                                           {hotel.avgValueRating.toFixed(1)}
                                         </span>
-                                        <span className="text-muted">{hotel.totalFeedbacks} feedbacks about hotel</span>
+                                        <span className="text-muted">
+                                          {hotel.totalFeedbacks} feedbacks about
+                                          hotel
+                                        </span>
                                       </>
                                     ) : (
-                                      <span className="text-muted">No feedback about hotel</span>
+                                      <span className="text-muted">
+                                        No feedback about hotel
+                                      </span>
                                     )}
                                   </p>
 
                                   {/* Facilities */}
                                   <div className="mt-3 d-flex flex-wrap gap-2">
-                                    {inforHotel.facilities && inforHotel.facilities.length > 0 ? (
-                                      inforHotel.facilities.slice(0, 7).map((feature, i) => {
-                                        const matchedFeature = listFacilities.find(
-                                          (f) => f.name.toLowerCase() === feature.name.toLowerCase(),
-                                        )
-                                        const FacilityIcon = matchedFeature?.iconTemp
+                                    {inforHotel.facilities &&
+                                    inforHotel.facilities.length > 0 ? (
+                                      inforHotel.facilities
+                                        .slice(0, 7)
+                                        .map((feature, i) => {
+                                          const matchedFeature =
+                                            listFacilities.find(
+                                              (f) =>
+                                                f.name.toLowerCase() ===
+                                                feature.name.toLowerCase()
+                                            );
+                                          const FacilityIcon =
+                                            matchedFeature?.iconTemp;
 
-                                        return (
-                                          <span
-                                            key={feature._id || i}
-                                            className="badge bg-light text-dark border"
-                                            style={{
-                                              fontSize: "14px",
-                                              padding: "8px 12px",
-                                              borderRadius: "20px",
-                                              display: "flex",
-                                              alignItems: "center",
-                                            }}
-                                          >
-                                            {FacilityIcon && <FacilityIcon style={{ marginRight: "8px" }} />}
-                                            {feature.name}
-                                          </span>
-                                        )
-                                      })
+                                          return (
+                                            <span
+                                              key={feature._id || i}
+                                              className="badge bg-light text-dark border"
+                                              style={{
+                                                fontSize: "14px",
+                                                padding: "8px 12px",
+                                                borderRadius: "20px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                              }}
+                                            >
+                                              {FacilityIcon && (
+                                                <FacilityIcon
+                                                  style={{ marginRight: "8px" }}
+                                                />
+                                              )}
+                                              {feature.name}
+                                            </span>
+                                          );
+                                        })
                                     ) : (
-                                      <p className="text-muted small">No features available</p>
+                                      <p className="text-muted small">
+                                        No features available
+                                      </p>
                                     )}
                                   </div>
 
                                   {/* Benefits */}
                                   <div className="d-flex flex-wrap align-items-center gap-3 mt-2">
-                                    <p className="text-success mb-0" style={{ fontSize: 16, padding: "8px 12px" }}>
-                                      <FaCheck className="me-1" /> Free cancellation
+                                    <p
+                                      className="text-success mb-0"
+                                      style={{
+                                        fontSize: 16,
+                                        padding: "8px 12px",
+                                      }}
+                                    >
+                                      <FaCheck className="me-1" /> Free
+                                      cancellation
                                     </p>
-                                    <p className="text-success mb-0" style={{ fontSize: 16, padding: "8px 12px" }}>
-                                      <FaCheck className="me-1" /> No immediate payment
+                                    <p
+                                      className="text-success mb-0"
+                                      style={{
+                                        fontSize: 16,
+                                        padding: "8px 12px",
+                                      }}
+                                    >
+                                      <FaCheck className="me-1" /> No immediate
+                                      payment
                                     </p>
                                   </div>
                                 </div>
 
                                 {/* Star Rating */}
                                 <div className="d-flex">
-                                  {inforHotel.star ? renderStars(inforHotel.star) : "No Rating"}
+                                  {inforHotel.star
+                                    ? renderStars(inforHotel.star)
+                                    : "No Rating"}
                                 </div>
                               </div>
 
                               {/* Booking Button */}
                               <div className="text-end mt-3">
                                 <Button
-                                  style={{ position: "absolute", bottom: 20, right: 20 }}
+                                  style={{
+                                    position: "absolute",
+                                    bottom: 20,
+                                    right: 20,
+                                  }}
                                   variant="primary"
-                                  onClick={() => navigateToHotelDetail(inforHotel._id)}
+                                  onClick={() =>
+                                    navigateToHotelDetail(inforHotel._id)
+                                  }
                                 >
                                   Booking Room
                                 </Button>
@@ -798,13 +980,17 @@ const HotelSearchPage = () => {
                           </Col>
                         </Row>
                       </Card>
-                    )
+                    );
                   })}
 
                   {/* Pagination */}
                   {totalPages >= 1 && (
                     <div className="d-flex justify-content-center mt-4">
-                      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                      <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                      />
                     </div>
                   )}
                 </>
@@ -820,8 +1006,8 @@ const HotelSearchPage = () => {
           <Modal
             show={showModalMap}
             onHide={() => {
-              setShowModalMap(false)
-              setAddressMap("")
+              setShowModalMap(false);
+              setAddressMap("");
             }}
             size="lg"
           >
@@ -835,8 +1021,8 @@ const HotelSearchPage = () => {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setShowModalMap(false)
-                  setAddressMap("")
+                  setShowModalMap(false);
+                  setAddressMap("");
                 }}
               >
                 Close
@@ -847,7 +1033,7 @@ const HotelSearchPage = () => {
       </div>
       <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default HotelSearchPage
+export default HotelSearchPage;

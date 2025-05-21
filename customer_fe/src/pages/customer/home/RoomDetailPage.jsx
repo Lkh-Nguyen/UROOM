@@ -810,7 +810,7 @@ function MainContent() {
                       roomDetail.bed.map((b, index) => (
                         <li key={index} style={styles.bedItem}>
                           <FaIcons.FaBed style={styles.icon} />
-                          <span style={{ color: "#333333" }}>
+                          <span style={{ color: "#333333", cursor: "pointer"}} title={b.bed?.description ?? ""}>
                             {b.quantity} x {b.bed?.name || "Unknown Bed Type"}
                           </span>
                         </li>

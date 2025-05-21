@@ -20,6 +20,11 @@ const HotelServiceSchema = new Schema(
       type: Number,
       required: true,
     },
+    statusActive: {
+      type: String,
+      enum: ["ACTIVE", "NONACTIVE"],
+      default: "NONACTIVE"
+    },
   },
   { versionKey: false }
 );

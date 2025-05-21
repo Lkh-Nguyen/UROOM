@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "backend": "file:",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
@@ -26,6 +27,7 @@
     "fs": "^0.0.1-security",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "mongodb": "^6.13.0",
     "mongoose": "^8.10.0",
     "mongoose-sequence": "^6.0.1",

@@ -1,8 +1,8 @@
-// src/middlewares/checkCustomer.js
+// src/middlewares/checkOwner.js
 
 const jwt = require("jsonwebtoken");
 
-const checkCustomer = (req, res, next) => {
+const checkOwner = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
 
@@ -18,4 +18,4 @@ const checkCustomer = (req, res, next) => {
   });
 };
 
-module.exports = checkCustomer;
+module.exports = checkOwner;
