@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useRef, useState } from "react";
 import {
   useParams,
@@ -279,7 +277,7 @@ export default function HotelDetailPage() {
     return () => {
       isMounted = false;
     };
-  }, [hotelId, dispatch, searchParams]);
+  }, [hotelId, dispatch]);
 
   const [searchRoom, setSearchRoom] = useState(false);
 
@@ -299,7 +297,11 @@ export default function HotelDetailPage() {
       type: SearchActions.SAVE_SEARCH,
       payload: { SearchInformation: SearchInformationTemp },
     });
-
+    dispatch({
+      type: SearchActions.SAVE_SELECTED_ROOMS,
+      payload: { selectedRooms: [] },
+    });
+    setSelectedRooms([]);
     setSearchRoom(true);
     dispatch({
       type: RoomActions.FETCH_ROOM,
@@ -926,11 +928,26 @@ export default function HotelDetailPage() {
                     className="border-0 bg-transparent"
                     value={checkinDate}
                     onChange={(e) => {
-                      setCheckinDate(e.target.value);
-                      setSearchParams({
-                        ...searchParams,
-                        checkinDate: e.target.value,
-                      });
+                      const newCheckinDate = e.target.value;
+                      if (checkoutDate && newCheckinDate >= checkoutDate) {
+                        const date = new Date(newCheckinDate);
+                        date.setDate(date.getDate() + 1);
+                        const newCheckOutDate = date
+                          .toISOString()
+                          .split("T")[0];
+                        setCheckoutDate(newCheckOutDate);
+                        setSearchParams({
+                          ...searchParams,
+                          checkinDate: newCheckinDate,
+                          checkoutDate: newCheckOutDate,
+                        });
+                      } else {
+                        setSearchParams({
+                          ...searchParams,
+                          checkinDate: newCheckinDate,
+                        });
+                      }
+                      setCheckinDate(newCheckinDate);
                     }}
                     required
                     min={today}
@@ -1902,8 +1919,10 @@ export default function HotelDetailPage() {
           </p>
           <p>
             <b>Note: </b>
-            <a style={{color: 'red'}}>Accompanying</a> services can be ordered once you check in. <a style={{color: 'red'}}>Alternatively</a>, 
-            you may message the hotel host after booking torequest the service in advance.
+            <a style={{ color: "red" }}>Accompanying</a> services can be ordered
+            once you check in. <a style={{ color: "red" }}>Alternatively</a>,
+            you may message the hotel host after booking torequest the service
+            in advance.
           </p>
         </Modal.Body>
         <Modal.Footer>

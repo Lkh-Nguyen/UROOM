@@ -315,6 +315,26 @@ exports.deleteFeedback = async (req, res) => {
     });
   }
 };
+
+
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const  checkProfanityWithGemini = async (content) => {
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  try {
+    const prompt = `Kiểm tra nội dung sau có chứa từ ngữ không phù hợp hay không (trả lời chỉ "YES" hoặc "NO") * CHÚ Ý HÃY KIỂM TRA TRONG TẤT CẢ CÁC LOẠI NGÔN NGỮ: "${content}"`;
+
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text().trim();
+    console.log("responseText: ", responseText)
+    return responseText === "YES"; // Trả về true nếu có từ ngữ không phù hợp
+  } catch (error) {
+    console.error("Error checking content with Gemini:", error);
+    return false; // Nếu lỗi xảy ra, mặc định không chặn nội dung
+  }
+};
+
 exports.createFeedback = async (req, res) => {
   try {
     const { reservation, hotel, content, rating } = req.body;
@@ -323,22 +343,29 @@ exports.createFeedback = async (req, res) => {
     if (!reservation || !hotel || !content || !rating) {
       return res.status(400).json({
         error: true,
-        message: "Vui lòng cung cấp đầy đủ thông tin feedback.",
+        message: "Please provide all required feedback information.",
       });
+    }
+
+    //Kiểm tra nội dung bằng Gemini
+    const isProfane = await checkProfanityWithGemini(content);
+    if (isProfane) {
+      console.log("Có từ ngữ không phù hợp trong feedback")
+      return res.status(400).json({ message: `Content "${content}" contains inappropriate language and is not acceptable in feedback.` });
     }
 
     const newFeedback = await Feedback.create({ user, reservation, hotel, content, rating });
 
     res.status(201).json({
       error: false,
-      message: "Tạo feedback thành công",
+      message: "Create feedback successfully",
       data: newFeedback,
     });
   } catch (error) {
     console.error("Lỗi khi tạo feedback:", error);
     res.status(500).json({
       error: true,
-      message: "Lỗi server khi tạo feedback",
+      message: "Error server when creating feedback",
     });
   }
 };
@@ -362,14 +389,14 @@ exports.getFeedbackById = async (req, res) => {
 
     return res.status(200).json({
       error: false,
-      message: "Lấy thông tin feedback thành công.",
+      message: "Feedback retrieved successfully.",
       data: feedback,
     });
   } catch (error) {
     console.error("Lỗi khi lấy thông tin feedback theo ID:", error);
     return res.status(500).json({
       error: true,
-      message: "Lỗi server khi lấy thông tin feedback.",
+      message: "Server error occurred when fetching feedback.",
     });
   }
 };

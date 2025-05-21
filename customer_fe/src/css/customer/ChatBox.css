@@ -16,8 +16,8 @@
   }
   
   .chatbox {
-    width: 300px;
-    height: 400px;
+    width: 400px;
+    height: 600px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -89,3 +89,12 @@
     cursor: pointer;
   }
   
+.hotel-link {
+  text-decoration: none;
+  color: black;
+  transition: color 0.2s ease;
+}
+
+.hotel-link:hover {
+  color: blue;
+}

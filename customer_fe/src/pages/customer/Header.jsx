@@ -153,29 +153,6 @@ function NavigationBar() {
             </Nav.Link>
           </Nav>
 
-          {/* <Dropdown style={{ marginRight: "10px" }}>
-            <Dropdown.Toggle
-              style={{
-                backgroundColor: "transparent",
-                border: "none",
-                boxShadow: "none",
-              }}
-            >
-              <FaBell style={{ color: "white" }} />{" "} */}
-              {/* Đổi màu chuông nếu cần */}
-            {/* </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item>You have a new message</Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item>System update at 10pm tonight</Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item
-                onClick={() => navigate(Routers.ChatPage, { state: { id: 0 } })}
-              >
-                You have a new message
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown> */}
 
           {Auth._id !== -1 ? (
             <Dropdown align="end">

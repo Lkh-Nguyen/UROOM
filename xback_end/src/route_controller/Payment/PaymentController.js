@@ -1,17 +1,16 @@
 require("dotenv").config();
 const asyncHandler = require("../../middlewares/asyncHandler");
-const User = require("../../models/user");
-const Room = require("../../models/room");
 const Reservation = require("../../models/reservation");
 const RoomAvailability = require("../../models/roomAvailability");
+const Room = require("../../models/room");
 const mongoose = require("mongoose");
+const room = require("../../models/room");
 
 //Create booking with not paid reservation
 exports.createBooking = asyncHandler(async (req, res) => {
   const user = req.user;
   const { hotelId, checkInDate, checkOutDate, roomDetails, totalPrice } =
     req.body.params;
-
 
   try {
     if (!user._id || !hotelId || !checkInDate || !checkOutDate) {
@@ -23,13 +22,14 @@ exports.createBooking = asyncHandler(async (req, res) => {
     const checkIn = new Date(checkInDate);
     const checkOut = new Date(checkOutDate);
 
+    console.log("checkIn: ", checkIn);
+    console.log("checkOut: ", checkOut);
+
     //Check not paid reservation
     const unpaidReservation = await Reservation.findOne({
       user: user._id,
       status: "NOT PAID",
     });
-
-    console.log("unpaidReservation: ", unpaidReservation);
 
     if (unpaidReservation) {
       return res.json({
@@ -37,6 +37,58 @@ exports.createBooking = asyncHandler(async (req, res) => {
         message:
           "You must payment the not paid reservation before or wait 5 minutes to delete",
       });
+    }
+
+    for (let room of roomDetails) {
+      console.log("room: ", room);
+      const roomFind = await Room.findById(room.room._id);
+      console.log("Id: ", room.room._id);
+
+      // First, find all bookings that overlap with the requested period
+      const overlappingBookings = await RoomAvailability.find({
+        room: new mongoose.Types.ObjectId(room.room._id),
+        checkInDate: { $lt: checkOut },
+        checkOutDate: { $gt: checkIn },
+      });
+
+      // Process the overlapping bookings to determine the maximum occupancy
+      let maxBookedQuantity = 0;
+      let dateMap = new Map();
+
+      // Create a map of all dates in the range and their booked quantities
+      for (const booking of overlappingBookings) {
+        // Get all dates between checkIn and checkOut for this booking
+        let currentDate = new Date(Math.max(booking.checkInDate, checkIn));
+        const endDate = new Date(Math.min(booking.checkOutDate, checkOut));
+
+        while (currentDate < endDate) {
+          const dateStr = currentDate.toISOString().split("T")[0];
+          const currentBooked = dateMap.get(dateStr) || 0;
+          dateMap.set(dateStr, currentBooked + booking.bookedQuantity);
+
+          // Move to next day
+          currentDate.set
+          Date(currentDate.getDate() + 1);
+        }
+      }
+
+      // Find the maximum booked quantity for any day in the range
+      for (const bookedQuantity of dateMap.values()) {
+        maxBookedQuantity = Math.max(maxBookedQuantity, bookedQuantity);
+      }
+
+      console.log("roomFind quantity: ", roomFind.quantity);
+      console.log("maxBookedQuantity: ", maxBookedQuantity);
+      console.log("requested quantity: ", room.amount);
+
+      // Check if the requested amount exceeds available capacity
+      if (room.amount > roomFind.quantity - maxBookedQuantity) {
+        return res.status(400).json({
+          error: true,
+          message:
+            "Failed to create reservation. Not enough rooms available for the selected dates.",
+        });
+      }
     }
 
     // Tạo đơn đặt phòng
@@ -52,13 +104,23 @@ exports.createBooking = asyncHandler(async (req, res) => {
       totalPrice,
       status: "NOT PAID",
     });
-
     reservation.save();
 
-    console.log("reservation: ", reservation);
+    for (let room of roomDetails) {
+      const roomAvailability = new RoomAvailability({
+        room: room.room._id,
+        checkInDate,
+        checkOutDate,
+        bookedQuantity: room.amount,
+        reservation: reservation._id,
+      });
+      roomAvailability.save();
+    }
+
     return res.status(201).json({
       error: false,
-      message: "Reservation created successfully. Please finish payment in 5 minutes",
+      message:
+        "Reservation created successfully. Please finish payment in 5 minutes",
       reservation,
     });
   } catch (err) {
@@ -71,7 +133,6 @@ exports.createBooking = asyncHandler(async (req, res) => {
 
 exports.cancelPayment = asyncHandler(async (req, res) => {
   const { reservationId } = req.body;
-  console.log("reservationId1: ", reservationId);
   const userId = req.user.id;
 
   try {
@@ -92,7 +153,20 @@ exports.cancelPayment = asyncHandler(async (req, res) => {
         error: true,
         message: "Reservation is already cancelled",
       });
-    }else{
+    } else {
+      try {
+        const result = await RoomAvailability.deleteMany({
+          reservation: reservationId,
+        });
+        console.log(
+          `Đã xóa ${result.deletedCount} bản ghi RoomAvailability với reservationId = ${reservationId}`
+        );
+      } catch (error) {
+        console.error(
+          "Lỗi khi xóa RoomAvailability theo reservationId:",
+          error
+        );
+      }
       reservation.status = "CANCELLED";
       reservation.save();
     }
@@ -112,7 +186,6 @@ exports.cancelPayment = asyncHandler(async (req, res) => {
 
 exports.acceptPayment = asyncHandler(async (req, res) => {
   const { reservationId } = req.body;
-  console.log("reservationId: ", reservationId);
   const userId = req.user.id;
 
   try {

@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import * as Routers from "./utils/Routes";
+import Utils from "@utils/Utils";
 
 // Customer pages
 import BannedPage from "./pages/BannedPage";
