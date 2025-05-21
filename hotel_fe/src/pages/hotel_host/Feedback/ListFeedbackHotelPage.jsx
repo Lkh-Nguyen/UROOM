@@ -137,9 +137,9 @@ const ListFeedbackHotelPage = () => {
               </div>
               <ProgressBar
                 now={
-                  feedbacks && feedbacks.length
-                    ? (feedbackStats[idx] / feedbacks.feedbacks.length) * 100
-                    : 0
+                  feedbacks && 
+                     (feedbackStats[idx] / feedbacks?.totalFeedback) * 100
+                    
                 }
               />
             </div>
