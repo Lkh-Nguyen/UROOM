@@ -689,21 +689,26 @@ const roomFacilityIds = [];
 const bedTypes = [
   {
     name: "Single Bed",
-    description: "Comfortable single bed, ideal for one person.",
+    description: "A single bed suitable for one person. Width: 90 - 130 cm.",
+    bedWidth: "Width 90 - 130 cm",
   },
   {
-    name: "Double Bed",
-    description: "Spacious double bed, suitable for 2 people.",
+    name: "Double Bed", 
+    description: "A double bed ideal for two people. Width: 131 - 150 cm.",
+    bedWidth: "Width 131 - 150 cm",
   },
   {
-    name: "Quad Bed",
-    description: "Large bed that can accommodate up to 4 people.",
+    name: "King Bed",
+    description: "A king-size bed for extra comfort, suitable for two or more people. Width: 151 - 180 cm.",
+    bedWidth: "Width 151 - 180 cm",
   },
   {
-    name: "2 Single Beds",
-    description: "Room with 2 single beds, suitable for a group of 2.",
+    name: "Super King Beds",
+    description: "Room with two large single beds, suitable for two people. Total width: 181 - 210 cm.",
+    bedWidth: "Width 181 - 210 cm",
   },
 ];
+
 
 // Insert Beds
 const bedDocs = db.beds.insertMany(bedTypes);
@@ -872,6 +877,7 @@ for (let i = 0; i < 42; i++) {
       description: serviceDescriptions[i], // Match index correctly
       type: servicesName[i].includes("Buffet") ? "person" : "service",
       price: randomPrice,
+      statusActive: "ACTIVE",
     });
     serviceIds.push(hotelService.insertedId);
   }
@@ -921,6 +927,7 @@ for (let i = 0; i < 60; i++) {
       checkInEnd: "13:00",
       checkOutStart: "10:00",
       checkOutEnd: "11:00",
+      ownerStatus: "ACTIVE",
     });
 
     hotelIds.push(hotel.insertedId);
@@ -929,7 +936,7 @@ for (let i = 0; i < 60; i++) {
 
 for (let i = 0; i < 50; i++) {
   for (let j = 0; j < 3; j++) {
-    let selectedBeds = Array.from({ length: 3 }, () => ({
+    let selectedBeds = Array.from({ length: 1 }, () => ({
       bed: bedIds[Math.floor(Math.random() * bedIds.length)],
       quantity: Math.floor(Math.random() * 3) + 1,
     }));
@@ -959,6 +966,7 @@ for (let i = 0; i < 50; i++) {
       quantity: Math.floor(Math.random() * 5) + 3,
       hotel: hotelIds[i % hotelIds.length],
       bed: selectedBeds,
+      statusActive: "ACTIVE",
     });
     roomIds.push(room.insertedId);
   }
@@ -1002,12 +1010,13 @@ for (let i = 0; i < hotelNames.length; i++) {
       star: Math.floor(Math.random() * 5) + 1, // 2-5 sao
       rating: Math.floor(Math.random() * 5) + 1, // 1-5 rating
       pricePerNight:
-        Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
+      Math.floor(Math.random() * ((2000 - 500) / 10 + 1)) * 10 + 500, // 5000 - 2000
       images: images,
       checkInStart: "12:00",
       checkInEnd: "13:00",
       checkOutStart: "10:00",
       checkOutEnd: "11:00",
+      ownerStatus: "ACTIVE",
     });
 
     hotelIds.push(hotel.insertedId);
@@ -1017,7 +1026,7 @@ for (let i = 0; i < hotelNames.length; i++) {
 // Insert 60 rooms (Mỗi phòng có 3 ảnh)
 for (let i = 0; i < 20; i++) {
   for (let j = 0; j < 3; j++) {
-    let selectedBeds = Array.from({ length: 3 }, () => ({
+    let selectedBeds = Array.from({ length: 1 }, () => ({
       bed: bedIds[Math.floor(Math.random() * bedIds.length)],
       quantity: Math.floor(Math.random() * 3) + 1,
     }));
@@ -1047,6 +1056,7 @@ for (let i = 0; i < 20; i++) {
       hotel: hotelIds[i % hotelIds.length],
       facilities: shuffledFacilities,
       bed: selectedBeds,
+      statusActive: "ACTIVE",
     });
     roomIds.push(room.insertedId);
   }

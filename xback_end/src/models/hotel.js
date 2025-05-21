@@ -23,6 +23,7 @@ const hotelSchema = new Schema(
     phoneNumber: {
       type: String,
       required: true,
+      default: "0905123456"
     },
     services: [
       {
@@ -65,7 +66,7 @@ const hotelSchema = new Schema(
     ownerStatus: {
       type: String,
       enum: ["ACTIVE", "NONACTIVE"],
-      default: "ACTIVE"
+      default: "NONACTIVE"
     },
     requestDate: {
       type: Date,
@@ -90,7 +91,6 @@ const hotelSchema = new Schema(
       type: String,
       default: "11:00"
     },
-
   },
   { versionKey: false }
 );
