@@ -118,7 +118,7 @@ const getRoomById = async (req, res) => {
     const room = await Room.findById(roomId)
       .populate("hotel")
       .populate("facilities")
-      .populate("bed.bed", "bedType capacity name");
+      .populate("bed.bed", "bedType capacity name description");
 
     if (!room) {
       return res

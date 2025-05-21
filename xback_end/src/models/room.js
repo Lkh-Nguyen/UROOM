@@ -20,6 +20,11 @@ const RoomSchema = new Schema(
       },
     ],
     facilities: [{ type: Schema.Types.ObjectId, ref: 'RoomFacility' }],
+    statusActive: {
+      type: String,
+      enum: ["ACTIVE", "NONACTIVE"],
+      default: "NONACTIVE"
+    },
   },
   { versionKey: false }
 );
