@@ -3,6 +3,7 @@ const RefundingReservation = require("../../models/refundingReservation");
 
 const cron = require("node-cron");
 const asyncHandler = require("../../middlewares/asyncHandler");
+const roomAvailability = require("../../models/roomAvailability");
 
 exports.getReservationsByUserId = async (req, res) => {
   try {
@@ -111,16 +112,16 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
   }
 
   // 2. Xử lý đơn PENDING mà quá thời gian check-in
-  const pendingReservations = await Reservation.find({ status: "PENDING" }).populate('user');
+  const pendingReservations = await Reservation.find({
+    status: "PENDING",
+  }).populate("user");
+
   for (const r of pendingReservations) {
     try {
-      const checkinDate = new Date(r.checkInDate);
+      const checkinDeadline = new Date(r.checkInDate);
+      checkinDeadline.setHours(24, 0, 0, 0); // Đặt thời gian là 12:00 PM ngày check-in
 
-      // Tạo 12:00 PM cùng ngày với ngày check-in
-      const oneDayLater = new Date(now);
-      oneDayLater.setDate(oneDayLater.getDate() + 1 );
-
-      if (oneDayLater > checkinDate) {
+      if (now > checkinDeadline) {
         r.status = "CANCELLED";
         await r.save();
 
@@ -130,8 +131,22 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
           refundAmount: r.totalPrice,
           accountHolderName: r.user.accountHolderName ?? "Hoang Nguyen",
           accountNumber: r.user.accountNumber ?? "Le Kim Hoang Nguyen",
-          bankName:  r.user.bankName ?? "Techcom Bank",
+          bankName: r.user.bankName ?? "Techcom Bank",
         });
+
+        try {
+          const result = await roomAvailability.deleteMany({
+            reservation: r._id,
+          });
+          console.log(
+            `Đã xóa ${result.deletedCount} bản ghi RoomAvailability với reservationId = ${r._id}`
+          );
+        } catch (error) {
+          console.error(
+            "Lỗi khi xóa RoomAvailability theo reservationId:",
+            error
+          );
+        }
 
         console.log(
           `Reservation ${r._id} đã bị hủy do quá 12h trưa ngày check-in.`

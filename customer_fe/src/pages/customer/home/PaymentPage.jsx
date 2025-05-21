@@ -81,10 +81,11 @@ const PaymentPage = () => {
     // Bắt đầu đếm thời gian
     timeoutRef.current = setTimeout(() => {
       handleAccept();
-    }, 30000);
+    }, 10000);
 
     // Cleanup khi rời khỏi component (chuyển trang)
     return () => {
+      
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
         console.log("Timeout cleared on unmount!");

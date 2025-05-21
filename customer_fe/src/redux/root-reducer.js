@@ -6,6 +6,7 @@ import RoomReducer from './room/reducer';
 import FeedbackReducer from './feedback/reducer';
 import ReservationReducer from './reservations/reducer';
 import ReportFeedbackReducer from './reportedFeedback/reducer';
+import chatboxReducer from './chatbox/reducer';
 
 const rootReducer = combineReducers({
     Auth: AuthReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     Feedback:FeedbackReducer,
     Reservation:ReservationReducer,
     ReportFeedback:ReportFeedbackReducer,
+    ChatBox: chatboxReducer,
 });
 
 export default rootReducer;
