@@ -256,12 +256,20 @@ const Transaction = () => {
                       {new Date(reservation.createdAt).toLocaleDateString()}
                     </td>
                     <td>
-                      <a>
-                        Đặt phòng -{" "}
-                        {reservation.rooms && reservation.rooms.length > 0
-                          ? reservation.rooms[0].room?.name || ""
-                          : ""}
-                      </a>
+                      <p>
+                        {reservation.hotel && reservation.rooms.length > 0 && (
+                          <strong>{reservation.hotel.hotelName}</strong>
+                        )}
+                      </p>
+                      <span>
+                        {reservation.rooms &&
+                          reservation.rooms.length > 0 &&
+                          reservation.rooms.map((roomObj) => (
+                            <div>
+                              {roomObj.room?.name} - {roomObj.room?.quantity}
+                            </div>
+                          ))}
+                      </span>
                     </td>
                     <td>{formatCurrency(reservation.totalPrice)}</td>
                     <td className="text-danger">
