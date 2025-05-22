@@ -4,7 +4,7 @@ const asyncHandler = require("../../middlewares/asyncHandler");
 const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
 const Reservation = require("../../models/reservation");
-
+const HotelFacility = require("../../models/hotelFacility"); 
 // exports.getAllHotels = asyncHandler(async (req, res) => {
 //     const {page= 1, limit= 5}= req.query;
 
@@ -317,3 +317,110 @@ exports.getTop3HotelsThisMonth = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+exports.getHotelsByOwner = asyncHandler(async (req, res) => {
+  const ownerId = req.user._id;
+
+  if (!ownerId) {
+    return res.status(400).json({
+      error: true,
+      message: "User ID is missing from token",
+    });
+  }
+
+  const hotels = await Hotel.find({ owner: ownerId })
+    .populate("services")
+    .populate("facilities");
+
+  if (!hotels || hotels.length === 0) {
+    return res.status(404).json({
+      error: true,
+      message: "No hotels found for this owner",
+    });
+  }
+
+  return res.status(200).json({
+    error: false,
+    hotels,
+    message: "Get hotels by owner successfully",
+  });
+});
+
+
+
+exports.updateHotelInfo = asyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+  const updateData = req.body;
+
+  if (!hotelId) {
+    return res.status(400).json({
+      error: true,
+      message: "Hotel ID is required",
+    });
+  }
+
+  const hotel = await Hotel.findById(hotelId);
+
+  if (!hotel) {
+    return res.status(404).json({
+      error: true,
+      message: "Hotel not found",
+    });
+  }
+
+  const allFacilities = await HotelFacility.find({});
+  const nameToIdMap = {};
+  allFacilities.forEach(facility => {
+    nameToIdMap[facility.name] = facility._id;
+  });
+
+
+  if (updateData.facilities && Array.isArray(updateData.facilities)) {
+    hotel.facilities = updateData.facilities
+      .map(name => nameToIdMap[name])
+      .filter(id => id); 
+  }
+
+  const updatableFields = [
+    "hotelName",
+    "description",
+    "address",
+    "phoneNumber",
+    "services",
+    "rating",
+    "star",
+    "pricePerNight",
+    "images",
+    "businessDocuments",
+    "adminStatus",
+    "ownerStatus",
+    "checkInStart",
+    "checkInEnd",
+    "checkOutStart",
+    "checkOutEnd"
+  ];
+
+  updatableFields.forEach(field => {
+    if (updateData[field] !== undefined) {
+      hotel[field] = updateData[field];
+    }
+  });
+
+  if (updateData.adminStatus) {
+    hotel.decisionDate = new Date();
+  }
+
+  try {
+    await hotel.save();
+    return res.status(200).json({
+      error: false,
+      message: "Hotel updated successfully",
+      hotel,
+    });
+  } catch (error) {
+    console.error("Error saving hotel:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Failed to update hotel",
+    });
+  }
+});

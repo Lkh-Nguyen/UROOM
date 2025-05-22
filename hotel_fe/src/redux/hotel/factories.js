@@ -19,17 +19,17 @@ const Factories = {
     }
     return api.post(ApiConstants.FETCH_FAVORITE_HOTELS, { ids, params });
   },
-
-  fetch_hotels_by_owner_id: (id) => {
-    const url = ApiConstants.FETCH_HOTEL_BY_OWNER_ID;
-    return api.post(url, { id });
-  },
-
   get_all_hotels: () => {
     return api.get(ApiConstants.FETCH_ALL_HOTEL);
   },
   get_top3_hotels: () => {
     return api.get(ApiConstants.FETCH_TOP3_HOTEL);
+  },
+  fetchOwnerHotel: () => {
+    return api.get(ApiConstants.FETCH_OWNER_HOTEL);
+  },
+  updateHotel: (hotelId, updateData) => {
+    return api.put(`${ApiConstants.UPDATE_HOTEL}/${hotelId}`, updateData);
   },
 };
 

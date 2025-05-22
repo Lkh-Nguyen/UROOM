@@ -48,7 +48,7 @@ const ListFeedbackHotelPage = () => {
   useEffect(() => {
     if (auth) {
       dispatch({
-        type: HotelActions.FETCH_HOTEL_BY_OWNER_ID,
+        type: HotelActions.FETCH_OWNER_HOTEL,
         payload: { id: auth._id },
       });
     }

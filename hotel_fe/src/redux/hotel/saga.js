@@ -39,34 +39,6 @@ function* getFavoriteHotels() {
     }
   });
 }
-
-function* getHotelsByOwnerId() {
-  yield takeEvery(HotelActions.FETCH_HOTEL_BY_OWNER_ID, function* (action) {
-    const { id, onSuccess, onFailed, onError } = action.payload;
-
-    try {
-      const response = yield call(() => Factories.fetch_hotels_by_owner_id(id));
-      if (response?.status === 200) {
-        const data = response.data;
-        yield put({
-          type: HotelActions.FETCH_HOTEL_BY_OWNER_ID_SUCCESS,
-          payload: data,
-        });
-        onSuccess?.(data);
-      } else {
-        onFailed?.("Failed to fetch hotel details");
-      }
-    } catch (error) {
-      const msg = error.response?.data?.message || "Something went wrong";
-      const status = error.response?.status;
-      if (status >= 500) {
-        onError?.(error);
-      } else {
-        onFailed?.(msg);
-      }
-    }
-  });
-}
 function* getAllHotels() {
   yield takeEvery(HotelActions.FETCH_ALL_HOTEL, function* (action) {
     const { onSuccess, onFailed, onError } = action.payload || {};
@@ -93,6 +65,39 @@ function* getAllHotels() {
       const msg = error.response?.data?.message || "Something went wrong";
 
       console.log("Get all hotels error:", msg);
+    }
+  });
+}
+function* getOwnerHotel() {
+  yield takeEvery(HotelActions.FETCH_OWNER_HOTEL, function* (action) {
+    const { onSuccess, onFailed, onError } = action.payload || {};
+
+    try {
+      const response = yield call(() => Factories.fetchOwnerHotel());
+
+      console.log("Owner hotel response:", response);
+
+      if (response?.status === 200) {
+        const ownerHotel = response.data;
+
+        yield put({
+          type: HotelActions.FETCH_OWNER_HOTEL_SUCCESS,
+          payload: ownerHotel,
+        });
+
+        onSuccess?.(ownerHotel);
+      } else {
+        onFailed?.(
+          response?.data?.message || "Không lấy được thông tin khách sạn"
+        );
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg =
+        error.response?.data?.message ||
+        "Có lỗi xảy ra khi lấy thông tin khách sạn";
+
+      console.log("Owner hotel error:", msg);
 
       if (status >= 500) {
         onError?.(error);
@@ -128,8 +133,37 @@ function* getTop3Hotels() {
       const msg =
         error.response?.data?.message ||
         "Có lỗi xảy ra khi lấy top 3 khách sạn";
+    }
+  });
+}
+function* updateHotel() {
+  yield takeEvery(HotelActions.UPDATE_HOTEL, function* (action) {
+    const { hotelId, updateData, onSuccess, onFailed, onError } =
+      action.payload || {};
 
-      console.log("Top 3 hotels error:", msg);
+    if (!hotelId) {
+      onFailed?.("Hotel ID không được để trống");
+      return;
+    }
+
+    try {
+      const response = yield call(() =>
+        Factories.updateHotel(hotelId, updateData)
+      );
+
+      if (response?.status === 200) {
+        yield put({
+          type: HotelActions.UPDATE_HOTEL_SUCCESS,
+          payload: response.data.hotel,
+        });
+        onSuccess?.(response.data.hotel);
+      } else {
+        onFailed?.(response?.data?.message || "Cập nhật khách sạn thất bại");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg =
+        error.response?.data?.message || "Có lỗi xảy ra khi cập nhật khách sạn";
 
       if (status >= 500) {
         onError?.(error);
@@ -143,8 +177,9 @@ function* getTop3Hotels() {
 export default function* userSaga() {
   yield all([
     fork(getFavoriteHotels),
-    fork(getHotelsByOwnerId),
     fork(getAllHotels),
     fork(getTop3Hotels),
+    fork(getOwnerHotel),
+    fork(updateHotel),
   ]);
 }

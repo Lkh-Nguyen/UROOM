@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Row,
@@ -7,6 +7,7 @@ import {
   Badge,
   Image,
   Button,
+  Spinner,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
@@ -20,123 +21,169 @@ import {
   Building,
   PersonCheck,
   ShieldCheck,
+  Star,
+  StarFill,
 } from "react-bootstrap-icons";
-import "../../../css/hotelHost/HotelManagement.css";
-import { Star, StarFill } from "react-bootstrap-icons";
 import Hotel from "./Hotel";
 
+import { useAppSelector } from "../../../redux/store";
+import { useDispatch } from "react-redux";
+import HotelActions from "../../../redux/hotel/actions";
+import { showToast } from "@components/ToastContainer";
+import "../../../css/hotelHost/HotelManagement.css";
+import * as Routers from "../../../utils/Routes";
+import { useNavigate } from "react-router-dom";
+import * as FaIcons from "react-icons/fa";
+import * as MdIcons from "react-icons/md";
+import * as GiIcons from "react-icons/gi";
 function HotelManagement() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+  const [formData, setFormData] = useState(Auth);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [showModal, setShowModal]= useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [hotelinfo, setHotelinfo] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [selectedHotelId, setSelectedHotelId] = useState(null);
+  console.log("idsfbcdvfn", formData._id);
+  useEffect(() => {
+    fetchHotelInfo();
+  }, []);
+  const renderIcon = (iconName) => {
+    const iconLibraries = {
+      ...FaIcons,
+      ...MdIcons,
+      ...GiIcons,
+    };
 
-  // Hotel data
-  const hotel = {
-    name: "Khách Sạn Sunshine Palace",
-    address: {
-      city: "Hà Nội",
-      district: "Phường Xuân Hà, Quận Hai Bà Trưng",
-      specific: "15 Phố Trần Hưng Đạo",
-    },
-    amenities: [
-      { name: "WiFi miễn phí", icon: <Wifi /> },
-      { name: "TV màn hình phẳng", icon: <Tv /> },
-      { name: "Nước nóng", icon: <Droplet /> },
-      { name: "Điều hòa", icon: <Wind /> },
-      { name: "Quầy bar", icon: <Cup /> },
-      { name: "Phòng họp", icon: <Building /> },
-      { name: "Dịch vụ phòng", icon: <PersonCheck /> },
-      { name: "An ninh 24/7", icon: <ShieldCheck /> },
-    ],
-    checkIn: {
-      from: "14:00",
-      to: "22:00",
-    },
-    checkOut: {
-      from: "06:00",
-      to: "12:00",
-    },
-    stars: 4,
-    description:
-      "Khách sạn Sunshine Palace là một khách sạn sang trọng nằm ở trung tâm Hà Nội. Với vị trí thuận lợi, khách sạn cung cấp dịch vụ chất lượng cao và tiện nghi hiện đại. Phòng nghỉ được thiết kế tinh tế, tạo cảm giác thoải mái cho du khách. Nhà hàng trong khách sạn phục vụ các món ăn đặc sản địa phương và quốc tế. Đội ngũ nhân viên thân thiện và chuyên nghiệp luôn sẵn sàng hỗ trợ khách hàng 24/7.",
-    images: [
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651297.jpg?k=a174332a012227fd1eef89fc4b281941ecb1d12cb20d18ce2217bd660e95b8f2&o=&hp=1",
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651307.jpg?k=8a543b0b236f4d31f049e39055cb5aba7f3bd9399a0feb77807813af9a8cc13c&o=&hp=1",
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651309.jpg?k=61bd2ee76be2704cbad7d10869392496661990e79ef0af625af2e29d93d565f9&o=&hp=1",
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651287.jpg?k=7279f5d268aa315a461733a33e3109caae28946287f43bd9901ff03711a7028d&o=&hp=1",
-      "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651315.jpg?k=75d77cb9c4fda006f58d48be6f19af16d31e084cb6840c37f41bb6220bd99d9e&o=&hp=1   ",
-    ],
+    const IconComponent = iconLibraries[iconName];
+    return IconComponent ? (
+      <IconComponent style={{ fontSize: "20px", color: "#1a2b49" }} />
+    ) : null;
+  };
+  const fetchHotelInfo = () => {
+    setLoading(true);
+    dispatch({
+      type: HotelActions.FETCH_OWNER_HOTEL,
+      payload: {
+        userId: formData._id,
+        onSuccess: (data) => {
+          setHotelinfo(data.hotels);
+          console.log("acsahjsikxx", data.hotels);
+          setLoading(false);
+        },
+        onFailed: () => {
+          showToast.error("Lấy thông tin khách sạn thất bại");
+          setLoading(false);
+        },
+        onError: (err) => {
+          console.error(err);
+          showToast.error("Lỗi máy chủ khi lấy thông tin khách sạn");
+          setLoading(false);
+        },
+      },
+    });
   };
 
-  const renderStars = (count, total = 5) => {
-    return [...Array(total)].map((_, i) =>
+  const renderStars = (count = 0, total = 5) =>
+    [...Array(total)].map((_, i) =>
       i < count ? (
         <StarFill key={i} className="text-warning" />
       ) : (
         <Star key={i} className="text-warning" />
       )
     );
-  };
+
+  if (loading || !hotelinfo) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "60vh" }}
+      >
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
+  }
+
+  console.log("infor: ", hotelinfo);
 
   return (
     <div className="main-content_1 p-3">
       <div style={styles.header}>
+        {/* <h1>{hotelinfo[0]._id}</h1> */}
         <h1 style={styles.title}>Thông tin khách sạn</h1>
-        <Button style={styles.addButton} onClick={() => {setShowModal(true)}}>
+        <Button
+          style={styles.addButton}
+          onClick={() => {
+            setSelectedHotelId(hotelinfo[0]._id);
+            setShowModal(true);
+          }}
+        >
           + Chỉnh sửa khách sạn
         </Button>
       </div>
+
       <Card className="border-0 shadow">
         <Card.Body className="p-4">
           <div className="hotel-header mb-4">
-            <h1 className="hotel-name">{hotel.name}</h1>
+            <h1 className="hotel-name">{hotelinfo[0]?.hotelName}</h1>
             <div className="d-flex align-items-center mb-2">
-              <div className="stars me-2">{renderStars(hotel.stars)}</div>
+              <div className="stars me-2">{renderStars(hotelinfo[0].star)}</div>
               <Badge bg="warning" text="dark" className="star-badge">
-                {hotel.stars} sao
+                {hotelinfo.stars} sao
               </Badge>
             </div>
           </div>
 
           <Row>
-            <Col lg={8}>
+            <Col lg={7}>
               <div className="main-image-container mb-3">
                 <Image
-                  src={hotel.images[selectedImage] || "/placeholder.svg"}
-                  alt={`${hotel.name} - Ảnh chính`}
+                  src={
+                    hotelinfo[0].images?.[selectedImage] || "/placeholder.svg"
+                  }
+                  alt="Ảnh khách sạn chính"
                   className="main-image"
                   fluid
-                  style={{ height: "500px", width: "500px" }}
+                  style={{ height: "600px", width: "600px" }}
                 />
               </div>
 
               <div className="image-thumbnails mb-4">
-                {hotel.images.map((image, index) => (
+                {hotelinfo[0].images?.map((image, index) => (
                   <Image
                     key={index}
-                    src={image || "/placeholder.svg"}
-                    alt={`${hotel.name} - Ảnh ${index + 1}`}
+                    src={image}
+                    alt={`Ảnh ${index + 1}`}
                     className={`thumbnail ${
                       selectedImage === index ? "active" : ""
                     }`}
                     onClick={() => setSelectedImage(index)}
-                    style={{ height: "100px", width: "100px" }}
+                    style={{
+                      height: "120px",
+                      width: "120px",
+                      cursor: "pointer",
+                    }}
                   />
                 ))}
               </div>
 
               <div className="hotel-description mb-4">
                 <h3 className="section-title">Mô tả</h3>
-                <p>{hotel.description}</p>
+                <p>{hotelinfo[0].description}</p>
               </div>
 
               <div className="hotel-amenities mb-4">
                 <h3 className="section-title">Tiện nghi khách sạn</h3>
                 <Row>
-                  {hotel.amenities.map((amenity, index) => (
+                  {hotelinfo[0].facilities?.map((facility, index) => (
                     <Col key={index} xs={6} md={4} lg={3} className="mb-3">
-                      <div className="amenity-item">
-                        <span className="amenity-icon">{amenity.icon}</span>
-                        <span className="amenity-name">{amenity.name}</span>
+                      <div className="amenity-item d-flex align-items-center gap-2">
+                        {renderIcon(facility.icon)}
+                        <span style={{ marginLeft: "5px" }}>
+                          {facility.name}
+                        </span>
                       </div>
                     </Col>
                   ))}
@@ -144,7 +191,7 @@ function HotelManagement() {
               </div>
             </Col>
 
-            <Col lg={4}>
+            <Col lg={5}>
               <Card className="info-card">
                 <Card.Body>
                   <div className="info-section">
@@ -152,10 +199,7 @@ function HotelManagement() {
                       <GeoAlt className="me-2" />
                       Địa chỉ
                     </h4>
-                    <p className="mb-1">{hotel.address.specific}</p>
-                    <p>
-                      {hotel.address.district}, {hotel.address.city}
-                    </p>
+                    <p className="mb-1">{hotelinfo[0].address}</p>
                   </div>
 
                   <div className="info-section">
@@ -164,7 +208,8 @@ function HotelManagement() {
                       Giờ nhận phòng
                     </h4>
                     <div className="time-badge check-in">
-                      Từ {hotel.checkIn.from} đến {hotel.checkIn.to}
+                      Từ {hotelinfo[0].checkInStart} đến{" "}
+                      {hotelinfo[0].checkInEnd}
                     </div>
                   </div>
 
@@ -174,7 +219,8 @@ function HotelManagement() {
                       Giờ trả phòng
                     </h4>
                     <div className="time-badge check-out">
-                      Từ {hotel.checkOut.from} đến {hotel.checkOut.to}
+                      Từ {hotelinfo[0].checkOutStart} đến{" "}
+                      {hotelinfo[0].checkOutEnd}
                     </div>
                   </div>
                 </Card.Body>
@@ -183,21 +229,46 @@ function HotelManagement() {
           </Row>
         </Card.Body>
       </Card>
+      {/* 
       <Hotel
         show={showModal}
         onHide={() => setShowModal(false)}
         handleClose={() => setShowModal(false)}
+      /> */}
+
+      <Hotel
+        show={showModal}
+        handleClose={() => setShowModal(false)}
+        selectedHotelId={selectedHotelId}
       />
     </div>
   );
 }
 
+// const getAmenityIcon = (name) => {
+//   switch (name.toLowerCase()) {
+//     case "wifi miễn phí":
+//       return <Wifi />;
+//     case "tv màn hình phẳng":
+//       return <Tv />;
+//     case "nước nóng":
+//       return <Droplet />;
+//     case "điều hòa":
+//       return <Wind />;
+//     case "quầy bar":
+//       return <Cup />;
+//     case "phòng họp":
+//       return <Building />;
+//     case "dịch vụ phòng":
+//       return <PersonCheck />;
+//     case "an ninh 24/7":
+//       return <ShieldCheck />;
+//     default:
+//       return null;
+//   }
+// };
+
 const styles = {
-  container: {
-    maxWidth: "1200px",
-    margin: "30px auto",
-    padding: "0 15px",
-  },
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -210,8 +281,8 @@ const styles = {
     margin: 0,
   },
   addButton: {
-    backgroundColor: "#0071c2",
-    border: "none",
+    backgroundColor: "#007bff",
+    borderColor: "#007bff",
   },
 };
 

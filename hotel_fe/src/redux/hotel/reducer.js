@@ -5,6 +5,8 @@ const initialState = {
   hotelDetail: null,
   error: null,
   top3Hotels: [],
+  loading: false,
+  data: null,
 };
 
 const favoriteHotelReducer = (state = initialState, action) => {
@@ -14,11 +16,13 @@ const favoriteHotelReducer = (state = initialState, action) => {
         ...state,
         hotels: action.payload,
       };
-    case HotelActions.FETCH_HOTEL_BY_OWNER_ID_SUCCESS:
+    case HotelActions.FETCH_OWNER_HOTEL_SUCCESS:
       console.log(action.payload.hotels);
       return {
         ...state,
         hotel: action.payload.hotels[0],
+        data: action.payload,
+        loading: false,
       };
     case HotelActions.FETCH_All_HOTEL_SUCCESS:
       return {
@@ -29,6 +33,15 @@ const favoriteHotelReducer = (state = initialState, action) => {
       return {
         ...state,
         top3Hotels: action.payload,
+      };
+    case HotelActions.UPDATE_HOTEL_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: {
+          ...state.data,
+          ...action.payload,
+        },
       };
 
     default:
