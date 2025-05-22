@@ -113,7 +113,11 @@ const LoginPage = () => {
               dispatch({ type: AuthActions.LOGOUT });
               clearToken();
             } else {
-              navigate(-1);
+              if(location.state?.from === "register" || location.state?.from === "login"){
+                navigate(Routers.Home,  { state: { message: "Login account successfully !!!" } })
+              }else{
+                navigate(-1)
+              }
             }
           },
           onFailed: (msg) => {
@@ -236,7 +240,11 @@ const LoginPage = () => {
 
               <div className="text-center">
                 <span className="text-muted">Not a member? </span>
-                <a href={Routers.RegisterPage} className="text-decoration-none">
+                <a
+                  onClick={() => {
+                    navigate(Routers.RegisterPage)
+                  }} 
+                  className="text-decoration-none">
                   Register now
                 </a>
               </div>

@@ -85,7 +85,7 @@ function Home() {
 
   return (
     <div className="app-container_1">
-      <NavigationBar />
+      <NavigationBar from="login"/>
       <ToastProvider />
       <HeroSection />
       <SearchBar />
@@ -533,24 +533,6 @@ function OtherHotels() {
                       }}
                     >
                       <span>{hotel.hotelName}</span>
-                      <span
-                        style={{
-                          fontSize: "1.1rem",
-                          color: "#0d6efd",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {Utils.formatCurrency(hotel.pricePerNight)}
-                        <span
-                          style={{
-                            fontSize: "0.95rem",
-                            color: "#888",
-                            marginLeft: "4px",
-                          }}
-                        >
-                          / Day
-                        </span>
-                      </span>
                     </div>
                   </Card.Title>
                   <div
@@ -864,7 +846,7 @@ function CustomerReviews() {
   );
 }
 
-const ChatBox = () => {
+export const ChatBox = () => {
   const dispatch = useDispatch();
   const Messages = useAppSelector((state) => state.ChatBox.Messages);
   console.log("Messages123: ", Messages);

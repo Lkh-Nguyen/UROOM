@@ -43,6 +43,7 @@ import { showToast, ToastProvider } from "../../../components/ToastContainer";
 import Pagination from "@components/Pagination";
 import MapComponent from "@pages/MapLocation";
 import AuthActions from "../../../redux/auth/actions";
+import { ChatBox } from "./HomePage";
 
 // Options for adults and children select
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -1029,6 +1030,9 @@ const HotelSearchPage = () => {
             </Modal.Footer>
           </Modal>
         </Container>
+        <div>
+          <ChatBox/>
+        </div>
       </div>
       <Footer />
     </div>

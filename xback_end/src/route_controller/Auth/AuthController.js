@@ -58,7 +58,7 @@ exports.loginOwner = async (req, res) => {
 exports.updateCustomerProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { name, phoneNumber, address, gender, birthDate, image } = req.body;
+    const { name, phoneNumber, address, gender, birthDate, image, cmnd } = req.body;
 
     const user = await User.findById(userId);
 
@@ -80,6 +80,7 @@ exports.updateCustomerProfile = async (req, res) => {
     user.address = address || user.address;
     user.gender = gender || user.gender;
     user.birthDate = birthDate || user.birthDate;
+    user.cmnd = cmnd || user.cmnd;
 
     if (image && image.public_ID && image.url) {
       user.image = image;

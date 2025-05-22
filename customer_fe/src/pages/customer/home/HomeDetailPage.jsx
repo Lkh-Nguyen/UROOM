@@ -58,6 +58,7 @@ import Utils from "../../../utils/Utils";
 import ErrorModal from "@components/ErrorModal";
 import SearchActions from "../../../redux/search/actions";
 import HotelClosedModal from "./components/HotelClosedModal";
+import { ChatBox } from "./HomePage";
 
 // Options for select inputs
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -1907,6 +1908,9 @@ export default function HotelDetailPage() {
             </div>
           )}
         </Container>
+        <div>
+          <ChatBox/>
+        </div>
       </div>
       <Footer />
       <Modal

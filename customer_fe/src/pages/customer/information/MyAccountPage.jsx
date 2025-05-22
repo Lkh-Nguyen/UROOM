@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, ListGroup } from "react-bootstrap";
-import { FaKey, FaImage, FaHistory, FaHeart, FaComment, FaExclamationTriangle, FaMoneyBillWave } from "react-icons/fa";
+import {
+  FaKey,
+  FaImage,
+  FaHistory,
+  FaHeart,
+  FaComment,
+  FaExclamationTriangle,
+  FaMoneyBillWave,
+} from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../css/customer/MyAccountPage.css";
@@ -18,21 +26,23 @@ import Footer from "../Footer";
 import { useAppSelector } from "../../../redux/store";
 import * as Routers from "../../../utils/Routes";
 import RefundReservations from "./components/RefundReservation";
+import { ChatBox } from "../home/HomePage";
+
 
 function MyAccountPage() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  const {section}= useParams();
-  const navigate = useNavigate() // cần thêm dòng này
-  
+  const { section } = useParams();
+  const navigate = useNavigate(); // cần thêm dòng này
+
   const menuItems = [
-    { name: "My Account", icon: <IoSettingsSharp />, link: "view_information"},
-    { name: "Change Password", icon: <FaKey /> , link: "change_password"},
-    { name: "View Avatar", icon: <FaImage /> , link: "view_avatar"},
-    { name: "Booking History", icon: <FaHistory /> , link: "booking_history"},
-    { name: "Favorite Hotel", icon: <FaHeart /> , link: "favorite_hotel"},
-    { name: "My Feedback", icon: <FaComment /> , link: "my_feedback"},
-    { name: "My Report", icon: <FaExclamationTriangle/>, link: "my_report" },         // báo cáo
-    { name: "My Refund", icon: <FaMoneyBillWave/>, link: "my_refund" }               // hoàn tiền
+    { name: "My Account", icon: <IoSettingsSharp />, link: "view_information" },
+    { name: "Change Password", icon: <FaKey />, link: "change_password" },
+    { name: "View Avatar", icon: <FaImage />, link: "view_avatar" },
+    { name: "Booking History", icon: <FaHistory />, link: "booking_history" },
+    { name: "Favorite Hotel", icon: <FaHeart />, link: "favorite_hotel" },
+    { name: "My Feedback", icon: <FaComment />, link: "my_feedback" },
+    { name: "My Report", icon: <FaExclamationTriangle />, link: "my_report" }, // báo cáo
+    { name: "My Refund", icon: <FaMoneyBillWave />, link: "my_refund" }, // hoàn tiền
   ];
 
   return (
@@ -67,7 +77,7 @@ function MyAccountPage() {
                         height: "80px",
                         objectFit: "cover",
                       }}
-                   />
+                    />
                   </div>
                   <h5 className="mt-2 mb-0">{Auth.name}</h5>
                   <small className="text-muted">Google</small>
@@ -80,10 +90,12 @@ function MyAccountPage() {
                         item.link === section ? "active" : ""
                       }`}
                       onClick={() => {
-                        if(item.link == "favorite_hotel"){
-                          navigate(`${Routers.MyAccountPage}/${item.link}?page=1`)
-                        }else{
-                          navigate(`${Routers.MyAccountPage}/${item.link}`)
+                        if (item.link == "favorite_hotel") {
+                          navigate(
+                            `${Routers.MyAccountPage}/${item.link}?page=1`
+                          );
+                        } else {
+                          navigate(`${Routers.MyAccountPage}/${item.link}`);
                         }
                       }}
                     >
@@ -92,14 +104,13 @@ function MyAccountPage() {
                     </ListGroup.Item>
                   ))}
                 </ListGroup>
-                
               </Card>
             </Col>
             <Col md={9}>
               <Card style={{ backgroundColor: "rgba(255, 255, 255,0.9)" }}>
                 {section == "view_information" && <ViewInformation />}
                 {section == "change_password" && <ChangePassword />}
-                {section === "view_avatar" && <ViewAvatar/>}
+                {section === "view_avatar" && <ViewAvatar />}
                 {section == "booking_history" && <BookingHistory />}
                 {section == "favorite_hotel" && <FavoriteHotel />}
                 {section == "my_feedback" && <MyFeedback />}
@@ -109,6 +120,9 @@ function MyAccountPage() {
             </Col>
           </Row>
         </Container>
+        <div>
+          <ChatBox />
+        </div>
       </div>
       <Footer />
     </div>
