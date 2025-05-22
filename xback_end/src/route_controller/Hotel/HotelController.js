@@ -424,3 +424,47 @@ exports.updateHotelInfo = asyncHandler(async (req, res) => {
     });
   }
 });
+
+
+exports.changeStatusHotelInfo = asyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+  const {ownerStatus} = req.body;
+
+  console.log("ownerStatus: ", ownerStatus)
+  if (!hotelId) {
+    return res.status(400).json({
+      error: true,
+      message: "Hotel ID is required",
+    });
+  }
+
+  const hotel = await Hotel.findById(hotelId);
+
+  if (!hotel) {
+    return res.status(404).json({
+      error: true,
+      message: "Hotel not found",
+    });
+  }
+
+  if (ownerStatus) {
+    hotel.ownerStatus = "NONACTIVE";
+  }else{
+    hotel.ownerStatus = "ACTIVE";
+  }
+
+  try {
+    await hotel.save();
+    return res.status(200).json({
+      error: false,
+      message: "Hotel updated successfully",
+      hotel,
+    });
+  } catch (error) {
+    console.error("Error saving hotel:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Failed to update hotel",
+    });
+  }
+});

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -7,7 +9,6 @@ import {
   Form,
   Button,
   Image,
-  Pagination,
   ProgressBar,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -16,7 +17,7 @@ import "../../../css/hotelHost/ListFeedbackHotelPage.css";
 import ReportedFeedbackHotel from "./ReportedFeedbackHotel";
 import FeedbackActions from "../../../redux/feedback/actions";
 import HotelActions from "@redux/hotel/actions";
-import handleRating from "@utils/handleRating";
+import CustomPagination from "@components/CustomPagination";
 
 const ListFeedbackHotelPage = () => {
   const dispatch = useDispatch();
@@ -40,10 +41,8 @@ const ListFeedbackHotelPage = () => {
 
   const filteredFeedbacks = useMemo(() => {
     if (!Array.isArray(feedbacks.feedbacks)) return [];
-    return selectedStar === 0
-      ? feedbacks.feedbacks
-      : feedbacks.feedbacks.filter((fb) => fb.rating === selectedStar);
-  }, [feedbacks.feedbacks, selectedStar]);
+    return feedbacks.feedbacks;
+  }, [feedbacks.feedbacks]);
 
   useEffect(() => {
     if (auth) {
@@ -57,11 +56,16 @@ const ListFeedbackHotelPage = () => {
   useEffect(() => {
     if (!hotel) return;
 
+    const query = {
+      page: activePage,
+      ...(selectedStar > 0 && { star: selectedStar }),
+    };
+
     dispatch({
       type: FeedbackActions.FETCH_FEEDBACK_BY_HOTELID,
-      payload: { hotelId: hotel._id, query: { page: activePage } },
+      payload: { hotelId: hotel._id, query },
     });
-  }, [activePage, dispatch, hotel]);
+  }, [activePage, selectedStar, dispatch, hotel]);
 
   const renderStars = useCallback((count, total = 5) => {
     return Array.from({ length: total }).map((_, i) =>
@@ -77,19 +81,6 @@ const ListFeedbackHotelPage = () => {
   const limit = feedbacks?.limit || 1;
   const totalPages = Math.ceil(total / limit);
 
-  const visiblePages = useMemo(() => {
-    const delta = 2;
-    const pages = [];
-    for (
-      let i = Math.max(1, activePage - delta);
-      i <= Math.min(totalPages, activePage + delta);
-      i++
-    ) {
-      pages.push(i);
-    }
-    return pages;
-  }, [activePage, totalPages]);
-
   return (
     <div className="main-content_1 p-3">
       <h2 className="fw-bold my-4">
@@ -101,28 +92,78 @@ const ListFeedbackHotelPage = () => {
       </p>
 
       <Row className="mb-4 justify-content-center align-items-center">
-        <Col md={2} />
-        <Col md={4}>
+        <Col md={3} />
+        <Col md={3} style={{ justifyContent: "center", alignItems: "center" }}>
           <Row>
             <Col xs="auto">
-              <Card className="rating-box border-4 shadow-sm">
-                <Card.Body className="d-flex align-items-center justify-content-center p-2">
-                  <span className="rating-number">
-                    {feedbacks?.averageRating}
+              <Card
+                style={{
+                  background:
+                    "linear-gradient(to bottom right, #e6f3ff, #ffffff)",
+                  borderRadius: "16px",
+                  padding: "16px",
+                  boxShadow: "0 0 8px rgba(0, 123, 255, 0.15)",
+                  border: "6px solid rgba(0, 123, 255, 0.15)",
+                }}
+              >
+                <Card.Body className="d-flex align-items-center justify-content-center">
+                  <span
+                    style={{
+                      fontSize: "60px",
+                      fontWeight: 600,
+                      color: "#0099ff",
+                    }}
+                  >
+                    {Number(feedbacks?.averageRating).toFixed(1)}
                   </span>
                 </Card.Body>
               </Card>
             </Col>
             <Col>
-              <h2 className="rating-title mb-0">
-                {handleRating(Math.round(feedbacks?.averageRating || 0))}
+              <h2
+                style={{
+                  color: "#007bff",
+                  fontWeight: "700",
+                  marginBottom: "0",
+                  fontSize: "30px",
+                }}
+              >
+                {feedbacks?.averageRating === 5
+                  ? "Rất tốt"
+                  : feedbacks?.averageRating > 4
+                  ? "Tốt"
+                  : feedbacks?.averageRating > 3
+                  ? "Khá tốt"
+                  : feedbacks?.averageRating > 2
+                  ? "Tiêu chuẩn"
+                  : feedbacks?.averageRating > 1
+                  ? "Cơ bản"
+                  : feedbacks?.averageRating == 0
+                  ? "Không đánh giá"
+                  : ""}
               </h2>
-              <p className="rating-count mb-1">
-                Từ {feedbacks?.totalFeedback || 0} đánh giá
+
+              <p
+                style={{
+                  marginBottom: "4px",
+                  fontWeight: "500",
+                  fontSize: "24px",
+                  color: "#000",
+                }}
+              >
+                Từ {feedbacks?.totalFeedback} đánh giá
               </p>
-              <div className="rating-source">
-                Bởi khách du lịch trong{" "}
-                <span className="traveloka-text">uroom</span>
+
+              <div
+                style={{
+                  fontSize: "18px",
+                  color: "gray",
+                }}
+              >
+                By domestic travelers in{" "}
+                <span style={{ fontWeight: "600", color: "#6c757d" }}>
+                  uroom
+                </span>
                 <sup>®</sup>
               </div>
             </Col>
@@ -132,14 +173,16 @@ const ListFeedbackHotelPage = () => {
           {ratingLabels.map((label, idx) => (
             <div key={idx} className="rating-item">
               <div className="d-flex justify-content-between mb-1">
-                <span>{label}</span>
+                <span>
+                  {label} ({idx + 1} star)
+                </span>
                 <span>{feedbackStats[idx]}</span>
               </div>
               <ProgressBar
+                style={{ height: "20px" }}
                 now={
-                  feedbacks && 
-                     (feedbackStats[idx] / feedbacks?.totalFeedback) * 100
-                    
+                  feedbacks &&
+                  (feedbackStats[idx] / feedbacks?.totalFeedback) * 100
                 }
               />
             </div>
@@ -158,7 +201,10 @@ const ListFeedbackHotelPage = () => {
           <Form.Select
             style={{ width: "120px" }}
             value={selectedStar}
-            onChange={(e) => setSelectedStar(Number(e.target.value))}
+            onChange={(e) => {
+              setSelectedStar(Number(e.target.value));
+              setActivePage(1);
+            }}
           >
             <option value={0}>All star</option>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -170,8 +216,36 @@ const ListFeedbackHotelPage = () => {
         </Col>
       </Row>
 
-      {filteredFeedbacks.map((review) => (
-        <Card key={review._id} className="mb-3 border-0 shadow-sm">
+      {filteredFeedbacks.length === 0 ? (
+        <div className="d-flex flex-column align-items-center justify-content-center text-center py-5">
+          <div
+            className="rounded-circle bg-light d-flex align-items-center justify-content-center mb-4"
+            style={{
+              width: 140,
+              height: 140,
+              transition: "transform 0.3s",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            }}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.transform = "scale(1.05)")
+            }
+            onMouseOut={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            <img
+              src="/empty-state.svg"
+              alt="No data"
+              style={{ width: 80, height: 80, opacity: 0.75 }}
+            />
+          </div>
+          <h5 className="text-muted fw-semibold">No Reviews Yet</h5>
+          <p className="text-secondary mb-0" style={{ maxWidth: 300 }}>
+            This hotel hasn’t received any reviews yet. Be the first to share
+            your experience!
+          </p>
+        </div>
+      ) : (
+        filteredFeedbacks.map((review) => (
+          <Card key={review._id} className="mb-3 border-0 shadow-sm">
           <Card.Body className="p-0 m-4">
             <Row className="g-0 justify-content-between">
               <Col md={12}>
@@ -190,7 +264,11 @@ const ListFeedbackHotelPage = () => {
                 <div className="d-flex justify-content-between align-items-start mb-2">
                   <div className="d-flex align-items-center">
                     <Image
-                      src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
+                      src={
+                        review.user?.image?.url ||
+                        "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg" ||
+                        "/placeholder.svg"
+                      }
                       roundedCircle
                       style={{
                         width: "50px",
@@ -200,7 +278,7 @@ const ListFeedbackHotelPage = () => {
                     />
                     <div>
                       <h6 className="mb-0">
-                        {review?.user?.fullName || "Ẩn danh"}
+                        {review?.user?.name || "Ẩn danh"}
                       </h6>
                       <div>
                         {renderStars(review.rating)}
@@ -226,22 +304,15 @@ const ListFeedbackHotelPage = () => {
             </Row>
           </Card.Body>
         </Card>
-      ))}
+        ))
+      )}
 
       <div className="d-flex justify-content-center mt-4">
-        <Pagination>
-          {visiblePages.map((number) => (
-            <Pagination.Item
-              key={number}
-              active={number === activePage}
-              onClick={() => setActivePage(number)}
-            >
-              <b style={{ color: number === activePage ? "white" : "#0d6efd" }}>
-                {number}
-              </b>
-            </Pagination.Item>
-          ))}
-        </Pagination>
+        <CustomPagination
+          activePage={activePage}
+          totalPages={totalPages}
+          onPageChange={setActivePage}
+        />
       </div>
 
       <ReportedFeedbackHotel

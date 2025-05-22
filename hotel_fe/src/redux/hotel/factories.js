@@ -31,6 +31,9 @@ const Factories = {
   updateHotel: (hotelId, updateData) => {
     return api.put(`${ApiConstants.UPDATE_HOTEL}/${hotelId}`, updateData);
   },
+  changeStatusHotel: (hotelId, ownerStatus) => {
+    return api.put(`${ApiConstants.CHANGE_STATUS_HOTEL}/${hotelId}`, {ownerStatus});
+  },
 };
 
 export default Factories;

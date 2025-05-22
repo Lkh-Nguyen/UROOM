@@ -57,6 +57,7 @@ import Factories2 from "../../../redux/feedback/factories";
 import Utils from "../../../utils/Utils";
 import ErrorModal from "@components/ErrorModal";
 import SearchActions from "../../../redux/search/actions";
+import HotelClosedModal from "./components/HotelClosedModal";
 
 // Options for select inputs
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -105,6 +106,7 @@ export default function HotelDetailPage() {
   const selectedRoomsTemps = useAppSelector(
     (state) => state.Search.selectedRooms
   );
+  const [showModalStatusBooking, setShowModalStatusBooking] = useState(false);
 
   // State variables
   const [hotelDetail, setHotelDetail] = useState(null);
@@ -842,7 +844,10 @@ export default function HotelDetailPage() {
                     </p>
                   </Col>
                 </Row>
-
+                <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
+                  Contact Hotel:
+                </h3>
+                <p>Phone Number: {hotelDetail.phoneNumber}</p>
                 <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
                   Highlights of the services
                 </h3>
@@ -875,30 +880,29 @@ export default function HotelDetailPage() {
                     <li style={{ width: "100%" }}>No highlights.</li>
                   )}
                 </ul>
-
-                <h3 style={{ fontWeight: "bold", color: "#1a2b49" }}>
-                  Favorite amenities
-                </h3>
-                <div className="amenities-grid">
-                  {hotelDetail.facilities?.length > 0 ? (
-                    hotelDetail.facilities.map((facility, index) => (
-                      <div
-                        key={index}
-                        className="amenity-item"
-                        style={{ display: "flex", alignItems: "center" }}
-                      >
-                        {renderIcon(facility.icon)}
-                        <span style={{ marginLeft: "5px" }}>
-                          {facility.name}
-                        </span>
-                      </div>
-                    ))
-                  ) : (
-                    <div>No amenities.</div>
-                  )}
-                </div>
               </div>
             </Col>
+          </Row>
+          <Row>
+            <h3 style={{ fontWeight: "bold", color: "#1a2b49" }}>
+              Favorite amenities
+            </h3>
+            <div className="amenities-grid">
+              {hotelDetail.facilities?.length > 0 ? (
+                hotelDetail.facilities.map((facility, index) => (
+                  <div
+                    key={index}
+                    className="amenity-item"
+                    style={{ display: "flex", alignItems: "center" }}
+                  >
+                    {renderIcon(facility.icon)}
+                    <span style={{ marginLeft: "5px" }}>{facility.name}</span>
+                  </div>
+                ))
+              ) : (
+                <div>No amenities.</div>
+              )}
+            </div>
           </Row>
         </Card>
       </Container>
@@ -1304,24 +1308,29 @@ export default function HotelDetailPage() {
                     );
                     setShowModal(true);
                   } else {
-                    if (Auth._id != -1) {
-                      dispatch({
-                        type: SearchActions.SAVE_SELECTED_ROOMS,
-                        payload: {
-                          selectedRooms: selectedRooms,
-                          hotelDetail: hotelDetail,
-                        },
-                      });
-                      navigate(Routers.BookingCheckPage);
+                    console.log("hotelDetail: ", hotelDetail)
+                    if (hotelDetail.ownerStatus != "ACTIVE") {
+                      setShowModalStatusBooking(true)
                     } else {
-                      dispatch({
-                        type: SearchActions.SAVE_SELECTED_ROOMS,
-                        payload: {
-                          selectedRooms: selectedRooms,
-                          hotelDetail: hotelDetail,
-                        },
-                      });
-                      navigate(Routers.LoginPage);
+                      if (Auth._id != -1) {
+                        dispatch({
+                          type: SearchActions.SAVE_SELECTED_ROOMS,
+                          payload: {
+                            selectedRooms: selectedRooms,
+                            hotelDetail: hotelDetail,
+                          },
+                        });
+                        navigate(Routers.BookingCheckPage);
+                      } else {
+                        dispatch({
+                          type: SearchActions.SAVE_SELECTED_ROOMS,
+                          payload: {
+                            selectedRooms: selectedRooms,
+                            hotelDetail: hotelDetail,
+                          },
+                        });
+                        navigate(Routers.LoginPage);
+                      }
                     }
                   }
                 }}
@@ -1351,6 +1360,7 @@ export default function HotelDetailPage() {
               }}
               message={errorMessage}
             />
+            <HotelClosedModal show={showModalStatusBooking} onClose={() => {setShowModalStatusBooking(false)}} />
           </>
         )}
       </Container>

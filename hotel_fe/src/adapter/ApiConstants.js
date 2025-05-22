@@ -10,6 +10,7 @@ const ApiConstants = {
   //HOTEL
   FETCH_OWNER_HOTEL: "/hotel/owner-hotels",
   UPDATE_HOTEL: "/hotel/update-hotel",
+  CHANGE_STATUS_HOTEL: "/hotel/changeStatus-hotel"
 };
 
 export default ApiConstants;
