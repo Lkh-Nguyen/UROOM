@@ -10,11 +10,17 @@ import {
   Modal,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { cityOptionSelect, districtsByCity, listFacilities } from "@utils/data";
+import {
+  cityOptionSelect,
+  districtsByCity,
+  listFacilities,
+  wardsByDistrict,
+} from "@utils/data";
 import { useAppSelector } from "../../../redux/store";
 import { useDispatch } from "react-redux";
 import HotelActions from "../../../redux/hotel/actions";
 import { showToast } from "@components/ToastContainer";
+import ConfirmationModal from "@components/ConfirmationModal";
 function Hotel({ show, handleClose, selectedHotelId }) {
   const [bedCount, setBedCount] = useState({
     singleBed: 1,
@@ -25,7 +31,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
+  const [selectedWard, setSelectedWard] = useState("");
   const [districtOptions, setDistrictOptions] = useState([]);
+  const [wardOptions, setWardOptions] = useState([]);
   const half = Math.ceil(listFacilities.length / 2);
   const facilitiesCol1 = listFacilities.slice(0, half);
   const facilitiesCol2 = listFacilities.slice(half);
@@ -36,10 +44,14 @@ function Hotel({ show, handleClose, selectedHotelId }) {
   const [formData, setFormData] = useState(Auth);
 
   const [address, setAddress] = useState("");
-  console.log("districtOptions: ", districtOptions)
+  console.log("districtOptions: ", districtOptions);
+
   useEffect(() => {
-    fetchHotelInfo();
-  }, []);
+    if (show) {
+     fetchHotelInfo();
+    }
+  }, [show]);
+
   const fetchHotelInfo = () => {
     setLoading(true);
     dispatch({
@@ -71,7 +83,15 @@ function Hotel({ show, handleClose, selectedHotelId }) {
       setDistrictOptions([]);
     }
   }, [selectedCity]);
-  
+
+  useEffect(() => {
+    if (selectedDistrict && wardsByDistrict[selectedDistrict]) {
+      setWardOptions(wardsByDistrict[selectedDistrict]);
+    } else {
+      setWardOptions([]);
+    }
+  }, [selectedDistrict]);
+
   useEffect(() => {
     if (selectedHotelId) {
       // TODO: fetch dữ liệu khách sạn từ selectedHotelId
@@ -79,13 +99,10 @@ function Hotel({ show, handleClose, selectedHotelId }) {
     }
   }, [selectedHotelId]);
 
-
-
   const getDistrictOptions = (cityValue) => {
     return districtsByCity[cityValue] || [];
   };
 
- 
   const findCityValue = (cityLabel) => {
     const city = cityOptionSelect.find((c) => cityLabel.includes(c.label));
     return city ? city.value : "";
@@ -97,43 +114,63 @@ function Hotel({ show, handleClose, selectedHotelId }) {
     return district ? district.value : "";
   };
 
+  const findWardValue = (wardLabel, districtValue) => {
+    const wards = wardsByDistrict[districtValue] || [];
+    const ward = wards.find((w) => wardLabel.includes(w.label));
+    return ward ? ward.value : "";
+  };
+
   useEffect(() => {
     if (hotelinfo?.length) {
       const fullAddress = hotelinfo[0].address;
       const parts = fullAddress.split(",").map((s) => s.trim());
-  
+
       const cityLabel = parts.find((p) => p.includes("Thành phố")) || "";
-      const districtLabel = parts[2];
-      const addressDetail = parts.slice(0, 2).join(", ");
-  
+      const districtLabel = parts.length === 4 ? parts[2] : parts[1];
+      const wardLabel = parts.length === 4 ? parts[1] : "";
+      const addressDetail = parts.slice(0, 1).join(", ");
+
       const cityValue = findCityValue(cityLabel);
       const districtValue = findDistrictValue(districtLabel, cityValue);
-      
+      const wardValue = findWardValue(wardLabel, districtValue);
+
       setSelectedCity(cityValue);
-      
+
       const districts = getDistrictOptions(cityValue);
       setDistrictOptions(districts);
-  
+
       // Đảm bảo districtValue có trong districts trước khi setSelectedDistrict
-      if (districts.some(d => d.value === districtValue)) {
-        console.log("ABC: ", districtValue)
-        setSelectedDistrict(districtValue)
+      if (districts.some((d) => d.value === districtValue)) {
+        console.log("ABC: ", districtValue);
+        setSelectedDistrict(districtValue);
+
+        // Cập nhật danh sách phường/xã
+        const wards = wardsByDistrict[districtValue] || [];
+        setWardOptions(wards);
+
+        // Đặt phường/xã đã chọn
+        if (wards.some((w) => w.value === wardValue)) {
+          setSelectedWard(wardValue);
+        } else {
+          setSelectedWard("");
+        }
       } else {
         setSelectedDistrict("");
+        setSelectedWard("");
       }
-  
+
       setAddress(addressDetail);
-  
+
       console.log("Full Address:", fullAddress);
       console.log("City Label:", cityLabel);
       console.log("District Label:", districtLabel);
+      console.log("Ward Label:", wardLabel);
       console.log("City Value:", cityValue);
       console.log("District Value (from function):", districtValue);
+      console.log("Ward Value (from function):", wardValue);
     }
   }, [hotelinfo]);
 
-  
-  
   useEffect(() => {
     if (selectedCity) {
       const districts = getDistrictOptions(selectedCity);
@@ -145,11 +182,12 @@ function Hotel({ show, handleClose, selectedHotelId }) {
   useEffect(() => {
     console.log("SelectedDistrict changed:", selectedDistrict);
   }, [selectedDistrict]);
-  
+
   const [checkInStart, setCheckInStart] = useState("");
   const [checkInEnd, setCheckInEnd] = useState("");
   const [checkOutStart, setCheckOutStart] = useState("");
   const [checkOutEnd, setCheckOutEnd] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (hotelinfo?.[0]) {
@@ -182,26 +220,31 @@ function Hotel({ show, handleClose, selectedHotelId }) {
   };
   console.log("szzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz", hotelinfo?.[0]?._id);
 
-
   /// UPDATE_HOTEL
   const handleSave = () => {
     if (!hotelinfo?.[0]?._id) {
       showToast.error("Không tìm thấy ID khách sạn để cập nhật.");
       return;
     }
-  
-    const cityLabel = cityOptionSelect.find((c) => c.value === selectedCity)?.label || "";
-    const districtLabel = districtOptions.find((d) => d.value === selectedDistrict)?.label || "";
-  
-    if (!address || !cityLabel || !districtLabel) {
-      showToast.error("Vui lòng điền đầy đủ địa chỉ, thành phố và quận.");
+
+    const cityLabel =
+      cityOptionSelect.find((c) => c.value === selectedCity)?.label || "";
+    const districtLabel =
+      districtOptions.find((d) => d.value === selectedDistrict)?.label || "";
+    const wardLabel =
+      wardOptions.find((w) => w.value === selectedWard)?.label || "";
+
+    if (!address || !cityLabel || !districtLabel || !wardLabel) {
+      showToast.error(
+        "Vui lòng điền đầy đủ địa chỉ, thành phố, quận và phường."
+      );
       return;
     }
-  
-    const fullAddress = `${address}, ${districtLabel}, Thành phố ${cityLabel}`;
-  
+
+    const fullAddress = `${address}, ${wardLabel}, ${districtLabel}, Thành phố ${cityLabel}`;
+
     console.log("hotelFacilities:", hotelFacilities);
-  
+
     const updateData = {
       hotelName: hotelinfo?.[0]?.hotelName,
       description: hotelinfo?.[0]?.description || "",
@@ -221,9 +264,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
       checkOutStart,
       checkOutEnd,
     };
-  
+
     setLoading(true);
-  
+
     dispatch({
       type: HotelActions.UPDATE_HOTEL,
       payload: {
@@ -232,7 +275,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
         onSuccess: (data) => {
           showToast.success("Cập nhật khách sạn thành công!");
           setLoading(false);
-             window.location.reload();
+          window.location.reload();
           handleClose();
         },
         onFailed: (message) => {
@@ -247,7 +290,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
       },
     });
   };
-  
+
   const [hotelImages, setHotelImages] = useState([]);
   useEffect(() => {
     if (hotelinfo?.length > 0 && hotelinfo[0].images) {
@@ -259,15 +302,24 @@ function Hotel({ show, handleClose, selectedHotelId }) {
     // Nếu muốn preview file mới chọn
     const filePreviews = files.map((file) => URL.createObjectURL(file));
     setHotelImages(filePreviews);
-  
+
     // TODO: xử lý upload file lên server hoặc lưu file tạm
   };
-console.log("6666666666666666666666666666666:",selectedDistrict)
-
+  console.log("6666666666666666666666666666666:", selectedDistrict);
 
   return (
     <Modal show={show} onHide={handleClose} size="lg">
       <div className="booking-app bg-light">
+        <ConfirmationModal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          onConfirm={handleSave}
+          title="Xác nhận chỉnh sửa"
+          message="Bạn muốn chỉnh sửa thông tin khách sản đúng không?"
+          confirmButtonText="Chỉnh sửa"
+          cancelButtonText="Hủy bỏ"
+          type="success"
+        />
         <Container className="py-4">
           <h2 className="mb-4 fw-bold">Chi tiết phòng</h2>
           {/* <h1>{selectedHotelId}</h1> */}
@@ -330,7 +382,7 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
                     className="form-input"
                     value={selectedDistrict}
                     onChange={(e) => {
-                      console.log("Quận đã chọn:", e.target.value); 
+                      console.log("Quận đã chọn:", e.target.value);
                       setSelectedDistrict(e.target.value);
                     }}
                   >
@@ -338,6 +390,27 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
                     {districtOptions.map((district) => (
                       <option key={district.value} value={district.value}>
                         {district.label}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+
+                {/* <h1>{selectedDistrict || "Chưa chọn quận"}</h1> */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Phường / Xã</Form.Label>
+                  <Form.Select
+                    className="form-input"
+                    value={selectedWard}
+                    onChange={(e) => {
+                      console.log("Phường/xã đã chọn:", e.target.value);
+                      setSelectedWard(e.target.value);
+                    }}
+                    disabled={!selectedDistrict}
+                  >
+                    <option value="">Chọn phường/xã</option>
+                    {wardOptions.map((ward) => (
+                      <option key={ward.value} value={ward.value}>
+                        {ward.label}
                       </option>
                     ))}
                   </Form.Select>
@@ -505,11 +578,31 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
                   </Row>
 
                   <Row className="mb-3">
+                    <Col md={6}>
+                      <Form.Label>Liên lạc của khách sạn</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Nhập tên chỗ nghỉ"
+                        className="form-input"
+                        value={hotelinfo?.[0]?.phoneNumber || ""}
+                        onChange={(e) => {
+                          const updatedHotels = [...hotelinfo];
+                          updatedHotels[0] = {
+                            ...updatedHotels[0],
+                            phoneNumber: e.target.value,
+                          };
+                          setHotelinfo(updatedHotels);
+                        }}
+                      />
+                    </Col>
+                  </Row>
+
+                  <Row className="mb-3">
                     <Col md={12}>
                       <Form.Label>Mô tả về khách sạn</Form.Label>
                       <Form.Control
                         as="textarea"
-                        rows={3}
+                        rows={10}
                         value={hotelinfo?.[0]?.description || ""}
                         placeholder="Nhập mô tả khách sạn..."
                         onChange={(e) => {
@@ -523,7 +616,7 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
                       />
                     </Col>
                   </Row>
-                  {/* <Row className="mb-3">
+                  <Row className="mb-3">
                     <Col md={12}>
                       <Form.Label>
                         Hình ảnh khách sạn (Bắt buộc 5 ảnh)
@@ -532,32 +625,25 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
                         type="file"
                         multiple
                         accept="image/*"
-                        onChange={() => {}}
+                        onChange={handleFileChange}
                       />
+                      <div className="mt-3 d-flex flex-wrap gap-2">
+                        {hotelImages.map((imgUrl, idx) => (
+                          <img
+                            key={idx}
+                            src={imgUrl || "/placeholder.svg"}
+                            alt={`Hotel image ${idx + 1}`}
+                            style={{
+                              width: 100,
+                              height: 100,
+                              objectFit: "cover",
+                              borderRadius: 5,
+                            }}
+                          />
+                        ))}
+                      </div>
                     </Col>
-                  </Row> */}
-                  <Row className="mb-3">
-  <Col md={12}>
-    <Form.Label>Hình ảnh khách sạn (Bắt buộc 5 ảnh)</Form.Label>
-    <Form.Control
-      type="file"
-      multiple
-      accept="image/*"
-      onChange={handleFileChange}
-    />
-    <div className="mt-3 d-flex flex-wrap gap-2">
-      {hotelImages.map((imgUrl, idx) => (
-        <img
-          key={idx}
-          src={imgUrl}
-          alt={`Hotel image ${idx + 1}`}
-          style={{ width: 100, height: 100, objectFit: "cover", borderRadius: 5 }}
-        />
-      ))}
-    </div>
-  </Col>
-</Row>
-
+                  </Row>
                 </div>
               </Row>
             </Card.Body>
@@ -577,7 +663,9 @@ console.log("6666666666666666666666666666666:",selectedDistrict)
               <Button
                 variant="primary"
                 className="w-100 py-2"
-                onClick={handleSave}
+                onClick={() => {
+                  setShowModal(true)
+                }}
               >
                 Chỉnh sửa
               </Button>
