@@ -19,6 +19,7 @@ import ConfirmationModal from "@components/ConfirmationModal";
 import { useAppSelector } from "../../../redux/store";
 import Utils from "../../../utils/Utils";
 import Factories from "../../../redux/search/factories";
+import { ChatBox } from "./HomePage";
 
 const BookingCheckPage = () => {
   const Auth = useAppSelector((state) => state.Auth.Auth);
@@ -385,6 +386,9 @@ const BookingCheckPage = () => {
             </Col>
           </Row>
         </Container>
+        <div>
+          <ChatBox/>
+        </div>
       </div>
       <Footer />
     </div>

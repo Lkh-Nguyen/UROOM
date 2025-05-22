@@ -37,6 +37,11 @@ const [showUpdateModal, setShowUpdateModal] = useState(false);
 const [showAcceptModal, setShowAcceptModal] = useState(false);
 
 const handleCancel = () => {
+  const { oldPassword, newPassword, againNewPassword } = formData;
+  if (!oldPassword || !newPassword || !againNewPassword) {
+    showToast.warning("Please fill in all fields.");
+    return;
+  }
   setFormData(initialFormData); // Reset form
   showToast.info("Cancelled change password.");
   setShowUpdateModal(false);
