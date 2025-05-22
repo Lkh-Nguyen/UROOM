@@ -2,15 +2,18 @@ import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Alert, Button, Card, Container, Form, Modal } from "react-bootstrap";
 import { Image } from "react-bootstrap";
-import { AlertTriangle, CheckCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle, CircleAlertIcon } from "lucide-react";
 import { Star, StarFill } from "react-bootstrap-icons";
+import { useDispatch } from "react-redux";
+import ReportFeedbackActions from "@redux/reportedFeedback/actions";
 
-const ReportedFeedbackHotel = ({ show, handleClose }) => {
+const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
+  const dispatch = useDispatch();
   const [validated, setValidated] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showModal, setShowModal] = useState();
+  const [error, setError] = useState();
   const [formData, setFormData] = useState({
-    feedbackId: "",
-    reportType: "",
+    reason: "",
     description: "",
   });
 
@@ -18,7 +21,20 @@ const ReportedFeedbackHotel = ({ show, handleClose }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+  const onSuccess = () => {
+    setShowModal("success");
+    setValidated(false);
 
+    // Reset form
+    setFormData({
+      reason: "",
+      description: "",
+    });
+  };
+  const onFailed = (data) => {
+    setShowModal("failed");
+    setError(data);
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.currentTarget;
@@ -28,19 +44,14 @@ const ReportedFeedbackHotel = ({ show, handleClose }) => {
       setValidated(true);
       return;
     }
-
-    console.log("Submitting report:", formData);
-
-    // Hiển thị modal cảm ơn
-    setShowSuccessModal(true);
-    setValidated(false);
-
-    // Reset form
-    setFormData({
-      feedbackId: "",
-      reportType: "",
-      description: "",
-    });
+    try {
+      dispatch({
+        type: ReportFeedbackActions.REPORT_FEEDBACK,
+        payload: { ...formData, feedbackId, onSuccess, onFailed },
+      });
+    } catch {
+      Alert("Có vấn đề khi report");
+    }
   };
 
   const renderStars = (count, total = 5) => {
@@ -78,14 +89,20 @@ const ReportedFeedbackHotel = ({ show, handleClose }) => {
                       <Image
                         src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
                         roundedCircle
-                        style={{ width: "50px", height: "50px", marginRight: "10px" }}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          marginRight: "10px",
+                        }}
                       />
                       <div>
                         <h6 className="mb-0">Nguyễn Văn Nam</h6>
                         <div>{renderStars(5)}</div>
                       </div>
                     </div>
-                    <p>Clean hotel, great service, friendly and helpful staff!</p>
+                    <p>
+                      Clean hotel, great service, friendly and helpful staff!
+                    </p>
                   </Card.Body>
                 </Card>
               </Form.Group>
@@ -95,8 +112,8 @@ const ReportedFeedbackHotel = ({ show, handleClose }) => {
                   Report Type <span className="text-danger">*</span>
                 </Form.Label>
                 <Form.Select
-                  name="reportType"
-                  value={formData.reportType}
+                  name="reason"
+                  value={formData.reason}
                   onChange={handleChange}
                   required
                 >
@@ -161,25 +178,33 @@ const ReportedFeedbackHotel = ({ show, handleClose }) => {
       </Modal>
 
       {/* Modal cảm ơn */}
-      <Modal show={showSuccessModal} onHide={() => setShowSuccessModal(false)}>
+      <Modal show={showModal} onHide={() => setShowModal()}>
         <Container className="py-5">
-            <Card.Body className="text-center p-5">
+          <Card.Body className="text-center p-5">
+            {showModal !== "success" ? (
+              <CircleAlertIcon className="mb-3" size={50} />
+            ) : (
               <CheckCircle className="text-success mb-3" size={50} />
-              <h2>Report Submitted Successfully</h2>
-              <p className="mb-4">
-                Thank you for your report. Our team will review it and take
-                appropriate action.
-              </p>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowSuccessModal(false);
-                  handleClose();
-                }}
-              >
-                Close
-              </Button>
-            </Card.Body>
+            )}
+            <h2>
+              Report Submitted{" "}
+              {showModal === "success" ? "Successfully" : "Failed"}
+            </h2>
+            <p className="mb-4">
+              {showModal === "success"
+                ? "Thank you for your report. Our team will review it and take appropriate action."
+                : error}
+            </p>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setShowModal();
+                handleClose();
+              }}
+            >
+              Close
+            </Button>
+          </Card.Body>
         </Container>
       </Modal>
     </>
