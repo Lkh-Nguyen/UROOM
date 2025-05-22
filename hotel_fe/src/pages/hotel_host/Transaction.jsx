@@ -6,12 +6,18 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useNavigate } from "react-router-dom";
 import TransactionDetail from "./TransactionDetail";
+import { useDispatch, useSelector } from "react-redux";
+import ReservationActions from "../../redux/reservation/actions";
 
 const Transaction = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { reservations } = useSelector((state) => state.Reservation);
   const [payments, setPayments] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedSort, setSelectedSort] = useState("desc");
 
   // Trạng thái thông tin ngân hàng
   const [hasBankInfo, setHasBankInfo] = useState(false);
@@ -30,73 +36,18 @@ const Transaction = () => {
     setShowModal(true);
   };
 
-  // Dữ liệu mẫu - trong ứng dụng thực tế, dữ liệu này sẽ đến từ API
   useEffect(() => {
-    // Giả lập gọi API
-    const fetchPayments = () => {
-      const mockPayments = [
-        {
-          id: 1,
-          date: "2025-03-05",
-          customerPaid: 5000000,
-          commission: 750000,
-          amountToHost: 4250000,
-          status: "Completed",
-          description: "Đặt phòng - Phòng Deluxe",
-        },
-        {
-          id: 2,
-          date: "2025-03-12",
-          customerPaid: 3500000,
-          commission: 525000,
-          amountToHost: 2975000,
-          status: "Pending",
-          description: "Đặt phòng - Phòng Tiêu chuẩn",
-        },
-        {
-          id: 3,
-          date: "2025-03-18",
-          customerPaid: 8400000,
-          commission: 1260000,
-          amountToHost: 7140000,
-          status: "Completed",
-          description: "Đặt phòng - Phòng Tổng thống",
-        },
-        {
-          id: 4,
-          date: "2025-03-25",
-          customerPaid: 6000000,
-          commission: 900000,
-          amountToHost: 5100000,
-          status: "Processing",
-          description: "Đặt phòng - Phòng Gia đình",
-        },
-      ];
-      setPayments(mockPayments);
-    };
-
-    fetchPayments();
-
-    // Giả lập kiểm tra xem thông tin ngân hàng có tồn tại không
-    // Trong ứng dụng thực tế, đây sẽ là một cuộc gọi API để lấy thông tin ngân hàng đã lưu
-    const checkBankInfo = () => {
-      // Cho mục đích demo, chúng ta sẽ chỉ kiểm tra xem hasBankInfo có đúng không
-      if (hasBankInfo) {
-        setSavedBankInfo({
-          accountNumber: "9876543210",
-          accountName: "NGUYỄN VĂN A",
-          bankName: "Vietcombank",
-          branch: "Thành phố Hồ Chí Minh",
-        });
-        setShowForm(false);
-      } else {
-        setSavedBankInfo(null);
-        setShowForm(true);
-      }
-    };
-
-    checkBankInfo();
-  }, [selectedMonth, selectedYear, hasBankInfo]);
+    // Gọi API lấy reservation theo filter, sort, month, year
+    dispatch({
+      type: ReservationActions.FETCH_RESERVATIONS,
+      payload: {
+        status: selectedStatus !== "All" ? selectedStatus : undefined,
+        month: selectedMonth + 1, // FE dùng 0-11, BE dùng 1-12
+        year: selectedYear,
+        sort: selectedSort,
+      },
+    });
+  }, [dispatch, selectedMonth, selectedYear, selectedStatus, selectedSort]);
 
   const handleBankInfoChange = (e) => {
     const { name, value } = e.target;
@@ -148,19 +99,20 @@ const Transaction = () => {
     (_, i) => new Date().getFullYear() - 2 + i
   );
 
-  // Tính tổng
-  const totalCustomerPaid = payments.reduce(
-    (sum, payment) => sum + payment.customerPaid,
+  const totalCustomerPaid = reservations?.reduce(
+    (sum, r) => sum + r.totalPrice,
     0
   );
-  const totalCommission = payments.reduce(
-    (sum, payment) => sum + payment.commission,
-    0
-  );
-  const totalAmountToHost = payments.reduce(
-    (sum, payment) => sum + payment.amountToHost,
-    0
-  );
+
+  const totalCommission = Math.floor(totalCustomerPaid * 0.15);
+
+  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85);
+  const completedCount =
+    reservations?.filter((r) => r.status === "COMPLETED").length || 0;
+  const pendingCount =
+    reservations?.filter((r) => r.status === "PENDING").length || 0;
+  const bookedCount =
+    reservations?.filter((r) => r.status === "BOOKED").length || 0;
 
   return (
     <div className="main-content_1">
@@ -212,23 +164,17 @@ const Transaction = () => {
                   <Form.Group className="mb-3">
                     <Form.Label>Trạng thái</Form.Label>
                     <Form.Select
-                      value="All"
-                      onChange={(e) =>
-                        setSelectedYear(Number.parseInt(e.target.value))
-                      }
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
                     >
-                      <option key="All" value="All">
-                        Tất cả
-                      </option>
-                      <option key="Pending" value="Pending">
-                        Đang chờ
-                      </option>
-                      <option key="Proccessing" value="Proccessing">
-                        Đang xử lý
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        Hoàn thành
-                      </option>
+                      <option value="All">Tất cả</option>
+                      <option value="BOOKED">BOOKED</option>
+                      <option value="CHECKED IN">CHECKED IN</option>
+                      <option value="CHECKED OUT">CHECKED OUT</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                      <option value="PENDING">PENDING</option>
+                      <option value="CANCELLED">CANCELLED</option>
+                      <option value="NOT PAID">NOT PAID</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -236,23 +182,11 @@ const Transaction = () => {
                   <Form.Group className="mb-3">
                     <Form.Label>Lọc theo:</Form.Label>
                     <Form.Select
-                      value="All"
-                      onChange={(e) =>
-                        setSelectedYear(Number.parseInt(e.target.value))
-                      }
+                      value={selectedSort}
+                      onChange={(e) => setSelectedSort(e.target.value)}
                     >
-                      <option key="Newest" value="Newest">
-                        Mới nhất
-                      </option>
-                      <option key="Oldest" value="Oldest">
-                        Cũ nhất
-                      </option>
-                      <option key="Ascending" value="Ascending">
-                        A -&gt; Z
-                      </option>
-                      <option key="Descending" value="Descending">
-                        Z -&gt; A
-                      </option>
+                      <option value="desc">Mới nhất</option>
+                      <option value="asc">Cũ nhất</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -283,7 +217,9 @@ const Transaction = () => {
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Thanh toán Hoàn thành/Đang xử lý/Đang chờ:</span>
-                <strong>3/4/5</strong>
+                <strong>
+                  {completedCount}/{pendingCount}/{bookedCount}
+                </strong>
               </div>
             </Card.Body>
           </Card>
@@ -308,40 +244,49 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {payments.length > 0 ? (
-                payments.map((payment, index) => (
+              {reservations && reservations.length > 0 ? (
+                reservations.map((reservation, index) => (
                   <tr
-                    key={payment.id}
+                    key={reservation._id}
                     onClick={handleShowModal}
                     style={{ cursor: "pointer" }}
                   >
                     <td>{index + 1}</td>
-                    <td>{payment.date}</td>
                     <td>
-                      <a>{payment.description}</a>
+                      {new Date(reservation.createdAt).toLocaleDateString()}
                     </td>
-                    <td>{formatCurrency(payment.customerPaid)}</td>
+                    <td>
+                      <a>
+                        Đặt phòng -{" "}
+                        {reservation.rooms && reservation.rooms.length > 0
+                          ? reservation.rooms[0].room?.name || ""
+                          : ""}
+                      </a>
+                    </td>
+                    <td>{formatCurrency(reservation.totalPrice)}</td>
                     <td className="text-danger">
-                      {formatCurrency(payment.commission)}
+                      {/* Nếu có trường commission thì hiển thị, không thì để 0 */}
+                      {formatCurrency(
+                        Math.floor(reservation.totalPrice * 0.15) || 0
+                      )}
                     </td>
                     <td className="text-success">
-                      {formatCurrency(payment.amountToHost)}
+                      {/* Nếu có trường amountToHost thì hiển thị, không thì để 0 */}
+                      {formatCurrency(
+                        Math.floor(reservation.totalPrice * 0.85) || 0
+                      )}
                     </td>
                     <td>
                       <span
                         className={`badge ${
-                          payment.status === "Completed"
+                          reservation.status === "COMPLETED"
                             ? "bg-success"
-                            : payment.status === "Pending"
+                            : reservation.status === "PENDING"
                             ? "bg-warning"
                             : "bg-info"
                         }`}
                       >
-                        {payment.status === "Completed"
-                          ? "Hoàn thành"
-                          : payment.status === "Pending"
-                          ? "Đang chờ"
-                          : "Đang xử lý"}
+                        {reservation.status}
                       </span>
                     </td>
                   </tr>
@@ -420,32 +365,19 @@ const Transaction = () => {
                   <Form.Group className="mb-3">
                     <Form.Label>Tên ngân hàng</Form.Label>
                     <Form.Select
-                      value="Pending"
-                      onChange={(e) =>
-                        setSelectedYear(Number.parseInt(e.target.value))
-                      }
+                      name="bankName"
+                      value={bankInfo.bankName}
+                      onChange={handleBankInfoChange}
+                      required
                     >
-                      <option key="Pending" value="Mbabnk">
-                        MB Bank
-                      </option>
-                      <option key="Proccessing" value="Proccessing">
-                        Techcombank
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        Vietcombank
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        Bidv
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        HB Bank
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        VP Bank
-                      </option>
-                      <option key="Compeleted" value="Compeleted">
-                        TP Bank
-                      </option>
+                      <option value="">Chọn ngân hàng</option>
+                      <option value="MB Bank">MB Bank</option>
+                      <option value="Techcombank">Techcombank</option>
+                      <option value="Vietcombank">Vietcombank</option>
+                      <option value="BIDV">BIDV</option>
+                      <option value="HDBank">HDBank</option>
+                      <option value="VPBank">VPBank</option>
+                      <option value="TPBank">TPBank</option>
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -584,11 +516,7 @@ const Transaction = () => {
                             : "bg-info"
                         }`}
                       >
-                        {payment.status === "Completed"
-                          ? "Hoàn thành"
-                          : payment.status === "Pending"
-                          ? "Đang chờ"
-                          : "Đang xử lý"}
+                        {payment.status}
                       </span>
                     </td>
                   </tr>
