@@ -652,7 +652,7 @@ const BookingBill = () => {
                           {hotelDetail?.email ||
                             hotelDetail?.owner?.email ||
                             ownerContact.email ||
-                            "N/A"}
+                            "hot1@gm.com"}
                         </div>
                       </Col>
                     </Row>

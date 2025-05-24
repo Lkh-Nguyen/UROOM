@@ -133,6 +133,7 @@ const BookingHistory = () => {
             hotelName: reservation.hotel?.hotelName || "Unknown Hotel",
             checkIn: new Date(reservation.checkInDate).toLocaleDateString(),
             checkOut: new Date(reservation.checkOutDate).toLocaleDateString(),
+            rooms: reservation?.rooms,
             totalPrice: formatCurrency(reservation.totalPrice),
             status: reservation.status || "PENDING",
             originalData: reservation, // Keep the original data for reference
@@ -156,7 +157,8 @@ const BookingHistory = () => {
       },
     });
   };
-
+  
+  console.log("res: ", reservations)
   function parseCurrency(formatted) {
     if (!formatted) return 0; // hoặc null tùy vào yêu cầu
     const numericString = formatted.replace(/[^\d]/g, "");
@@ -367,6 +369,15 @@ const BookingHistory = () => {
       }
     }
   };
+
+  const calculateTotalPrice = (rooms) => {
+    if (!rooms || !Array.isArray(rooms)) return 0;
+    return rooms.reduce((total, roomItem) => {
+      const roomPrice = roomItem.room?.price || 0;
+      const quantity = roomItem.quantity || 1;
+      return total + roomPrice * quantity;
+    }, 0);
+  };
   return (
     <Container fluid className="py-4">
       <h2 className="fw-bold mb-4">Booking History</h2>
@@ -504,7 +515,7 @@ const BookingHistory = () => {
                           <Col md={6}>
                             <p>
                               <strong>Total price:</strong>{" "}
-                              {reservation.totalPrice}
+                              {Utils.formatCurrency(calculateTotalPrice(reservation.rooms))}
                             </p>
                           </Col>
                           <Col md={6}>
