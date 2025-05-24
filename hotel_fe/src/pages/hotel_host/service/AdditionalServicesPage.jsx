@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -10,56 +10,69 @@ import {
   Table,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { showToast } from "@components/ToastContainer";
+import { useAppSelector } from "../../../redux/store";
+import { useDispatch } from "react-redux";
+import HotelActions from "../../../redux/hotel/actions";
+import HotelservicesActions from "../../../redux/Hotelservices/actions";
 
 function AdditionalServicesPage() {
-  const [services, setServices] = useState([
-    {
-      id: 1,
-      name: "Bữa sáng",
-      description: "Bữa sáng phong phú với nhiều món ăn Việt Nam và quốc tế",
-      price: 250000,
-      type: "per_person",
-      availability: "daily",
-      timeSlots: ["06:00 - 10:00"],
-      options: ["Buffet", "Phục vụ tại phòng"],
-      active: true,
-    },
-    {
-      id: 2,
-      name: "Buffet tối",
-      description: "Buffet tối với hơn 50 món ăn và đồ uống không giới hạn",
-      price: 450000,
-      type: "per_person",
-      availability: "daily",
-      timeSlots: ["18:00 - 22:00"],
-      options: ["Buffet"],
-      active: true,
-    },
-    {
-      id: 3,
-      name: "Đưa đón sân bay",
-      description: "Dịch vụ đưa đón sân bay bằng xe sang trọng",
-      price: 350000,
-      type: "per_booking",
-      availability: "on_request",
-      timeSlots: [],
-      options: ["Xe 4 chỗ", "Xe 7 chỗ"],
-      active: true,
-    },
-  ]);
-
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
+  const Auth = useAppSelector((state) => state.Auth.Auth);
   const [showModal, setShowModal] = useState(false);
+  const [hotelinfo, setHotelinfo] = useState(null);
+  console.log("hotel: ", hotelinfo);
   const [currentService, setCurrentService] = useState({
     name: "",
     description: "",
     price: "",
     type: "per_person",
     availability: "daily",
-    timeSlots: [""],
-    options: [""],
     active: true,
   });
+  console.log("formData._id có giá trị:", Auth._id);
   const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    console.log("formData._id có giá trị 2:", Auth._id);
+    fetchHotelInfo();
+  }, []);
+
+  const fetchHotelInfo = () => {
+    setLoading(true);
+
+    dispatch({
+      type: HotelActions.FETCH_OWNER_HOTEL,
+      payload: {
+        userId: Auth._id,
+        onSuccess: (data) => {
+          setHotelinfo(data.hotels);
+          console.log("hello tài dương", data.hotels);
+          setLoading(false);
+        },
+        onFailed: () => {
+          showToast.error("Lấy thông tin khách sạn thất bại");
+          setLoading(false);
+        },
+        onError: (err) => {
+          console.error(err);
+          showToast.error("Lỗi máy chủ khi lấy thông tin khách sạn");
+          setLoading(false);
+        },
+      },
+    });
+  };
+  const handleEditService = (service) => {
+    setCurrentService({
+      ...service,
+      price: formatPrice(service.price),
+      timeSlots: service.timeSlots || [],
+      options: service.options || [],
+    });
+    setIsEditing(true);
+    setShowModal(true);
+  };
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -81,26 +94,9 @@ function AdditionalServicesPage() {
     setShowModal(true);
   };
 
-  const handleEditService = (service) => {
-    setCurrentService({ ...service });
-    setIsEditing(true);
-    setShowModal(true);
-  };
-
-  const handleDeleteService = (id) => {
-    setServices(services.filter((service) => service.id !== id));
-  };
-
-  const handleToggleActive = (id) => {
-    setServices(
-      services.map((service) =>
-        service.id === id ? { ...service, active: !service.active } : service
-      )
-    );
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value);
     setCurrentService({ ...currentService, [name]: value });
   };
 
@@ -109,392 +105,254 @@ function AdditionalServicesPage() {
     setCurrentService({ ...currentService, price: value });
   };
 
-  const handleTimeSlotChange = (index, value) => {
-    const newTimeSlots = [...currentService.timeSlots];
-    newTimeSlots[index] = value;
-    setCurrentService({...currentService, timeSlots: newTimeSlots});
-  };
-
-  const addTimeSlot = () => {
-    setCurrentService({
-      ...currentService,
-      timeSlots: [...currentService.timeSlots, ""],
-    });
-  };
-
-  const removeTimeSlot = (index) => {
-    const newTimeSlots = [...currentService.timeSlots];
-    newTimeSlots.splice(index, 1);
-    setCurrentService({ ...currentService, timeSlots: newTimeSlots });
-  };
-
-  const handleOptionChange = (index, value) => {
-    const newOptions = [...currentService.options];
-    newOptions[index] = value;
-    setCurrentService({ ...currentService, options: newOptions });
-  };
-
-  const addOption = () => {
-    setCurrentService({
-      ...currentService,
-      options: [...currentService.options, ""],
-    });
-  };
-
-  const removeOption = (index) => {
-    const newOptions = [...currentService.options];
-    newOptions.splice(index, 1);
-    setCurrentService({ ...currentService, options: newOptions });
-  };
-
-  const handleSubmit = () => {
-    if (isEditing) {
-      setServices(
-        services.map((service) =>
-          service.id === currentService.id ? currentService : service
-        )
-      );
-    } else {
-      const newService = {
-        ...currentService,
-        id:
-          services.length > 0 ? Math.max(...services.map((s) => s.id)) + 1 : 1,
-        price: parseInt(currentService.price) || 0,
-      };
-      setServices([...services, newService]);
-    }
-    handleCloseModal();
-  };
-
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
-  const getTypeLabel = (type) => {
-    return type === "per_person" ? "Theo người" : "Theo đặt phòng";
-  };
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
-  const getAvailabilityLabel = (availability) => {
-    switch (availability) {
-      case "daily":
-        return "Hàng ngày";
-      case "weekdays":
-        return "Ngày trong tuần";
-      case "weekends":
-        return "Cuối tuần";
-      case "on_request":
-        return "Theo yêu cầu";
-      default:
-        return "";
+  const handleSubmitService = () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+  
+    const payload = {
+      ...currentService,
+      price: Number(currentService.price.toString().replace(/\D/g, "")),
+    };
+  
+    const onSuccess = (data) => {
+      alert("Thao tác thành công!");
+      setIsSubmitting(false);
+      window.location.reload();
+      handleCloseModal();
+    };
+  
+    const onFailed = (message) => {
+      // alert(`Lỗi: ${message}`);
+      setIsSubmitting(false);
+    };
+  
+    const onError = (error) => {
+      console.error("Lỗi hệ thống:", error);
+      alert("Lỗi hệ thống. Vui lòng thử lại sau.");
+      setIsSubmitting(false);
+    };
+  
+    if (isEditing) {
+      dispatch({
+        type: HotelservicesActions.UPDATE_HOTEL_SERVICE,
+        payload: {
+          serviceId: currentService._id,
+          updateData: payload,
+          onSuccess,
+          onFailed,
+          onError,
+        },
+      });
+    } else {
+      dispatch({
+        type: HotelActions.CREATE_HOTEL_SERVICE,
+        payload: {
+          serviceData: {
+            hotelId: hotelinfo[0]?._id,
+            ...payload,
+          },
+          onSuccess,
+          onFailed,
+          onError,
+        },
+      });
     }
   };
 
+  const handleToggleStatus = (service) => {
+    const newStatus =
+      service.statusActive === "ACTIVE" ? "NONACTIVE" : "ACTIVE";
+
+    console.log("newStatus: ", newStatus);
+    console.log("service: ", service);
+
+    dispatch({
+      type: HotelActions.UPDATE_HOTEL_SERVICE_STATUS,
+      payload: {
+        hotelId: hotelinfo[0]?._id,
+        serviceId: service._id,
+        statusActive: newStatus,
+        onSuccess: () => {
+          showToast.success("Cập nhật trạng thái thành công");
+          window.location.reload();
+        },
+        onFailed: (msg) => {
+          showToast.error("Cập nhật thất bại: " + msg);
+        },
+        onError: (err) => {
+          showToast.error("Lỗi hệ thống:", err);
+        },
+      },
+    });
+  };
+
   return (
-        <div className="main-content_1 p-3">
-          <div style={styles.header}>
-            <h1 style={styles.title}>Dịch Vụ Đi Kèm</h1>
-            <Button style={styles.addButton} onClick={handleShowModal}>
-              + Thêm Dịch Vụ Mới
-            </Button>
-          </div>
+    <div className="main-content_1 p-3">
+      <div style={styles.header}>
+        <h1 style={styles.title}>Dịch Vụ Đi Kèm</h1>
+        <Button style={styles.addButton} onClick={handleShowModal}>
+          + Thêm Dịch Vụ Mới
+        </Button>
+      </div>
 
-          {services.length === 0 ? (
-            <div style={styles.emptyState}>
-              <h3>Không có dịch vụ nào</h3>
-              <p>Hãy thêm dịch vụ mới để tăng doanh thu của bạn</p>
-            </div>
-          ) : (
-            <Row>
-              {services.map((service) => (
-                <Col key={service.id} xs={4} md={4} lg={4}>
-                  <Card
-                    style={styles.serviceCard}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.transform = "translateY(-5px)";
-                      e.currentTarget.style.boxShadow =
-                        "0 8px 16px rgba(0,0,0,0.1)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.transform = "none";
-                      e.currentTarget.style.boxShadow =
-                        "0 2px 8px rgba(0,0,0,0.1)";
-                    }}
-                  >
-                    <div style={styles.serviceHeader}>
-                      <h3 style={styles.serviceName}>
-                        {service.name}
-                        <Button
-                          variant={service.active ? "success" : "danger"}
-                          style={{marginLeft: '10px'}}
-                        >
-                          {service.active ? "Đang hoạt động" : "Đã tắt"}
-                        </Button>
-                      </h3>
-                      <div style={styles.servicePrice}>
-                        VND {formatPrice(service.price)}
-                      </div>
-                    </div>
-
-                    <div style={styles.serviceDetails}>
-                      <p>{service.description}</p>
-
-                      <Table borderless style={styles.detailsTable}>
-                        <tbody>
-                          <tr>
-                            <td style={styles.tableCell}>
-                              <strong>Loại tính phí:</strong>
-                            </td>
-                            <td style={styles.tableCell}>
-                              {getTypeLabel(service.type)}
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={styles.tableCell}>
-                              <strong>Khả dụng:</strong>
-                            </td>
-                            <td style={styles.tableCell}>
-                              {getAvailabilityLabel(service.availability)}
-                            </td>
-                          </tr>
-                          {service.timeSlots.length > 0 && (
-                            <tr>
-                              <td style={styles.tableCell}>
-                                <strong>Thời gian:</strong>
-                              </td>
-                              <td style={styles.tableCell}>
-                                {service.timeSlots.join(", ")}
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </Table>
-
-                      {service.options.length > 0 && (
-                        <div>
-                          <strong>Tùy chọn:</strong>
-                          <div style={styles.optionsList}>
-                            {service.options.map((option, index) => (
-                              <Button 
-                                variant="dark"
-                              >
-                                {option}
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    <div style={styles.actionButtons}>
-                      <Button
-                        variant="outline-secondary"
-                        style={{
-                          ...styles.toggleButton,
-                          ...(service.active
-                            ? styles.activeToggle
-                            : styles.inactiveToggle),
-                        }}
-                        onClick={() => handleToggleActive(service.id)}
-                      >
-                        {service.active ? "Tắt" : "Bật"}
-                      </Button>
-                      <Button
-                        variant="outline-danger"
-                        style={styles.deleteButton}
-                        onClick={() => handleDeleteService(service.id)}
-                      >
-                        Xóa
-                      </Button>
-                      <Button
-                        style={styles.editButton}
-                        onClick={() => handleEditService(service)}
-                      >
-                        Chỉnh sửa
-                      </Button>
-                    </div>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          )}
-
-          {/* Modal for adding/editing services */}
-          <Modal show={showModal} onHide={handleCloseModal} size="lg">
-            <Modal.Header closeButton>
-              <Modal.Title style={styles.modalTitle}>
-                {isEditing ? "Chỉnh Sửa Dịch Vụ" : "Thêm Dịch Vụ Mới"}
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Form>
-                <Form.Group style={styles.formGroup}>
-                  <Form.Label style={styles.formLabel}>Tên dịch vụ</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="name"
-                    value={currentService.name}
-                    onChange={handleInputChange}
-                    placeholder="Ví dụ: Bữa sáng, Buffet tối, Spa..."
-                  />
-                </Form.Group>
-
-                <Form.Group style={styles.formGroup}>
-                  <Form.Label style={styles.formLabel}>Mô tả</Form.Label>
-                  <Form.Control
-                    as="textarea"
-                    rows={3}
-                    name="description"
-                    value={currentService.description}
-                    onChange={handleInputChange}
-                    placeholder="Mô tả chi tiết về dịch vụ"
-                  />
-                </Form.Group>
-
-                <Row>
-                  <Col md={6}>
-                    <Form.Group style={styles.formGroup}>
-                      <Form.Label style={styles.formLabel}>
-                        Giá (VND)
-                      </Form.Label>
-                      <InputGroup>
-                        <InputGroup.Text>VND</InputGroup.Text>
-                        <Form.Control
-                          type="text"
-                          name="price"
-                          value={currentService.price}
-                          onChange={handlePriceChange}
-                          placeholder="Ví dụ: 250000"
-                        />
-                      </InputGroup>
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group style={styles.formGroup}>
-                      <Form.Label style={styles.formLabel}>
-                        Loại tính phí
-                      </Form.Label>
-                      <Form.Select
-                        name="type"
-                        value={currentService.type}
-                        onChange={handleInputChange}
-                      >
-                        <option value="per_person">Theo người</option>
-                        <option value="per_booking">Theo đặt phòng</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-                </Row>
-
-                <Form.Group style={styles.formGroup}>
-                  <Form.Label style={styles.formLabel}>Khả dụng</Form.Label>
-                  <Form.Select
-                    name="availability"
-                    value={currentService.availability}
-                    onChange={handleInputChange}
-                  >
-                    <option value="daily">Hàng ngày</option>
-                    <option value="weekdays">Ngày trong tuần</option>
-                    <option value="weekends">Cuối tuần</option>
-                    <option value="on_request">Theo yêu cầu</option>
-                  </Form.Select>
-                </Form.Group>
-
-                {currentService.availability !== "on_request" && (
-                  <Form.Group style={styles.formGroup}>
-                    <Form.Label style={styles.formLabel}>Thời gian</Form.Label>
-                    {currentService.timeSlots.map((timeSlot, index) => (
-                      <div key={index} style={styles.timeSlotRow}>
-                        <Form.Control
-                          type="text"
-                          value={timeSlot}
-                          onChange={(e) =>
-                            handleTimeSlotChange(index, e.target.value)
-                          }
-                          placeholder="Ví dụ: 06:00 - 10:00"
-                        />
-                        {currentService.timeSlots.length > 1 && (
-                          <button
-                            type="button"
-                            style={styles.removeButton}
-                            onClick={() => removeTimeSlot(index)}
-                          >
-                            ×
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                    <button
-                      type="button"
-                      style={styles.addButton2}
-                      onClick={addTimeSlot}
-                    >
-                      + <span style={styles.addButtonText}>Thêm khung giờ</span>
-                    </button>
-                  </Form.Group>
-                )}
-
-                <Form.Group style={styles.formGroup}>
-                  <Form.Label style={styles.formLabel}>Tùy chọn</Form.Label>
-                  {currentService.options.map((option, index) => (
-                    <div key={index} style={styles.timeSlotRow}>
-                      <Form.Control
-                        type="text"
-                        value={option}
-                        onChange={(e) =>
-                          handleOptionChange(index, e.target.value)
-                        }
-                        placeholder="Ví dụ: Buffet, Phục vụ tại phòng..."
-                      />
-                      {currentService.options.length > 1 && (
-                        <button
-                          type="button"
-                          style={styles.removeButton}
-                          onClick={() => removeOption(index)}
-                        >
-                          ×
-                        </button>
-                      )}
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    style={styles.addButton2}
-                    onClick={addOption}
-                  >
-                    + <span style={styles.addButtonText}>Thêm tùy chọn</span>
-                  </button>
-                </Form.Group>
-
-                <Form.Group style={styles.formGroup}>
-                  <Form.Check
-                    type="checkbox"
-                    id="active-checkbox"
-                    label="Kích hoạt dịch vụ này"
-                    checked={currentService.active}
-                    onChange={(e) =>
-                      setCurrentService({
-                        ...currentService,
-                        active: e.target.checked,
-                      })
-                    }
-                  />
-                </Form.Group>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Hủy
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                style={styles.editButton}
-              >
-                {isEditing ? "Lưu Thay Đổi" : "Thêm Dịch Vụ"}
-              </Button>
-            </Modal.Footer>
-          </Modal>
+      {!hotelinfo ||
+      hotelinfo.length === 0 ||
+      !hotelinfo[0]?.services ||
+      hotelinfo[0].services.length === 0 ? (
+        <div style={styles.emptyState}>
+          <h3>Không có dịch vụ nào</h3>
+          <p>Hãy thêm dịch vụ mới để tăng doanh thu của bạn</p>
         </div>
+      ) : (
+        <Row>
+          {hotelinfo[0].services.map((service, index) => (
+            <Col key={index} xs={4} md={4} lg={4}>
+              <Card
+                style={styles.serviceCard}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-5px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 16px rgba(0,0,0,0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "none";
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                }}
+              >
+                <div style={styles.serviceHeader}>
+                  <h3 style={styles.serviceName}>
+                    {service.name}
+                    <Form.Check
+                      type="switch"
+                      id={`status-switch-${service._id}`}
+                      // label={
+                      //   service.statusActive === "ACTIVE"
+                      //     ? "Đang hoạt động"
+                      //     : "Đã tắt"
+                      // }
+                      checked={service.statusActive === "ACTIVE"}
+                      onChange={() => handleToggleStatus(service)}
+                      style={{ marginLeft: "20px" }}
+                    />
+                  </h3>
+                  <div style={styles.servicePrice}>
+                    {formatPrice(service.price)} VND
+                  </div>
+                </div>
+
+                <div style={styles.serviceDetails}>
+                  <p>{service.description}</p>
+
+                  <Table borderless style={styles.detailsTable}>
+                    <tbody>
+                      <tr>
+                        <td style={styles.tableCell}>
+                          <strong>Loại tính phí:</strong>
+                        </td>
+                        <td style={styles.tableCell}>{service.type}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
+
+                  {service.options?.map((option, index) => (
+                    <Button key={index} variant="dark">
+                      {option}
+                    </Button>
+                  ))}
+                </div>
+
+                <div style={styles.actionButtons}>
+                  <Button
+                    style={styles.editButton}
+                    onClick={() => handleEditService(service)}
+                  >
+                    Chỉnh sửa
+                  </Button>
+                </div>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
+
+      <Modal show={showModal} onHide={handleCloseModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {isEditing ? "Chỉnh Sửa Dịch Vụ" : "Thêm Dịch Vụ Mới"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Tên dịch vụ</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={currentService.name}
+                onChange={handleInputChange}
+                placeholder="Ví dụ: Bữa sáng, Buffet tối, Spa..."
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Mô tả</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="description"
+                rows={3}
+                value={currentService.description}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Giá (VND)</Form.Label>
+              <Form.Control
+                type="text"
+                name="price"
+                value={formatPrice(currentService.price)}
+                onChange={handlePriceChange}
+              />
+            </Form.Group>
+            <Form.Group>
+              <Form.Label>Loại tính phí</Form.Label>
+              <Form.Control
+                type="text"
+                name="type"
+                value={formatPrice(currentService.type)}
+                onChange={handleInputChange}
+              />
+            </Form.Group>
+
+            {/* <Form.Group className="mb-3">
+              <Form.Label>Loại tính phí</Form.Label>
+              <Form.Select
+                name="type"
+                value={currentService.type}
+                onChange={handleInputChange}
+              >
+                <option value="per_person">Theo người</option>
+                <option value="per_room">Theo đặt phòng</option>
+              </Form.Select>
+            </Form.Group> */}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Huỷ
+          </Button>
+          <Button variant="primary" onClick={handleSubmitService}>
+            {isEditing ? "Lưu thay đổi" : "Thêm dịch vụ"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 }
 

@@ -13,4 +13,6 @@ HotelRouter.get("/hotel_detail/:hotelId", checkGuest, HotelController.getHotelDe
 HotelRouter.get("/top-bookings", checkGuest,HotelController.getTop3HotelsThisMonth);
 HotelRouter.get("/owner-hotels", checkOwner, HotelController.getHotelsByOwner);
 HotelRouter.put("/update-hotel/:hotelId",checkOwner,  HotelController.updateHotelInfo);
+HotelRouter.put("/updateStatusService/:hotelId/status",  HotelController.updateHotelServiceStatus);
+HotelRouter.post("/add-service", HotelController.createHotelService);
 module.exports = HotelRouter;

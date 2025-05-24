@@ -5,6 +5,7 @@ const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
 const Reservation  = require("../../models/reservation");
 const HotelFacility = require("../../models/hotelFacility"); 
+const HotelService = require("../../models/hotelService");
 // exports.getAllHotels = asyncHandler(async (req, res) => {
 //     const {page= 1, limit= 5}= req.query;
 
@@ -405,3 +406,82 @@ exports.updateHotelInfo = asyncHandler(async (req, res) => {
     });
   }
 });
+exports.updateHotelServiceStatus = async (req, res) => {
+  console.log('1')
+  try {
+    const { hotelId } = req.params;
+    const { serviceId, statusActive } = req.body;
+
+    console.log("body: ", req.body)
+    if (!["ACTIVE", "NONACTIVE"].includes(statusActive)) {
+      return res.status(400).json({ message: "Invalid statusActive value" });
+    }
+
+    console.log("2")
+    const hotel = await Hotel.findById(hotelId);
+    if (!hotel) {
+      return res.status(404).json({ message: "Hotel not found" });
+    }
+    console.log("3")
+
+    const isServiceInHotel = hotel.services.includes(serviceId);
+    if (!isServiceInHotel) {
+      return res.status(400).json({ message: "Service does not belong to this hotel" });
+    }
+    console.log("4")
+
+    const updatedService = await HotelService.findByIdAndUpdate(
+      serviceId,
+      { statusActive },
+      { new: true }
+    );
+
+    if (!updatedService) {
+      return res.status(404).json({ message: "HotelService not found" });
+    }
+
+    console.log("5")
+
+    res.status(200).json({
+      message: "Service status updated successfully",
+      service: updatedService,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.createHotelService = async (req, res) => {
+  try {
+    const { hotelId, name, description, type, price } = req.body;
+    let { statusActive } = req.body;
+
+    if (!hotelId) {
+      return res.status(400).json({ message: "Thiếu hotelId" });
+    }
+
+
+    if (!statusActive) {
+      statusActive = "ACTIVE";
+    }
+
+    const newService = await HotelService.create({
+      hotelId,
+      name,
+      description,
+      type,
+      price,
+      statusActive,
+    });
+
+  
+    await Hotel.findByIdAndUpdate(hotelId, {
+      $push: { services: newService._id },
+    });
+
+    res.status(201).json({ message: "Tạo dịch vụ thành công", service: newService });
+  } catch (error) {
+    console.error("Lỗi tạo dịch vụ khách sạn:", error);
+    res.status(500).json({ message: "Tạo dịch vụ thất bại", error: error.message });
+  }
+};

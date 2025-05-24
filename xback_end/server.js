@@ -11,11 +11,12 @@ const FeedbackRouter = require("./src/route_controller/Feedback/FeedbackRoute");
 const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
 const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/ReportedFeedbackRoute");
-
+const HotelServiceRoute = require("./src/route_controller/Hotelservices/HotelservicesRoute");
 const cron = require("node-cron");
 require("./src/route_controller/Reservations/ReservationsController"); 
 const ReservationRouter = require("./src/route_controller/Reservations/ReservationsRouter");
 const RefundingReservationRouter = require("./src/route_controller/RefundingReservation/RefundingReservationRoute");
+
 
 
 const port = process.env.PORT || 5000;
@@ -50,6 +51,7 @@ app.use("/api/payment", PaymentRouter);
 app.use("/api/reportFeedback", ReportedFeedbackRoute);
 
 app.use("/api/refunding_reservation", RefundingReservationRouter);
+app.use("/api/hotelservices", HotelServiceRoute);
 //from errorHandle
 app.use(errorHandler);
 
