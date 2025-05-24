@@ -1,42 +1,51 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Row, Col, Table, Form, Button, Card, Alert, Pagination } from "react-bootstrap"
-import "bootstrap/dist/css/bootstrap.min.css"
-import { showToast, ToastProvider } from "@components/ToastContainer"
-import { useNavigate } from "react-router-dom"
-import TransactionDetail from "./TransactionDetail"
-import { useDispatch, useSelector } from "react-redux"
-import ReservationActions from "../../redux/reservation/actions"
-import Utils from "@utils/Utils"
+import { useState, useEffect } from "react";
+import {
+  Row,
+  Col,
+  Table,
+  Form,
+  Button,
+  Card,
+  Alert,
+  Pagination,
+} from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import { useNavigate } from "react-router-dom";
+import TransactionDetail from "./TransactionDetail";
+import { useDispatch, useSelector } from "react-redux";
+import ReservationActions from "../../redux/reservation/actions";
+import Utils from "@utils/Utils";
 
 const Transaction = () => {
-  const navigate = useNavigate()
-  const dispatch = useDispatch()
-  const { reservations } = useSelector((state) => state.Reservation)
-  const [payments, setPayments] = useState([])
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
-  const [selectedStatus, setSelectedStatus] = useState("All")
-  const [selectedSort, setSelectedSort] = useState("desc")
-  const [detailReservation, setDetailReservation] = useState({})
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { reservations } = useSelector((state) => state.Reservation);
+  const [payments, setPayments] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedStatus, setSelectedStatus] = useState("All");
+  const [selectedSort, setSelectedSort] = useState("desc");
+  const [detailReservation, setDetailReservation] = useState({});
 
   // Pagination states
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 10
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Trạng thái thông tin ngân hàng
-  const [hasBankInfo, setHasBankInfo] = useState(false)
+  const [hasBankInfo, setHasBankInfo] = useState(false);
   const [bankInfo, setBankInfo] = useState({
     accountNumber: "",
     accountName: "",
     bankName: "",
     branch: "",
-  })
-  const [savedBankInfo, setSavedBankInfo] = useState(null)
-  const [showForm, setShowForm] = useState(true)
+  });
+  const [savedBankInfo, setSavedBankInfo] = useState(null);
+  const [showForm, setShowForm] = useState(true);
 
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     // Gọi API lấy reservation theo filter, sort, month, year
@@ -48,39 +57,39 @@ const Transaction = () => {
         year: selectedYear,
         sort: selectedSort,
       },
-    })
+    });
     // Reset về trang 1 khi filter thay đổi
-    setCurrentPage(1)
-  }, [dispatch, selectedMonth, selectedYear, selectedStatus, selectedSort])
+    setCurrentPage(1);
+  }, [dispatch, selectedMonth, selectedYear, selectedStatus, selectedSort]);
 
   const handleBankInfoChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setBankInfo({
       ...bankInfo,
       [name]: value,
-    })
-  }
+    });
+  };
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Thông tin ngân hàng đã gửi:", bankInfo)
-    setSavedBankInfo(bankInfo)
-    setHasBankInfo(true)
-    setShowForm(false)
-    showToast.success("Tạo tài khoản ngân hàng thành công")
-  }
+    e.preventDefault();
+    console.log("Thông tin ngân hàng đã gửi:", bankInfo);
+    setSavedBankInfo(bankInfo);
+    setHasBankInfo(true);
+    setShowForm(false);
+    showToast.success("Tạo tài khoản ngân hàng thành công");
+  };
 
   const handleEdit = () => {
-    setBankInfo(savedBankInfo)
-    setShowForm(true)
-  }
+    setBankInfo(savedBankInfo);
+    setShowForm(true);
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(amount)
-  }
+    }).format(amount);
+  };
 
   const months = [
     "Tháng 1",
@@ -95,80 +104,91 @@ const Transaction = () => {
     "Tháng 10",
     "Tháng 11",
     "Tháng 12",
-  ]
+  ];
 
   // Tạo danh sách năm từ 2021 đến 2025
-  const years = Array.from({ length: 5 }, (_, i) => 2021 + i)
+  const years = Array.from({ length: 5 }, (_, i) => 2021 + i);
 
   // Logic để hiển thị tháng dựa trên năm được chọn
   const getAvailableMonths = () => {
-    const currentYear = new Date().getFullYear()
-    const currentMonth = new Date().getMonth() // 0-11
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth(); // 0-11
 
     if (selectedYear === currentYear) {
       // Nếu là năm hiện tại (2025), chỉ hiển thị đến tháng hiện tại (tháng 5 = index 4)
-      return months.slice(0, currentMonth + 1)
+      return months.slice(0, currentMonth + 1);
     } else {
       // Nếu là năm khác, hiển thị đủ 12 tháng
-      return months
+      return months;
     }
-  }
+  };
 
   // Pagination logic
-  const totalItems = reservations?.length || 0
-  const totalPages = Math.ceil(totalItems / itemsPerPage)
-  const startIndex = (currentPage - 1) * itemsPerPage
-  const endIndex = startIndex + itemsPerPage
-  const currentReservations = reservations?.slice(startIndex, endIndex) || []
+  const totalItems = reservations?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentReservations = reservations?.slice(startIndex, endIndex) || [];
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+    setCurrentPage(pageNumber);
+  };
 
   // Tạo pagination items
   const renderPaginationItems = () => {
-    const items = []
-    const maxVisiblePages = 5
+    const items = [];
+    const maxVisiblePages = 5;
 
     // Previous button
     items.push(
-      <Pagination.Prev key="prev" disabled={currentPage === 1} onClick={() => handlePageChange(currentPage - 1)} />,
-    )
+      <Pagination.Prev
+        key="prev"
+        disabled={currentPage === 1}
+        onClick={() => handlePageChange(currentPage - 1)}
+      />
+    );
 
     // First page
     if (totalPages > maxVisiblePages && currentPage > 3) {
       items.push(
         <Pagination.Item key={1} onClick={() => handlePageChange(1)}>
           1
-        </Pagination.Item>,
-      )
+        </Pagination.Item>
+      );
       if (currentPage > 4) {
-        items.push(<Pagination.Ellipsis key="ellipsis1" />)
+        items.push(<Pagination.Ellipsis key="ellipsis1" />);
       }
     }
 
     // Visible pages
-    const startPage = Math.max(1, currentPage - 2)
-    const endPage = Math.min(totalPages, currentPage + 2)
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
 
     for (let page = startPage; page <= endPage; page++) {
       items.push(
-        <Pagination.Item key={page} active={page === currentPage} onClick={() => handlePageChange(page)}>
+        <Pagination.Item
+          key={page}
+          active={page === currentPage}
+          onClick={() => handlePageChange(page)}
+        >
           {page}
-        </Pagination.Item>,
-      )
+        </Pagination.Item>
+      );
     }
 
     // Last page
     if (totalPages > maxVisiblePages && currentPage < totalPages - 2) {
       if (currentPage < totalPages - 3) {
-        items.push(<Pagination.Ellipsis key="ellipsis2" />)
+        items.push(<Pagination.Ellipsis key="ellipsis2" />);
       }
       items.push(
-        <Pagination.Item key={totalPages} onClick={() => handlePageChange(totalPages)}>
+        <Pagination.Item
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+        >
           {totalPages}
-        </Pagination.Item>,
-      )
+        </Pagination.Item>
+      );
     }
 
     // Next button
@@ -177,19 +197,38 @@ const Transaction = () => {
         key="next"
         disabled={currentPage === totalPages}
         onClick={() => handlePageChange(currentPage + 1)}
-      />,
-    )
+      />
+    );
 
-    return items
-  }
+    return items;
+  };
+  const calculateTotalPrice = (rooms) => {
+    if (!rooms || !Array.isArray(rooms)) return 0;
+    return rooms.reduce((total, roomItem) => {
+      const roomPrice = roomItem.room?.price || 0;
+      const quantity = roomItem.quantity || 1;
+      return total + roomPrice * quantity;
+    }, 0);
+  };
+  
+  const totalCustomerPaid = reservations?.reduce(
+    (sum, r) => sum + calculateTotalPrice(r.rooms),
+    0
+  );
 
-  const totalCustomerPaid = reservations?.reduce((sum, r) => sum + r.totalPrice, 0)
+  const totalCommission = Math.floor(totalCustomerPaid * 0.15);
+  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85);
+  const completedCount =
+    reservations?.filter(
+      (r) => r.status === "COMPLETED" || r.status === "CHECKED OUT"
+    ).length || 0;
+  const pendingCount =
+    reservations?.filter((r) => r.status === "PENDING").length || 0;
+  const bookedCount =
+    reservations?.filter(
+      (r) => r.status === "BOOKED" || r.status === "CHECKED IN"
+    ).length || 0;
 
-  const totalCommission = Math.floor(totalCustomerPaid * 0.15)
-  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85)
-  const completedCount = reservations?.filter((r) => r.status === "COMPLETED" || r.status === "CHECKED OUT").length || 0
-  const pendingCount = reservations?.filter((r) => r.status === "PENDING").length || 0
-  const bookedCount = reservations?.filter((r) => r.status === "BOOKED" || r.status === "CHECKED IN").length || 0
 
   return (
     <div className="main-content_1">
@@ -208,8 +247,8 @@ const Transaction = () => {
                     <Form.Select
                       value={selectedMonth}
                       onChange={(e) => {
-                        const newMonth = Number.parseInt(e.target.value)
-                        setSelectedMonth(newMonth)
+                        const newMonth = Number.parseInt(e.target.value);
+                        setSelectedMonth(newMonth);
                       }}
                     >
                       {getAvailableMonths().map((month, index) => (
@@ -226,14 +265,17 @@ const Transaction = () => {
                     <Form.Select
                       value={selectedYear}
                       onChange={(e) => {
-                        const newYear = Number.parseInt(e.target.value)
-                        setSelectedYear(newYear)
+                        const newYear = Number.parseInt(e.target.value);
+                        setSelectedYear(newYear);
 
                         // Nếu chuyển sang năm hiện tại và tháng hiện tại > tháng được chọn
-                        const currentYear = new Date().getFullYear()
-                        const currentMonth = new Date().getMonth()
-                        if (newYear === currentYear && selectedMonth > currentMonth) {
-                          setSelectedMonth(currentMonth)
+                        const currentYear = new Date().getFullYear();
+                        const currentMonth = new Date().getMonth();
+                        if (
+                          newYear === currentYear &&
+                          selectedMonth > currentMonth
+                        ) {
+                          setSelectedMonth(currentMonth);
                         }
                       }}
                     >
@@ -249,7 +291,10 @@ const Transaction = () => {
                 <Col>
                   <Form.Group className="mb-3">
                     <Form.Label>Trạng thái</Form.Label>
-                    <Form.Select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
+                    <Form.Select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                    >
                       <option value="All">Tất cả</option>
                       <option value="COMPLETED">COMPLETED</option>
                       <option value="CHECKED OUT">CHECKED OUT</option>
@@ -264,7 +309,10 @@ const Transaction = () => {
                 <Col>
                   <Form.Group className="mb-3">
                     <Form.Label>Lọc theo:</Form.Label>
-                    <Form.Select value={selectedSort} onChange={(e) => setSelectedSort(e.target.value)}>
+                    <Form.Select
+                      value={selectedSort}
+                      onChange={(e) => setSelectedSort(e.target.value)}
+                    >
                       <option value="desc">Mới nhất</option>
                       <option value="asc">Cũ nhất</option>
                     </Form.Select>
@@ -285,11 +333,15 @@ const Transaction = () => {
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Tổng hoa hồng (Admin):</span>
-                <strong className="text-danger">{Utils.formatCurrency(totalCommission)}</strong>
+                <strong className="text-danger">
+                  {Utils.formatCurrency(totalCommission)}
+                </strong>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Tổng số tiền cho chủ khách sạn:</span>
-                <strong className="text-success">{Utils.formatCurrency(totalAmountToHost)}</strong>
+                <strong className="text-success">
+                  {Utils.formatCurrency(totalAmountToHost)}
+                </strong>
               </div>
               <div className="d-flex justify-content-between mb-2">
                 <span>Hóa đơn Hoàn thành / Đang xử lý / Đang thực hiện:</span>
@@ -306,10 +358,12 @@ const Transaction = () => {
         <Card.Header as="h5">
           <div className="d-flex justify-content-between align-items-center">
             <span>
-              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth]} - {selectedYear}
+              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth]} -{" "}
+              {selectedYear}
             </span>
             <span className="text-muted">
-              Hiển thị {startIndex + 1}-{Math.min(endIndex, totalItems)} của {totalItems} kết quả
+              Hiển thị {startIndex + 1}-{Math.min(endIndex, totalItems)} của{" "}
+              {totalItems} kết quả
             </span>
           </div>
         </Card.Header>
@@ -332,8 +386,8 @@ const Transaction = () => {
                   <tr
                     key={reservation._id}
                     onClick={() => {
-                      setShowModal(true)
-                      setDetailReservation(reservation)
+                      setShowModal(true);
+                      setDetailReservation(reservation);
                     }}
                     style={{ cursor: "pointer" }}
                   >
@@ -345,30 +399,43 @@ const Transaction = () => {
                           reservation.rooms.length > 0 &&
                           reservation.rooms.map((roomObj, idx) => (
                             <div key={idx}>
-                              {roomObj.room?.name} - {roomObj.room?.quantity} rooms
+                              {roomObj.room?.name} - {roomObj.room?.quantity}{" "}
+                              rooms
                             </div>
                           ))}
                       </span>
                     </td>
-                    <td>{Utils.formatCurrency(reservation.totalPrice * 1) || 0}</td>
-                    <td className="text-danger">{Utils.formatCurrency(reservation.totalPrice * 0.15) || 0}</td>
-                    <td className="text-success">{Utils.formatCurrency(reservation.totalPrice * 0.85) || 0}</td>
+                    <td>
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms))}
+                    </td>
+                    <td className="text-danger">
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.15 || 0)}
+                    </td>
+                    <td className="text-success">
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.85 || 0)}
+                    </td>
                     <td>
                       <span
                         className={`badge ${
                           reservation.status === "COMPLETED"
                             ? "bg-secondary"
                             : reservation.status === "PENDING"
-                              ? "bg-warning"
-                              : reservation.status === "CANCELLED" && reservation.status === "NOT PAID"
-                              ? "bg-danger"
-                              : reservation.status === "BOOKED" 
-                              ? "bg-success"
-                              : reservation.status === "CHECKED OUT"  
-                              ? "bg-info"
-                              : "bg-primary"
+                            ? "bg-warning"
+                            : reservation.status === "CANCELLED" &&
+                              reservation.status === "NOT PAID"
+                            ? "bg-danger"
+                            : reservation.status === "BOOKED"
+                            ? "bg-success"
+                            : reservation.status === "CHECKED OUT"
+                            ? "bg-info"
+                            : "bg-primary"
                         }`}
-                        style={{ width: "100px", height: "30px", paddingTop: "10px", paddingBottom: "10px" }}
+                        style={{
+                          width: "100px",
+                          height: "30px",
+                          paddingTop: "10px",
+                          paddingBottom: "10px",
+                        }}
                       >
                         {reservation.status}
                       </span>
@@ -416,7 +483,10 @@ const Transaction = () => {
         <Card.Header as="h5">Thông tin tài khoản ngân hàng</Card.Header>
         <Card.Body>
           {!hasBankInfo && (
-            <Alert variant="warning">Vui lòng thêm thông tin tài khoản ngân hàng của bạn để nhận thanh toán.</Alert>
+            <Alert variant="warning">
+              Vui lòng thêm thông tin tài khoản ngân hàng của bạn để nhận thanh
+              toán.
+            </Alert>
           )}
 
           {showForm ? (
@@ -453,7 +523,12 @@ const Transaction = () => {
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Tên ngân hàng</Form.Label>
-                    <Form.Select name="bankName" value={bankInfo.bankName} onChange={handleBankInfoChange} required>
+                    <Form.Select
+                      name="bankName"
+                      value={bankInfo.bankName}
+                      onChange={handleBankInfoChange}
+                      required
+                    >
                       <option value="">Chọn ngân hàng</option>
                       <option value="MB Bank">MB Bank</option>
                       <option value="Techcombank">Techcombank</option>
@@ -488,10 +563,12 @@ const Transaction = () => {
                 <div>
                   <Row className="mb-3">
                     <Col md={6}>
-                      <strong>Số tài khoản:</strong> {savedBankInfo.accountNumber}
+                      <strong>Số tài khoản:</strong>{" "}
+                      {savedBankInfo.accountNumber}
                     </Col>
                     <Col md={6}>
-                      <strong>Tên tài khoản:</strong> {savedBankInfo.accountName}
+                      <strong>Tên tài khoản:</strong>{" "}
+                      {savedBankInfo.accountName}
                     </Col>
                   </Row>
                   <Row className="mb-3">
@@ -499,7 +576,8 @@ const Transaction = () => {
                       <strong>Tên ngân hàng:</strong> {savedBankInfo.bankName}
                     </Col>
                     <Col md={6}>
-                      <strong>Chi nhánh:</strong> {savedBankInfo.branch || "N/A"}
+                      <strong>Chi nhánh:</strong>{" "}
+                      {savedBankInfo.branch || "N/A"}
                     </Col>
                   </Row>
                   <Button variant="outline-primary" onClick={handleEdit}>
@@ -523,7 +601,9 @@ const Transaction = () => {
                     <Form.Label>Năm</Form.Label>
                     <Form.Select
                       value={selectedYear}
-                      onChange={(e) => setSelectedYear(Number.parseInt(e.target.value))}
+                      onChange={(e) =>
+                        setSelectedYear(Number.parseInt(e.target.value))
+                      }
                     >
                       {years.map((year) => (
                         <option key={year} value={year}>
@@ -540,7 +620,9 @@ const Transaction = () => {
       </Row>
 
       <Card className="mb-4">
-        <Card.Header as="h5">Danh sách thanh toán cho năm {selectedYear}</Card.Header>
+        <Card.Header as="h5">
+          Danh sách thanh toán cho năm {selectedYear}
+        </Card.Header>
         <Card.Body>
           <Table responsive striped hover>
             <thead>
@@ -561,18 +643,22 @@ const Transaction = () => {
                     <td>{index + 1}</td>
                     <td>{index + 4}/2025</td>
                     <td>{formatCurrency(payment.customerPaid)}</td>
-                    <td className="text-danger">{formatCurrency(payment.commission)}</td>
-                    <td className="text-success">{formatCurrency(payment.amountToHost)}</td>
+                    <td className="text-danger">
+                      {formatCurrency(payment.commission)}
+                    </td>
+                    <td className="text-success">
+                      {formatCurrency(payment.amountToHost)}
+                    </td>
                     <td>
                       <span
                         className={`badge ${
                           payment.status === "COMPLETED"
                             ? "bg-success"
                             : payment.status === "PENDING"
-                              ? "bg-warning"
-                              : payment.status === "CANCELLED" 
-                              ? "bg-danger" 
-                              : "bg-info"
+                            ? "bg-warning"
+                            : payment.status === "CANCELLED"
+                            ? "bg-danger"
+                            : "bg-info"
                         }`}
                       >
                         {payment.status}
@@ -600,7 +686,7 @@ const Transaction = () => {
         detailReservation={detailReservation}
       />
     </div>
-  )
-}
+  );
+};
 
-export default Transaction
+export default Transaction;
