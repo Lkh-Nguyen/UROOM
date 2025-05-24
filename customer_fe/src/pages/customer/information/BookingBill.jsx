@@ -32,6 +32,7 @@ import HotelActions from "../../../redux/hotel/actions";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as Routers from "../../../utils/Routes";
+import { ChatBox } from "../home/HomePage";
 
 const BookingBill = () => {
   const dispatch = useAppDispatch();
@@ -651,7 +652,7 @@ const BookingBill = () => {
                           {hotelDetail?.email ||
                             hotelDetail?.owner?.email ||
                             ownerContact.email ||
-                            "N/A"}
+                            "hot1@gm.com"}
                         </div>
                       </Col>
                     </Row>
@@ -753,6 +754,9 @@ const BookingBill = () => {
             </Card>
           )}
         </Container>
+          <div>
+            <ChatBox/>
+          </div>
       </div>
       <Footer />
     </div>

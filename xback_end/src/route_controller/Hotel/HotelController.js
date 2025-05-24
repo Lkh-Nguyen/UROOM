@@ -3,7 +3,7 @@ const User = require("../../models/user");
 const asyncHandler = require("../../middlewares/asyncHandler");
 const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
-const Reservation  = require("../../models/reservation");
+const Reservation = require("../../models/reservation");
 const HotelFacility = require("../../models/hotelFacility"); 
 const HotelService = require("../../models/hotelService");
 // exports.getAllHotels = asyncHandler(async (req, res) => {
@@ -117,6 +117,28 @@ exports.getHotelsByIds = asyncHandler(async (req, res) => {
   });
 });
 
+exports.getHotelsByOwnerId = asyncHandler(async (req, res) => {
+  const { id } = req.body;
+
+  if (!id) {
+    return res.status(400).json({
+      error: true,
+      message: "No owner provided",
+    });
+  }
+
+  // Tìm kiếm theo query đã build
+  const hotel = await Hotel.find({ owner: id });
+
+  console.log("hotel: ", hotel);
+
+  return res.status(200).json({
+    error: false,
+    hotels: hotel,
+    message: "Get filtered hotels success",
+  });
+});
+
 exports.removeFavoriteHotel = asyncHandler(async (req, res) => {
   const userId = req.user._id; // Lấy từ token
   const { hotelId } = req.body;
@@ -221,11 +243,9 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
       message: "Hotel not found",
     });
   }
-  let isFavorite= false;
-  if(user){
-    isFavorite = user
-    ? user.favorites.includes(hotel._id.toString())
-    : false;
+  let isFavorite = false;
+  if (user) {
+    isFavorite = user ? user.favorites.includes(hotel._id.toString()) : false;
   }
 
   return res.status(200).json({
@@ -238,15 +258,14 @@ exports.getHotelDetails = asyncHandler(async (req, res) => {
 exports.getTop3HotelsThisMonth = async (req, res) => {
   try {
     const startOfMonth = new Date();
-    startOfMonth.setMonth(startOfMonth.getMonth() - 2)
+    startOfMonth.setMonth(startOfMonth.getMonth() - 2);
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
     const endOfMonth = new Date();
-    endOfMonth.setMonth(endOfMonth.getMonth() + 1)
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
     endOfMonth.setDate(1);
     endOfMonth.setHours(0, 0, 0, 0);
-
 
     const topHotels = await Reservation.aggregate([
       {
@@ -269,7 +288,7 @@ exports.getTop3HotelsThisMonth = async (req, res) => {
       },
       {
         $lookup: {
-          from: "hotels", 
+          from: "hotels",
           localField: "_id",
           foreignField: "_id",
           as: "hotelInfo",
@@ -485,3 +504,47 @@ exports.createHotelService = async (req, res) => {
     res.status(500).json({ message: "Tạo dịch vụ thất bại", error: error.message });
   }
 };
+
+
+exports.changeStatusHotelInfo = asyncHandler(async (req, res) => {
+  const { hotelId } = req.params;
+  const {ownerStatus} = req.body;
+
+  console.log("ownerStatus: ", ownerStatus)
+  if (!hotelId) {
+    return res.status(400).json({
+      error: true,
+      message: "Hotel ID is required",
+    });
+  }
+
+  const hotel = await Hotel.findById(hotelId);
+
+  if (!hotel) {
+    return res.status(404).json({
+      error: true,
+      message: "Hotel not found",
+    });
+  }
+
+  if (ownerStatus) {
+    hotel.ownerStatus = "NONACTIVE";
+  }else{
+    hotel.ownerStatus = "ACTIVE";
+  }
+
+  try {
+    await hotel.save();
+    return res.status(200).json({
+      error: false,
+      message: "Hotel updated successfully",
+      hotel,
+    });
+  } catch (error) {
+    console.error("Error saving hotel:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Failed to update hotel",
+    });
+  }
+});

@@ -211,7 +211,11 @@ const RegisterPage = () => {
 
               <div className="text-center">
                 <span className="text-muted">You have a account? </span>
-                <a href={Routers.LoginPage} className="text-decoration-none">
+                <a
+                  onClick={() => {
+                    navigate(Routers.LoginPage, { state: { from: "register" } })
+                  }}
+                  className="text-decoration-none">
                   Sign in here
                 </a>
               </div>

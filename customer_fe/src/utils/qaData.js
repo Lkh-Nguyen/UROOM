@@ -119,24 +119,6 @@ const ListHotel = ({ address }) => {
 // qaData.js
 const qaData = [
   {
-    questions: ["Hello", "Hi"],
-    answer: ["Hello! How can I assist you today?"],
-  },
-  {
-    questions: ["What is your name?", "Who are you?"],
-    answer: ["I am a virtual assistant here to help you."],
-  },
-  {
-    questions: ["What can you do?", "How can you help me?", "help me"],
-    answer: [
-      "I can answer your questions, provide information, and assist you whenever needed.",
-    ],
-  },
-  {
-    questions: ["Da Nang", "Hotels in Da Nang", "Da Nang hotels"],
-    answer: ["ListHotelDaNang"],
-  },
-  {
     questions: [
       "Ho Chi Minh",
       "Hotels in Ho Chi Minh",
@@ -149,7 +131,7 @@ const qaData = [
     answer: ["ListHotelHaNoi"],
   },
   {
-    questions: ["Cancel room", "Cancellation policy", "Refund"],
+    questions: ["Cancel room", "Cancellation policy", "Refund", "Cancellation", "Policty"],
     answer: ["CancellationPolicy"],
   },
   {
@@ -175,7 +157,25 @@ const qaData = [
     answer: [
       "Thank you for reaching out!"
     ],
-  }
+  },
+    {
+    questions: ["Hello", "Hi"],
+    answer: ["Hello! How can I assist you today?"],
+  },
+  {
+    questions: ["What is your name?", "Who are you?"],
+    answer: ["I am a virtual assistant here to help you."],
+  },
+  {
+    questions: ["What can you do?", "How can you help me?", "help me"],
+    answer: [
+      "I can answer your questions, provide information, and assist you whenever needed.",
+    ],
+  },
+  {
+    questions: ["Da Nang", "Hotels in Da Nang", "Da Nang hotels"],
+    answer: ["ListHotelDaNang"],
+  },
 ];
 
 export { ChatSupportCard, CancellationPolicy, ListHotel};

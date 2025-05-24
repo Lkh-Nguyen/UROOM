@@ -43,6 +43,7 @@ import { showToast, ToastProvider } from "../../../components/ToastContainer";
 import Pagination from "@components/Pagination";
 import MapComponent from "@pages/MapLocation";
 import AuthActions from "../../../redux/auth/actions";
+import { ChatBox } from "./HomePage";
 
 // Options for adults and children select
 const adultsOptions = Array.from({ length: 20 }, (_, i) => ({
@@ -767,7 +768,7 @@ const HotelSearchPage = () => {
                     const inforHotel = hotel.hotel;
                     return (
                       <Card key={hotel.id || index} className="mb-3 shadow-sm">
-                        <Row className="g-0" style={{ height: "350px" }}>
+                        <Row className="g-0" style={{ height: "360px" }}>
                           {/* Hotel Image */}
                           <Col md={4}>
                             <div className="position-relative">
@@ -812,7 +813,7 @@ const HotelSearchPage = () => {
                                 alt={hotel.name || "Unnamed Hotel"}
                                 className="img-fluid rounded-start hotel-image"
                                 style={{
-                                  height: "350px",
+                                  height: "360px",
                                   objectFit: "cover",
                                   userSelect: "none",
                                 }}
@@ -888,7 +889,6 @@ const HotelSearchPage = () => {
                                     {inforHotel.facilities &&
                                     inforHotel.facilities.length > 0 ? (
                                       inforHotel.facilities
-                                        .slice(0, 7)
                                         .map((feature, i) => {
                                           const matchedFeature =
                                             listFacilities.find(
@@ -1030,6 +1030,9 @@ const HotelSearchPage = () => {
             </Modal.Footer>
           </Modal>
         </Container>
+        <div>
+          <ChatBox/>
+        </div>
       </div>
       <Footer />
     </div>

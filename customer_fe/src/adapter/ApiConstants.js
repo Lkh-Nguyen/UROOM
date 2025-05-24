@@ -55,7 +55,12 @@ const ApiConstants = {
   ///REPORTFEEDBACK
   REPORT_FEEDBACK:"reportFeedback/create_report_feedback",
   FETCH_REPORTS_BY_USERID:"reportFeedback/my-reports",
-  DELETE_REPORTED_FEEDBACK:"reportFeedback/delete_report_feedback/:reportId"
+  DELETE_REPORTED_FEEDBACK:"reportFeedback/delete_report_feedback/:reportId",
+
+  //chat
+  FETCH_CHAT_MESSAGE: '/chat/chat-history/:receiverId',
+  FETCH_CHAT_ALL_USERS: '/chat/chat-users',
+
 };
 
 export default ApiConstants;

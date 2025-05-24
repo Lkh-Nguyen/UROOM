@@ -67,7 +67,7 @@ exports.createBooking = asyncHandler(async (req, res) => {
           dateMap.set(dateStr, currentBooked + booking.bookedQuantity);
 
           // Move to next day
-          currentDate.set
+          currentDate.set;
           Date(currentDate.getDate() + 1);
         }
       }
@@ -223,5 +223,46 @@ exports.acceptPayment = asyncHandler(async (req, res) => {
       error: true,
       message: "Failed to cancel reservation",
     });
+  }
+});
+
+// Lấy danh sách reservation theo filter
+exports.getReservations = asyncHandler(async (req, res) => {
+  try {
+    const { status, month, year, sort = "desc" } = req.query;
+    const userId = req.user._id;
+
+    // Filter reservations where the hotel's owner is the current user
+    const hotels = await mongoose
+      .model("Hotel")
+      .find({ owner: userId })
+      .select("_id");
+    const hotelIds = hotels.map((h) => h._id);
+
+    let filter = {};
+    filter.hotel = { $in: hotelIds };
+    if (status) filter.status = status;
+    if (month && year) {
+      // Lọc theo tháng và năm của createdAt
+      const start = new Date(year, month - 1, 1);
+      const end = new Date(year, month, 1);
+      filter.createdAt = { $gte: start, $lt: end };
+    } else if (year) {
+      // Lọc theo năm
+      const start = new Date(year, 0, 1);
+      const end = new Date(Number(year) + 1, 0, 1);
+      filter.createdAt = { $gte: start, $lt: end };
+    }
+    console.log("re filter: ", filter);
+    const reservations = await Reservation.find(filter)
+      .sort({ createdAt: sort === "asc" ? 1 : -1 })
+      .populate("hotel")
+      .populate("user")
+      .populate("rooms.room");
+    console.log("re: ", reservations);
+    res.json({ error: false, reservations });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: true, message: "Failed to get reservations" });
   }
 });

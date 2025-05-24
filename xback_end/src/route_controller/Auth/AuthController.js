@@ -12,7 +12,7 @@ exports.loginCustomer = async (req, res) => {
   console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
-  if (user.role == "CUSTOMER") {
+  if (user.role) {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
@@ -36,7 +36,7 @@ exports.loginOwner = async (req, res) => {
   console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
-  if (user.role == "OWNER") {
+  if (user.role && user.role == "OWNER") {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
@@ -58,7 +58,7 @@ exports.loginOwner = async (req, res) => {
 exports.updateCustomerProfile = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { name, phoneNumber, address, gender, birthDate, image } = req.body;
+    const { name, phoneNumber, address, gender, birthDate, image, cmnd } = req.body;
 
     const user = await User.findById(userId);
 
@@ -80,6 +80,7 @@ exports.updateCustomerProfile = async (req, res) => {
     user.address = address || user.address;
     user.gender = gender || user.gender;
     user.birthDate = birthDate || user.birthDate;
+    user.cmnd = cmnd || user.cmnd;
 
     if (image && image.public_ID && image.url) {
       user.image = image;

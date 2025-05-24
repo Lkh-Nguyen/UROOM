@@ -4,9 +4,12 @@ import "../../css/customer/Footer.css";
 import { useNavigate } from "react-router-dom";
 import * as Routers from "../../utils/Routes";
 import image from "../../images/image-removebg-preview.png";
+import { useAppSelector } from "@redux/store";
 
 function Footer() {
   const navigate = useNavigate();
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+
   return (
     <footer className="footer">
       <Container>
@@ -27,9 +30,14 @@ function Footer() {
             <div className="footer-links">
               <a href="#about_us">About Us</a>
               <a
-                // onClick={() => {
-                //   navigate(Routers.ChatPage);
-                // }}
+                href=""
+                onClick={() => {
+                  if (Auth._id != -1) {
+                    navigate(Routers.ChatPage);
+                  } else {
+                    navigate(Routers.LoginPage);
+                  }
+                }}
               >
                 Contact
               </a>

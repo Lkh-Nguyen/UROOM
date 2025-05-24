@@ -21,7 +21,7 @@ import {
 } from "@utils/handleToken";
 import SearchActions from "@redux/search/actions";
 
-function NavigationBar() {
+function NavigationBar({from}) {
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
@@ -79,7 +79,7 @@ function NavigationBar() {
             >
               Home
             </Nav.Link>
-            {/* <Nav.Link
+            <Nav.Link
               className="nav-link"
               onClick={() => {
                 if (Auth._id != -1) {
@@ -90,7 +90,7 @@ function NavigationBar() {
               }}
             >
               Message
-            </Nav.Link> */}
+            </Nav.Link>
             <Nav.Link
               className="nav-link"
               onClick={() => {
@@ -227,7 +227,13 @@ function NavigationBar() {
                   backgroundColor: "white",
                   color: "#2E9AED",
                 }}
-                onClick={() => navigate(Routers.LoginPage)}
+                onClick={() => {
+                  if(from === 'login'){
+                    navigate(Routers.LoginPage , { state: { from: "register" } })
+                  }else{
+                    navigate(Routers.LoginPage)
+                  }
+                }}
               >
                 Login
               </Button>

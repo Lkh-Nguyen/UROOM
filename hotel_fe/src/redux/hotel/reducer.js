@@ -1,6 +1,10 @@
 import HotelActions from "./actions";
 
 const initialState = {
+  hotel: null,
+  hotelDetail: null,
+  error: null,
+  top3Hotels: [],
   loading: false,
   data: null,
   error: null,
@@ -8,8 +12,30 @@ const initialState = {
 
 const favoriteHotelReducer = (state = initialState, action) => {
   switch (action.type) {
+    case HotelActions.FETCH_FAVORITE_HOTELS_SUCCESS:
+      return {
+        ...state,
+        hotels: action.payload,
+      };
     case HotelActions.FETCH_OWNER_HOTEL_SUCCESS:
       return { ...state, loading: false, data: action.payload };
+      console.log(action.payload.hotels);
+      return {
+        ...state,
+        hotel: action.payload.hotels[0],
+        data: action.payload,
+        loading: false,
+      };
+    case HotelActions.FETCH_All_HOTEL_SUCCESS:
+      return {
+        ...state,
+        hotels: action.payload,
+      };
+    case HotelActions.FETCH_TOP3_HOTEL_SUCCESS:
+      return {
+        ...state,
+        top3Hotels: action.payload,
+      };
     case HotelActions.UPDATE_HOTEL_SUCCESS:
       return {
         ...state,
@@ -43,6 +69,7 @@ const favoriteHotelReducer = (state = initialState, action) => {
             },
             error: null,
           };
+
     default:
       return state;
   }

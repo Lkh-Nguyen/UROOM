@@ -8,6 +8,7 @@ import {
   Image,
   Button,
   Spinner,
+  Form,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import {
@@ -36,6 +37,9 @@ import { useNavigate } from "react-router-dom";
 import * as FaIcons from "react-icons/fa";
 import * as MdIcons from "react-icons/md";
 import * as GiIcons from "react-icons/gi";
+import ConfirmationModal from "@components/ConfirmationModal";
+import Factories from "@redux/hotel/factories";
+
 function HotelManagement() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -46,10 +50,29 @@ function HotelManagement() {
   const [hotelinfo, setHotelinfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedHotelId, setSelectedHotelId] = useState(null);
-  console.log("idsfbcdvfn", formData._id);
+  const [showModalChangeStatus, setShowModalChangeStatus] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+
+  const handleToggle = async () => {
+    try {
+      const response = await Factories.changeStatusHotel(
+        hotelinfo[0]._id,
+        isActive
+      );
+      if (response?.status === 200) {
+        console.log("1")
+        setIsActive(!isActive);
+      }
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    } finally {
+    }
+  };
+
   useEffect(() => {
     fetchHotelInfo();
   }, []);
+
   const renderIcon = (iconName) => {
     const iconLibraries = {
       ...FaIcons,
@@ -70,9 +93,11 @@ function HotelManagement() {
         userId: formData._id,
         onSuccess: (data) => {
           setHotelinfo(data.hotels);
+          setIsActive(data.hotels[0].ownerStatus === "ACTIVE" ? true : false);
           console.log("acsahjsikxx", data.hotels);
           setLoading(false);
         },
+
         onFailed: () => {
           showToast.error("Lấy thông tin khách sạn thất bại");
           setLoading(false);
@@ -113,6 +138,7 @@ function HotelManagement() {
       <div style={styles.header}>
         {/* <h1>{hotelinfo[0]._id}</h1> */}
         <h1 style={styles.title}>Thông tin khách sạn</h1>
+
         <Button
           style={styles.addButton}
           onClick={() => {
@@ -123,11 +149,43 @@ function HotelManagement() {
           + Chỉnh sửa khách sạn
         </Button>
       </div>
-
+      <ConfirmationModal
+        show={showModalChangeStatus}
+        onHide={() => setShowModalChangeStatus(false)}
+        onConfirm={handleToggle}
+        title={
+          isActive ? "Tạm ngừng nhận đặt phòng" : "Cho phép nhận đặt phòng"
+        }
+        message={
+          isActive
+            ? "Nếu bạn ngừng nhận đặt phòng, thì khách sạn sẽ không được hiện trên web, nhưng các phòng đã đặt sẽ vẫn tiếp tục diễn ra"
+            : "Nếu bạn mở nhận đặt phòng, thì khách sạn sẽ được hiện trên web và có thể đặt được phòng từ lúc mở nhận đặt phòng"
+        }
+        confirmButtonText="Xác nhận"
+        cancelButtonText="Hủy bỏ"
+        type={isActive ? "danger" : "warning"}
+      />
       <Card className="border-0 shadow">
         <Card.Body className="p-4">
           <div className="hotel-header mb-4">
-            <h1 className="hotel-name">{hotelinfo[0]?.hotelName}</h1>
+            <div className="d-flex" style={{ alignItems: "center" }}>
+              <h1 className="hotel-name">{hotelinfo[0]?.hotelName}</h1>
+              <Form>
+                <Form.Check
+                  title="Trạng thái khách sạn"
+                  type="switch"
+                  id="custom-switch"
+                  checked={isActive}
+                  onChange={() => {
+                    setShowModalChangeStatus(true);
+                  }}
+                  style={{
+                    transform: "scale(2)",
+                    marginLeft: "50px",
+                  }}
+                />
+              </Form>
+            </div>
             <div className="d-flex align-items-center mb-2">
               <div className="stars me-2">{renderStars(hotelinfo[0].star)}</div>
               <Badge bg="warning" text="dark" className="star-badge">
@@ -176,6 +234,38 @@ function HotelManagement() {
                     }
                   />
                 ))}
+              </div>
+
+              <div className="hotel-description mb-4">
+                <h3 className="section-title">Mô tả về khách sạn</h3>
+                {hotelinfo[0].description ? (
+                  hotelinfo[0].description
+                    .split("\n")
+                    .map((para, index) => <p key={index}>{para}</p>)
+                ) : (
+                  <p>No description.</p>
+                )}
+              </div>
+
+              <div className="hotel-description mb-4">
+                <h3 className="section-title">Liên lạc của khách sạn</h3>
+                <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
+              </div>
+
+              <div className="hotel-amenities mb-4">
+                <h3 className="section-title">Tiện nghi khách sạn</h3>
+                <Row>
+                  {hotelinfo[0].facilities?.map((facility, index) => (
+                    <Col key={index} xs={6} md={4} lg={3} className="mb-3">
+                      <div className="amenity-item d-flex align-items-center gap-2">
+                        {renderIcon(facility.icon)}
+                        <span style={{ marginLeft: "5px" }}>
+                          {facility.name}
+                        </span>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
               </div>
             </Col>
 
