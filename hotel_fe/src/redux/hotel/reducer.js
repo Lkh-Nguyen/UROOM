@@ -7,6 +7,7 @@ const initialState = {
   top3Hotels: [],
   loading: false,
   data: null,
+  error: null,
 };
 
 const favoriteHotelReducer = (state = initialState, action) => {
@@ -17,6 +18,7 @@ const favoriteHotelReducer = (state = initialState, action) => {
         hotels: action.payload,
       };
     case HotelActions.FETCH_OWNER_HOTEL_SUCCESS:
+      return { ...state, loading: false, data: action.payload };
       console.log(action.payload.hotels);
       return {
         ...state,
@@ -43,6 +45,30 @@ const favoriteHotelReducer = (state = initialState, action) => {
           ...action.payload,
         },
       };
+      case HotelActions.UPDATE_HOTEL_SERVICE_STATUS_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          data: {
+            ...state.data,
+            services: state.data.services.map((service) =>
+              service._id === action.payload._id
+                ? { ...service, statusActive: action.payload.statusActive }
+                : service
+            ),
+          },
+        };
+        case HotelActions.CREATE_HOTEL_SERVICE_SUCCESS:
+          return {
+            ...state,
+            loading: false,
+            data: {
+              ...state.data,
+           
+              services: [...(state.data?.services || []), action.payload],
+            },
+            error: null,
+          };
 
     default:
       return state;

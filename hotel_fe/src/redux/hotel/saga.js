@@ -173,6 +173,73 @@ function* updateHotel() {
     }
   });
 }
+function* updateHotelServiceStatus() {
+  yield takeEvery(HotelActions.UPDATE_HOTEL_SERVICE_STATUS, function* (action) {
+    const { hotelId, statusActive, serviceId, onSuccess, onFailed, onError } = action.payload || {};
+
+    if (!hotelId || !serviceId) {
+      onFailed?.("Hotel ID và Service ID không được để trống");
+      return;
+    }
+
+    // Chuẩn bị dữ liệu gửi lên API
+    const updateData = { statusActive };
+
+    try {
+      const response = yield call(() =>
+        Factories.updateHotelServiceStatus(hotelId, updateData, serviceId)
+      );
+      if (response?.status === 200) {
+        onSuccess?.(response.data.service);
+      } else {
+        onFailed?.(response?.data?.message || "Cập nhật trạng thái dịch vụ thất bại");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Có lỗi xảy ra khi cập nhật trạng thái dịch vụ";
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+function* createHotelService() {
+  yield takeEvery(HotelActions.CREATE_HOTEL_SERVICE, function* (action) {
+    const { serviceData, onSuccess, onFailed, onError } = action.payload || {};
+
+    if (!serviceData?.hotelId) {
+      onFailed?.("Thiếu hotelId trong dữ liệu dịch vụ");
+      return;
+    }
+
+    try {
+      const response = yield call(() => Factories.createHotelService(serviceData));
+
+      if (response?.status === 201) {
+        yield put({
+          type: HotelActions.CREATE_HOTEL_SERVICE_SUCCESS,
+          payload: response.data.service,
+        });
+        onSuccess?.(response.data.service);
+      } else {
+        onFailed?.(response?.data?.message || "Tạo dịch vụ thất bại");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Có lỗi xảy ra khi tạo dịch vụ";
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
+
 
 export default function* userSaga() {
   yield all([
@@ -181,5 +248,11 @@ export default function* userSaga() {
     fork(getTop3Hotels),
     fork(getOwnerHotel),
     fork(updateHotel),
+<<<<<<< HEAD
+    fork(updateHotelServiceStatus),
+    fork(createHotelService),
+   
+=======
+>>>>>>> 607ba21aec6ce507c6c7f0675bc919ddf1d66542
   ]);
 }

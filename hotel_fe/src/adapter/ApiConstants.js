@@ -10,6 +10,9 @@ const ApiConstants = {
   //HOTEL
   FETCH_OWNER_HOTEL: "/hotel/owner-hotels",
   UPDATE_HOTEL: "/hotel/update-hotel",
+  CREATE_HOTEL_SERVICE: "/hotel/add-service",
+  UPDATE_HOTEL_SERVICE: "/hotelservices/update-service",
+  UPDATE_HOTEL_SERVICE_STATUS: "/hotel/updateStatusService/:hotelId/status",
   CHANGE_STATUS_HOTEL: "/hotel/changeStatus-hotel",
   //RESERVATION
   RESERVATIONS: "/payment/reservations",

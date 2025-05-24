@@ -97,4 +97,6 @@ const hotelSchema = new Schema(
 
 
 
+
+
 module.exports = mongoose.model("Hotel", hotelSchema);
