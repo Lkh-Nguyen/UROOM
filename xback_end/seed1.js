@@ -35,7 +35,7 @@ async function seedUsers() {
         cmnd: "047003012301",
         image: {
           public_ID: "avatar_owner1",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/6c/88/6a/6c886a58955b62b80b29d29a69432904.jpg",
         },
       },
       {
@@ -50,7 +50,7 @@ async function seedUsers() {
         cmnd: "047003012302",
         image: {
           public_ID: "avatar_owner2",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/4b/72/21/4b722154dc3f319b1f8e9ac7c0a48d4f.jpg",
         },
       },
       {
@@ -65,7 +65,7 @@ async function seedUsers() {
         cmnd: "047003012303",
         image: {
           public_ID: "avatar_owner3",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/7f/eb/63/7feb63a3026ec37bfc7d1d8ffe3dc873.jpg",
         },
       },
       {
@@ -80,7 +80,7 @@ async function seedUsers() {
         cmnd: "047003012304",
         image: {
           public_ID: "avatar_owner4",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/ba/07/4b/ba074bf20e916723432ce1bb3df949ec.jpg",
         },
       },
       {
@@ -95,7 +95,7 @@ async function seedUsers() {
         cmnd: "047003012305",
         image: {
           public_ID: "avatar_owner5",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/ba/07/4b/ba074bf20e916723432ce1bb3df949ec.jpg",
         },
       },
       {
@@ -110,7 +110,7 @@ async function seedUsers() {
         cmnd: "047003012306",
         image: {
           public_ID: "avatar_owner6",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/e2/a8/ba/e2a8baa8d5a171e4c80725801b648e81.jpg",
         },
       },
       {
@@ -125,7 +125,7 @@ async function seedUsers() {
         cmnd: "047003012307",
         image: {
           public_ID: "avatar_owner7",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/29/44/39/294439b399dd8f9905d7dc04c5c58ce2.jpg",
         },
       },
       {
@@ -140,7 +140,7 @@ async function seedUsers() {
         cmnd: "047003012308",
         image: {
           public_ID: "avatar_owner8",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/11/49/fb/1149fb05369b91e4cb07fc85cc67426e.jpg",
         },
       },
       {
@@ -155,7 +155,7 @@ async function seedUsers() {
         cmnd: "047003012309",
         image: {
           public_ID: "avatar_owner9",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/1a/13/f9/1a13f9cc5a076c71449e2ffd7dcbfd94.jpg",
         },
       },
       {
@@ -170,7 +170,7 @@ async function seedUsers() {
         cmnd: "047003012310",
         image: {
           public_ID: "avatar_owner10",
-          url: "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg",
+          url: "https://i.pinimg.com/736x/0b/ec/aa/0becaa9013e485340fc15704e8ea7bd5.jpg",
         },
       },
 

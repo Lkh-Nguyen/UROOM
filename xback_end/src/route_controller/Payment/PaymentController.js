@@ -257,6 +257,7 @@ exports.getReservations = asyncHandler(async (req, res) => {
     const reservations = await Reservation.find(filter)
       .sort({ createdAt: sort === "asc" ? 1 : -1 })
       .populate("hotel")
+      .populate("user")
       .populate("rooms.room");
     console.log("re: ", reservations);
     res.json({ error: false, reservations });

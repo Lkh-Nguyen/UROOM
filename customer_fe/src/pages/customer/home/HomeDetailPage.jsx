@@ -724,7 +724,14 @@ export default function HotelDetailPage() {
             }}
             variant="outline-light"
             onClick={() => {
-              navigate(Routers.ChatPage);
+              navigate(Routers.ChatPage, {
+                state: {
+                  receiver: {
+                    ...hotelDetail.owner,
+                    ownedHotels: [{ hotelName: hotelDetail.hotelName }],
+                  },
+                },
+              });
             }}
           >
             Contact with hotel
@@ -1309,9 +1316,9 @@ export default function HotelDetailPage() {
                     );
                     setShowModal(true);
                   } else {
-                    console.log("hotelDetail: ", hotelDetail)
+                    console.log("hotelDetail: ", hotelDetail);
                     if (hotelDetail.ownerStatus != "ACTIVE") {
-                      setShowModalStatusBooking(true)
+                      setShowModalStatusBooking(true);
                     } else {
                       if (Auth._id != -1) {
                         dispatch({
@@ -1361,7 +1368,12 @@ export default function HotelDetailPage() {
               }}
               message={errorMessage}
             />
-            <HotelClosedModal show={showModalStatusBooking} onClose={() => {setShowModalStatusBooking(false)}} />
+            <HotelClosedModal
+              show={showModalStatusBooking}
+              onClose={() => {
+                setShowModalStatusBooking(false);
+              }}
+            />
           </>
         )}
       </Container>
@@ -1909,7 +1921,7 @@ export default function HotelDetailPage() {
           )}
         </Container>
         <div>
-          <ChatBox/>
+          <ChatBox />
         </div>
       </div>
       <Footer />

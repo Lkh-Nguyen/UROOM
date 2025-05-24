@@ -1,3 +1,4 @@
+const { Server } = require('socket.io');
 const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
@@ -11,17 +12,33 @@ const FeedbackRouter = require("./src/route_controller/Feedback/FeedbackRoute");
 const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
 const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/ReportedFeedbackRoute");
+const ChatRoutes = require('./src/route_controller/ChatMessage/ChatMessageRoute');
 
-const cron = require("node-cron");
+const cron = require("node-cron");  
 require("./src/route_controller/Reservations/ReservationsController"); 
 const ReservationRouter = require("./src/route_controller/Reservations/ReservationsRouter");
 const RefundingReservationRouter = require("./src/route_controller/RefundingReservation/RefundingReservationRoute");
-
+const socketHandler = require('./src/route_controller/Socket/socketHandler');
 
 const port = process.env.PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
+
+
+//from cors
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  credentials: true
+}));
+
+//Socket
+const io = new Server(server, {
+  cors: {
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    credentials: true
+  }
+});
 
 // Kết nối DB
 connectToDB();
@@ -31,8 +48,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
-//from cors
-app.use(cors());
 
 // Routes
 app.use("/api/auth", authRoute);
@@ -50,6 +65,18 @@ app.use("/api/payment", PaymentRouter);
 app.use("/api/reportFeedback", ReportedFeedbackRoute);
 
 app.use("/api/refunding_reservation", RefundingReservationRouter);
+
+app.use('/api/chat', ChatRoutes);
+
+const users = {}; // lưu trữ userId -> socketId
+
+//socket.io
+io.on('connection', (socket) => {
+  socketHandler(io, socket, users);
+});
+
+
+
 //from errorHandle
 app.use(errorHandler);
 

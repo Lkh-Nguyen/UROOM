@@ -12,7 +12,7 @@ exports.loginCustomer = async (req, res) => {
   console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
-  if (user.role == "CUSTOMER") {
+  if (user.role) {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
