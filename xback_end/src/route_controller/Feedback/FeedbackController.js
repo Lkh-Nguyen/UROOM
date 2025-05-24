@@ -29,6 +29,8 @@ exports.calculateAvgRatingHotel = async (hotelId) => {
 
 exports.getAllFeedBackByHotelId = asyncHandler(async (req, res) => {
   const { hotelId } = req.params;
+  console.log("hotelId: ", hotelId);
+  
   const { page = 1, limit = 3, sort = 1, star = 0 } = req.query;
 
   if (!hotelId) {

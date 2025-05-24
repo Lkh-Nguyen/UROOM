@@ -53,8 +53,8 @@ module.exports = function (io, socket, users) {
     const receiverSocket = users[receiverId];
     if (receiverSocket) {
       io.to(receiverSocket).emit("receive-markAsRead", {
-        senderId,
-        receiverId,
+        senderId: senderId,
+        receiverId: receiverId,
       });
     }
   });

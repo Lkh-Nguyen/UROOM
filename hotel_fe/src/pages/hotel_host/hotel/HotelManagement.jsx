@@ -60,7 +60,7 @@ function HotelManagement() {
         isActive
       );
       if (response?.status === 200) {
-        console.log("1")
+        console.log("1");
         setIsActive(!isActive);
       }
     } catch (error) {
@@ -235,38 +235,6 @@ function HotelManagement() {
                   />
                 ))}
               </div>
-
-              <div className="hotel-description mb-4">
-                <h3 className="section-title">Mô tả về khách sạn</h3>
-                {hotelinfo[0].description ? (
-                  hotelinfo[0].description
-                    .split("\n")
-                    .map((para, index) => <p key={index}>{para}</p>)
-                ) : (
-                  <p>No description.</p>
-                )}
-              </div>
-
-              <div className="hotel-description mb-4">
-                <h3 className="section-title">Liên lạc của khách sạn</h3>
-                <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
-              </div>
-
-              <div className="hotel-amenities mb-4">
-                <h3 className="section-title">Tiện nghi khách sạn</h3>
-                <Row>
-                  {hotelinfo[0].facilities?.map((facility, index) => (
-                    <Col key={index} xs={6} md={4} lg={3} className="mb-3">
-                      <div className="amenity-item d-flex align-items-center gap-2">
-                        {renderIcon(facility.icon)}
-                        <span style={{ marginLeft: "5px" }}>
-                          {facility.name}
-                        </span>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
             </Col>
 
             <Col xs={12} sm={12} md={6} lg={6}>
@@ -301,15 +269,30 @@ function HotelManagement() {
                       {hotelinfo[0].checkOutEnd}
                     </div>
                   </div>
-                  
                 </Card.Body>
               </Card>
               <div className="hotel-description mb-4 mt-3">
-                <h3 className="section-title" style={{ fontSize:"20px"}}>Mô tả</h3>
-                <p>{hotelinfo[0].description}</p>
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Mô tả về khách sạn
+                </h2>
+                {hotelinfo[0].description ? (
+                  hotelinfo[0].description
+                    .split("\n")
+                    .map((para, index) => <p key={index}>{para}</p>)
+                ) : (
+                  <p>No description.</p>
+                )}
+              </div>
+              <div className="hotel-description mb-4">
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Liên lạc của khách sạn
+                </h2>
+                <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
               </div>
               <div className="hotel-amenities mb-4 mt-3">
-                <h2 className="section-title mb-3" style={{ fontSize:"20px"}}>Tiện nghi khách sạn</h2>
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Tiện nghi khách sạn
+                </h2>
                 <Row>
                   {hotelinfo[0].facilities?.map((facility, index) => (
                     <Col key={index} xs={6} md={4} lg={3} className="mb-3">
@@ -371,6 +354,5 @@ const styles = {
     border: "2px solid #007bff",
   },
 };
-
 
 export default HotelManagement;

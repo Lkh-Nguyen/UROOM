@@ -870,20 +870,24 @@ export default function HotelDetailPage() {
                   }}
                 >
                   {hotelDetail.services?.length > 0 ? (
-                    hotelDetail.services.map((service, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          width: "100%",
-                          marginBottom: "8px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handleServiceClickService(service)}
-                      >
-                        {service.name} - {Utils.formatCurrency(service.price)}/
-                        {service.type}
-                      </li>
-                    ))
+                    hotelDetail.services.map((service, index) => {
+                      if (service.statusActive === "ACTIVE") {
+                        return (
+                          <li
+                            key={index}
+                            style={{
+                              width: "100%",
+                              marginBottom: "8px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleServiceClickService(service)}
+                          >
+                            {service.name} -{" "}
+                            {Utils.formatCurrency(service.price)}/{service.type}
+                          </li>
+                        );
+                      }
+                    })
                   ) : (
                     <li style={{ width: "100%" }}>No highlights.</li>
                   )}

@@ -52,7 +52,6 @@ function App() {
     return searchParams.get("tab") || "dashboard"
   })
   const Auth = useAppSelector((state) => state.Auth.Auth)
-  console.log("Auth: ", Auth)
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
 

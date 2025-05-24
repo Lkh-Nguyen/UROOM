@@ -31,9 +31,9 @@ function CustomerChat() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [userMessages, setUserMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isReadLast, setIsReadLast] = useState(false);
   // Ref cho container tin nhắn để scroll xuống cuối
   const messagesEndRef = useRef(null);
-  console.log("ngoài selectedUser: ", selectedUser);
 
   const fetchAllUser = () => {
     dispatch({
@@ -44,8 +44,7 @@ function CustomerChat() {
           setSelectedUser((prevSelectedUser) => {
             if (!prevSelectedUser && users.length >= 1) {
               return users[0];
-            }
-            else if(prevSelectedUser._id === users[0]._id){
+            } else if (prevSelectedUser?._id === users[0]?._id) {
               return users[0];
             }
             return prevSelectedUser;
@@ -64,7 +63,8 @@ function CustomerChat() {
         payload: {
           receiverId: selectedUser?._id,
           onSuccess: (messages) => {
-              setUserMessages(messages);
+            setUserMessages(messages);
+            setIsReadLast(messages[messages.length - 1].isRead);
           },
           onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
           onError: (err) => console.error("Server error:", err),
@@ -112,12 +112,20 @@ function CustomerChat() {
     });
 
     Socket.on("receive-markAsRead", (msg) => {
-      console.log("ABC")
-      console.log("msg: ", msg)
-      console.log("sdsds: ", selectUser);
+      console.log("selectedUser: ", selectedUser)
+      if (selectedUser._id == msg.senderId) {
+        console.log("abc123");
+        setUserMessages((prevMessages) => {
+          if (prevMessages.length === 0) return prevMessages;
 
-      if(selectedUser._id == msg.senderId){
-        console.log("A1")
+          const updatedMessages = [...prevMessages];
+          updatedMessages[updatedMessages.length - 1] = {
+            ...updatedMessages[updatedMessages.length - 1],
+            isRead: true,
+          };
+
+          return updatedMessages;
+        });
       }
     });
 
@@ -125,28 +133,28 @@ function CustomerChat() {
       Socket.off("receive-message");
       Socket.off("receive-markAsRead");
     };
-
   }, [Socket, Auth, selectedUser]);
 
   // Mark messages as read when viewing conversation
-  useEffect(() => {
-    if (selectedUser?._id && Socket && Auth?._id) {
-      Socket.emit("markAsRead", {
-        senderId: selectedUser._id,
-        receiverId: Auth._id,
-      });
+  // useEffect(() => {
+  //   if (selectedUser?._id && Socket && Auth?._id) {
+  //     Socket.emit("markAsRead", {
+  //       senderId: selectedUser._id,
+  //       receiverId: Auth._id,
+  //     });
 
-      // Update read status in users list
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id === selectedUser._id
-            ? { ...user, lastMessageIsRead: true }
-            : user
-        )
-      );
-    }
-  }, [userMessages, Socket, Auth]);
+  //     // Update read status in users list
+  //     setUsers((prevUsers) =>
+  //       prevUsers.map((user) =>
+  //         user._id === selectedUser._id
+  //           ? { ...user, lastMessageIsRead: true }
+  //           : user
+  //       )
+  //     );
+  //   }
+  // }, [userMessages, Socket, Auth]);
 
+  console.log("isReadLast: ", isReadLast);
   // Gửi tin nhắn
   const sendMessage = (e) => {
     e.preventDefault();
@@ -242,7 +250,7 @@ function CustomerChat() {
                       : {}),
                   }}
                   onClick={() => {
-                    selectUser(user)
+                    selectUser(user);
                   }}
                 >
                   <div style={styles.hotelAvatar}>
@@ -425,19 +433,28 @@ function CustomerChat() {
                   </div>
 
                   {/* Message status (only for the last message from current user) */}
-                  {index === userMessages.length - 1 && message.senderId == Auth._id && (
-                    <div style={styles.messageStatus}>
-                      {message.isRead ? (
-                        <>
-                          Đã xem <i className="bi bi-check-all" style={styles.messageStatusIcon}></i>
-                        </>
-                      ) : (
-                        <>
-                          Đã gửi <i className="bi bi-check" style={styles.messageStatusIcon}></i>
-                        </>
-                      )}
-                    </div>
-                  )}
+                  {index === userMessages.length - 1 &&
+                    message.senderId == Auth._id && (
+                      <div style={styles.messageStatus}>
+                        {message.isRead ? (
+                          <>
+                            Đã xem{" "}
+                            <i
+                              className="bi bi-check-all"
+                              style={styles.messageStatusIcon}
+                            ></i>
+                          </>
+                        ) : (
+                          <>
+                            Đã gửi{" "}
+                            <i
+                              className="bi bi-check"
+                              style={styles.messageStatusIcon}
+                            ></i>
+                          </>
+                        )}
+                      </div>
+                    )}
                 </>
               );
             })
@@ -463,13 +480,14 @@ function CustomerChat() {
                 placeholder="Nhập tin nhắn..."
                 value={newMessage}
                 onChange={(e) => {
-                  if(selectedUser){
+                  if (selectedUser) {
+                    console.log("ABC123");
                     Socket.emit("markAsRead", {
-                      senderId: selectedUser._id,
-                      receiverId: Auth._id,
+                    senderId: selectedUser._id,
+                    receiverId: Auth._id,
                     });
                   }
-                  setNewMessage(e.target.value)
+                  setNewMessage(e.target.value);
                 }}
                 rows="1"
               ></textarea>

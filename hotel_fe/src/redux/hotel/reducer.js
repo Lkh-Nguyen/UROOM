@@ -18,8 +18,6 @@ const favoriteHotelReducer = (state = initialState, action) => {
         hotels: action.payload,
       };
     case HotelActions.FETCH_OWNER_HOTEL_SUCCESS:
-      return { ...state, loading: false, data: action.payload };
-      console.log(action.payload.hotels);
       return {
         ...state,
         hotel: action.payload.hotels[0],

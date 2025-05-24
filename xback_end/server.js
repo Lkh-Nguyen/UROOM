@@ -15,8 +15,6 @@ const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/R
 const HotelServiceRoute = require("./src/route_controller/Hotelservices/HotelservicesRoute");
 const cron = require("node-cron");
 const ChatRoutes = require('./src/route_controller/ChatMessage/ChatMessageRoute');
-
-const cron = require("node-cron");  
 require("./src/route_controller/Reservations/ReservationsController"); 
 const ReservationRouter = require("./src/route_controller/Reservations/ReservationsRouter");
 const RefundingReservationRouter = require("./src/route_controller/RefundingReservation/RefundingReservationRoute");
