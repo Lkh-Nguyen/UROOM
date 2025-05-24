@@ -79,7 +79,7 @@ function NavigationBar({from}) {
             >
               Home
             </Nav.Link>
-            {/* <Nav.Link
+            <Nav.Link
               className="nav-link"
               onClick={() => {
                 if (Auth._id != -1) {
@@ -90,7 +90,7 @@ function NavigationBar({from}) {
               }}
             >
               Message
-            </Nav.Link> */}
+            </Nav.Link>
             <Nav.Link
               className="nav-link"
               onClick={() => {

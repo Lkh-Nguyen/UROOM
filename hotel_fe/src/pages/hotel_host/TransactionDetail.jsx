@@ -14,10 +14,12 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 // import Banner from "../../images/banner.jpg";
 import "../../css/hotelHost/BookingBill.css";
 import { useParams } from "react-router-dom";
+import Utils from "@utils/Utils";
+import { useAppSelector } from "@redux/store";
 
-const TransactionDetail = ({ show, handleClose }) => {
-  const { id } = useParams(); // Lấy id từ URL
-  console.log("id: ", id);
+const TransactionDetail = ({detailReservation, show, handleClose }) => {
+
+  const Auth = useAppSelector((state) => state.Auth.Auth)
   // Star rating component
   const StarRating = ({ rating }) => {
     return (
@@ -32,9 +34,18 @@ const TransactionDetail = ({ show, handleClose }) => {
       </div>
     );
   };
-
+    // Calculate total price from rooms
+  const calculateTotalPrice = (rooms) => {
+    if (!rooms || !Array.isArray(rooms)) return 0;
+    return rooms.reduce((total, roomItem) => {
+      const roomPrice = roomItem.room?.price || 0;
+      const quantity = roomItem.quantity || 1;
+      return total + roomPrice * quantity;
+    }, 0);
+  };
+  console.log("detailReservation: ", detailReservation)
   return (
-    <Modal show={show} onHide={handleClose} size="xl">
+    <Modal show={show} onHide={handleClose} size="xl" style={{marginTop: "130px"}}>
       <div className="p-3">
         <Container fluid className="booking-bill-container">
           <Modal.Header>
@@ -61,23 +72,23 @@ const TransactionDetail = ({ show, handleClose }) => {
               <div className="hotel-details">
                 <h5 className="hotel-name-title">Hotel Name</h5>
                 <p className="hotel-full-name">
-                  Novotel Hotel Da Nang - Capital Pay
+                  {detailReservation?.hotel?.hotelName}
                 </p>
 
                 <div className="check-dates-container">
                   <div className="check-date-box">
                     <p className="date-label">Checkin Dates</p>
-                    <p className="date-value">12/03/2024</p>
+                    <p className="date-value">{Utils.getDate(detailReservation?.checkInDate, 1)}</p>
                   </div>
 
                   <div className="star-rating-container">
                     <p className="star-hotel-text">Star Hotel</p>
-                    <StarRating rating={4} />
+                    <StarRating rating={detailReservation?.hotel?.star ?? 0} />
                   </div>
 
                   <div className="check-date-box">
                     <p className="date-label">Checkout Dates</p>
-                    <p className="date-value">15/03/2024</p>
+                    <p className="date-value">{Utils.getDate(detailReservation?.checkOutDate, 1)}</p>
                   </div>
                 </div>
               </div>
@@ -93,7 +104,7 @@ const TransactionDetail = ({ show, handleClose }) => {
                 </h2>
                 <div className="booking-bill-header">
                   <h4>Booking Bill</h4>
-                  <p className="date-created">Date created: 20/02/2023</p>
+                  <p className="date-created">Date created: {Utils.getDate(detailReservation?.createdAt, 1)}</p>
                 </div>
               </div>
 
@@ -105,7 +116,7 @@ const TransactionDetail = ({ show, handleClose }) => {
                     Name Customer:
                   </Col>
                   <Col md={8} className="info-value">
-                    Le Kim Hoang Nguyen
+                    {detailReservation?.user?.name}
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -113,7 +124,7 @@ const TransactionDetail = ({ show, handleClose }) => {
                     Contact Customer:
                   </Col>
                   <Col md={8} className="info-value">
-                    +84 934 726 073
+                    {detailReservation?.user?.phoneNumber}
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -121,7 +132,7 @@ const TransactionDetail = ({ show, handleClose }) => {
                     Email Customer:
                   </Col>
                   <Col md={8} className="info-value">
-                    lkhnguyven1305@gmail.com
+                    {detailReservation?.user?.email}
                   </Col>
                 </Row>
               </div>
@@ -134,7 +145,7 @@ const TransactionDetail = ({ show, handleClose }) => {
                     Contact Hotel:
                   </Col>
                   <Col md={8} className="info-value">
-                    +84 905 123 456
+                    {detailReservation?.hotel?.phoneNumber}
                   </Col>
                 </Row>
                 <Row className="mb-2">
@@ -142,43 +153,59 @@ const TransactionDetail = ({ show, handleClose }) => {
                     Email Hotel:
                   </Col>
                   <Col md={8} className="info-value">
-                    novoteldalang@email.com
+                    {Auth.email}
                   </Col>
                 </Row>
               </div>
 
               {/* Booking Information */}
               <div className="info-section">
-                <h5 className="section-title">III. INFORMATIN BOOKING</h5>
-                <Table bordered className="booking-table">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>Room Name</th>
-                      <th>Quantity</th>
-                      <th>Price</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Standard Room</td>
-                      <td>2</td>
-                      <td>650,000 VND</td>
-                    </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>Deluxe Name</td>
-                      <td>1</td>
-                      <td>150,000 VND</td>
-                    </tr>
-                    <tr className="total-row">
-                      <td colSpan={2}>Total Price</td>
-                      <td colSpan={2}>800,000 VND</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
+                    <Row className="mb-2">
+                      <Col md={12} className="info-label">
+                      <h5>III. BOOKING INFORMATION</h5>
+                      </Col>
+                    </Row>
+                    <Table bordered className="booking-table">
+                      <thead>
+                        <tr>
+                          <th>STT</th>
+                          <th>Room name</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {detailReservation.rooms &&
+                        Array.isArray(detailReservation?.rooms) ? (
+                          detailReservation.rooms.map((roomItem, index) => (
+                            <tr key={index}>
+                              <td>{index + 1}</td>
+                              <td>{roomItem.room?.name || "Phòng"}</td>
+                              <td>{roomItem.quantity || 1}</td>
+                              <td>
+                                {Utils.formatCurrency(roomItem.room?.price * roomItem.quantity || 0)}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="text-center">
+                              No room information available
+                            </td>
+                          </tr>
+                        )}
+                        <tr className="total-row">
+                          <td colSpan={2}>Total amount</td>
+                          <td colSpan={2}>
+                            {Utils.formatCurrency(
+                              detailReservation.totalAmount ||
+                                calculateTotalPrice(detailReservation.rooms)
+                            )}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </div>
 
               {/* Customer Signature */}
               <div className="info-section">
@@ -189,15 +216,6 @@ const TransactionDetail = ({ show, handleClose }) => {
                   label="Agree the Terms & Privacy of hotels and web"
                   className="terms-checkbox"
                 />
-                <div className="export-button-container">
-                  <Button
-                    variant="info"
-                    className="export-button"
-                    style={{ color: "white", borderRadius: 10 }}
-                  >
-                    Export File
-                  </Button>
-                </div>
               </div>
             </Col>
           </Row>

@@ -22,12 +22,13 @@ const expireConfig = {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['Auth', 'Search', 'hotel', 'Room', 'ChatBox'], // auth vĩnh viễn, booking sẽ expire
+  whitelist: ['Auth', 'Search', 'hotel', 'Room', 'ChatBox', 'Socket'], // auth vĩnh viễn, booking sẽ expire
   transforms: [
     expireReducer('Search', expireConfig),
     expireReducer('hotel', expireConfig),
     expireReducer('Room', expireConfig),
     expireReducer('ChatBox', expireConfig),
+    expireReducer('Socket', expireConfig),
   ],
 };
 
