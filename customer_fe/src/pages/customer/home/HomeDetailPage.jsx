@@ -5,6 +5,7 @@ import {
   useSearchParams,
   Route,
 } from "react-router-dom";
+import MapComponent from "@pages/MapLocation";
 import {
   Container,
   Row,
@@ -122,7 +123,8 @@ export default function HotelDetailPage() {
   const [averageRating, setAverageRating] = useState(0);
   const [ratingBreakdown, setRatingBreakdown] = useState({});
   const [totalPages, setTotalPages] = useState();
-
+  const [showModalMap, setShowModalMap] = useState(false);
+  const [addressMap, setAddressMap] = useState("");
   const [searchParamsTemp] = useSearchParams();
   const sortTemp = searchParamsTemp.get("sort");
   const starTemp = searchParamsTemp.get("star");
@@ -830,8 +832,21 @@ export default function HotelDetailPage() {
                 ) : (
                   <p>No description.</p>
                 )}
-                <h3 style={{ fontWeight: "bold" }}>Address Hotel</h3>
+                <h3 style={{ fontWeight: "bold" }}>
+                  Address Hotel{" - "}
+                  <a
+                    onClick={() => {
+                      setAddressMap(hotelDetail.address);
+                      setShowModalMap(true);
+                    }}
+                    className="text-primary"
+                    style={{ cursor: "pointer", fontSize: "14px", fontWeight: '500'}}
+                  >
+                    Show on map
+                  </a>
+                </h3>
                 <p>{hotelDetail.address}</p>
+
                 <Row style={{ marginTop: "-40px" }}>
                   <Col md={6}>
                     <h3 style={{ fontWeight: "bold" }}>Check-in Time </h3>
@@ -870,20 +885,24 @@ export default function HotelDetailPage() {
                   }}
                 >
                   {hotelDetail.services?.length > 0 ? (
-                    hotelDetail.services.map((service, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          width: "100%",
-                          marginBottom: "8px",
-                          cursor: "pointer",
-                        }}
-                        onClick={() => handleServiceClickService(service)}
-                      >
-                        {service.name} - {Utils.formatCurrency(service.price)}/
-                        {service.type}
-                      </li>
-                    ))
+                    hotelDetail.services.map((service, index) => {
+                      if (service.statusActive === "ACTIVE") {
+                        return (
+                          <li
+                            key={index}
+                            style={{
+                              width: "100%",
+                              marginBottom: "8px",
+                              cursor: "pointer",
+                            }}
+                            onClick={() => handleServiceClickService(service)}
+                          >
+                            {service.name} -{" "}
+                            {Utils.formatCurrency(service.price)}/{service.type}
+                          </li>
+                        );
+                      }
+                    })
                   ) : (
                     <li style={{ width: "100%" }}>No highlights.</li>
                   )}
@@ -1378,7 +1397,33 @@ export default function HotelDetailPage() {
         )}
       </Container>
       {/* Other Hotels */}
-
+      {/* Map Modal */}
+      <Modal
+        show={showModalMap}
+        onHide={() => {
+          setShowModalMap(false);
+          setAddressMap("");
+        }}
+        size="lg"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Map Address</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <MapComponent addressMap={addressMap} />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setShowModalMap(false);
+              setAddressMap("");
+            }}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
       {searchRoom ? (
         <div></div>
       ) : (

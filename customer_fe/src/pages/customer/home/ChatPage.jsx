@@ -31,9 +31,9 @@ function CustomerChat() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [userMessages, setUserMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [isReadLast, setIsReadLast] = useState(false);
   // Ref cho container tin nhắn để scroll xuống cuối
   const messagesEndRef = useRef(null);
-  console.log("ngoài selectedUser: ", selectedUser);
 
   const fetchAllUser = () => {
     dispatch({
@@ -44,8 +44,7 @@ function CustomerChat() {
           setSelectedUser((prevSelectedUser) => {
             if (!prevSelectedUser && users.length >= 1) {
               return users[0];
-            }
-            else if(prevSelectedUser._id === users[0]._id){
+            } else if (prevSelectedUser?._id === users[0]?._id) {
               return users[0];
             }
             return prevSelectedUser;
@@ -64,7 +63,8 @@ function CustomerChat() {
         payload: {
           receiverId: selectedUser?._id,
           onSuccess: (messages) => {
-              setUserMessages(messages);
+            setUserMessages(messages);
+            setIsReadLast(messages[messages.length - 1].isRead);
           },
           onFailed: (msg) => console.error("Failed to fetch rooms:", msg),
           onError: (err) => console.error("Server error:", err),
@@ -96,57 +96,53 @@ function CustomerChat() {
   useEffect(() => {
     if (!Socket || !Auth?._id) return;
 
-    // Gửi userId cho server
+    // Gửi userId để đăng ký socket
     Socket.emit("register", Auth._id);
 
-    // Lắng nghe nhận tin nhắn riêng
-    Socket.on("receive-message", (msg) => {
-      console.log("selectedUser abc: ", selectedUser);
-      if (Auth?._id == msg.receiverId) {
-        // Giả sử selectedUserId là ID người mà C đang chat cùng
-        if (msg.senderId === selectedUser?._id) {
-          setUserMessages((prev) => [...prev, msg]);
-        }
+    // Nếu có selectedUser thì join vào room chung
+    if (selectedUser?._id) {
+      Socket.emit("join-room", {
+        userId: Auth._id,
+        partnerId: selectedUser._id,
+      });
+    }
+
+    // Nhận tin nhắn riêng
+    const handleReceiveMessage = (msg) => {
+      if (Auth._id === msg.receiverId && msg.senderId === selectedUser?._id) {
+        setUserMessages((prev) => [...prev, msg]);
       }
       fetchAllUser();
-    });
-
-    Socket.on("receive-markAsRead", (msg) => {
-      console.log("ABC")
-      console.log("msg: ", msg)
-      console.log("sdsds: ", selectUser);
-
-      if(selectedUser._id == msg.senderId){
-        console.log("A1")
-      }
-    });
-
-    return () => {
-      Socket.off("receive-message");
-      Socket.off("receive-markAsRead");
     };
 
-  }, [Socket, Auth, selectedUser]);
+    // Nhận cập nhật tin nhắn đã đọc
+    const handleMarkAsRead = (msg) => {
+      if (selectedUser?._id == msg.senderId) {
+        setUserMessages((prevMessages) =>
+          prevMessages.map((message) => {
+            if (
+              message.senderId === msg.receiverId &&
+              message.receiverId === msg.senderId &&
+              !message.isRead
+            ) {
+              return { ...message, isRead: true };
+            }
+            return message;
+          })
+        );
+      }
+    };
 
-  // Mark messages as read when viewing conversation
-  useEffect(() => {
-    if (selectedUser?._id && Socket && Auth?._id) {
-      Socket.emit("markAsRead", {
-        senderId: selectedUser._id,
-        receiverId: Auth._id,
-      });
+    Socket.on("receive-message", handleReceiveMessage);
+    Socket.on("receive-markAsRead", handleMarkAsRead);
 
-      // Update read status in users list
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id === selectedUser._id
-            ? { ...user, lastMessageIsRead: true }
-            : user
-        )
-      );
-    }
-  }, [userMessages, Socket, Auth]);
+    return () => {
+      Socket.off("receive-message", handleReceiveMessage);
+      Socket.off("receive-markAsRead", handleMarkAsRead);
+    };
+  }, [Socket, Auth?._id, selectedUser?._id]);
 
+  console.log("users: ", users);
   // Gửi tin nhắn
   const sendMessage = (e) => {
     e.preventDefault();
@@ -156,11 +152,13 @@ function CustomerChat() {
       senderId: Auth._id,
       receiverId: selectedUser?._id,
       message: newMessage,
-      timestamp: Date.now(),
+      timestamp: Date.now(), // timestamp phía client (tuỳ bạn)
     };
 
-    Socket.emit("private-message", msgData);
-    setUserMessages([...userMessages, msgData]);
+    Socket.emit("send-message", msgData);
+
+    // Thêm tin nhắn vào giao diện tạm thời
+    setUserMessages((prev) => [...prev, msgData]);
     setNewMessage("");
     fetchAllUser();
   };
@@ -168,9 +166,7 @@ function CustomerChat() {
   // Chọn người dùng
   const selectUser = (user) => {
     setSelectedUser(user);
-    setShowSidebar(false); // Hide sidebar on mobile after selecting a user
-
-    // Đánh dấu tin nhắn đã đọc
+    setShowSidebar(false);
     setUsers((prevUsers) =>
       prevUsers.map((u) => (u.id === user.id ? { ...u, unread: 0 } : u))
     );
@@ -242,7 +238,14 @@ function CustomerChat() {
                       : {}),
                   }}
                   onClick={() => {
-                    selectUser(user)
+                    selectUser(user);
+                    if (user) {
+                      Socket.emit("markAsRead", {
+                        senderId: user._id,
+                        receiverId: Auth._id,
+                      });
+                      fetchAllUser();
+                    }
                   }}
                 >
                   <div style={styles.hotelAvatar}>
@@ -422,22 +425,32 @@ function CustomerChat() {
                         </span>
                       </div>
                     </div>
+
                   </div>
 
                   {/* Message status (only for the last message from current user) */}
-                  {index === userMessages.length - 1 && message.senderId == Auth._id && (
-                    <div style={styles.messageStatus}>
-                      {message.isRead ? (
-                        <>
-                          Đã xem <i className="bi bi-check-all" style={styles.messageStatusIcon}></i>
-                        </>
-                      ) : (
-                        <>
-                          Đã gửi <i className="bi bi-check" style={styles.messageStatusIcon}></i>
-                        </>
-                      )}
-                    </div>
-                  )}
+                  {index === userMessages.length - 1 &&
+                    message.senderId == Auth._id && (
+                      <div style={styles.messageStatus}>
+                        {message.isRead ? (
+                          <>
+                            Seen{" "}
+                            <i
+                              className="bi bi-check-all"
+                              style={styles.messageStatusIcon}
+                            ></i>
+                          </>
+                        ) : (
+                          <>
+                            Sent{" "}
+                            <i
+                              className="bi bi-check"
+                              style={styles.messageStatusIcon}
+                            ></i>
+                          </>
+                        )}
+                      </div>
+                    )}
                 </>
               );
             })
@@ -463,13 +476,14 @@ function CustomerChat() {
                 placeholder="Nhập tin nhắn..."
                 value={newMessage}
                 onChange={(e) => {
-                  if(selectedUser){
+                  if (selectedUser) {
                     Socket.emit("markAsRead", {
                       senderId: selectedUser._id,
                       receiverId: Auth._id,
                     });
+                    fetchAllUser();
                   }
-                  setNewMessage(e.target.value)
+                  setNewMessage(e.target.value);
                 }}
                 rows="1"
               ></textarea>

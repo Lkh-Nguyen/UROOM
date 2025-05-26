@@ -160,6 +160,7 @@ function* getFeedbackByHotelId() {
         const response = yield call(() =>
           Factories.get_feedback_by_hotelId(hotelId, query || {})
         );
+        console.log("saga ")
         if (response?.status === 200 && response?.data?.error === false) {
           const data = response.data;
           console.log(response.data);

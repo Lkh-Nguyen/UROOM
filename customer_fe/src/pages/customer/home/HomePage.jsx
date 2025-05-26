@@ -869,7 +869,7 @@ export const ChatBox = () => {
     if (isOpen) {
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 400);
+      }, 1000);
     }
   }, [isOpen]);
 

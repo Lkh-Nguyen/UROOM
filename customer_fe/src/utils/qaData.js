@@ -131,7 +131,7 @@ const qaData = [
     answer: ["ListHotelHaNoi"],
   },
   {
-    questions: ["Cancel room", "Cancellation policy", "Refund", "Cancellation", "Policty"],
+    questions: ["Cancel room", "Cancellation policy", "Refund", "Cancellation", "Policty", "Cancel", ],
     answer: ["CancellationPolicy"],
   },
   {

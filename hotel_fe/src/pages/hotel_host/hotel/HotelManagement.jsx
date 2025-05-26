@@ -60,7 +60,7 @@ function HotelManagement() {
         isActive
       );
       if (response?.status === 200) {
-        console.log("1")
+        console.log("1");
         setIsActive(!isActive);
       }
     } catch (error) {
@@ -195,72 +195,49 @@ function HotelManagement() {
           </div>
 
           <Row>
-            <Col lg={7}>
+            <Col xs={12} sm={12} md={6} lg={6}>
               <div className="main-image-container mb-3">
                 <Image
                   src={
                     hotelinfo[0].images?.[selectedImage] || "/placeholder.svg"
                   }
                   alt="Ảnh khách sạn chính"
-                  className="main-image"
                   fluid
-                  style={{ height: "600px", width: "600px" }}
+                  rounded
+                  style={{
+                    width: "100%",
+                    maxHeight: "60vh", // thay vì số cứng, dùng % chiều cao màn hình
+                    objectFit: "cover",
+                    borderRadius: 12,
+                  }}
                 />
               </div>
 
-              <div className="image-thumbnails mb-4">
+              <div style={styles.imageThumbnails}>
                 {hotelinfo[0].images?.map((image, index) => (
-                  <Image
+                  <img
                     key={index}
                     src={image}
                     alt={`Ảnh ${index + 1}`}
-                    className={`thumbnail ${
-                      selectedImage === index ? "active" : ""
-                    }`}
                     onClick={() => setSelectedImage(index)}
                     style={{
-                      height: "120px",
-                      width: "120px",
-                      cursor: "pointer",
+                      ...styles.thumbnail,
+                      ...(selectedImage === index
+                        ? styles.thumbnailActive
+                        : {}),
                     }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.transform = "scale(1.05)")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.transform = "scale(1)")
+                    }
                   />
                 ))}
               </div>
-
-              <div className="hotel-description mb-4">
-                <h3 className="section-title">Mô tả về khách sạn</h3>
-                {hotelinfo[0].description ? (
-                  hotelinfo[0].description
-                    .split("\n")
-                    .map((para, index) => <p key={index}>{para}</p>)
-                ) : (
-                  <p>No description.</p>
-                )}
-              </div>
-
-              <div className="hotel-description mb-4">
-                <h3 className="section-title">Liên lạc của khách sạn</h3>
-                <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
-              </div>
-
-              <div className="hotel-amenities mb-4">
-                <h3 className="section-title">Tiện nghi khách sạn</h3>
-                <Row>
-                  {hotelinfo[0].facilities?.map((facility, index) => (
-                    <Col key={index} xs={6} md={4} lg={3} className="mb-3">
-                      <div className="amenity-item d-flex align-items-center gap-2">
-                        {renderIcon(facility.icon)}
-                        <span style={{ marginLeft: "5px" }}>
-                          {facility.name}
-                        </span>
-                      </div>
-                    </Col>
-                  ))}
-                </Row>
-              </div>
             </Col>
 
-            <Col lg={5}>
+            <Col xs={12} sm={12} md={6} lg={6}>
               <Card className="info-card">
                 <Card.Body>
                   <div className="info-section">
@@ -294,6 +271,41 @@ function HotelManagement() {
                   </div>
                 </Card.Body>
               </Card>
+              <div className="hotel-description mb-4 mt-3">
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Mô tả về khách sạn
+                </h2>
+                {hotelinfo[0].description ? (
+                  hotelinfo[0].description
+                    .split("\n")
+                    .map((para, index) => <p key={index}>{para}</p>)
+                ) : (
+                  <p>No description.</p>
+                )}
+              </div>
+              <div className="hotel-description mb-4">
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Liên lạc của khách sạn
+                </h2>
+                <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
+              </div>
+              <div className="hotel-amenities mb-4 mt-3">
+                <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>
+                  Tiện nghi khách sạn
+                </h2>
+                <Row>
+                  {hotelinfo[0].facilities?.map((facility, index) => (
+                    <Col key={index} xs={6} md={4} lg={3} className="mb-3">
+                      <div className="amenity-item d-flex align-items-center gap-2">
+                        {renderIcon(facility.icon)}
+                        <span style={{ marginLeft: "5px" }}>
+                          {facility.name}
+                        </span>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
             </Col>
           </Row>
         </Card.Body>
@@ -323,6 +335,23 @@ const styles = {
   addButton: {
     backgroundColor: "#007bff",
     borderColor: "#007bff",
+  },
+  imageThumbnails: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+    justifyContent: "flex-start",
+  },
+  thumbnail: {
+    width: "calc(20% - 10px)", // 5 hình/1 hàng
+    aspectRatio: "1 / 1", // giữ tỷ lệ vuông
+    objectFit: "cover",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "transform 0.2s",
+  },
+  thumbnailActive: {
+    border: "2px solid #007bff",
   },
 };
 
