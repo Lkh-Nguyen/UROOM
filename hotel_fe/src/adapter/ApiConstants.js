@@ -16,6 +16,8 @@ const ApiConstants = {
   CHANGE_STATUS_HOTEL: "/hotel/changeStatus-hotel",
   //RESERVATION
   RESERVATIONS: "/payment/reservations",
+  //MONTHLYPAYMENT
+  MONTHLY_PAYMENTS: "/monthly-payment/all",
 };
 
 export default ApiConstants;
