@@ -12,8 +12,8 @@ import React, { useState } from "react";
 import ConfirmationModal from "@components/ConfirmationModal";
 import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useDispatch } from "react-redux";
-import AuthActions from "../../../../redux/auth/actions"; 
- const ChangePassword = () => {
+import AuthActions from "../../../../redux/auth/actions";
+const ChangePassword = () => {
   const dispatch = useDispatch();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -26,69 +26,78 @@ import AuthActions from "../../../../redux/auth/actions";
     againNewPassword: "",
   };
   const [formData, setFormData] = useState(initialFormData);
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData({
-    ...formData,
-    [name]: value,
-  });
-};
-const [showUpdateModal, setShowUpdateModal] = useState(false);
-const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
 
-const handleCancel = () => {
-  const { oldPassword, newPassword, againNewPassword } = formData;
-  if (!oldPassword || !newPassword || !againNewPassword) {
-    showToast.warning("Please fill in all fields.");
-    return;
-  }
-  setFormData(initialFormData); // Reset form
-  showToast.info("Cancelled change password.");
-  setShowUpdateModal(false);
-};
+  const handleCancel = () => {
+    const { oldPassword, newPassword, againNewPassword } = formData;
+    if (!oldPassword || !newPassword || !againNewPassword) {
+      showToast.warning("Please fill in all fields.");
+      return;
+    }
+    setFormData(initialFormData); // Reset form
+    showToast.info("Cancelled change password.");
+    setShowUpdateModal(false);
+  };
 
-const handleSave = () => {
-  const { oldPassword, newPassword, againNewPassword } = formData;
+  const handleSave = () => {
+    const { oldPassword, newPassword, againNewPassword } = formData;
 
-  if (!oldPassword || !newPassword || !againNewPassword) {
-    showToast.warning("Please fill in all fields.");
-    return;
-  }
+    if (!oldPassword || !newPassword || !againNewPassword) {
+      showToast.warning("Please fill in all fields.");
+      return;
+    }
 
-  if (newPassword !== againNewPassword) {
-    showToast.warning("New password and confirmation do not match.");
-    return;
-  }
+    if (
+      oldPassword.length < 8 ||
+      newPassword.length < 8 ||
+      againNewPassword.length < 8
+    ) {
+      showToast.warning("All passwords must be at least 8 characters long.");
+      return;
+    }
 
-  dispatch({
-    type: AuthActions.CHANGE_PASSWORD,
-    payload: {
-      data: {
-        currentPassword: oldPassword,
-        newPassword,
-        confirmPassword: againNewPassword,
+    if (newPassword !== againNewPassword) {
+      showToast.warning("New password and confirmation do not match.");
+      return;
+    }
+
+    dispatch({
+      type: AuthActions.CHANGE_PASSWORD,
+      payload: {
+        data: {
+          currentPassword: oldPassword,
+          newPassword,
+          confirmPassword: againNewPassword,
+        },
+        onSuccess: () => {
+          showToast.success("Password changed successfully!");
+          setFormData(initialFormData);
+        },
+        onFailed: (msg) => {
+          showToast.warning(`Change failed: ${msg}`);
+        },
+        onError: (err) => {
+          console.error(err);
+          showToast.warning("An error occurred while changing password.");
+        },
       },
-      onSuccess: () => {
-        showToast.success("Password changed successfully!");
-        setFormData(initialFormData);
-      },
-      onFailed: (msg) => {
-        showToast.warning(`Change failed: ${msg}`);
-      },
-      onError: (err) => {
-        console.error(err);
-        showToast.warning("An error occurred while changing password.");
-      },
-    },
-  });
+    });
 
-  setShowAcceptModal(false);
-};
+    setShowAcceptModal(false);
+  };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
-  setShowAcceptModal(true);
-};
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setShowAcceptModal(true);
+  };
 
   return (
     <Card.Body>
@@ -216,4 +225,3 @@ const handleSubmit = (e) => {
 };
 
 export default ChangePassword;
-

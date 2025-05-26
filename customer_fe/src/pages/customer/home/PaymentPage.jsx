@@ -10,7 +10,7 @@ import ConfirmationModal from "@components/ConfirmationModal";
 import Factories from "../../../redux/search/factories";
 import Factories2 from "../../../redux/reservation/factories";
 import { showToast, ToastProvider } from "../../../components/ToastContainer";
-
+import QrCode from '@images/z6640231280983_d1809567eae74e226fab3536e3048fe3.jpg';
 const PaymentPage = () => {
   const timeoutRef = useRef(null);
 
@@ -129,7 +129,16 @@ const PaymentPage = () => {
     setShowDeleteModal(true);
   };
 
-  const formatCurrency = (amount) => {
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Format a given amount of money in USD as a string using the locale
+ * "en-US", with a style of "currency", and 0 minimum and maximum fraction
+ * digits. If the amount is undefined or null, return "$0".
+ *
+ * @param {number} amount The amount of money to format.
+ * @returns {string} The formatted string.
+ */
+/*******  b6007135-9bba-44d6-9803-735f1da2d51c  *******/  const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "$0";
     return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -168,7 +177,7 @@ const PaymentPage = () => {
               <Col md={6} className="d-flex flex-column align-items-center">
                 <div className="bg-white p-3 mb-3 rounded shadow-sm">
                   <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=UROOM-PAYMENT-VORQ00023Snha-400USD"
+                    src={QrCode ?? ""}
                     alt="Payment QR Code"
                     style={{ width: "300px", height: "300px" }}
                   />
@@ -187,7 +196,7 @@ const PaymentPage = () => {
               <Col md={6} className="d-flex align-items-center">
                 <div className="w-100">
                   <h6 className="text-muted">Account holder</h6>
-                  <h5 className="mb-3">Company Uroom Booking Hotel</h5>
+                  <h5 className="mb-3"></h5>
                   <h6 className="text-muted">Account number</h6>
                   <h5 className="mb-3">447771209309</h5>
                   <h6 className="text-muted">Amount</h6>

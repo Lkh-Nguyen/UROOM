@@ -8,17 +8,34 @@ const { emailVerificationTemplate } = require("../../utils/emailTemplates");
 const admin = require("../../config/firebaseAdminConfig").default;
 
 exports.loginCustomer = async (req, res) => {
-  const { email, password } = req.body;
-  console.log("body: ", req.body);
-  const user = await User.findOne({ email }).select("+password");
+  try {
+    const { email, password } = req.body;
+    console.log("body: ", req.body);
 
-  if (user.role) {
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const user = await User.findOne({ email }).select("+password");
+
+    // Nếu không tìm thấy user
+    if (!user) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
+
+    // Nếu không có role
+    if (!user.role) {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    // So sánh mật khẩu
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    // Kiểm tra xác minh email
     if (!user.isVerified) {
       return res.status(403).json({ MsgNo: "Your email is not verified" });
     }
+
+    // Tạo token và trả về dữ liệu
     const token = generateToken(user);
     res.json({
       Data: {
@@ -26,8 +43,10 @@ exports.loginCustomer = async (req, res) => {
         user: user,
       },
     });
-  } else {
-    return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
   }
 };
 

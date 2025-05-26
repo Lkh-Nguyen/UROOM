@@ -216,8 +216,8 @@ const Transaction = () => {
     0
   );
 
-  const totalCommission = Math.floor(totalCustomerPaid * 0.15);
-  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85);
+  const totalCommission = Math.floor(totalCustomerPaid * 0.12);
+  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.88);
   const completedCount =
     reservations?.filter(
       (r) => r.status === "COMPLETED" || r.status === "CHECKED OUT"
@@ -337,7 +337,7 @@ const Transaction = () => {
                   {Utils.formatCurrency(totalCommission)}
                 </strong>
               </div>
-              <div className="d-flex justify-content-between mb-2">
+              <div className="d-flex justify-content-between mb-2">http://localhost:3000/data?tab=transaction#
                 <span>Tổng số tiền cho chủ khách sạn:</span>
                 <strong className="text-success">
                   {Utils.formatCurrency(totalAmountToHost)}
@@ -409,10 +409,10 @@ const Transaction = () => {
                       {Utils.formatCurrency(calculateTotalPrice(reservation.rooms))}
                     </td>
                     <td className="text-danger">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.15 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.12 || 0)}
                     </td>
                     <td className="text-success">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.85 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.88 || 0)}
                     </td>
                     <td>
                       <span
