@@ -70,7 +70,9 @@ app.use("/api/hotelservices", HotelServiceRoute);
 
 app.use('/api/chat', ChatRoutes);
 app.use("/api/monthly-payment", MonthlyPaymentRoute);
-const users = {}; // lưu trữ userId -> socketId
+
+
+const users = new Map();  // lưu trữ userId -> socketId
 
 //socket.io
 io.on('connection', (socket) => {
