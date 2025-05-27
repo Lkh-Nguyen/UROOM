@@ -48,7 +48,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
   useEffect(() => {
     if (show) {
-     fetchHotelInfo();
+      fetchHotelInfo();
     }
   }, [show]);
 
@@ -327,7 +327,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
           <Card className="mb-4 shadow-sm">
             <Card.Body>
               <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">Tên chỗ nghỉ</Form.Label>
+                <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                  Tên chỗ nghỉ
+                </Form.Label>
                 <Form.Control
                   type="text"
                   placeholder="Nhập tên chỗ nghỉ"
@@ -352,7 +354,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
               <Form>
                 {/* Thành phố */}
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Thành phố</Form.Label>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Thành phố
+                  </Form.Label>
                   <Form.Select
                     className="form-input"
                     value={selectedCity}
@@ -377,7 +381,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
                 {/* Quận */}
                 {/* <h1>{selectedDistrict || "Chưa chọn quận"}</h1> */}
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Quận / Huyện</Form.Label>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Quận / Huyện
+                  </Form.Label>
                   <Form.Select
                     className="form-input"
                     value={selectedDistrict}
@@ -397,7 +403,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
                 {/* <h1>{selectedDistrict || "Chưa chọn quận"}</h1> */}
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Phường / Xã</Form.Label>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Phường / Xã
+                  </Form.Label>
                   <Form.Select
                     className="form-input"
                     value={selectedWard}
@@ -418,7 +426,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
                 {/* Địa chỉ cụ thể */}
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Địa chỉ</Form.Label>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Địa chỉ
+                  </Form.Label>
                   <Form.Control
                     type="text"
                     placeholder="Nhập địa chỉ cụ thể"
@@ -436,7 +446,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
             <Card.Body>
               <Form>
                 <Form.Group className="mb-3">
-                  <Form.Label className="fw-bold">Các tiện nghi</Form.Label>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Các tiện nghi
+                  </Form.Label>
                   <Row>
                     <Col md={6}>
                       {facilitiesCol1.map((facility, index) => (
@@ -471,7 +483,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
               {/* Nhận phòng */}
               <Row className="mb-2">
                 <Col>
-                  <h6>Nhận phòng</h6>
+                  <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                    Thời gian nhận trả phòng
+                  </Form.Label>
                 </Col>
               </Row>
               <Row className="mb-3">
@@ -539,24 +553,19 @@ function Hotel({ show, handleClose, selectedHotelId }) {
           <Card className="mb-4 shadow-sm">
             <Card.Body>
               <Row>
-                <div className="mb-4">
-                  <h1 className="main-heading">
-                    Tiêu chuẩn và mô tả về khách sạn
-                  </h1>
-                </div>
-
                 {/* Facility Form */}
                 <div
                   className="facility-form-card"
                   style={{
                     backgroundColor: "white",
                     borderRadius: "4px",
-                    padding: "20px",
                   }}
                 >
                   <Row className="mb-3">
                     <Col md={6}>
-                      <Form.Label>Tiêu chuẩn khách sạn</Form.Label>
+                      <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                        Tiêu chuẩn khách sạn
+                      </Form.Label>
                       <Form.Select
                         value={hotelinfo?.[0]?.star?.toString() || ""}
                         onChange={(e) => {
@@ -579,7 +588,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
                   <Row className="mb-3">
                     <Col md={6}>
-                      <Form.Label>Liên lạc của khách sạn</Form.Label>
+                      <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                        Liên lạc của khách sạn
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Nhập tên chỗ nghỉ"
@@ -599,7 +610,9 @@ function Hotel({ show, handleClose, selectedHotelId }) {
 
                   <Row className="mb-3">
                     <Col md={12}>
-                      <Form.Label>Mô tả về khách sạn</Form.Label>
+                      <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
+                        Mô tả về khách sạn{" "}
+                      </Form.Label>
                       <Form.Control
                         as="textarea"
                         rows={10}
@@ -618,7 +631,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
                   </Row>
                   <Row className="mb-3">
                     <Col md={12}>
-                      <Form.Label>
+                      <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
                         Hình ảnh khách sạn (Bắt buộc 5 ảnh)
                       </Form.Label>
                       <Form.Control
@@ -664,7 +677,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
                 variant="primary"
                 className="w-100 py-2"
                 onClick={() => {
-                  setShowModal(true)
+                  setShowModal(true);
                 }}
               >
                 Chỉnh sửa

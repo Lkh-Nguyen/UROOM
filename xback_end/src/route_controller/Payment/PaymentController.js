@@ -243,7 +243,6 @@ exports.getReservations = asyncHandler(async (req, res) => {
     filter.hotel = { $in: hotelIds };
     if (status) filter.status = status;
     if (month && year) {
-      // Lọc theo tháng và năm của createdAt
       const start = new Date(year, month - 1, 1);
       const end = new Date(year, month, 1);
       filter.createdAt = { $gte: start, $lt: end };

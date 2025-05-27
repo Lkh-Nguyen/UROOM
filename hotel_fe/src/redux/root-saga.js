@@ -6,6 +6,7 @@ import HotelservicesSaga from './Hotelservices/saga';
 import ReportFeedbackSaga from "./reportedFeedback/saga";
 import ReservationSaga from "./reservation/saga";
 import FeedbackSaga from "./feedback/saga";
+import MonthlyPaymentSaga from "./monthlyPayment/saga";
 
 
 export default function* rootSaga() {
@@ -16,5 +17,6 @@ export default function* rootSaga() {
     HotelservicesSaga(),
     ReportFeedbackSaga(),
     ReservationSaga(),
+    MonthlyPaymentSaga()
   ]);
 }

@@ -1,73 +1,87 @@
 // socketHandlers.js
-const chatMessage = require("../../models/chatMessage");
 const ChatMessage = require("../../models/chatMessage");
-const mongoose = require("mongoose");
 
 module.exports = function (io, socket, users) {
-  console.log("A user connected:", socket.id);
+  console.log("✅ A user connected:", socket.id);
 
-  // Nhận userId từ client và lưu lại('private-message'
+  // --- 1. Đăng ký user khi kết nối ---
   socket.on("register", (userId) => {
-    users[userId] = socket.id;
-    console.log(`📌 Registered: ${userId} => ${socket.id}`);
+    users.set(userId, socket.id);
+    console.log(`🟢 User ${userId} registered with socket ${socket.id}`);
   });
 
-  // Lắng nghe gửi tin nhắn riêng
-  socket.on("private-message", async ({ senderId, receiverId, message }) => {
-    try {
-      // Lưu tin nhắn vào DB
-      const newMsg = new ChatMessage({
-        senderId: senderId,
-        receiverId: receiverId,
-        message,
-      });
-      await newMsg.save();
+  // --- 2. Vào room khi chọn user ---
+  socket.on("join-room", ({ userId, partnerId }) => {
+    const roomId = getRoomId(userId, partnerId);
+    socket.join(roomId);
+    console.log(`👥 User ${userId} joined room ${roomId}`);
+  });
 
-      // Gửi lại cho người nhận nếu họ đang online
-      const receiverSocket = users[receiverId];
-      if (receiverSocket) {
-        io.to(receiverSocket).emit("receive-message", {
-          _id: newMsg._id,
-          senderId,
-          receiverId,
-          message,
-          isRead: newMsg.isRead,
-          timestamp: newMsg.timestamp,
+  // --- 3. Gửi tin nhắn ---
+  socket.on("send-message", async ({ senderId, receiverId, message }) => {
+    const roomId = getRoomId(senderId, receiverId);
+
+    const newMsg = new ChatMessage({ senderId, receiverId, message });
+    await newMsg.save();
+
+    const msgPayload = {
+      _id: newMsg._id,
+      senderId,
+      receiverId,
+      message,
+      timestamp: newMsg.timestamp,
+    };
+
+    const receiverSocketId = users.get(receiverId);
+
+    if (receiverSocketId) {
+      // Kiểm tra xem receiver đã vào room chưa
+      const socketsInRoom = await io.in(roomId).allSockets(); // Trả về Set các socketId trong room
+      if (socketsInRoom.has(receiverSocketId)) {
+        // Nếu receiver đã ở trong room, gửi tin nhắn qua room
+        io.to(roomId).emit("receive-message", msgPayload);
+      } else {
+        // Nếu receiver chưa ở trong room, gửi trực tiếp tin nhắn và yêu cầu join room
+        io.to(receiverSocketId).emit("receive-message", msgPayload);
+        io.to(receiverSocketId).emit("force-join-room", {
+          roomId,
+          partnerId: senderId,
         });
       }
-    } catch (error) {
-      console.error("Error saving or sending private message:", error);
+    } else {
+      // Nếu receiver không online, có thể gửi tin nhắn qua room hoặc bỏ qua (tuỳ app)
+      io.to(roomId).emit("receive-message", msgPayload);
     }
   });
 
-  // Server
+  // --- 4. Đánh dấu tin nhắn đã đọc ---
   socket.on("markAsRead", async ({ senderId, receiverId }) => {
-    console.log("-------------------------------------------------------");
-    console.log("senderId: ", senderId);
-    console.log("receiverId: ", receiverId);
-    await chatMessage.updateMany(
+    const roomId = getRoomId(senderId, receiverId);
+
+    await ChatMessage.updateMany(
       { senderId, receiverId, isRead: false },
       { $set: { isRead: true } }
     );
-    // Có thể phát sự kiện thông báo lại cho sender tin nhắn đã đọc
-    const receiverSocket = users[receiverId];
-    if (receiverSocket) {
-      io.to(receiverSocket).emit("receive-markAsRead", {
-        senderId,
-        receiverId,
-      });
-    }
+
+    io.to(roomId).emit("receive-markAsRead", {
+      senderId: receiverId,
+      receiverId: senderId,
+    });
   });
 
-  // Xử lý khi client ngắt kết nối
+  // --- 5. Dọn dẹp khi disconnect ---
   socket.on("disconnect", () => {
-    for (const [userId, socketId] of Object.entries(users)) {
+    for (const [userId, socketId] of users.entries()) {
       if (socketId === socket.id) {
-        delete users[userId];
-        console.log(`User ${userId} disconnected and removed from users list.`);
+        users.delete(userId);
+        console.log(`🔴 User ${userId} disconnected`);
         break;
       }
     }
-    console.log("❌ User disconnected:", socket.id);
   });
 };
+
+// --- Helper function để tạo room ID ---
+function getRoomId(userId1, userId2) {
+  return [userId1, userId2].sort().join("_");
+}

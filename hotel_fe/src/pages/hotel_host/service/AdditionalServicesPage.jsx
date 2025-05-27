@@ -1,143 +1,160 @@
-import React, { useEffect, useState } from "react";
-import {
-  Row,
-  Col,
-  Card,
-  Button,
-  Form,
-  InputGroup,
-  Modal,
-  Table,
-} from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { showToast } from "@components/ToastContainer";
-import { useAppSelector } from "../../../redux/store";
-import { useDispatch } from "react-redux";
-import HotelActions from "../../../redux/hotel/actions";
-import HotelservicesActions from "../../../redux/Hotelservices/actions";
+"use client"
+
+import React, { useEffect, useState } from "react"
+import { Row, Col, Card, Button, Form, Modal } from "react-bootstrap"
+import "bootstrap/dist/css/bootstrap.min.css"
+import { showToast, ToastProvider } from "@components/ToastContainer"
+import { useAppSelector } from "../../../redux/store"
+import { useDispatch } from "react-redux"
+import HotelActions from "../../../redux/hotel/actions"
+import HotelservicesActions from "../../../redux/Hotelservices/actions"
+import Utils from "@utils/Utils"
+import ConfirmationModal from "@components/ConfirmationModal"
 
 function AdditionalServicesPage() {
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
-  const Auth = useAppSelector((state) => state.Auth.Auth);
-  const [showModal, setShowModal] = useState(false);
-  const [hotelinfo, setHotelinfo] = useState(null);
-  console.log("hotel: ", hotelinfo);
+  const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+  const Auth = useAppSelector((state) => state.Auth.Auth)
+  const [showModal, setShowModal] = useState(false)
+  const [hotelinfo, setHotelinfo] = useState([])
+  const [listService, setListService] = useState([]) // State mới cho danh sách services
+  const [showModalChangeStatus, setShowModalChangeStatus] = useState(false)
+  const [selectedService, setSelectedService] = useState(null)
   const [currentService, setCurrentService] = useState({
     name: "",
     description: "",
     price: "",
-    type: "per_person",
+    type: "",
     availability: "daily",
     active: true,
-  });
-  console.log("formData._id có giá trị:", Auth._id);
-  const [isEditing, setIsEditing] = useState(false);
+  })
+  console.log("formData._id có giá trị:", Auth._id)
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
-    console.log("formData._id có giá trị 2:", Auth._id);
-    fetchHotelInfo();
-  }, []);
+    console.log("formData._id có giá trị 2:", Auth._id)
+    fetchHotelInfo()
+  }, [])
+
+  // Cập nhật listService khi hotelinfo thay đổi
+  useEffect(() => {
+    if (hotelinfo && hotelinfo.length > 0 && hotelinfo[0].services) {
+      setListService(hotelinfo[0].services)
+    }
+  }, [hotelinfo])
 
   const fetchHotelInfo = () => {
-    setLoading(true);
+    setLoading(true)
 
     dispatch({
       type: HotelActions.FETCH_OWNER_HOTEL,
       payload: {
         userId: Auth._id,
         onSuccess: (data) => {
-          setHotelinfo(data.hotels);
-          console.log("hello tài dương", data.hotels);
-          setLoading(false);
+          setHotelinfo(data.hotels)
+          console.log("hello tài dương", data.hotels)
+          setLoading(false)
         },
         onFailed: () => {
-          showToast.error("Lấy thông tin khách sạn thất bại");
-          setLoading(false);
+          showToast.error("Lấy thông tin khách sạn thất bại")
+          setLoading(false)
         },
         onError: (err) => {
-          console.error(err);
-          showToast.error("Lỗi máy chủ khi lấy thông tin khách sạn");
-          setLoading(false);
+          console.error(err)
+          showToast.error("Lỗi máy chủ khi lấy thông tin khách sạn")
+          setLoading(false)
         },
       },
-    });
-  };
+    })
+  }
+
   const handleEditService = (service) => {
     setCurrentService({
       ...service,
       price: formatPrice(service.price),
       timeSlots: service.timeSlots || [],
       options: service.options || [],
-    });
-    setIsEditing(true);
-    setShowModal(true);
-  };
+    })
+    setIsEditing(true)
+    setShowModal(true)
+  }
 
   const handleCloseModal = () => {
-    setShowModal(false);
-    setIsEditing(false);
-  };
+    setShowModal(false)
+    setIsEditing(false)
+  }
 
   const handleShowModal = () => {
     setCurrentService({
       name: "",
       description: "",
       price: "",
-      type: "per_person",
-      availability: "daily",
-      timeSlots: [""],
-      options: [""],
+      type: "",
       active: true,
-    });
-    setIsEditing(false);
-    setShowModal(true);
-  };
+    })
+    setIsEditing(false)
+    setShowModal(true)
+  }
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    setCurrentService({ ...currentService, [name]: value });
-  };
+    const { name, value } = e.target
+    console.log(name, value)
+    setCurrentService({ ...currentService, [name]: value })
+  }
 
   const handlePriceChange = (e) => {
-    const value = e.target.value.replace(/\D/g, "");
-    setCurrentService({ ...currentService, price: value });
-  };
+    const value = e.target.value.replace(/\D/g, "")
+    setCurrentService({ ...currentService, price: value })
+  }
 
   const formatPrice = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  };
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")
+  }
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const handleSubmitService = () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-  
+    if (isSubmitting) return
+    setIsSubmitting(true)
+
     const payload = {
       ...currentService,
       price: Number(currentService.price.toString().replace(/\D/g, "")),
-    };
-  
+    }
+
     const onSuccess = (data) => {
-      alert("Thao tác thành công!");
-      setIsSubmitting(false);
-      window.location.reload();
-      handleCloseModal();
-    };
-  
+      showToast.success("Cập nhật service thành công !!!")
+      setIsSubmitting(false)
+
+      if (isEditing) {
+        // Cập nhật service trong listService
+        setListService((prevList) =>
+          prevList.map((service) => (service._id === currentService._id ? { ...service, ...payload } : service)),
+        )
+      } else {
+        // Thêm service mới vào listService
+        const newService = {
+          ...payload,
+          _id: data.service?._id || Date.now().toString(), // Sử dụng ID từ response hoặc tạm thời
+          statusActive: "ACTIVE",
+        }
+        setListService((prevList) => [...prevList, newService])
+      }
+
+      handleCloseModal()
+    }
+
     const onFailed = (message) => {
-      // alert(`Lỗi: ${message}`);
-      setIsSubmitting(false);
-    };
-  
+      showToast.warning("Cập nhật service thất bại !!!")
+      setIsSubmitting(false)
+    }
+
     const onError = (error) => {
-      console.error("Lỗi hệ thống:", error);
-      alert("Lỗi hệ thống. Vui lòng thử lại sau.");
-      setIsSubmitting(false);
-    };
-  
+      console.error("Lỗi hệ thống:", error)
+      showToast.warning("Lỗi hệ thống. Vui lòng thử lại sau.")
+      setIsSubmitting(false)
+    }
+
     if (isEditing) {
       dispatch({
         type: HotelservicesActions.UPDATE_HOTEL_SERVICE,
@@ -148,7 +165,7 @@ function AdditionalServicesPage() {
           onFailed,
           onError,
         },
-      });
+      })
     } else {
       dispatch({
         type: HotelActions.CREATE_HOTEL_SERVICE,
@@ -161,16 +178,18 @@ function AdditionalServicesPage() {
           onFailed,
           onError,
         },
-      });
+      })
     }
-  };
+  }
 
   const handleToggleStatus = (service) => {
-    const newStatus =
-      service.statusActive === "ACTIVE" ? "NONACTIVE" : "ACTIVE";
+    if (!hotelinfo) {
+      return
+    }
+    const newStatus = service?.statusActive === "ACTIVE" ? "NONACTIVE" : "ACTIVE"
 
-    console.log("newStatus: ", newStatus);
-    console.log("service: ", service);
+    console.log("newStatus: ", newStatus)
+    console.log("service: ", service)
 
     dispatch({
       type: HotelActions.UPDATE_HOTEL_SERVICE_STATUS,
@@ -179,21 +198,28 @@ function AdditionalServicesPage() {
         serviceId: service._id,
         statusActive: newStatus,
         onSuccess: () => {
-          showToast.success("Cập nhật trạng thái thành công");
-          window.location.reload();
+          showToast.success("Cập nhật trạng thái thành công")
+
+          // Cập nhật status trong listService thay vì reload
+          setListService((prevList) =>
+            prevList.map((s) => (s._id === service._id ? { ...s, statusActive: newStatus } : s)),
+          )
+
+          setShowModalChangeStatus(false)
         },
         onFailed: (msg) => {
-          showToast.error("Cập nhật thất bại: " + msg);
+          showToast.error("Cập nhật thất bại: " + msg)
         },
         onError: (err) => {
-          showToast.error("Lỗi hệ thống:", err);
+          showToast.error("Lỗi hệ thống:", err)
         },
       },
-    });
-  };
+    })
+  }
 
   return (
     <div className="main-content_1 p-3">
+      <ToastProvider/>
       <div style={styles.header}>
         <h1 style={styles.title}>Dịch Vụ Đi Kèm</h1>
         <Button style={styles.addButton} onClick={handleShowModal}>
@@ -201,65 +227,54 @@ function AdditionalServicesPage() {
         </Button>
       </div>
 
-      {!hotelinfo ||
-      hotelinfo.length === 0 ||
-      !hotelinfo[0]?.services ||
-      hotelinfo[0].services.length === 0 ? (
+      {!listService || listService.length === 0 ? (
         <div style={styles.emptyState}>
           <h3>Không có dịch vụ nào</h3>
           <p>Hãy thêm dịch vụ mới để tăng doanh thu của bạn</p>
         </div>
       ) : (
         <Row>
-          {hotelinfo[0].services.map((service, index) => (
-            <Col key={index} xs={4} md={4} lg={4}>
+          {listService.map((service, index) => (
+            <Col key={service._id || index} xs={4} md={4} lg={4}>
               <Card
                 style={styles.serviceCard}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-5px)";
-                  e.currentTarget.style.boxShadow =
-                    "0 8px 16px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.transform = "translateY(-5px)"
+                  e.currentTarget.style.boxShadow = "0 8px 16px rgba(0,0,0,0.1)"
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "none";
-                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                  e.currentTarget.style.transform = "none"
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)"
                 }}
               >
                 <div style={styles.serviceHeader}>
                   <h3 style={styles.serviceName}>
-                    {service.name}
+                    Tên dịch vụ: {service.name}
                     <Form.Check
                       type="switch"
                       id={`status-switch-${service._id}`}
-                      // label={
-                      //   service.statusActive === "ACTIVE"
-                      //     ? "Đang hoạt động"
-                      //     : "Đã tắt"
-                      // }
                       checked={service.statusActive === "ACTIVE"}
-                      onChange={() => handleToggleStatus(service)}
+                      onChange={() => {
+                        setSelectedService(service)
+                        setShowModalChangeStatus(true)
+                      }}
                       style={{ marginLeft: "20px" }}
                     />
                   </h3>
                   <div style={styles.servicePrice}>
-                    {formatPrice(service.price)} VND
+                    {Utils.formatCurrency(service.price)}/{service.type}
                   </div>
                 </div>
 
                 <div style={styles.serviceDetails}>
-                  <p>{service.description}</p>
-
-                  <Table borderless style={styles.detailsTable}>
-                    <tbody>
-                      <tr>
-                        <td style={styles.tableCell}>
-                          <strong>Loại tính phí:</strong>
-                        </td>
-                        <td style={styles.tableCell}>{service.type}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-
+                  <p>
+                    <b>Mô tả: </b>
+                    {service.description}
+                  </p>
+                  <p>
+                    <b>Loại tính phí: </b>
+                    {service.type}
+                  </p>
                   {service.options?.map((option, index) => (
                     <Button key={index} variant="dark">
                       {option}
@@ -268,10 +283,7 @@ function AdditionalServicesPage() {
                 </div>
 
                 <div style={styles.actionButtons}>
-                  <Button
-                    style={styles.editButton}
-                    onClick={() => handleEditService(service)}
-                  >
+                  <Button style={styles.editButton} onClick={() => handleEditService(service)}>
                     Chỉnh sửa
                   </Button>
                 </div>
@@ -283,9 +295,7 @@ function AdditionalServicesPage() {
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>
-            {isEditing ? "Chỉnh Sửa Dịch Vụ" : "Thêm Dịch Vụ Mới"}
-          </Modal.Title>
+          <Modal.Title>{isEditing ? "Chỉnh Sửa Dịch Vụ" : "Thêm Dịch Vụ Mới"}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -308,6 +318,7 @@ function AdditionalServicesPage() {
                 rows={3}
                 value={currentService.description}
                 onChange={handleInputChange}
+                placeholder="Mô tả dịch vụ"
               />
             </Form.Group>
 
@@ -318,6 +329,7 @@ function AdditionalServicesPage() {
                 name="price"
                 value={formatPrice(currentService.price)}
                 onChange={handlePriceChange}
+                placeholder="Giá tiền của dịch vụ đó"
               />
             </Form.Group>
             <Form.Group>
@@ -325,22 +337,11 @@ function AdditionalServicesPage() {
               <Form.Control
                 type="text"
                 name="type"
-                value={formatPrice(currentService.type)}
-                onChange={handleInputChange}
-              />
-            </Form.Group>
-
-            {/* <Form.Group className="mb-3">
-              <Form.Label>Loại tính phí</Form.Label>
-              <Form.Select
-                name="type"
                 value={currentService.type}
                 onChange={handleInputChange}
-              >
-                <option value="per_person">Theo người</option>
-                <option value="per_room">Theo đặt phòng</option>
-              </Form.Select>
-            </Form.Group> */}
+                placeholder="Ví dụ: person, service, room, day, night, month, year,..."
+              />
+            </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -352,8 +353,24 @@ function AdditionalServicesPage() {
           </Button>
         </Modal.Footer>
       </Modal>
+      <ConfirmationModal
+        show={showModalChangeStatus}
+        onHide={() => setShowModalChangeStatus(false)}
+        onConfirm={() => {
+          handleToggleStatus(selectedService)
+        }}
+        title={selectedService?.statusActive === "ACTIVE" ? "Tạm ngừng nhận dịch vụ này" : "Cho phép nhận dịch vụ này"}
+        message={
+          selectedService?.statusActive === "ACTIVE"
+            ? "Nếu bạn ngừng nhận dịch vụ này, thì dịch vụ này sẽ không được hiện trên web, nhưng các dịch vụ này đã đặt sẽ vẫn tiếp tục diễn ra !!!"
+            : "Nếu bạn mở nhận dịch vụ này, thì dịch vụ này sẽ được hiện trên web và có thể đặt được dịch vụ này từ lúc mở nhận đặt dịch vụ này !!!"
+        }
+        confirmButtonText="Xác nhận"
+        cancelButtonText="Hủy bỏ"
+        type={selectedService?.statusActive === "ACTIVE" ? "danger" : "warning"}
+      />
     </div>
-  );
+  )
 }
 
 const styles = {
@@ -506,6 +523,6 @@ const styles = {
     padding: "50px 0",
     color: "#6b6b6b",
   },
-};
+}
 
-export default AdditionalServicesPage;
+export default AdditionalServicesPage

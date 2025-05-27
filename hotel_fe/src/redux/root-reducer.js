@@ -5,14 +5,16 @@ import HotelservicesReducer from './Hotelservices/reducer';
 import ReportedFeedbackReducer from "./reportedFeedback/reducer";
 import ReservationReducer from "./reservation/reducer";
 import FeedbackReducer from "./feedback/reducer";
+import MonthlyPaymentReducer from "./monthlyPayment/reducer";
 
 const rootReducer = combineReducers({
     Auth: AuthReducer,
     Hotel: HotelReducer,
-    Hotelservices:HotelservicesReducer,
+    Hotelservices: HotelservicesReducer,
     Feedback: FeedbackReducer,
     ReportedFeedback: ReportedFeedbackReducer,
-    Reservation: ReservationReducer
+    Reservation: ReservationReducer,
+    MonthlyPayment: MonthlyPaymentReducer
 });
 
 export default rootReducer;

@@ -22,6 +22,7 @@ import CustomPagination from "@components/CustomPagination";
 const ListFeedbackHotelPage = () => {
   const dispatch = useDispatch();
   const feedbacks = useSelector((state) => state.Feedback);
+  console.log("feedbacks: ", feedbacks)
   const auth = useSelector((state) => state.Auth.Auth);
   const hotel = useSelector((state) => state.Hotel.hotel);
 
@@ -54,6 +55,7 @@ const ListFeedbackHotelPage = () => {
   }, [auth, dispatch]);
 
   useEffect(() => {
+    console.log("Hotel: ", hotel);
     if (!hotel) return;
 
     const query = {
