@@ -248,11 +248,8 @@ export default function* userSaga() {
     fork(getTop3Hotels),
     fork(getOwnerHotel),
     fork(updateHotel),
-<<<<<<< HEAD
     fork(updateHotelServiceStatus),
     fork(createHotelService),
    
-=======
->>>>>>> 607ba21aec6ce507c6c7f0675bc919ddf1d66542
   ]);
 }

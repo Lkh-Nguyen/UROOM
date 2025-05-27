@@ -13,7 +13,7 @@ const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
 const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/ReportedFeedbackRoute");
 const HotelServiceRoute = require("./src/route_controller/Hotelservices/HotelservicesRoute");
-const cron = require("node-cron");
+// const cron = require("node-cron");
 const ChatRoutes = require('./src/route_controller/ChatMessage/ChatMessageRoute');
 
 const cron = require("node-cron");  
