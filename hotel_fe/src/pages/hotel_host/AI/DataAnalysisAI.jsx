@@ -30,6 +30,7 @@ import { useAppDispatch } from "@redux/store";
 import DashBoardPage from "../dash_board/DashBoardPage";
 import InsightAiPage from "./InSightAiPage";
 import RevenuePage from "../revenue/RevenuePage";
+import AuthActions from "@redux/auth/actions";
 
 ChartJS.register(
   CategoryScale,
@@ -279,6 +280,7 @@ function App() {
                     <Dropdown.Menu>
                       <Dropdown.Item
                         onClick={() => {
+                          dispatch({ type: AuthActions.LOGOUT });
                           navigate(Routers.HomeHotel, {
                             state: {
                               message: "Logout account successfully !!!",

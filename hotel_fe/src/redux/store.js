@@ -22,7 +22,7 @@ const expireConfig = {
 const persistConfig = {
   key: 'root',
   storage,
-  whitelist: ['Auth'], // auth vĩnh viễn, booking sẽ expire
+  whitelist: ['Auth', 'Hotel', 'Hotelservices', 'Reservation', 'MonthlyPayment', 'ReportedFeedback', 'Feedback'], 
   transforms: [
     expireReducer('Search', expireConfig),
   ],

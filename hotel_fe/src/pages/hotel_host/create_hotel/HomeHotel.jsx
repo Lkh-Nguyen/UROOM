@@ -4,9 +4,23 @@ import "../../../css/hotelHost/HomeHotel.css"
 import { CheckCircle } from "react-bootstrap-icons"
 import * as Routers from "../../../utils/Routes"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
+import { useAppDispatch, useAppSelector } from "@redux/store"
+import AuthActions from "@redux/auth/actions"
 
 function HomeHotel() {
   const navigate = useNavigate()
+  const Auth = useAppSelector((state) => state.Auth.Auth)
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (Auth._id != -1) {
+      if(Auth.ownerHotel?.length() > 0) {
+        navigate(Routers.DataAnalysisAI)
+      }else{
+        dispatch({ type: AuthActions.LOGOUT });
+      }
+    }
+  }) 
   return (
     <div className="booking-app">
       <Navbar bg="primary" variant="dark" className="booking-navbar">

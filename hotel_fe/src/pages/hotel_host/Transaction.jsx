@@ -347,7 +347,7 @@ const Transaction = () => {
                   {Utils.formatCurrency(totalCommission)}
                 </strong>
               </div>
-              <div className="d-flex justify-content-between mb-2">http://localhost:3000/data?tab=transaction#
+              <div className="d-flex justify-content-between mb-2">
                 <span>Tổng số tiền cho chủ khách sạn:</span>
                 <strong className="text-success">
                   {Utils.formatCurrency(totalAmountToHost)}
@@ -368,7 +368,7 @@ const Transaction = () => {
         <Card.Header as="h5">
           <div className="d-flex justify-content-between align-items-center">
             <span>
-              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth]} -{" "}
+              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth - 1]} -{" "}
               {selectedYear}
             </span>
             <span className="text-muted">
@@ -487,7 +487,7 @@ const Transaction = () => {
         </Card.Body>
       </Card>
 
-      {/* Phần thông tin tài khoản ngân hàng */}
+      {/* Phần thông tin tài khoản ngân hàng
       <Card className="mb-4">
         <Card.Header as="h5">Thông tin tài khoản ngân hàng</Card.Header>
         <Card.Body>
@@ -597,7 +597,7 @@ const Transaction = () => {
             </>
           )}
         </Card.Body>
-      </Card>
+      </Card> */}
 
       <Row className="mb-4">
         <Col md={6}>
@@ -628,7 +628,7 @@ const Transaction = () => {
 
       <Card className="mb-4">
         <Card.Header as="h5">
-          Danh sách thanh toán cho năm {selectedAdminYear}
+          Danh sách doanh thu cho năm {selectedAdminYear}
         </Card.Header>
         <Card.Body>
           <Table responsive striped hover>

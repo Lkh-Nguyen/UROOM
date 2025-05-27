@@ -1,6 +1,10 @@
 const ApiConstants = {
   //AUTH:
   LOGIN_OWNER: "/auth/login_owner",
+  REGISTER_OWNER: "/auth/register_owner",
+  VERIFY_EMAIL: "/auth/verify-email",
+  RESEND_VERIFICATION: "/auth/resend-verification",
+  
   //FEEDBACK:
   FEEDBACK_HOTEL: "/feedback/get-feedback-hotel/:hotelId",
   ///REPORTFEEDBACK

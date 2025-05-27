@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Navbar,
   Container,
@@ -13,12 +13,30 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FiArrowLeft } from "react-icons/fi";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import HotelActions from "@redux/hotel/actions";
+import { showToast, ToastProvider } from "@components/ToastContainer";
 
 function BookingPropertyName() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const createHotel = useAppSelector((state) => state.Hotel.createHotel);
+  const [hotelName, setHotelName] = useState(createHotel.hotelName);
 
+  const handleContinueClick = () => {
+    if (hotelName !== "") {
+      dispatch({
+        type: HotelActions.SAVE_HOTEL_NAME_CREATE,
+        payload: hotelName,
+      });
+      navigate(Routers.BookingPropertyLocation);
+    } else {
+      showToast.warning("Hãy nhập tên khách sạn !!!");
+    }
+  };
   return (
     <div className="booking-app">
+      <ToastProvider />
       {/* Navigation Bar */}
       <Navbar className="navbar-custom">
         <Container>
@@ -62,6 +80,8 @@ function BookingPropertyName() {
                     type="text"
                     placeholder="Nhập tên chỗ nghỉ"
                     className="form-input"
+                    value={hotelName}
+                    onChange={(e) => setHotelName(e.target.value)}
                   />
                 </Form.Group>
               </Form>
@@ -71,7 +91,11 @@ function BookingPropertyName() {
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  navigate("/BookingRegistration");
+                  dispatch({
+                    type: HotelActions.SAVE_HOTEL_NAME_CREATE,
+                    payload: hotelName,
+                  });
+                  navigate(Routers.BookingRegistration);
                 }}
               >
                 <FiArrowLeft className="back-icon" />
@@ -79,9 +103,7 @@ function BookingPropertyName() {
               <Button
                 variant="primary"
                 className="continue-button"
-                onClick={() => {
-                  navigate("/BookingPropertyLocation");
-                }}
+                onClick={handleContinueClick}
               >
                 Tiếp tục
               </Button>

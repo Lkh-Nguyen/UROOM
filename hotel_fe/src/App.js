@@ -34,8 +34,14 @@ import DataAnalysisAI from "@pages/hotel_host/AI/DataAnalysisAI";
 import HotelManagement from "@pages/hotel_host/hotel/HotelManagement";
 import Room from "@pages/room/Room";
 import ViewInformation from "@pages/hotel_host/information/components/ViewInformationHotel";
+import VerifyCodeRegisterPage from "@pages/hotel_host/login_register/VerifyCodeRegisterPage";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    document.title = "Uroom Owner";
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -66,6 +72,7 @@ function App() {
         <Route path={Routers.HomeHotel} element={<HomeHotel/>} />
         <Route path={Routers.LoginHotelPage} element={<LoginHotelPage/>} />
         <Route path={Routers.RegisterHotelPage} element={<RegisterHotelPage/>} />
+        <Route path={Routers.VerifyCodeRegisterPage} element={<VerifyCodeRegisterPage/>} />
         <Route path={Routers.ForgetPasswordHotelPage} element={<ForgetPasswordHotelPage/>} />
         <Route path={Routers.VerifyCodeHotelPage} element={<VerifyCodeHotelPage/>} />
         <Route path={Routers.ResetPasswordHotelPage} element={<ResetPasswordHotelPage/>} />
