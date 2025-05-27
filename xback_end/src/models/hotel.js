@@ -25,6 +25,11 @@ const hotelSchema = new Schema(
       required: true,
       default: "0905123456"
     },
+    email: {
+      type: String,
+      required: true,
+      default: "DaNangLunVuiTUoi@hotel.com",
+    },
     services: [
       {
         type: mongoose.Schema.Types.ObjectId,

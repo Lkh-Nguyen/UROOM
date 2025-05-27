@@ -55,6 +55,9 @@ exports.loginOwner = async (req, res) => {
   console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
+  if (!user) {
+    return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+  }
   if (user.role && user.role == "OWNER") {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
@@ -391,6 +394,71 @@ exports.googleLogin = async (req, res) => {
     });
   } catch (error) {
     console.error("Google login error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+
+////Owner///
+exports.registerOwner = async (req, res) => {
+  try {
+    const { name, email, password, phoneNumber } = req.body;
+
+    console.log("body: ", req.body);
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ MsgNo: "Email is already registered" });
+    }
+
+    // Generate 6-digit verification code
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    ); // 24 hours
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password,
+      phoneNumber,
+      role: "OWNER",
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpiresAt,
+    });
+
+    // Save user
+    await newUser.save();
+
+    // Send verification email with 6-digit code
+    const emailSent = await sendEmail(
+      email,
+      "UROOM - Verify Your Email",
+      emailVerificationTemplate(name, verificationToken)
+    );
+
+    if (!emailSent) {
+      return res
+        .status(500)
+        .json({ MsgNo: "Failed to send verification email" });
+    }
+
+    res.json({
+      MsgNo:
+        "Registration successful! Please check your email for your verification code.",
+      Data: {
+        user: {
+          _id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          isVerified: newUser.isVerified,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).json({ MsgNo: "Internal server error" });
   }
 };

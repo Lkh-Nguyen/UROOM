@@ -14,16 +14,13 @@ authRouter.post("/updateProfile_customer",checkCustomer, AuthController.updateCu
 authRouter.post("/changePassword_customer", checkCustomer, AuthController.changePassword);
 //upload ảnh
 const upload = require("../../middlewares/uploadMiddleware");
-authRouter.put(
-  "/update_avatar",
-  checkCustomer,
-  upload.single("avatar"),
-  AuthController.updateAvatar
-);
+authRouter.put("/update_avatar",checkCustomer,upload.single("avatar"), AuthController.updateAvatar);
 
 
 
 //hotel host
 authRouter.post("/login_owner", AuthController.loginOwner);
+authRouter.post("/register_owner", AuthController.registerOwner);
+
 
 module.exports = authRouter;
