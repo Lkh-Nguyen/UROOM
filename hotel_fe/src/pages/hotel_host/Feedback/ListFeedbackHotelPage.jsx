@@ -1,4 +1,3 @@
-"use client";
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,14 +21,14 @@ import CustomPagination from "@components/CustomPagination";
 const ListFeedbackHotelPage = () => {
   const dispatch = useDispatch();
   const feedbacks = useSelector((state) => state.Feedback);
-  console.log("feedbacks: ", feedbacks)
+  console.log("feedbacks: ", feedbacks);
   const auth = useSelector((state) => state.Auth.Auth);
   const hotel = useSelector((state) => state.Hotel.hotel);
 
   const [showModal, setShowModal] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const [selectedStar, setSelectedStar] = useState(0);
-  const [selectedFeedbackId, setSelectedFeedbackId] = useState();
+  const [selectedFeedback, setSelectedFeedback] = useState({});
 
   const ratingLabels = ["Cơ bản", "Tiêu Chuẩn", "Khá Tốt", "Tốt", "Rất Tốt"];
   const feedbackStats = [
@@ -248,64 +247,64 @@ const ListFeedbackHotelPage = () => {
       ) : (
         filteredFeedbacks.map((review) => (
           <Card key={review._id} className="mb-3 border-0 shadow-sm">
-          <Card.Body className="p-0 m-4">
-            <Row className="g-0 justify-content-between">
-              <Col md={12}>
-                <Button
-                  variant="link"
-                  className="text-dark p-0"
-                  style={{ position: "absolute", top: 15, right: 15 }}
-                  onClick={() => {
-                    setSelectedFeedbackId(review._id);
-                    setShowModal(true);
-                  }}
-                >
-                  <ExclamationTriangleFill size={20} color="red" />
-                </Button>
+            <Card.Body className="p-0 m-4">
+              <Row className="g-0 justify-content-between">
+                <Col md={12}>
+                  <Button
+                    variant="link"
+                    className="text-dark p-0"
+                    style={{ position: "absolute", top: 15, right: 15 }}
+                    onClick={() => {
+                      setSelectedFeedback(review);
+                      setShowModal(true);
+                    }}
+                  >
+                    <ExclamationTriangleFill size={20} color="red" />
+                  </Button>
 
-                <div className="d-flex justify-content-between align-items-start mb-2">
-                  <div className="d-flex align-items-center">
-                    <Image
-                      src={
-                        review.user?.image?.url ||
-                        "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg" ||
-                        "/placeholder.svg"
-                      }
-                      roundedCircle
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        marginRight: "10px",
-                      }}
-                    />
-                    <div>
-                      <h6 className="mb-0">
-                        {review?.user?.name || "Ẩn danh"}
-                      </h6>
+                  <div className="d-flex justify-content-between align-items-start mb-2">
+                    <div className="d-flex align-items-center">
+                      <Image
+                        src={
+                          review.user?.image?.url ||
+                          "https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg" ||
+                          "/placeholder.svg"
+                        }
+                        roundedCircle
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          marginRight: "10px",
+                        }}
+                      />
                       <div>
-                        {renderStars(review.rating)}
-                        <small className="text-muted ms-2">
-                          {new Date(review.createdAt).toLocaleDateString()}
-                        </small>
+                        <h6 className="mb-0">
+                          {review?.user?.name || "Ẩn danh"}
+                        </h6>
+                        <div>
+                          {renderStars(review.rating)}
+                          <small className="text-muted ms-2">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </small>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <p>{review.content}</p>
+                  <p>{review.content}</p>
 
-                <div>
-                  <b className="text-primary p-0 me-3">
-                    {review.likedBy?.length || 0} lượt thích
-                  </b>
-                  <b className="text-danger p-0">
-                    {review.dislikedBy?.length || 0} lượt không thích
-                  </b>
-                </div>
-              </Col>
-            </Row>
-          </Card.Body>
-        </Card>
+                  <div>
+                    <b className="text-primary p-0 me-3">
+                      {review.likedBy?.length || 0} lượt thích
+                    </b>
+                    <b className="text-danger p-0">
+                      {review.dislikedBy?.length || 0} lượt không thích
+                    </b>
+                  </div>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
         ))
       )}
 
@@ -320,8 +319,7 @@ const ListFeedbackHotelPage = () => {
       <ReportedFeedbackHotel
         show={showModal}
         onHide={() => setShowModal(false)}
-        handleClose={() => setShowModal(false)}
-        feedbackId={selectedFeedbackId}
+        feedback={selectedFeedback}
       />
     </div>
   );

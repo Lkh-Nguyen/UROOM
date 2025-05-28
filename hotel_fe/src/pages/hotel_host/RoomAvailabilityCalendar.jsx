@@ -465,7 +465,7 @@ function RoomAvailabilityCalendar() {
         : rooms.filter((room) => room.type.toLowerCase() === filterRoomType.toLowerCase())
 
   return (
-    <div className="d-flex">
+    <div className="d-flex  flex-column flex-md-row">
       <div className="main-content_1 p-3">
         <div className=" text-black d-flex justify-content-between align-items-center mb-3">
           <h4>Tổng quan khách sạn</h4>

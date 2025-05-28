@@ -3,6 +3,7 @@ const ApiConstants = {
   LOGIN_OWNER: "/auth/login_owner",
   //FEEDBACK:
   FEEDBACK_HOTEL: "/feedback/get-feedback-hotel/:hotelId",
+  FETCH_FEEDBACK_BY_ID:"/feedback/getFeedbackById/:feedbackId",
   ///REPORTFEEDBACK
   REPORT_FEEDBACK: "reportFeedback/create_report_feedback_owner",
   FETCH_REPORTS_BY_USERID: "reportFeedback/my-reports",

@@ -128,7 +128,7 @@ function* getFeedbackById() {
 
     try {
       const response = yield call(() => Factories.getFeedbackById(feedbackId));
-
+console.log("1")
       if (response?.status === 200 && response?.data?.error === false) {
         const feedback = response.data?.data;
         yield put({
