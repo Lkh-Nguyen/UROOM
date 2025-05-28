@@ -65,6 +65,7 @@ function* verify_email() {
           type: AuthActions.VERIFY_EMAIL_SUCCESS,
           payload: { user: response.data.Data.user },
         });
+        console.log("User: ", response.data.Data.user)
         onSuccess && onSuccess(response.data.Data.user);
       }
     } catch (error) {

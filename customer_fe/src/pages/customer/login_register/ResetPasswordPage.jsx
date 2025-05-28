@@ -14,8 +14,9 @@ const ResetPasswordPage = () => {
   const [formData, setFormData] = useState({
     again_password: "",
     password: "",
-  });
+  }); 
 
+  console.log("formData:", formData);
   const { email, code, verified } = location.state || {};
 
   useEffect(() => {
