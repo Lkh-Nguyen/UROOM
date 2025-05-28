@@ -198,6 +198,109 @@ exports.registerCustomer = async (req, res) => {
 };
 
 /**
+ * Send email when forgot password
+ */
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("Forgot password request for email:", email);   
+    if (!email) {
+      return res.status(400).json({ MsgNo: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ MsgNo: "User not found" });
+    }
+
+    // Generate reset token and expiry (6-digit code, valid for 1 hour)
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiresAt = verificationTokenExpiresAt;
+    await user.save();
+
+    // Send email with reset code
+    const emailSent = await sendEmail(
+      email,
+      "UROOM - Password Reset Code",
+      emailVerificationTemplate(user.name, verificationToken)
+    );
+
+    if (!emailSent) {
+      return res.status(500).json({ MsgNo: "Failed to send reset email" });
+    }
+
+    res.json({
+      MsgNo: "Password reset code sent to your email",
+      Data: { email: user.email },
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+
+/**
+ * Reset password using the code sent to email
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email,code, newPassword, confirmPassword } = req.body;
+    if (!email ||!code || !newPassword || !confirmPassword) {
+      return res.status(400).json({ MsgNo: "All fields are required" });
+    }
+
+
+    const user = await User.findOne({
+      email,
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: new Date() },
+    }).select("+password");
+    if (!user) {
+      return res.status(400).json({ MsgNo: "Invalid or expired verification code" });
+    }
+    user.password = newPassword;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    user.updatedAt = new Date();
+    await user.save();
+
+    res.json({ MsgNo: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+/**
+ * Verify request forgot password using the verification code
+ */
+exports.verifyForgotPassword = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    // Find user with the verification code
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: new Date() },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ MsgNo: "Invalid or expired verification code" });
+    }
+    res.json({
+      MsgNo: "Verification successful. You can now reset your password.",
+    });
+  }
+  catch (error) {
+    console.error("Verification error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+}
+
+/**
  * Verify email using the verification code
  */
 exports.verifyEmail = async (req, res) => {

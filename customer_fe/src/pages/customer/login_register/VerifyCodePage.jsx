@@ -5,9 +5,11 @@ import * as Routers from "../../../utils/Routes";
 import Banner from "../../../images/banner.jpg";
 import { showToast, ToastProvider } from "@components/ToastContainer";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import AuthActions from "../../../redux/auth/actions";
+import axios from "axios";
 const VerifyCodePage = () => {
-  const navigate= useNavigate();
+  const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState([
     "",
     "",
@@ -16,9 +18,12 @@ const VerifyCodePage = () => {
     "",
     "",
   ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef([]);
   const location = useLocation();
-
+  const dispatch = useDispatch()
+  const email = location.state?.email || "";
   // Initialize refs array
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
@@ -76,18 +81,61 @@ const VerifyCodePage = () => {
       }
     }
   };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const code = verificationCode.join("");
-    console.log("Verification code submitted:", code);
-
-    // Navigate to reset password page if code is complete
-    if (code.length === 6) {
-      navigate(Routers.ResetPasswordPage, {state: {message: "Verify successfully! Enter new password"}})
+    if (code.length !== 6) {
+      showToast.error("Please enter all 6 digits of the verification code");
+      return;
     }
-  };
+    setIsLoading(true);
+    try {
+      const response = await axios.post("http://localhost:5000/api/auth/verify_forgot_password", {
+        code: code
+      });
+      setIsLoading(false);
+      if (response?.status === 200) {
+        navigate(Routers.ResetPasswordPage, {
+          state: {
+            code: code,
+            email: email,
+            verified: true,
+            message: "Verify successfully! Enter new password."
+          }
+        });
+      }
+    } catch (error) {
+      setIsLoading(false);
+      showToast.error(
+        error.response?.data?.MsgNo ||
+        error.response?.data?.message ||
+        "Error verifying code. Please try again."
+      );
+    }
+  }
+  const handleResendCode = () => {
 
+    setIsResending(true);
+
+    dispatch({
+      type: AuthActions.RESEND_VERIFICATION,
+      payload: {
+        data: { email: email },
+        onSuccess: (data) => {
+          setIsResending(false);
+          showToast.success("A new verification code has been sent to your email");
+        },
+        onFailed: (msg) => {
+          setIsResending(false);
+          showToast.error(msg);
+        },
+        onError: (error) => {
+          setIsResending(false);
+          showToast.error("Failed to resend verification code");
+        },
+      },
+    });
+  };
   return (
     <div
       className="min-vh-100 d-flex align-items-center justify-content-center py-5"
@@ -148,8 +196,9 @@ const VerifyCodePage = () => {
 
               <div className="text-center mb-3">
                 <span className="text-muted">Didn't receive the code? </span>
-                <a href="#" className="text-decoration-none">
-                  Resend code
+                <a href="#" className="text-decoration-none" onClick={handleResendCode}>
+                  {isResending ? "Resending..." : "Resend code"}
+
                 </a>
               </div>
 
