@@ -9,57 +9,108 @@ import {
   Table,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
 import Room from "@pages/room/Room";
+import Utils from "@utils/Utils";
 
 function RoomListingPage() {
-  const navigate = useNavigate();
-  const [showModal, setShowModal]= useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editingRoom, setEditingRoom] = useState(null);
   const [rooms, setRooms] = useState([
     {
       id: 1,
       name: "Phòng Đơn Hạng Bình Dân",
-      image:
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/280947638.jpg?k=28d6f3d93337dccf4fd7b25369fb6cb6a51818b1e359af9b60ea5c29c913726d&o=",
+      roomType: "Phòng đơn",
+      image: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/280947638.jpg?k=28d6f3d93337dccf4fd7b25369fb6cb6a51818b1e359af9b60ea5c29c913726d&o=",
       capacity: 1,
-      beds: 1,
+      beds: {
+        singleBed: 1,
+        doubleBed: 0,
+        kingBed: 0,
+        superKingBed: 0,
+      },
       bathroom: "Riêng",
-      price: 21321321,
+      price: 450,
       count: 1,
-      size: 18,
+      size: "15 - 20 m²",
     },
     {
       id: 2,
       name: "Phòng Đôi Tiêu Chuẩn",
-      image:
-        "https://cf.bstatic.com/xdata/images/hotel/max500/280949903.jpg?k=ffdbb282a1cbeeed2f59a1f85fae47c82e9556624a13703e4d8616640d533c92&o=",
+      roomType: "Phòng 2 giường đơn",
+      image: "https://cf.bstatic.com/xdata/images/hotel/max500/280949903.jpg?k=ffdbb282a1cbeeed2f59a1f85fae47c82e9556624a13703e4d8616640d533c92&o=",
       capacity: 2,
-      beds: 1,
+      beds: {
+        singleBed: 0,
+        doubleBed: 1,
+        kingBed: 0,
+        superKingBed: 0,
+      },
       bathroom: "Riêng",
-      price: 25500000,
+      price: 300,
       count: 3,
-      size: 22,
+      size: "20 - 30 m²",
     },
     {
       id: 3,
-      name: "Phòng Standand",
-      image:
-        "https://cf.bstatic.com/xdata/images/hotel/max1024x768/636651319.jpg?k=b66833f77898ba6ce4e093ec0e3e515960437367051a9737d2087968640fb745&o=&hp=1",
+      name: "Phòng Standard",
+      roomType: "Phòng gia đình",
+      image: "http://t0.gstatic.com/licensed-image?q=tbn:ANd9GcTMKBEV-sK78U-3N6IbGcRH0ppKRxxPDG4pc0HbrNOTgrGhD7ogDa6oKDhqGnxhrTFVdgUAHxyIuFbdq-pzVzU",
       capacity: 2,
-      beds: 1,
-      bathroom: "riêng",
-      price: 124000,
+      beds: {
+        singleBed: 2,
+        doubleBed: 0,
+        kingBed: 0,
+        superKingBed: 0,
+      },
+      bathroom: "Riêng",
+      price: 440,
       count: 3,
-      size: 22,
+      size: "20 - 30 m²",
     },
   ]);
 
   const handleDelete = (id) => {
-    setRooms(rooms.filter((room) => room.id !== id));
+    if (window.confirm("Bạn có chắc chắn muốn xóa phòng này?")) {
+      setRooms(rooms.filter((room) => room.id !== id));
+    }
+  };
+
+  const handleAdd = () => {
+    setEditingRoom(null);
+    setShowModal(true);
+  };
+
+  const handleEdit = (room) => {
+    setEditingRoom(room);
+    setShowModal(true);
+  };
+
+  const handleSave = (roomData) => {
+    if (editingRoom) {
+      // Update existing room
+      setRooms(rooms.map(room => 
+        room.id === editingRoom.id 
+          ? { ...roomData, id: editingRoom.id }
+          : room
+      ));
+    } else {
+      // Add new room
+      const newRoom = {
+        ...roomData,
+        id: Math.max(...rooms.map(r => r.id), 0) + 1
+      };
+      setRooms([...rooms, newRoom]);
+    }
+    setShowModal(false);
+    setEditingRoom(null);
   };
 
   const formatPrice = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const getTotalBeds = (beds) => {
+    return beds.singleBed + beds.doubleBed + beds.kingBed + beds.superKingBed;
   };
 
   const styles = {
@@ -169,9 +220,7 @@ function RoomListingPage() {
         <h1 style={styles.title}>Danh Sách Phòng</h1>
         <Button
           style={styles.addButton}
-          onClick={() => {
-            setShowModal(true);
-          }}
+          onClick={handleAdd}
         >
           + Thêm Phòng Mới
         </Button>
@@ -207,7 +256,7 @@ function RoomListingPage() {
                 <div style={styles.roomHeader}>
                   <h3 style={styles.roomName}>{room.name}</h3>
                   <div style={styles.roomPrice}>
-                    VND {formatPrice(room.price)}
+                     {Utils.formatCurrency(room.price)}
                   </div>
                 </div>
 
@@ -222,7 +271,7 @@ function RoomListingPage() {
                         <td style={styles.tableCell}>
                           <strong>Giường:</strong>
                         </td>
-                        <td style={styles.tableCell}>{room.beds}</td>
+                        <td style={styles.tableCell}>{getTotalBeds(room.beds)}</td>
                       </tr>
                       <tr>
                         <td style={styles.tableCell}>
@@ -232,15 +281,17 @@ function RoomListingPage() {
                         <td style={styles.tableCell}>
                           <strong>Diện tích:</strong>
                         </td>
-                        <td style={styles.tableCell}>{room.size} m²</td>
+                        <td style={styles.tableCell}>{room.size}</td>
                       </tr>
                       <tr>
                         <td style={styles.tableCell}>
                           <strong>Phòng loại này:</strong>
                         </td>
                         <td style={styles.tableCell}>{room.count}</td>
-                        <td style={styles.tableCell}></td>
-                        <td style={styles.tableCell}></td>
+                        <td style={styles.tableCell}>
+                          <strong>Loại phòng:</strong>
+                        </td>
+                        <td style={styles.tableCell}>{room.roomType}</td>
                       </tr>
                     </tbody>
                   </Table>
@@ -256,9 +307,7 @@ function RoomListingPage() {
                   </Button>
                   <Button
                     style={styles.editButton}
-                    onClick={() => {
-                      setShowModal(true);
-                    }}
+                    onClick={() => handleEdit(room)}
                   >
                     Chỉnh sửa
                   </Button>
@@ -268,10 +317,13 @@ function RoomListingPage() {
           ))}
         </Row>
       )}
+      
       <Room
         show={showModal}
         onHide={() => setShowModal(false)}
         handleClose={() => setShowModal(false)}
+        onSave={handleSave}
+        editingRoom={editingRoom}
       />
     </div>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Alert, Button, Card, Container, Form, Modal } from "react-bootstrap";
 import { Image } from "react-bootstrap";
@@ -6,8 +6,10 @@ import { AlertTriangle, CheckCircle, CircleAlertIcon } from "lucide-react";
 import { Star, StarFill } from "react-bootstrap-icons";
 import { useDispatch } from "react-redux";
 import ReportFeedbackActions from "@redux/reportedFeedback/actions";
-
-const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
+import FeedbackActions from "../../../redux/feedback/actions";
+import { showToast } from "@components/ToastContainer";
+import { Spinner } from "react-bootstrap";
+const ReportedFeedbackHotel = ({ show, onHide, feedback }) => {
   const dispatch = useDispatch();
   const [validated, setValidated] = useState(false);
   const [showModal, setShowModal] = useState();
@@ -16,6 +18,7 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
     reason: "",
     description: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,6 +34,7 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
       description: "",
     });
   };
+
   const onFailed = (data) => {
     setShowModal("failed");
     setError(data);
@@ -47,10 +51,10 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
     try {
       dispatch({
         type: ReportFeedbackActions.REPORT_FEEDBACK,
-        payload: { ...formData, feedbackId, onSuccess, onFailed },
+        payload: { ...formData, feedbackId: feedback._id, onSuccess, onFailed },
       });
     } catch {
-      Alert("Có vấn đề khi report");
+      showToast("Có vấn đề khi report");
     }
   };
 
@@ -67,7 +71,7 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
   return (
     <>
       {/* Modal chính */}
-      <Modal show={show} onHide={handleClose} size="xl">
+      <Modal show={show} onHide={onHide} size="xl">
         <div className="p-3">
           <h2 className="fw-bold text-secondary mb-4">
             Report Inappropriate Feedback
@@ -83,33 +87,60 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
                 <Form.Label>
                   Feedback <span className="text-danger">*</span>
                 </Form.Label>
-                <Card className="border-0">
-                  <Card.Body>
-                    <div className="d-flex align-items-center mb-2">
-                      <Image
-                        src="https://i.pinimg.com/736x/8f/1c/a2/8f1ca2029e2efceebd22fa05cca423d7.jpg"
-                        roundedCircle
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          marginRight: "10px",
-                        }}
-                      />
-                      <div>
-                        <h6 className="mb-0">Nguyễn Văn Nam</h6>
-                        <div>{renderStars(5)}</div>
+                {loading ? (
+                  <Spinner animation="border" />
+                ) : feedback ? (
+                  <Card className="border-0">
+                    <Card.Body>
+                      <div className="d-flex align-items-center mb-2">
+                        <Image
+                          src={
+                            feedback?.user?.image?.url ||
+                            "https://via.placeholder.com/50"
+                          }
+                          roundedCircle
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            marginRight: "10px",
+                          }}
+                        />
+
+                        <div>
+                          <h6 className="mb-0">
+                            {feedback?.user?.name || "Ẩn danh"}
+                          </h6>
+                          <div>
+                            {renderStars(feedback?.rating || 0)}
+                            <small className="text-muted ms-2">
+                              {new Date(
+                                feedback?.createdAt
+                              ).toLocaleDateString()}
+                            </small>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <p>
-                      Clean hotel, great service, friendly and helpful staff!
-                    </p>
-                  </Card.Body>
-                </Card>
+                      <p>
+                        {feedback?.content || "Không có nội dung phản hồi."}
+                      </p>
+                      <div>
+                        <b className="text-primary p-0 me-3">
+                          {feedback?.likedBy?.length || 0} lượt thích
+                        </b>
+                        <b className="text-danger p-0">
+                          {feedback?.dislikedBy?.length || 0} lượt không thích
+                        </b>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                ) : (
+                  <p>Không tìm thấy feedback.</p>
+                )}
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>
-                  Report Type <span className="text-danger">*</span>
+                  Loại báo cáo <span className="text-danger">*</span>
                 </Form.Label>
                 <Form.Select
                   name="reason"
@@ -117,22 +148,22 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select a reason for reporting</option>
-                  <option value="incorrect">Incorrect Information</option>
-                  <option value="fraud">Fraudulent Content</option>
-                  <option value="threatening">Threatening or Harassing</option>
-                  <option value="inappropriate">Inappropriate Content</option>
-                  <option value="spam">Spam</option>
-                  <option value="other">Other</option>
+                  <option value="">Chọn lý do báo cáo</option>
+                  <option value="incorrect">Thông tin không chính xác</option>
+                  <option value="fraud">Nội dung gian lận</option>
+                  <option value="threatening">Đe dọa hoặc quấy rối</option>
+                  <option value="inappropriate">Nội dung không phù hợp</option>
+                  <option value="spam">Thư rác</option>
+                  <option value="other">Khác</option>
                 </Form.Select>
                 <Form.Control.Feedback type="invalid">
-                  Please select a report type.
+                  Vui lòng chọn loại báo cáo.
                 </Form.Control.Feedback>
               </Form.Group>
 
               <Form.Group className="mb-3">
                 <Form.Label>
-                  Description <span className="text-danger">*</span>
+                  Mổ tả <span className="text-danger">*</span>
                 </Form.Label>
                 <Form.Control
                   as="textarea"
@@ -143,15 +174,15 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
                   required
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please provide details about the issue.
+                  Vui lòng cung cấp thông tin chi tiết về vấn đề này.
                 </Form.Control.Feedback>
               </Form.Group>
 
               <Alert variant="warning" className="d-flex align-items-center">
                 <AlertTriangle className="me-2" />
                 <div>
-                  False reporting may result in account restrictions. Please
-                  ensure your report is accurate.
+                  Báo cáo sai có thể dẫn đến hạn chế tài khoản. Vui lòng đảm bảo
+                  báo cáo của bạn là chính xác.
                 </div>
               </Alert>
 
@@ -160,16 +191,16 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
                   variant="outline-danger"
                   className="me-md-2"
                   style={{ width: "140px" }}
-                  onClick={handleClose}
+                  onClick={onHide}
                 >
-                  Cancel
+                  Hủy
                 </Button>
                 <Button
                   variant="primary"
                   type="submit"
                   style={{ width: "140px" }}
                 >
-                  Submit Report
+                 Lưu
                 </Button>
               </div>
             </Form>
@@ -199,10 +230,10 @@ const ReportedFeedbackHotel = ({ show, handleClose, feedbackId }) => {
               variant="primary"
               onClick={() => {
                 setShowModal();
-                handleClose();
+                onHide();
               }}
             >
-              Close
+              Đóng
             </Button>
           </Card.Body>
         </Container>

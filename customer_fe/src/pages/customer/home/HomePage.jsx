@@ -7,6 +7,7 @@ import {
   Form,
   InputGroup,
   Image,
+  Badge,
 } from "react-bootstrap";
 import {
   FaMapMarkerAlt,
@@ -83,9 +84,21 @@ function Home() {
     }
   }, [location, navigate]);
 
+  const [hotels, setHotels] = useState([]);
+  useEffect(() => {
+    dispatch({
+      type: HotelActions.FETCH_ALL_HOTEL,
+      payload: {
+        onSuccess: (hotels) => {
+          setHotels(hotels);
+        },
+      },
+    });
+  }, []);
+
   return (
     <div className="app-container_1">
-      <NavigationBar from="login"/>
+      <NavigationBar from="login" />
       <ToastProvider />
       <HeroSection />
       <SearchBar />
@@ -129,76 +142,121 @@ const childrenOptions = Array.from({ length: 11 }, (_, i) => ({
 }));
 
 export const SearchBar = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const hotels = useAppSelector((state) => state.hotel.hotels)
+  const todayDate = new Date()
+  const tomorrowDate = new Date()
+  tomorrowDate.setDate(todayDate.getDate() + 1)
+  const today = todayDate.toISOString().split("T")[0]
+  const tomorrow = tomorrowDate.toISOString().split("T")[0]
 
-  const todayDate = new Date(); // Date object
-  const tomorrowDate = new Date();
-  tomorrowDate.setDate(todayDate.getDate() + 1);
-  const today = todayDate.toISOString().split("T")[0]; // "YYYY-MM-DD"
-  const tomorrow = tomorrowDate.toISOString().split("T")[0];
-  const [checkinDate, setCheckinDate] = useState(today);
-  const [checkoutDate, setCheckoutDate] = useState(tomorrow);
-
+  const [checkinDate, setCheckinDate] = useState(today)
+  const [checkoutDate, setCheckoutDate] = useState(tomorrow)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [filteredHotels, setFilteredHotels] = useState([])
   const [selectedCity, setSelectedCity] = useState({
     value: "Hà Nội",
     label: "Hà Nội",
-  });
-  const [selectedAdults, setSelectedAdults] = useState(adultsOptions[0]); // Default to 1 adult
-  const [selectedChildren, setSelectedChildren] = useState(childrenOptions[0]); // Default to 0 children
-  const dispatch = useDispatch();
+  })
+  const [selectedAdults, setSelectedAdults] = useState(adultsOptions[0])
+  const [selectedChildren, setSelectedChildren] = useState(childrenOptions[0])
+  const dispatch = useDispatch()
   const [errors, setErrors] = useState({
     address: false,
     checkinDate: false,
     checkoutDate: false,
     dateOrder: false,
-  });
+  })
 
-  const [showModal, setShowModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [showModal, setShowModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
+  const searchRef = useRef(null)
+  const suggestionsRef = useRef(null)
 
-  // Handle search function
+  // Filter hotels based on search query
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      const filtered = hotels.filter(
+        (hotel) =>
+          hotel?.hotelName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          hotel?.address?.toLowerCase().includes(searchQuery.toLowerCase()),
+      )
+      setFilteredHotels(filtered)
+      setShowSuggestions(true)
+    } else {
+      setFilteredHotels([])
+      setShowSuggestions(false)
+    }
+  }, [searchQuery, hotels])
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target) &&
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target)
+      ) {
+        setShowSuggestions(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const handleHotelSelect = (hotel) => {
+    setSearchQuery(hotel.hotelName)
+    // Extract city from address or use a mapping
+    navigate(`${Routers.Home_detail}/${hotel._id}`);
+    setShowSuggestions(false)
+  }
+
+  const extractCityFromAddress = (address) => {
+    const cities = ["Hà Nội", "Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Phú Quốc"]
+    return cities.find((city) => address?.toLowerCase().includes(city.toLowerCase()))
+  }
+
   const handleSearch = () => {
-    // Reset errors
     setErrors({
       address: false,
       checkinDate: false,
       checkoutDate: false,
       dateOrder: false,
-    });
+    })
 
-    // Validate inputs in order and show modal for the first error found
     if (!selectedCity) {
-      setErrorMessage("Please select a location");
-      setShowModal(true);
-      setErrors((prev) => ({ ...prev, address: true }));
-      return;
+      setErrorMessage("Please select a location")
+      setShowModal(true)
+      setErrors((prev) => ({ ...prev, address: true }))
+      return
     }
 
     if (!checkinDate) {
-      setErrorMessage("Please select a check-in date");
-      setShowModal(true);
-      setErrors((prev) => ({ ...prev, checkinDate: true }));
-      return;
+      setErrorMessage("Please select a check-in date")
+      setShowModal(true)
+      setErrors((prev) => ({ ...prev, checkinDate: true }))
+      return
     }
 
     if (!checkoutDate) {
-      setErrorMessage("Please select a check-out date");
-      setShowModal(true);
-      setErrors((prev) => ({ ...prev, checkoutDate: true }));
-      return;
+      setErrorMessage("Please select a check-out date")
+      setShowModal(true)
+      setErrors((prev) => ({ ...prev, checkoutDate: true }))
+      return
     }
 
     if (new Date(checkinDate) >= new Date(checkoutDate)) {
-      setErrorMessage("Check-in date must be before check-out date");
-      setShowModal(true);
-      setErrors((prev) => ({ ...prev, dateOrder: true }));
-      return;
+      setErrorMessage("Check-in date must be before check-out date")
+      setShowModal(true)
+      setErrors((prev) => ({ ...prev, dateOrder: true }))
+      return
     }
 
-    // If no errors, proceed with search
-    const adults = selectedAdults ? selectedAdults.value : 1;
-    const childrens = selectedChildren ? selectedChildren.value : 0;
-    const numberOfPeople = adults + childrens;
+    const adults = selectedAdults ? selectedAdults.value : 1
+    const childrens = selectedChildren ? selectedChildren.value : 0
 
     const SearchInformation = {
       address: selectedCity.value,
@@ -206,22 +264,21 @@ export const SearchBar = () => {
       checkoutDate,
       adults,
       childrens,
-    };
+      hotelName: searchQuery, // Add hotel name to search
+    }
+
     dispatch({
       type: SearchActions.SAVE_SEARCH,
       payload: { SearchInformation },
-    });
+    })
 
-    // Navigate to search page with parameters
-    navigate(Routers.HotelSearchPage);
-  };
+    navigate(Routers.HotelSearchPage)
+  }
 
-  // Add a function to close the modal
   const closeModal = () => {
-    setShowModal(false);
-  };
+    setShowModal(false)
+  }
 
-  // Custom styles for react-select
   const selectStyles = {
     control: (provided) => ({
       ...provided,
@@ -230,10 +287,24 @@ export const SearchBar = () => {
       boxShadow: "none",
       width: "100%",
     }),
-  };
+  }
+
+  const highlightText = (text, query) => {
+    if (!query) return text
+    const parts = text.split(new RegExp(`(${query})`, "gi"))
+    return parts.map((part, index) =>
+      part.toLowerCase() === query.toLowerCase() ? (
+        <mark key={index} style={{ backgroundColor: "#fff3cd", padding: "0" }}>
+          {part}
+        </mark>
+      ) : (
+        part
+      ),
+    )
+  }
+
   return (
-    <div style={{ maxWidth: "1300px", margin: "0 auto", marginTop: "-4.5%" }}>
-      {/* Khối chứa cả Hotel và Search Bar */}
+    <div style={{ maxWidth: "1800px", margin: "0 auto", marginTop: "-4.5%" }}>
       <div
         style={{
           borderRadius: "20%",
@@ -256,11 +327,11 @@ export const SearchBar = () => {
             boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
             paddingLeft: "20px",
             marginBottom: "-1%",
-            marginLeft: "-0.9%",
+            marginLeft: "-0.65%",
           }}
         >
           <FaHotel style={{ color: "#2D74FF", fontSize: "24px" }} />
-          <span style={{ color: "black", marginLeft: "10px" }}>Hotel</span>
+          <span style={{ color: "black", marginLeft: "10px" }}>Search Hotels</span>
         </div>
 
         {/* Search Bar */}
@@ -270,9 +341,137 @@ export const SearchBar = () => {
             borderBottomRightRadius: "20px",
             borderBottomLeftRadius: "20px",
             borderTopRightRadius: "20px",
+            position: "relative",
           }}
         >
-          <Col md={3}>
+          {/* Hotel Search Input */}
+          <Col md={2} className="position-relative" ref={searchRef}>
+            <InputGroup className="border" style={{ borderRadius: "10px" }}>
+              <InputGroup.Text className="bg-transparent border-0">
+                <FaHotel />
+              </InputGroup.Text>
+              <Form.Control
+                type="text"
+                placeholder="Name hotel or city ..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  border: "none",
+                  backgroundColor: "transparent",
+                }}
+              />
+            </InputGroup>
+
+            {/* Hotel Suggestions Dropdown */}
+            {showSuggestions && filteredHotels.length > 0 && (
+              <Card
+                ref={suggestionsRef}
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: "0",
+                  right: "0",
+                  marginTop: "8px",
+                  zIndex: 1000,
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)",
+                  border: "2px solid #f3f4f6",
+                  borderRadius: "12px",
+                  maxHeight: "320px",
+                  overflowY: "auto",
+                }}
+              >
+                <Card.Body style={{ padding: "0" }}>
+                  {filteredHotels.map((hotel, index) => (
+                    <div
+                      key={hotel.hotelId}
+                      onClick={() => handleHotelSelect(hotel)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "1rem",
+                        padding: "1rem",
+                        cursor: "pointer",
+                        borderBottom: index < filteredHotels.length - 1 ? "1px solid #f3f4f6" : "none",
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#eff6ff"
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent"
+                      }}
+                    >
+                      <Image
+                        src={hotel.images?.[0] || "/placeholder.svg"}
+                        alt={hotel.hotelName}
+                        style={{
+                          width: "48px",
+                          height: "48px",
+                          borderRadius: "8px",
+                          objectFit: "cover",
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <h6
+                          style={{
+                            fontWeight: "600",
+                            color: "#111827",
+                            fontSize: "14px",
+                            margin: "0 0 4px 0",
+                          }}
+                        >
+                          {highlightText(hotel.hotelName, searchQuery)}
+                        </h6>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            color: "#6b7280",
+                            fontSize: "12px",
+                            marginBottom: "4px",
+                          }}
+                        >
+                          <span>{highlightText(hotel.address, searchQuery)}</span>
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                        >
+                          <Badge
+                            bg="secondary"
+                            style={{
+                              fontSize: "10px",
+                              padding: "2px 6px",
+                            }}
+                          >
+                            {extractCityFromAddress(hotel.address) || "N/A"}
+                          </Badge>
+                          <div style={{ display: "flex", gap: "2px" }}>
+                            {[...Array(hotel.star || 0)].map((_, i) => (
+                              <FaStar
+                                key={i}
+                                style={{
+                                  color: "#fbbf24",
+                                  fontSize: "12px",
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </Card.Body>
+              </Card>
+            )}
+          </Col>
+
+          {/* Location Select */}
+          <Col md={2}>
             <InputGroup className="border" style={{ borderRadius: "10px" }}>
               <InputGroup.Text className="bg-transparent border-0">
                 <FaMapMarkerAlt />
@@ -284,15 +483,7 @@ export const SearchBar = () => {
                   onChange={setSelectedCity}
                   placeholder="Search location"
                   isSearchable
-                  styles={{
-                    control: (provided) => ({
-                      ...provided,
-                      border: "none",
-                      background: "transparent",
-                      boxShadow: "none",
-                      width: "100%",
-                    }),
-                  }}
+                  styles={selectStyles}
                 />
               </div>
               <InputGroup.Text className="bg-transparent border-0">
@@ -301,14 +492,11 @@ export const SearchBar = () => {
             </InputGroup>
           </Col>
 
+          {/* Dates */}
           <Col md={4}>
             <Row className="align-items-center">
-              {/* Ngày bắt đầu */}
               <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
+                <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
                   <InputGroup.Text className="bg-transparent border-0">
                     <FaCalendarAlt />
                   </InputGroup.Text>
@@ -322,20 +510,12 @@ export const SearchBar = () => {
                 </InputGroup>
               </Col>
 
-              {/* Icon mũi tên */}
-              <Col
-                xs="auto"
-                className="d-flex align-items-center justify-content-center"
-              >
+              <Col xs="auto" className="d-flex align-items-center justify-content-center">
                 <FaArrowRight style={{ fontSize: "1.2rem", color: "#555" }} />
               </Col>
 
-              {/* Ngày kết thúc */}
               <Col className="d-flex flex-grow-1">
-                <InputGroup
-                  className="border w-100"
-                  style={{ borderRadius: "10px" }}
-                >
+                <InputGroup className="border w-100" style={{ borderRadius: "10px" }}>
                   <InputGroup.Text className="bg-transparent border-0">
                     <FaCalendarAlt />
                   </InputGroup.Text>
@@ -351,12 +531,9 @@ export const SearchBar = () => {
             </Row>
           </Col>
 
-          {/* Ô chọn số lượng Adults và Children */}
-          <Col md={4} className="px-3 ">
-            <InputGroup
-              className="border"
-              style={{ borderRadius: "10px", padding: "2px" }}
-            >
+          {/* Guests */}
+          <Col md={3} className="px-3">
+            <InputGroup className="border" style={{ borderRadius: "10px", padding: "2px" }}>
               <InputGroup.Text className="bg-transparent border-0">
                 <FaUser />
               </InputGroup.Text>
@@ -399,14 +576,11 @@ export const SearchBar = () => {
       </div>
 
       {/* Error Modal */}
-      <ErrorModal
-        show={showModal}
-        onClose={closeModal}
-        message={errorMessage}
-      />
+      <ErrorModal show={showModal} onClose={closeModal} message={errorMessage} />
     </div>
-  );
-};
+  )
+}
+
 
 function OtherHotels() {
   const dispatch = useAppDispatch();

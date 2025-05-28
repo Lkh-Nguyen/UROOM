@@ -208,6 +208,15 @@ function CustomerChat() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const handleSeen = () => {
+    if (selectedUser) {
+      Socket.emit("markAsRead", {
+        senderId: selectedUser._id,
+        receiverId: Auth._id,
+      });
+      fetchAllUser();
+    }
+  };
   return (
     <div style={styles.container}>
       {/* Sidebar - Danh sách người dùng */}
@@ -362,7 +371,7 @@ function CustomerChat() {
           <></>
         )}
         {/* Khu vực tin nhắn */}
-        <div style={styles.messages}>
+        <div style={styles.messages}        >
           {userMessages && userMessages.length > 0 ? (
             userMessages.map((message, index) => {
               const currentTime = moment(message.timestamp);
@@ -425,7 +434,6 @@ function CustomerChat() {
                         </span>
                       </div>
                     </div>
-
                   </div>
 
                   {/* Message status (only for the last message from current user) */}
@@ -475,6 +483,7 @@ function CustomerChat() {
                 style={styles.inputFieldTextarea}
                 placeholder="Nhập tin nhắn..."
                 value={newMessage}
+                onClick={handleSeen}
                 onChange={(e) => {
                   if (selectedUser) {
                     Socket.emit("markAsRead", {

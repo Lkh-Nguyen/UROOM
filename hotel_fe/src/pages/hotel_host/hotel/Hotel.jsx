@@ -263,6 +263,7 @@ function Hotel({ show, handleClose, selectedHotelId }) {
       checkInEnd,
       checkOutStart,
       checkOutEnd,
+      email: hotelinfo?.[0]?.email || "",
     };
 
     setLoading(true);
@@ -591,20 +592,40 @@ function Hotel({ show, handleClose, selectedHotelId }) {
                       <Form.Label className="fw-bold" style={{ fontSize: 18 }}>
                         Liên lạc của khách sạn
                       </Form.Label>
-                      <Form.Control
-                        type="text"
-                        placeholder="Nhập tên chỗ nghỉ"
-                        className="form-input"
-                        value={hotelinfo?.[0]?.phoneNumber || ""}
-                        onChange={(e) => {
-                          const updatedHotels = [...hotelinfo];
-                          updatedHotels[0] = {
-                            ...updatedHotels[0],
-                            phoneNumber: e.target.value,
-                          };
-                          setHotelinfo(updatedHotels);
-                        }}
-                      />
+                      <Col>
+                        <Form.Label>Số điện thoại</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Nhập số điện thoại"
+                          className="form-input"
+                          value={hotelinfo?.[0]?.phoneNumber || ""}
+                          onChange={(e) => {
+                            const updatedHotels = [...hotelinfo];
+                            updatedHotels[0] = {
+                              ...updatedHotels[0],
+                              phoneNumber: e.target.value,
+                            };
+                            setHotelinfo(updatedHotels);
+                          }}
+                        />
+                      </Col>
+                      <Col>
+                        <Form.Label>Gmail</Form.Label>
+                        <Form.Control
+                          type="text"
+                          placeholder="Nhập email khách sạn"
+                          className="form-input"
+                          value={hotelinfo?.[0]?.email || ""}
+                          onChange={(e) => {
+                            const updatedHotels = [...hotelinfo];
+                            updatedHotels[0] = {
+                              ...updatedHotels[0],
+                              email: e.target.value,
+                            };
+                            setHotelinfo(updatedHotels);
+                          }}
+                        />
+                      </Col>
                     </Col>
                   </Row>
 

@@ -21,7 +21,7 @@ const LoginHotelPage = () => {
   const [isResending, setIsResending] = useState(false);
   const [unverifiedEmail, setUnverifiedEmail] = useState("");
   const [formData, setFormData] = useState({
-    email: "hot1@gm.com",
+    email: "lkhnguyen3006@gmail.com",
     password: "12345678",
     rememberMe: false,
   });
@@ -76,7 +76,9 @@ const LoginHotelPage = () => {
               });
               dispatch({ type: AuthActions.LOGOUT });
               clearToken();
-            } else {
+            } else if(user.ownedHotels.length === 0){
+              navigate(Routers.BookingRegistration);
+            }else{
               navigate(Routers.DataAnalysisAI);
             }
           },

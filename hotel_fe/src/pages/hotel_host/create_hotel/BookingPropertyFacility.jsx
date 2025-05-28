@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Navbar,
   Container,
@@ -13,12 +13,65 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FiArrowLeft } from "react-icons/fi";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import { listFacilities } from "@utils/data";
+import HotelActions from "@redux/hotel/actions";
+import { showToast, ToastProvider } from "@components/ToastContainer";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@redux/store";
 
 function BookingPropertyFacility() {
   const navigate = useNavigate();
+  const dispatch= useDispatch();
+  const createHotel = useAppSelector((state) => state.Hotel.createHotel);
+  const [hotelFacilities, setHotelFacilities] = useState(createHotel.facilities);
+  const handleFacilityChange = (facilityName) => {
+    setHotelFacilities((prev) => {
+      if (prev.includes(facilityName)) {
+        // Bỏ tick
+        return prev.filter((name) => name !== facilityName);
+      } else {
+        // Tick
+        return [...prev, facilityName];
+      }
+    });
+  };
 
+  const handleBack= () => {
+    // Save current data before going back
+    dispatch({
+      type: HotelActions.SAVE_HOTEL_FACILITIES_CREATE,
+      payload: {
+        facilities: hotelFacilities,
+      },
+    });
+    
+    // Navigate back (you can replace with actual back route)
+    navigate(Routers.BookingPropertyLocation)
+  }
+  
+  const handleContinue = () => {
+    // Validate required fields
+    if (hotelFacilities.length === 0) {
+      showToast.warning("Vui lòng chọn tiện nghi của khách sạn");
+      return;
+    }
+
+
+    // Dispatch action to save data
+    dispatch({
+      type: HotelActions.SAVE_HOTEL_FACILITIES_CREATE,
+      payload: {
+        facilities: hotelFacilities,
+      },
+    });
+
+    // Navigate to next step
+    navigate(Routers.BookingPropertyCheckInOut);
+  };
+  console.log("hotelFacilities: ", hotelFacilities);
   return (
     <div className="booking-app">
+      <ToastProvider/>
       {/* Navigation Bar */}
       <Navbar className="navbar-custom">
         <Container>
@@ -70,17 +123,31 @@ function BookingPropertyFacility() {
                 <Form>
                   <Form.Group className="mb-3">
                     <Form.Label className="fw-bold">Các tiện nghi</Form.Label>
-                    <Form.Check type="checkbox" label="WiFi miễn phí" />
-                    <Form.Check type="checkbox" label="Bãi đỗ xe miễn phí" />
-                    <Form.Check type="checkbox" label="Điều hòa nhiệt độ" />
-                    <Form.Check type="checkbox" label="Phòng gia đình" />
-                    <Form.Check type="checkbox" label="Sân thượng" />
-                    <Form.Check type="checkbox" label="Khu vườn" />
-                    <Form.Check type="checkbox" label="Hồ bơi" />
-                    <Form.Check type="checkbox" label="Lễ tân 24 giờ" />
-                    <Form.Check type="checkbox" label="Quầy bar" />
-                    <Form.Check type="checkbox" label="Bồn tắm nóng/Jacuzzi" />
-                    <Form.Check type="checkbox" label="Phòng xông hơi" />
+                    {listFacilities.map((facility, index) => {
+                      const FacilityIcon = facility.iconTemp;
+                      return (
+                        <Form.Check
+                          className="mb-1"
+                          key={`facility1-${index}`}
+                          type="checkbox"
+                          label={
+                            <span>
+                              {FacilityIcon && (
+                                <FacilityIcon
+                                  style={{
+                                    marginRight: "8px",
+                                    marginTop: "-10px",
+                                  }}
+                                />
+                              )}
+                              <a>{facility.name}</a>
+                            </span>
+                          }
+                          checked={hotelFacilities.includes(facility.name)}
+                          onChange={() => handleFacilityChange(facility.name)}
+                        />
+                      );
+                    })}
                   </Form.Group>
                 </Form>
               </div>
@@ -88,18 +155,14 @@ function BookingPropertyFacility() {
             <div className="navigation-buttons mt-4">
               <Button
                 variant="outline-primary"
-                onClick={() => {
-                  navigate("/BookingPropertyLocation");
-                }}
+                onClick={handleBack}
               >
                 <FiArrowLeft className="back-icon" />
               </Button>
               <Button
                 variant="primary"
                 className="continue-button"
-                onClick={() => {
-                  navigate("/BookingPropertyCheckInOut");
-                }}
+                onClick={handleContinue}
               >
                 Tiếp tục
               </Button>

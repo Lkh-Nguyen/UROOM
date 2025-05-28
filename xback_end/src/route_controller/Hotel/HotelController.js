@@ -397,7 +397,8 @@ exports.updateHotelInfo = asyncHandler(async (req, res) => {
     "checkInStart",
     "checkInEnd",
     "checkOutStart",
-    "checkOutEnd"
+    "checkOutEnd",
+    "email",
   ];
 
   updatableFields.forEach(field => {

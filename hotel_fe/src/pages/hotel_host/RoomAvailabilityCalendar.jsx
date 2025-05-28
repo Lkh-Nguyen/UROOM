@@ -1273,4 +1273,3 @@ function RoomAvailabilityCalendar() {
 }
 
 export default RoomAvailabilityCalendar
-

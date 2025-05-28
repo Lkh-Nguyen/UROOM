@@ -34,50 +34,138 @@ import DataAnalysisAI from "@pages/hotel_host/AI/DataAnalysisAI";
 import HotelManagement from "@pages/hotel_host/hotel/HotelManagement";
 import Room from "@pages/room/Room";
 import ViewInformation from "@pages/hotel_host/information/components/ViewInformationHotel";
+import VerifyCodeRegisterPage from "@pages/hotel_host/login_register/VerifyCodeRegisterPage";
+import { useEffect } from "react";
+import { useAppSelector } from "@redux/store";
 
 function App() {
+  useEffect(() => {
+    document.title = "Uroom Owner";
+  }, []);
+
+  const Socket = useAppSelector((state) => state.Socket.socket);
+  const Auth = useAppSelector((state) => state.Auth.Auth);
+
+  useEffect(() => {
+    if (!Socket || !Auth?._id) return;
+
+    Socket.emit("register", Auth._id);
+
+    const handleForceJoinRoom = ({ roomId, partnerId }) => {
+      Socket.emit("join-room", {
+        userId: Auth._id,
+        partnerId,
+      });
+
+      // Optional: tự mở khung chat với partnerId nếu chưa mở
+      // dispatch(setSelectedUser(partnerId)); hoặc setSelectedUser(partnerId)
+    };
+
+    Socket.on("force-join-room", handleForceJoinRoom);
+
+    return () => {
+      Socket.off("force-join-room", handleForceJoinRoom);
+    };
+  }, [Socket, Auth?._id]);
   return (
     <Router>
       <Routes>
-        <Route path={Routers.BannedPage} element={<BannedPage/>} />
-        <Route path={Routers.ErrorPage} element={<ErrorPage/>} />
+        <Route path={Routers.BannedPage} element={<BannedPage />} />
+        <Route path={Routers.ErrorPage} element={<ErrorPage />} />
         <Route path={Routers.WaitPendingPage} element={<WaitPendingPage />} />
 
         {/*|Hotel Host */}
         <Route path={Routers.Transaction} element={<Transaction />} />
-        <Route path={Routers.BookingSchedule} element={<RoomAvailabilityCalendar />} />
-        <Route path={Routers.TransactionDetail} element={<TransactionDetail />} />
-        <Route path={Routers.BookingRegistration} element={<BookingRegistration />} />
-        <Route path={Routers.BookingPropertyName} element={<BookingPropertyName />} />
-        <Route path={Routers.BookingPropertyLocation} element={<BookingPropertyLocation />} />
-        <Route path={Routers.BookingPropertyFacility} element={<BookingPropertyFacility />} />
-        <Route path={Routers.BookingPropertyCheckInOut} element={<BookingPropertyCheckInOut />} />
-        <Route path={Routers.BookingPropertyDescription} element={<BookingPropertyDescription />} />
-        <Route path={Routers.BookingPropertyChecklist} element={<BookingPropertyChecklist />} />
+        <Route
+          path={Routers.BookingSchedule}
+          element={<RoomAvailabilityCalendar />}
+        />
+        <Route
+          path={Routers.TransactionDetail}
+          element={<TransactionDetail />}
+        />
+        <Route
+          path={Routers.BookingRegistration}
+          element={<BookingRegistration />}
+        />
+        <Route
+          path={Routers.BookingPropertyName}
+          element={<BookingPropertyName />}
+        />
+        <Route
+          path={Routers.BookingPropertyLocation}
+          element={<BookingPropertyLocation />}
+        />
+        <Route
+          path={Routers.BookingPropertyFacility}
+          element={<BookingPropertyFacility />}
+        />
+        <Route
+          path={Routers.BookingPropertyCheckInOut}
+          element={<BookingPropertyCheckInOut />}
+        />
+        <Route
+          path={Routers.BookingPropertyDescription}
+          element={<BookingPropertyDescription />}
+        />
+        <Route
+          path={Routers.BookingPropertyChecklist}
+          element={<BookingPropertyChecklist />}
+        />
         <Route path={Routers.CreateRoom} element={<CreateRoom />} />
         <Route path={Routers.RoomNamingForm} element={<RoomNamingForm />} />
         <Route path={Routers.PricingSetupForm} element={<PricingSetupForm />} />
         <Route path={Routers.RoomImageForm} element={<RoomImageForm />} />
         <Route path={Routers.RoomListingPage} element={<RoomListingPage />} />
-        <Route path={Routers.AdditionalServicesPage} element={<AdditionalServicesPage />} />
-        
+        <Route
+          path={Routers.AdditionalServicesPage}
+          element={<AdditionalServicesPage />}
+        />
+
         {/*|Hotel Host */}
-        <Route path={Routers.HotelManagement} element={<HotelManagement/>} />
-        <Route path={Routers.HomeHotel} element={<HomeHotel/>} />
-        <Route path={Routers.LoginHotelPage} element={<LoginHotelPage/>} />
-        <Route path={Routers.RegisterHotelPage} element={<RegisterHotelPage/>} />
-        <Route path={Routers.ForgetPasswordHotelPage} element={<ForgetPasswordHotelPage/>} />
-        <Route path={Routers.VerifyCodeHotelPage} element={<VerifyCodeHotelPage/>} />
-        <Route path={Routers.ResetPasswordHotelPage} element={<ResetPasswordHotelPage/>} />
-        <Route path={Routers.MyAccountHotelPage} element={<MyAccountHotelPage/>} />
-        <Route path={Routers.ListFeedbackHotelPage} element={<ListFeedbackHotelPage/>} />
-        <Route path={Routers.ReportedFeedbackHotel} element={<ReportedFeedbackHotel/>} />
-        <Route path={Routers.DocumentUpload} element={<DocumentUpload/>} />
-        <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI/>} />
-        <Route path={Routers.Room} element={<Room/>} />
+        <Route path={Routers.HotelManagement} element={<HotelManagement />} />
+        <Route path={Routers.HomeHotel} element={<HomeHotel />} />
+        <Route path={Routers.LoginHotelPage} element={<LoginHotelPage />} />
+        <Route
+          path={Routers.RegisterHotelPage}
+          element={<RegisterHotelPage />}
+        />
+        <Route
+          path={Routers.VerifyCodeRegisterPage}
+          element={<VerifyCodeRegisterPage />}
+        />
+        <Route
+          path={Routers.ForgetPasswordHotelPage}
+          element={<ForgetPasswordHotelPage />}
+        />
+        <Route
+          path={Routers.VerifyCodeHotelPage}
+          element={<VerifyCodeHotelPage />}
+        />
+        <Route
+          path={Routers.ResetPasswordHotelPage}
+          element={<ResetPasswordHotelPage />}
+        />
+        <Route
+          path={Routers.MyAccountHotelPage}
+          element={<MyAccountHotelPage />}
+        />
+        <Route
+          path={Routers.ListFeedbackHotelPage}
+          element={<ListFeedbackHotelPage />}
+        />
+        <Route
+          path={Routers.ReportedFeedbackHotel}
+          element={<ReportedFeedbackHotel />}
+        />
+        <Route path={Routers.DocumentUpload} element={<DocumentUpload />} />
+        <Route path={Routers.DataAnalysisAI} element={<DataAnalysisAI />} />
+        <Route path={Routers.Room} element={<Room />} />
 
-        <Route path={Routers.MyAccountHotelPage} element={<MyAccountHotelPage/>} />
-
+        <Route
+          path={Routers.MyAccountHotelPage}
+          element={<MyAccountHotelPage />}
+        />
       </Routes>
     </Router>
   );

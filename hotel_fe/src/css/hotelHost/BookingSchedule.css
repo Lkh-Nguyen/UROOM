@@ -1,13 +1,17 @@
 .calendar-container {
   overflow-x: auto;
   padding-bottom: 1rem;
+  width: 100%;
 }
 
 .calendar-grid {
-  display: table;
+  /* display: table; */
   width: 100%;
   border-collapse: collapse;
   min-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  /* min-width: 700px; */
 }
 
 .calendar-header,
@@ -58,7 +62,7 @@
 
 .room-info {
   background-color: #f8f9fa;
-  min-width: 150px;
+  min-width: 180px;
   position: relative;
 }
 
@@ -267,4 +271,8 @@
     margin-bottom: 1rem;
   }
 }
+
+
+
+
 

@@ -8,17 +8,34 @@ const { emailVerificationTemplate } = require("../../utils/emailTemplates");
 const admin = require("../../config/firebaseAdminConfig").default;
 
 exports.loginCustomer = async (req, res) => {
-  const { email, password } = req.body;
-  console.log("body: ", req.body);
-  const user = await User.findOne({ email }).select("+password");
+  try {
+    const { email, password } = req.body;
+    console.log("body: ", req.body);
 
-  if (user.role) {
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const user = await User.findOne({ email }).select("+password");
+
+    // Nếu không tìm thấy user
+    if (!user) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
+
+    // Nếu không có role
+    if (!user.role) {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    // So sánh mật khẩu
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    // Kiểm tra xác minh email
     if (!user.isVerified) {
       return res.status(403).json({ MsgNo: "Your email is not verified" });
     }
+
+    // Tạo token và trả về dữ liệu
     const token = generateToken(user);
     res.json({
       Data: {
@@ -26,8 +43,10 @@ exports.loginCustomer = async (req, res) => {
         user: user,
       },
     });
-  } else {
-    return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
   }
 };
 
@@ -36,6 +55,9 @@ exports.loginOwner = async (req, res) => {
   console.log("body: ", req.body);
   const user = await User.findOne({ email }).select("+password");
 
+  if (!user) {
+    return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+  }
   if (user.role && user.role == "OWNER") {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
@@ -196,6 +218,109 @@ exports.registerCustomer = async (req, res) => {
     res.status(500).json({ MsgNo: "Internal server error" });
   }
 };
+
+/**
+ * Send email when forgot password
+ */
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log("Forgot password request for email:", email);   
+    if (!email) {
+      return res.status(400).json({ MsgNo: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ MsgNo: "User not found" });
+    }
+
+    // Generate reset token and expiry (6-digit code, valid for 1 hour)
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpiresAt = new Date(Date.now() + 60 * 60 * 1000);
+
+    user.verificationToken = verificationToken;
+    user.verificationTokenExpiresAt = verificationTokenExpiresAt;
+    await user.save();
+
+    // Send email with reset code
+    const emailSent = await sendEmail(
+      email,
+      "UROOM - Password Reset Code",
+      emailVerificationTemplate(user.name, verificationToken)
+    );
+
+    if (!emailSent) {
+      return res.status(500).json({ MsgNo: "Failed to send reset email" });
+    }
+
+    res.json({
+      MsgNo: "Password reset code sent to your email",
+      Data: { email: user.email },
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+
+/**
+ * Reset password using the code sent to email
+ */
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email,code, newPassword, confirmPassword } = req.body;
+    if (!email ||!code || !newPassword || !confirmPassword) {
+      return res.status(400).json({ MsgNo: "All fields are required" });
+    }
+
+
+    const user = await User.findOne({
+      email,
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: new Date() },
+    }).select("+password");
+    if (!user) {
+      return res.status(400).json({ MsgNo: "Invalid or expired verification code" });
+    }
+    user.password = newPassword;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    user.updatedAt = new Date();
+    await user.save();
+
+    res.json({ MsgNo: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+/**
+ * Verify request forgot password using the verification code
+ */
+exports.verifyForgotPassword = async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    // Find user with the verification code
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: new Date() },
+    });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ MsgNo: "Invalid or expired verification code" });
+    }
+    res.json({
+      MsgNo: "Verification successful. You can now reset your password.",
+    });
+  }
+  catch (error) {
+    console.error("Verification error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+}
 
 /**
  * Verify email using the verification code
@@ -372,6 +497,71 @@ exports.googleLogin = async (req, res) => {
     });
   } catch (error) {
     console.error("Google login error:", error);
+    res.status(500).json({ MsgNo: "Internal server error" });
+  }
+};
+
+////Owner///
+exports.registerOwner = async (req, res) => {
+  try {
+    const { name, email, password, phoneNumber } = req.body;
+
+    console.log("body: ", req.body);
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ MsgNo: "Email is already registered" });
+    }
+
+    // Generate 6-digit verification code
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpiresAt = new Date(
+      Date.now() + 24 * 60 * 60 * 1000
+    ); // 24 hours
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password,
+      phoneNumber,
+      role: "OWNER",
+      isVerified: false,
+      verificationToken,
+      verificationTokenExpiresAt,
+    });
+
+    // Save user
+    await newUser.save();
+
+    // Send verification email with 6-digit code
+    const emailSent = await sendEmail(
+      email,
+      "UROOM - Verify Your Email",
+      emailVerificationTemplate(name, verificationToken)
+    );
+
+    if (!emailSent) {
+      return res
+        .status(500)
+        .json({ MsgNo: "Failed to send verification email" });
+    }
+
+    res.json({
+      MsgNo:
+        "Registration successful! Please check your email for your verification code.",
+      Data: {
+        user: {
+          _id: newUser._id,
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          isVerified: newUser.isVerified,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Registration error:", error);
     res.status(500).json({ MsgNo: "Internal server error" });
   }
 };

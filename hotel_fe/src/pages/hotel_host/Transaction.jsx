@@ -17,14 +17,17 @@ import { useNavigate } from "react-router-dom";
 import TransactionDetail from "./TransactionDetail";
 import { useDispatch, useSelector } from "react-redux";
 import ReservationActions from "../../redux/reservation/actions";
+import MonthlyPaymentActions from "@redux/monthlyPayment/actions";
 import Utils from "@utils/Utils";
 
 const Transaction = () => {
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const { reservations } = useSelector((state) => state.Reservation);
-  const [payments, setPayments] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const { list } = useSelector((state) => state.MonthlyPayment);
+  const [selectedAdminYear, setSelectedAdminYear] = useState(new Date().getFullYear());
+
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth()+1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedStatus, setSelectedStatus] = useState("All");
   const [selectedSort, setSelectedSort] = useState("desc");
@@ -53,7 +56,7 @@ const Transaction = () => {
       type: ReservationActions.FETCH_RESERVATIONS,
       payload: {
         status: selectedStatus !== "All" ? selectedStatus : undefined,
-        month: selectedMonth + 1, // FE dùng 0-11, BE dùng 1-12
+        month: selectedMonth,
         year: selectedYear,
         sort: selectedSort,
       },
@@ -61,6 +64,12 @@ const Transaction = () => {
     // Reset về trang 1 khi filter thay đổi
     setCurrentPage(1);
   }, [dispatch, selectedMonth, selectedYear, selectedStatus, selectedSort]);
+  useEffect(() => {
+    dispatch({
+      type: MonthlyPaymentActions.FETCH_MONTHLY_PAYMENTS,
+      payload: { year: selectedAdminYear },
+    });
+  }, [dispatch, selectedAdminYear]);
 
   const handleBankInfoChange = (e) => {
     const { name, value } = e.target;
@@ -210,14 +219,14 @@ const Transaction = () => {
       return total + roomPrice * quantity;
     }, 0);
   };
-  
+
   const totalCustomerPaid = reservations?.reduce(
     (sum, r) => sum + calculateTotalPrice(r.rooms),
     0
   );
 
-  const totalCommission = Math.floor(totalCustomerPaid * 0.15);
-  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85);
+  const totalCommission = Math.floor(totalCustomerPaid * 0.12);
+  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.88);
   const completedCount =
     reservations?.filter(
       (r) => r.status === "COMPLETED" || r.status === "CHECKED OUT"
@@ -240,85 +249,86 @@ const Transaction = () => {
           <Card>
             <Card.Header as="h5">Kỳ thanh toán</Card.Header>
             <Card.Body>
-              <Row>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Tháng</Form.Label>
-                    <Form.Select
-                      value={selectedMonth}
-                      onChange={(e) => {
-                        const newMonth = Number.parseInt(e.target.value);
-                        setSelectedMonth(newMonth);
-                      }}
-                    >
-                      {getAvailableMonths().map((month, index) => (
-                        <option key={index} value={index}>
-                          {month}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Năm</Form.Label>
-                    <Form.Select
-                      value={selectedYear}
-                      onChange={(e) => {
-                        const newYear = Number.parseInt(e.target.value);
-                        setSelectedYear(newYear);
+              <Form>
+                <Row className="align-items-end">
+                  <Col>
+                    <Form.Group className="mb-0">
+                      <Form.Label>Tháng</Form.Label>
+                      <Form.Select
+                        value={selectedMonth}
+                        onChange={(e) => {
+                          const newMonth = Number.parseInt(e.target.value);
+                          setSelectedMonth(newMonth);
+                        }}
+                      >
+                        {getAvailableMonths().map((month, index) => (
+                          <option key={index} value={index + 1}>
+                            {month}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group className="mb-0">
+                      <Form.Label>Năm</Form.Label>
+                      <Form.Select
+                        value={selectedYear}
+                        onChange={(e) => {
+                          const newYear = Number.parseInt(e.target.value);
+                          setSelectedYear(newYear);
 
-                        // Nếu chuyển sang năm hiện tại và tháng hiện tại > tháng được chọn
-                        const currentYear = new Date().getFullYear();
-                        const currentMonth = new Date().getMonth();
-                        if (
-                          newYear === currentYear &&
-                          selectedMonth > currentMonth
-                        ) {
-                          setSelectedMonth(currentMonth);
-                        }
-                      }}
-                    >
-                      {years.map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Trạng thái</Form.Label>
-                    <Form.Select
-                      value={selectedStatus}
-                      onChange={(e) => setSelectedStatus(e.target.value)}
-                    >
-                      <option value="All">Tất cả</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                      <option value="CHECKED OUT">CHECKED OUT</option>
-                      <option value="CHECKED IN">CHECKED IN</option>
-                      <option value="BOOKED">BOOKED</option>
-                      <option value="PENDING">PENDING</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                      <option value="NOT PAID">NOT PAID</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-                <Col>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Lọc theo:</Form.Label>
-                    <Form.Select
-                      value={selectedSort}
-                      onChange={(e) => setSelectedSort(e.target.value)}
-                    >
-                      <option value="desc">Mới nhất</option>
-                      <option value="asc">Cũ nhất</option>
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
+                          // Nếu chuyển sang năm hiện tại và tháng hiện tại > tháng được chọn
+                          const currentYear = new Date().getFullYear();
+                          const currentMonth = new Date().getMonth();
+                          if (
+                            newYear === currentYear &&
+                            selectedMonth > currentMonth
+                          ) {
+                            setSelectedMonth(currentMonth);
+                          }
+                        }}
+                      >
+                        {years.map((year) => (
+                          <option key={year} value={year}>
+                            {year}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group className="mb-0">
+                      <Form.Label>Trạng thái</Form.Label>
+                      <Form.Select
+                        value={selectedStatus}
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                      >
+                        <option value="All">Tất cả</option>
+                        <option value="COMPLETED">COMPLETED</option>
+                        <option value="CHECKED OUT">CHECKED OUT</option>
+                        <option value="CHECKED IN">CHECKED IN</option>
+                        <option value="BOOKED">BOOKED</option>
+                        <option value="PENDING">PENDING</option>
+                        <option value="CANCELLED">CANCELLED</option>
+                        <option value="NOT PAID">NOT PAID</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col>
+                    <Form.Group className="mb-0">
+                      <Form.Label>Lọc theo:</Form.Label>
+                      <Form.Select
+                        value={selectedSort}
+                        onChange={(e) => setSelectedSort(e.target.value)}
+                      >
+                        <option value="desc">Mới nhất</option>
+                        <option value="asc">Cũ nhất</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Form>
             </Card.Body>
           </Card>
         </Col>
@@ -358,7 +368,7 @@ const Transaction = () => {
         <Card.Header as="h5">
           <div className="d-flex justify-content-between align-items-center">
             <span>
-              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth]} -{" "}
+              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth - 1]} -{" "}
               {selectedYear}
             </span>
             <span className="text-muted">
@@ -409,27 +419,26 @@ const Transaction = () => {
                       {Utils.formatCurrency(calculateTotalPrice(reservation.rooms))}
                     </td>
                     <td className="text-danger">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.15 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.12 || 0)}
                     </td>
                     <td className="text-success">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.85 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.88 || 0)}
                     </td>
                     <td>
                       <span
-                        className={`badge ${
-                          reservation.status === "COMPLETED"
-                            ? "bg-secondary"
-                            : reservation.status === "PENDING"
+                        className={`badge ${reservation.status === "COMPLETED"
+                          ? "bg-secondary"
+                          : reservation.status === "PENDING"
                             ? "bg-warning"
                             : reservation.status === "CANCELLED" &&
                               reservation.status === "NOT PAID"
-                            ? "bg-danger"
-                            : reservation.status === "BOOKED"
-                            ? "bg-success"
-                            : reservation.status === "CHECKED OUT"
-                            ? "bg-info"
-                            : "bg-primary"
-                        }`}
+                              ? "bg-danger"
+                              : reservation.status === "BOOKED"
+                                ? "bg-success"
+                                : reservation.status === "CHECKED OUT"
+                                  ? "bg-info"
+                                  : "bg-primary"
+                          }`}
                         style={{
                           width: "100px",
                           height: "30px",
@@ -478,7 +487,7 @@ const Transaction = () => {
         </Card.Body>
       </Card>
 
-      {/* Phần thông tin tài khoản ngân hàng */}
+      {/* Phần thông tin tài khoản ngân hàng
       <Card className="mb-4">
         <Card.Header as="h5">Thông tin tài khoản ngân hàng</Card.Header>
         <Card.Body>
@@ -491,9 +500,9 @@ const Transaction = () => {
 
           {showForm ? (
             <Form onSubmit={handleSubmit}>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
+              <Row className="align-items-end">
+                <Col md={3}>
+                  <Form.Group className="mb-0">
                     <Form.Label>Số tài khoản</Form.Label>
                     <Form.Control
                       type="text"
@@ -505,8 +514,8 @@ const Transaction = () => {
                     />
                   </Form.Group>
                 </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
+                <Col md={3}>
+                  <Form.Group className="mb-0">
                     <Form.Label>Tên tài khoản</Form.Label>
                     <Form.Control
                       type="text"
@@ -518,10 +527,8 @@ const Transaction = () => {
                     />
                   </Form.Group>
                 </Col>
-              </Row>
-              <Row>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
+                <Col md={3}>
+                  <Form.Group className="mb-0">
                     <Form.Label>Tên ngân hàng</Form.Label>
                     <Form.Select
                       name="bankName"
@@ -540,8 +547,8 @@ const Transaction = () => {
                     </Form.Select>
                   </Form.Group>
                 </Col>
-                <Col md={6}>
-                  <Form.Group className="mb-3">
+                <Col md={3}>
+                  <Form.Group className="mb-0">
                     <Form.Label>Chi nhánh</Form.Label>
                     <Form.Control
                       type="text"
@@ -553,9 +560,11 @@ const Transaction = () => {
                   </Form.Group>
                 </Col>
               </Row>
-              <Button variant="primary" type="submit">
-                Lưu thông tin ngân hàng
-              </Button>
+              <div className="mt-3">
+                <Button variant="primary" type="submit">
+                  Lưu thông tin ngân hàng
+                </Button>
+              </div>
             </Form>
           ) : (
             <>
@@ -588,32 +597,30 @@ const Transaction = () => {
             </>
           )}
         </Card.Body>
-      </Card>
+      </Card> */}
 
       <Row className="mb-4">
         <Col md={6}>
           <Card>
             <Card.Header as="h5">Thanh toán từ Admin</Card.Header>
             <Card.Body>
-              <Row>
-                <Col md={4}>
-                  <Form.Group className="mb-3">
-                    <Form.Label>Năm</Form.Label>
-                    <Form.Select
-                      value={selectedYear}
-                      onChange={(e) =>
-                        setSelectedYear(Number.parseInt(e.target.value))
-                      }
-                    >
-                      {years.map((year) => (
-                        <option key={year} value={year}>
-                          {year}
-                        </option>
-                      ))}
-                    </Form.Select>
-                  </Form.Group>
-                </Col>
-              </Row>
+              <Form>
+                <Form.Group className="mb-0">
+                  <Form.Label>Năm</Form.Label>
+                  <Form.Select
+                    value={selectedAdminYear}
+                    onChange={(e) =>
+                      setSelectedAdminYear(Number.parseInt(e.target.value))
+                    }
+                  >
+                    {years.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Form>
             </Card.Body>
           </Card>
         </Col>
@@ -621,12 +628,12 @@ const Transaction = () => {
 
       <Card className="mb-4">
         <Card.Header as="h5">
-          Danh sách thanh toán cho năm {selectedYear}
+          Danh sách doanh thu cho năm {selectedAdminYear}
         </Card.Header>
         <Card.Body>
           <Table responsive striped hover>
             <thead>
-              <tr>
+              <tr className="text-center">
                 <th>#</th>
                 <th>Tháng/Năm</th>
                 <th>Tổng doanh thu</th>
@@ -637,34 +644,29 @@ const Transaction = () => {
               </tr>
             </thead>
             <tbody>
-              {payments.length > 0 ? (
-                payments.map((payment, index) => (
-                  <tr key={payment.id}>
+              {list && list.length > 0 ? (
+                list.map((payment, index) => (
+                  <tr key={payment._id} className="text-center">
                     <td>{index + 1}</td>
-                    <td>{index + 4}/2025</td>
-                    <td>{formatCurrency(payment.customerPaid)}</td>
-                    <td className="text-danger">
-                      {formatCurrency(payment.commission)}
-                    </td>
-                    <td className="text-success">
-                      {formatCurrency(payment.amountToHost)}
-                    </td>
+                    <td>{payment.month}/{payment.year}</td>
+                    <td>{formatCurrency(payment.amount)}</td>
+                    <td className="text-danger">{formatCurrency(payment.amount * 0.15)}</td>
+                    <td className="text-success">{formatCurrency(payment.amount * 0.85)}</td>
                     <td>
                       <span
-                        className={`badge ${
-                          payment.status === "COMPLETED"
-                            ? "bg-success"
-                            : payment.status === "PENDING"
+                        className={`badge ${payment.status === "COMPLETED"
+                          ? "bg-success"
+                          : payment.status === "PENDING"
                             ? "bg-warning"
                             : payment.status === "CANCELLED"
-                            ? "bg-danger"
-                            : "bg-info"
-                        }`}
+                              ? "bg-danger"
+                              : "bg-info"
+                          }`}
                       >
                         {payment.status}
                       </span>
                     </td>
-                    <td></td>
+                    <td>{payment.paymentDate ? Utils.getDate(payment.paymentDate) : ""}</td>
                   </tr>
                 ))
               ) : (
