@@ -10,6 +10,7 @@ import AuthActions from "../../../redux/auth/actions";
 import { showToast, ToastProvider } from "@components/ToastContainer";
 import GoogleLogin from "./GoogleLogin";
 
+
 const RegisterPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();

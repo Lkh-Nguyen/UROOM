@@ -33,6 +33,7 @@ const RoomListingPage = '/RoomListingPage';
 const AdditionalServicesPage = '/AdditionalServicesPage';
 const Room= '/Room';
 const HotelManagement= '/HotelManagement';
+const VerifyCodeRegisterPage= '/verify_regiter';
 
 export {
   BannedPage,
@@ -54,6 +55,7 @@ export {
   HotelManagement,
   
   LoginHotelPage,
+  VerifyCodeRegisterPage,
   RegisterHotelPage,
   ForgetPasswordHotelPage,
   VerifyCodeHotelPage,

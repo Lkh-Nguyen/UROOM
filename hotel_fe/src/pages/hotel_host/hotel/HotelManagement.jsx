@@ -288,6 +288,7 @@ function HotelManagement() {
                   Liên lạc của khách sạn
                 </h2>
                 <p>Số điện thoại: {hotelinfo[0].phoneNumber ?? "No have"}</p>
+                <p>Gmail: {hotelinfo[0].email ?? "No have"}</p>
               </div>
               <div className="hotel-amenities mb-4 mt-3">
                 <h2 className="section-title mb-3" style={{ fontSize: "20px" }}>

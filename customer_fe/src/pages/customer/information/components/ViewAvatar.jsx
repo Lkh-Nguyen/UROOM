@@ -31,7 +31,10 @@ function ViewAvatar() {
   };
 
   const handleUploadFile = () => {
-    if (!selectedFile) return;
+    if (!selectedFile) {
+      showToast.warning("Please select a file to upload.");
+      return;
+    };
 
     const formData = new FormData();
     formData.append("avatar", selectedFile);

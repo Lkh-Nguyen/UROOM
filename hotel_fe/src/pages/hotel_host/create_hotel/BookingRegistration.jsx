@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Navbar,
   Container,
@@ -11,9 +11,17 @@ import {
 import "bootstrap/dist/css/bootstrap.min.css";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@redux/store";
 
 function BookingRegistration() {
   const navigate = useNavigate();
+  const createHotel = useAppSelector((state) => state.Hotel.createHotel)
+
+  useEffect(() => {
+    if(createHotel.checkCreateHotel){
+      navigate(Routers.BookingPropertyChecklist)
+    }
+  },[]) 
   return (
     <div className="booking-app">
       {/* Navigation Bar */}
@@ -103,7 +111,11 @@ function BookingRegistration() {
                 </Card.Text>
               </Card.Body>
               <Card.Footer className="text-center p-0 border-0">
-                <Button variant="primary" className="register-btn w-100">
+                <Button variant="primary" className="register-btn w-100"
+                  onClick={() => {
+                    navigate("/BookingPropertyName");
+                  }}
+                >
                   Đăng chỗ nghỉ
                 </Button>
               </Card.Footer>
@@ -126,7 +138,11 @@ function BookingRegistration() {
                 </Card.Text>
               </Card.Body>
               <Card.Footer className="text-center p-0 border-0">
-                <Button variant="primary" className="register-btn w-100">
+                <Button variant="primary" className="register-btn w-100"
+                  onClick={() => {
+                    navigate("/BookingPropertyName");
+                  }}
+                >
                   Đăng chỗ nghỉ
                 </Button>
               </Card.Footer>
@@ -149,7 +165,11 @@ function BookingRegistration() {
                 </Card.Text>
               </Card.Body>
               <Card.Footer className="text-center p-0 border-0">
-                <Button variant="primary" className="register-btn w-100">
+                <Button variant="primary" className="register-btn w-100"
+                  onClick={() => {
+                    navigate("/BookingPropertyName");
+                  }}
+                >
                   Đăng chỗ nghỉ
                 </Button>
               </Card.Footer>

@@ -84,7 +84,7 @@ const LoginPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const passwordRegex = /^.{6,}$/; // tối thiểu 6 ký tự
+    const passwordRegex = /^.{8,}$/; // tối thiểu 6 ký tự
     if (!formData.email || !formData.password) {
       showToast.warning(
         "Email and password is required. Please fill in completely !"

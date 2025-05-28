@@ -229,7 +229,7 @@ function PricingSetupForm() {
               </Form.Group>
 
               <div style={styles.commissionRow}>
-                <span>15,00% Hoa hồng cho Booking.com</span>
+                <span>12,00% Hoa hồng cho Booking.com</span>
               </div>
 
               <div>

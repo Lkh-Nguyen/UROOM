@@ -1,6 +1,10 @@
 const ApiConstants = {
   //AUTH:
   LOGIN_OWNER: "/auth/login_owner",
+  REGISTER_OWNER: "/auth/register_owner",
+  VERIFY_EMAIL: "/auth/verify-email",
+  RESEND_VERIFICATION: "/auth/resend-verification",
+  
   //FEEDBACK:
   FEEDBACK_HOTEL: "/feedback/get-feedback-hotel/:hotelId",
   FETCH_FEEDBACK_BY_ID:"/feedback/getFeedbackById/:feedbackId",
@@ -19,6 +23,10 @@ const ApiConstants = {
   RESERVATIONS: "/payment/reservations",
   //MONTHLYPAYMENT
   MONTHLY_PAYMENTS: "/monthly-payment/all",
+
+    //chat
+  FETCH_CHAT_MESSAGE: '/chat/chat-history/:receiverId',
+  FETCH_CHAT_ALL_USERS: '/chat/chat-users',
 };
 
 export default ApiConstants;

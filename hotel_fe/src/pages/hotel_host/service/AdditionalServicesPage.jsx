@@ -423,6 +423,7 @@ const styles = {
   },
   serviceDetails: {
     padding: "15px 20px",
+    height: "150px",
   },
   detailsTable: {
     marginBottom: "15px",

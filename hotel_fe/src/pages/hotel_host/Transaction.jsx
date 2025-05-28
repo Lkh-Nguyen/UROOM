@@ -225,8 +225,8 @@ const Transaction = () => {
     0
   );
 
-  const totalCommission = Math.floor(totalCustomerPaid * 0.15);
-  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.85);
+  const totalCommission = Math.floor(totalCustomerPaid * 0.12);
+  const totalAmountToHost = Math.floor(totalCustomerPaid * 0.88);
   const completedCount =
     reservations?.filter(
       (r) => r.status === "COMPLETED" || r.status === "CHECKED OUT"
@@ -368,7 +368,7 @@ const Transaction = () => {
         <Card.Header as="h5">
           <div className="d-flex justify-content-between align-items-center">
             <span>
-              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth]} -{" "}
+              Danh sách thanh toán cho {getAvailableMonths()[selectedMonth - 1]} -{" "}
               {selectedYear}
             </span>
             <span className="text-muted">
@@ -419,10 +419,10 @@ const Transaction = () => {
                       {Utils.formatCurrency(calculateTotalPrice(reservation.rooms))}
                     </td>
                     <td className="text-danger">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.15 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.12 || 0)}
                     </td>
                     <td className="text-success">
-                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.85 || 0)}
+                      {Utils.formatCurrency(calculateTotalPrice(reservation.rooms) * 0.88 || 0)}
                     </td>
                     <td>
                       <span
@@ -487,7 +487,7 @@ const Transaction = () => {
         </Card.Body>
       </Card>
 
-      {/* Phần thông tin tài khoản ngân hàng */}
+      {/* Phần thông tin tài khoản ngân hàng
       <Card className="mb-4">
         <Card.Header as="h5">Thông tin tài khoản ngân hàng</Card.Header>
         <Card.Body>
@@ -597,7 +597,7 @@ const Transaction = () => {
             </>
           )}
         </Card.Body>
-      </Card>
+      </Card> */}
 
       <Row className="mb-4">
         <Col md={6}>
@@ -628,7 +628,7 @@ const Transaction = () => {
 
       <Card className="mb-4">
         <Card.Header as="h5">
-          Danh sách thanh toán cho năm {selectedAdminYear}
+          Danh sách doanh thu cho năm {selectedAdminYear}
         </Card.Header>
         <Card.Body>
           <Table responsive striped hover>

@@ -6,6 +6,8 @@ import ReportedFeedbackReducer from "./reportedFeedback/reducer";
 import ReservationReducer from "./reservation/reducer";
 import FeedbackReducer from "./feedback/reducer";
 import MonthlyPaymentReducer from "./monthlyPayment/reducer";
+import messageReducer from './message/reducer';
+import SocketReducer from './socket/socketSlice';
 
 const rootReducer = combineReducers({
     Auth: AuthReducer,
@@ -14,7 +16,9 @@ const rootReducer = combineReducers({
     Feedback: FeedbackReducer,
     ReportedFeedback: ReportedFeedbackReducer,
     Reservation: ReservationReducer,
-    MonthlyPayment: MonthlyPaymentReducer
+    MonthlyPayment: MonthlyPaymentReducer,
+    Message: messageReducer,
+    Socket: SocketReducer,
 });
 
 export default rootReducer;

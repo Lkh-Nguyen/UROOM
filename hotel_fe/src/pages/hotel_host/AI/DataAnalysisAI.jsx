@@ -30,6 +30,7 @@ import { useAppDispatch } from "@redux/store";
 import DashBoardPage from "../dash_board/DashBoardPage";
 import InsightAiPage from "./InSightAiPage";
 import RevenuePage from "../revenue/RevenuePage";
+import AuthActions from "@redux/auth/actions";
 
 ChartJS.register(
   CategoryScale,
@@ -47,7 +48,7 @@ ChartJS.register(
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
-    return searchParams.get("tab") || "dashboard";
+    return searchParams.get("tab") || "revenue";
   });
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function App() {
           </div>
 
           <ul className="nav flex-column">
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a
                 className={`nav-link ${
                   activeTab === "dashboard" ? "active" : ""
@@ -80,7 +81,7 @@ function App() {
                 <i className="bi bi-speedometer2 nav-icon"></i>
                 <span>Dashboard</span>
               </a>
-            </li>
+            </li> */}
             <li className="nav-item">
               <a
                 className={`nav-link ${
@@ -279,6 +280,7 @@ function App() {
                     <Dropdown.Menu>
                       <Dropdown.Item
                         onClick={() => {
+                          dispatch({ type: AuthActions.LOGOUT });
                           navigate(Routers.HomeHotel, {
                             state: {
                               message: "Logout account successfully !!!",
@@ -296,10 +298,10 @@ function App() {
           </nav>
 
           {/* Dashboard Content */}
-          <div className="container-fluid p-4">
-            {activeTab === "dashboard" && (
+          <div className="container-fluid">
+            {/* {activeTab === "dashboard" && (
               <DashBoardPage setActiveTab={setActiveTab} />
-            )}
+            )} */}
 
             {activeTab === "ai-insights" && <InsightAiPage />}
 

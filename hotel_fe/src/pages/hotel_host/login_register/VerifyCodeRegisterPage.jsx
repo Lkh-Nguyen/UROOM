@@ -1,30 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Container, Form, Button, Card } from "react-bootstrap";
-import { FaArrowLeft } from "react-icons/fa";
+import { Container, Form, Button, Card, Spinner } from "react-bootstrap";
 import * as Routers from "../../../utils/Routes";
+import { useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg";
 import { showToast, ToastProvider } from "@components/ToastContainer";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
-import axios from "axios";
-const VerifyCodePage = () => {
+
+const VerifyCodeRegisterPage = () => {
   const navigate = useNavigate();
-  const [verificationCode, setVerificationCode] = useState([
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-  ]);
+  const dispatch = useDispatch();
+  const [verificationCode, setVerificationCode] = useState(["", "", "", "", "", ""]);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef([]);
   const location = useLocation();
-  const dispatch = useDispatch()
-  const email = location.state?.email || "";
-  // Initialize refs array
+  const userEmail = location.state?.email || '';
+
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
     if (location.state?.message) {
@@ -81,46 +74,52 @@ const VerifyCodePage = () => {
       }
     }
   };
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     const code = verificationCode.join("");
+    
     if (code.length !== 6) {
       showToast.error("Please enter all 6 digits of the verification code");
       return;
     }
+    
     setIsLoading(true);
-    try {
-      const response = await axios.post("http://localhost:5000/api/auth/verify_forgot_password", {
-        code: code
-      });
-      setIsLoading(false);
-      if (response?.status === 200) {
-        navigate(Routers.ResetPasswordPage, {
-          state: {
-            code: code,
-            email: email,
-            verified: true,
-            message: "Verify successfully! Enter new password."
-          }
-        });
-      }
-    } catch (error) {
-      setIsLoading(false);
-      showToast.error(
-        error.response?.data?.MsgNo ||
-        error.response?.data?.message ||
-        "Error verifying code. Please try again."
-      );
-    }
-  }
+    
+    dispatch({
+      type: AuthActions.VERIFY_EMAIL,
+      payload: {
+        data: { code },
+        onSuccess: (data) => {
+          setIsLoading(false);
+          navigate(Routers.BookingRegistration, { 
+            state: { message: "Your account has been verified. You can now log in." }
+          });
+        },
+        onFailed: (msg) => {
+          setIsLoading(false);
+          showToast.error(msg);
+        },
+        onError: (error) => {
+          setIsLoading(false);
+          showToast.error("Error verifying email");
+        },
+      },
+    });
+  };
+  
   const handleResendCode = () => {
-
+    if (!userEmail) {
+      showToast.error("Email is missing. Please go back to the registration page.");
+      return;
+    }
+    
     setIsResending(true);
-
+    
     dispatch({
       type: AuthActions.RESEND_VERIFICATION,
       payload: {
-        data: { email: email },
+        data: { email: userEmail },
         onSuccess: (data) => {
           setIsResending(false);
           showToast.success("A new verification code has been sent to your email");
@@ -136,6 +135,7 @@ const VerifyCodePage = () => {
       },
     });
   };
+
   return (
     <div
       className="min-vh-100 d-flex align-items-center justify-content-center py-5"
@@ -147,7 +147,6 @@ const VerifyCodePage = () => {
     >
       <Container className="position-relative">
         <ToastProvider />
-
         <Card className="mx-auto shadow" style={{ maxWidth: "800px" }}>
           <Card.Body className="p-4 p-md-5">
             <h2 className="text-center mb-2">Verify Code</h2>
@@ -196,19 +195,52 @@ const VerifyCodePage = () => {
 
               <div className="text-center mb-3">
                 <span className="text-muted">Didn't receive the code? </span>
-                <a href="#" className="text-decoration-none" onClick={handleResendCode}>
-                  {isResending ? "Resending..." : "Resend code"}
-
-                </a>
+                <Button
+                  variant="link"
+                  className="text-decoration-none p-0"
+                  style={{ cursor: "pointer" }}
+                  onClick={handleResendCode}
+                  disabled={isResending}
+                >
+                  {isResending ? (
+                    <>
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        role="status"
+                        aria-hidden="true"
+                        className="me-1"
+                      />
+                      Sending...
+                    </>
+                  ) : (
+                    "Resend code"
+                  )}
+                </Button>
               </div>
 
               <Button
                 variant="primary"
                 type="submit"
                 className="w-100 py-2 mt-2"
-                disabled={verificationCode.some((digit) => !digit)}
+                disabled={verificationCode.some((digit) => !digit) || isLoading}
               >
-                Reset Password
+                {isLoading ? (
+                  <>
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                      className="me-2"
+                    />
+                    Verifying...
+                  </>
+                ) : (
+                  "Verify Code"
+                )}
               </Button>
             </Form>
           </Card.Body>
@@ -218,4 +250,4 @@ const VerifyCodePage = () => {
   );
 };
 
-export default VerifyCodePage;
+export default VerifyCodeRegisterPage;
