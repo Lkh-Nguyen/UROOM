@@ -149,12 +149,12 @@ const ReportedFeedbackHotel = ({ show, onHide, feedback }) => {
                   required
                 >
                   <option value="">Chọn lý do báo cáo</option>
-                  <option value="incorrect">Thông tin không chính xác</option>
-                  <option value="fraud">Nội dung gian lận</option>
-                  <option value="threatening">Đe dọa hoặc quấy rối</option>
-                  <option value="inappropriate">Nội dung không phù hợp</option>
-                  <option value="spam">Thư rác</option>
-                  <option value="other">Khác</option>
+                  <option value="Incorrect Information">Thông tin không chính xác</option>
+                  <option value="Fraudulent Content">Nội dung gian lận</option>
+                  <option value="Threatening or Harassing">Đe dọa hoặc quấy rối</option>
+                  <option value="Inappropriate Content">Nội dung không phù hợp</option>
+                  <option value="Spam">Thư rác</option>
+                  <option value="Other">Khác</option>
                 </Form.Select>
                 <Form.Control.Feedback type="invalid">
                   Vui lòng chọn loại báo cáo.
