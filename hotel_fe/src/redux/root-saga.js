@@ -7,7 +7,7 @@ import ReportFeedbackSaga from "./reportedFeedback/saga";
 import ReservationSaga from "./reservation/saga";
 import FeedbackSaga from "./feedback/saga";
 import MonthlyPaymentSaga from "./monthlyPayment/saga";
-
+import MessageSaga from "./message/saga";
 
 export default function* rootSaga() {
   yield all([
@@ -17,6 +17,7 @@ export default function* rootSaga() {
     HotelservicesSaga(),
     ReportFeedbackSaga(),
     ReservationSaga(),
-    MonthlyPaymentSaga()
+    MonthlyPaymentSaga(),
+    MessageSaga(),
   ]);
 }

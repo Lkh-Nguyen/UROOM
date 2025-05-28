@@ -48,7 +48,7 @@ ChartJS.register(
 function App() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => {
-    return searchParams.get("tab") || "dashboard";
+    return searchParams.get("tab") || "revenue";
   });
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ function App() {
           </div>
 
           <ul className="nav flex-column">
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a
                 className={`nav-link ${
                   activeTab === "dashboard" ? "active" : ""
@@ -81,7 +81,7 @@ function App() {
                 <i className="bi bi-speedometer2 nav-icon"></i>
                 <span>Dashboard</span>
               </a>
-            </li>
+            </li> */}
             <li className="nav-item">
               <a
                 className={`nav-link ${
@@ -298,10 +298,10 @@ function App() {
           </nav>
 
           {/* Dashboard Content */}
-          <div className="container-fluid p-4">
-            {activeTab === "dashboard" && (
+          <div className="container-fluid">
+            {/* {activeTab === "dashboard" && (
               <DashBoardPage setActiveTab={setActiveTab} />
-            )}
+            )} */}
 
             {activeTab === "ai-insights" && <InsightAiPage />}
 
