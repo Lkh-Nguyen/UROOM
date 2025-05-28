@@ -6,7 +6,7 @@ import * as Routers from "../../../utils/Routes";
 import { Route, useLocation, useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg";
 import { showToast, ToastProvider } from "@components/ToastContainer";
-
+import axios from "axios";
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,9 +14,16 @@ const ResetPasswordPage = () => {
   const [formData, setFormData] = useState({
     again_password: "",
     password: "",
-    rememberMe: false,
   });
 
+  const { email, code, verified } = location.state || {};
+
+  useEffect(() => {
+    if (!verified) {
+      // Nếu không có verified, không cho vào trang này
+      navigate(Routers.LoginPage, { replace: true });
+    }
+  }, [verified, navigate]);
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -25,9 +32,40 @@ const ResetPasswordPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
+    if (!formData.password || !formData.again_password) {
+      showToast.error("Please fill in all fields");
+      return;
+    }
+    if (formData.password.length < 8) {
+      showToast.error("Password must be at least 8 characters");
+      return;
+    }
+    if (formData.password !== formData.again_password) {
+      showToast.error("Passwords do not match");
+      return;
+    }
+    try {
+
+      const response = await axios.post("http://localhost:5000/api/auth/reset_password", {
+        email,
+        code,
+        newPassword: formData.password,
+        confirmPassword: formData.again_password,
+      });
+      if (response?.status === 200) {
+        navigate(Routers.LoginPage, {
+          state: {from: "login", message: "Reset password successfully" },
+        });
+      }
+    } catch (error) {
+      showToast.error(
+        error.response?.data?.MsgNo ||
+        error.response?.data?.message ||
+        "Reset password failed"
+      );
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -50,7 +88,7 @@ const ResetPasswordPage = () => {
       }}
     >
       <Container className="position-relative">
-        <ToastProvider/>
+        <ToastProvider />
         <Card className="mx-auto shadow" style={{ maxWidth: "800px" }}>
           <Card.Body className="p-4 p-md-5">
             <h2 className="text-center mb-4">Reset New Password</h2>
@@ -105,11 +143,6 @@ const ResetPasswordPage = () => {
                 variant="primary"
                 type="submit"
                 className="w-100 py-2 mt-2"
-                onClick={() => {
-                  navigate(Routers.Home, {
-                    state: { message: "Reset password successfully" },
-                  });
-                }}
               >
                 Reset Password
               </Button>
