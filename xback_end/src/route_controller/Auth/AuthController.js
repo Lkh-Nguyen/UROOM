@@ -20,7 +20,11 @@ exports.loginCustomer = async (req, res) => {
     }
 
     // Nếu không có role
-    if (!user.role) {
+    if (!user.role)  {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    if (user.role !== "CUSTOMER") { 
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
 
