@@ -18,7 +18,7 @@ const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    phone: "",
+    phoneNumber: "",
     email: "",
     password: "",
     rememberMe: false,
@@ -42,10 +42,10 @@ const RegisterPage = () => {
     }
     
     // Validate phone
-    if (!formData.phone.trim()) {
+    if (!formData.phoneNumber.trim()) {
       showToast.error("Phone number is required");
       isValid = false;
-    } else if (!/^\d{9,12}$/.test(formData.phone.trim())) {
+    } else if (!/^\d{9,12}$/.test(formData.phoneNumber.trim())) {
       showToast.error("Please enter a valid phone number (9-12 digits)");
       isValid = false;
     }
@@ -145,8 +145,8 @@ const RegisterPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Enter your phone number"
-                  name="phone"
-                  value={formData.phone}
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
                   onChange={handleChange}
                   className="py-2"
                 />

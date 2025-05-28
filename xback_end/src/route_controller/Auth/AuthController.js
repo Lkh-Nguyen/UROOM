@@ -270,6 +270,7 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { email,code, newPassword, confirmPassword } = req.body;
+    console.log("req.body: ", req.body)
     if (!email ||!code || !newPassword || !confirmPassword) {
       return res.status(400).json({ MsgNo: "All fields are required" });
     }
@@ -352,9 +353,10 @@ exports.verifyEmail = async (req, res) => {
       MsgNo: "Email verified successfully. You can now log in.",
       Data: {
         user: {
-          _id: user._id,
+          _id: user._id,  
           name: user.name,
           email: user.email,
+          phoneNumber: user.phoneNumber,
           role: user.role,
           isVerified: user.isVerified,
         },
@@ -383,13 +385,7 @@ exports.resendVerificationCode = async (req, res) => {
     if (!user) {
       return res.status(404).json({ MsgNo: "User not found" });
     }
-
-    if (user.isVerified) {
-      return res
-        .status(400)
-        .json({ MsgNo: "This account is already verified" });
-    }
-
+    
     // Generate new verification code
     const verificationToken = generateVerificationToken();
     const verificationTokenExpiresAt = new Date(

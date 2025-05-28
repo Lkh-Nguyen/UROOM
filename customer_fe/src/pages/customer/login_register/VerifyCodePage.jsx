@@ -23,7 +23,8 @@ const VerifyCodePage = () => {
   const inputRefs = useRef([]);
   const location = useLocation();
   const dispatch = useDispatch()
-  const email = location.state?.email || "";
+  const [email, setEmail] = useState(location.state?.email || "");
+  
   // Initialize refs array
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
@@ -81,6 +82,8 @@ const VerifyCodePage = () => {
       }
     }
   };
+          console.log("Email: ", email);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const code = verificationCode.join("");
