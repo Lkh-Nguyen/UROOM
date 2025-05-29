@@ -4,10 +4,12 @@ const ApiConstants = {
   REGISTER_OWNER: "/auth/register_owner",
   VERIFY_EMAIL: "/auth/verify-email",
   RESEND_VERIFICATION: "/auth/resend-verification",
-  
+  CHANGE_PASSWORD: "/auth/changePassword_customer",
+  UPDATE_PROFILE: "/auth/updateProfile_customer",
+  UPDATE_AVATAR: "/auth/update_avatar",
   //FEEDBACK:
   FEEDBACK_HOTEL: "/feedback/get-feedback-hotel/:hotelId",
-  FETCH_FEEDBACK_BY_ID:"/feedback/getFeedbackById/:feedbackId",
+  FETCH_FEEDBACK_BY_ID: "/feedback/getFeedbackById/:feedbackId",
   ///REPORTFEEDBACK
   REPORT_FEEDBACK: "reportFeedback/create_report_feedback_owner",
   FETCH_REPORTS_BY_USERID: "reportFeedback/my-reports",
@@ -24,9 +26,9 @@ const ApiConstants = {
   //MONTHLYPAYMENT
   MONTHLY_PAYMENTS: "/monthly-payment/all",
 
-    //chat
-  FETCH_CHAT_MESSAGE: '/chat/chat-history/:receiverId',
-  FETCH_CHAT_ALL_USERS: '/chat/chat-users',
+  //chat
+  FETCH_CHAT_MESSAGE: "/chat/chat-history/:receiverId",
+  FETCH_CHAT_ALL_USERS: "/chat/chat-users",
 };
 
 export default ApiConstants;

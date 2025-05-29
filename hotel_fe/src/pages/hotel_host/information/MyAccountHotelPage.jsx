@@ -8,6 +8,7 @@ import ChangePassword from "./components/ChangePasswordHotel";
 import ViewInformation from "./components/ViewInformationHotel";
 import ViewAvatar from "./components/ViewAvatarHotel";
 import { useLocation } from "react-router-dom";
+import { ToastProvider } from "@components/ToastContainer";
 
 function MyAccountHotelPage() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function MyAccountHotelPage() {
 
   return (
     <div className="main-content_1 p-3">
+      <ToastProvider/>
       <Nav variant="tabs" activeKey={indexActive} className="mb-3">
         {menuItems.map((item, index) => (
           <Nav.Item key={item.name}>

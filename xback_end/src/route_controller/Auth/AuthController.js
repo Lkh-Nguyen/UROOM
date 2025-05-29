@@ -92,10 +92,6 @@ exports.updateCustomerProfile = async (req, res) => {
       return res.status(404).json({ MsgNo: "User not found" });
     }
 
-    if (user.role !== "CUSTOMER") {
-      return res.status(403).json({ MsgNo: "Access denied" });
-    }
-
     if (!user.isVerified) {
       return res.status(403).json({ MsgNo: "Your email is not verified" });
     }

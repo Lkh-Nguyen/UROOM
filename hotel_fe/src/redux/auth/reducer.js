@@ -38,6 +38,29 @@ const Reducer = (state = initState, action) => {
           isAuthenticated: true,
         },
       };
+    case AuthActions.UPDATE_PROFILE_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+          ...action.payload?.user,
+        },
+      };
+    case AuthActions.CHANGE_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+        },
+      };
+    case AuthActions.UPDATE_AVATAR_SUCCESS:
+      return {
+        ...state,
+        Auth: {
+          ...state.Auth,
+          image: action.payload.image,
+        },
+      };
     default:
       return state;
   }
