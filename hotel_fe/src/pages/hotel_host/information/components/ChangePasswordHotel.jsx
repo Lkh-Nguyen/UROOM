@@ -219,7 +219,6 @@ const ChangePassword = () => {
         confirmButtonText="Accept"
         type="accept"
       />
-      <ToastProvider />
     </Card.Body>
   );
 };

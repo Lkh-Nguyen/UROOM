@@ -46,12 +46,15 @@ function ViewAvatar() {
         onSuccess: (MsgYes) => {
           setLoading(false);
           showToast.success(MsgYes || "Avatar updated successfully!");
+          setSelectedImage(Auth.image.url); // Cập nhật lại ảnh sau khi upload
         },
         onFailed: (MsgNo) => {
           showToast.warning(MsgNo || "Failed to update avatar.");
+          setLoading(false);
         },
         onError: (MsgNo) => {
           showToast.warning(MsgNo || "Something went wrong!");
+          setLoading(false);
         },
       },
     });
@@ -156,7 +159,6 @@ function ViewAvatar() {
           </Button>
         </Modal.Footer>
       </Modal>
-      <ToastProvider />
       {/* Update Confirmation Modal */}
       <ConfirmationModal
         show={showUpdateModal}

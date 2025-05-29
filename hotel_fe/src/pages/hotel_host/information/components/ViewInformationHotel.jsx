@@ -224,7 +224,6 @@ const ViewInformation = () => {
         type="accept"
       />
 
-      <ToastProvider />
     </Card.Body>
   );
 };
