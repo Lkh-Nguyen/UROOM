@@ -28,7 +28,11 @@ authRouter.post("/verify_forgot_password", AuthController.verifyForgotPassword);
 //upload ảnh
 
 authRouter.put(
-  "/update_avatar", checkRole(["CUSTOMER", "OWNER"]) , upload.single("avatar"),AuthController.updateAvatar);
+  "/update_avatar",
+  checkRole(["CUSTOMER", "OWNER"]),
+  upload.single("avatar"),
+  AuthController.updateAvatar
+);
 
 //hotel host
 authRouter.post("/login_owner", AuthController.loginOwner);

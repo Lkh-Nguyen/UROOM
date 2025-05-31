@@ -11,10 +11,7 @@ exports.loginCustomer = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("body: ", req.body);
-    const user123=  await User.find();
-    console.log("user123: ", user123);
     const user = await User.findOne({ email }).select("+password");
-    console.log("user: ", user);
     // Nếu không tìm thấy user
     if (!user) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
@@ -224,6 +221,7 @@ exports.registerCustomer = async (req, res) => {
  * Send email when forgot password
  */
 exports.forgotPassword = async (req, res) => {
+  console.log("Forgot password request body:", req.body);
   try {
     const { email } = req.body;
     console.log("Forgot password request for email:", email);   
@@ -233,7 +231,7 @@ exports.forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ MsgNo: "User not found" });
+      return res.status(404).json({ MsgNo: "Email is not registered with us! Try again with another email" });
     }
 
     // Generate reset token and expiry (6-digit code, valid for 1 hour)
