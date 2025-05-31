@@ -6,10 +6,26 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import HotelActions from "@redux/hotel/actions";
 import { useAppSelector } from "@redux/store";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 function BookingPropertyChecklist() {
   const navigate = useNavigate();
-  const dispatch= useDispatch()
+  const dispatch= useDispatch();
+  const [showModal, setShowModal] = React.useState(false);
+  const createHotel = useAppSelector((state) => state.Hotel.createHotel)
+  const handleComfirm = () => {
+    dispatch({
+      type: HotelActions.CREATE_HOTEL,
+      payload: {
+        createHotel: createHotel,
+        onSuccess: () => {
+          setShowModal(false);
+        },
+      },
+    });
+    navigate(Routers.WaitPendingPage);
+  }
+
   return (
     <div style={styles.bookingApp}>
       {/* Navigation Bar */}
@@ -158,12 +174,21 @@ function BookingPropertyChecklist() {
           <Button
             style={styles.confirmButton}
             onClick={() => {
-              navigate(Routers.WaitPendingPage);
+              setShowModal(true);
             }}
           >
             Xác nhận hoàn tất
           </Button>
         </div>
+      <ConfirmationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        onConfirm={handleComfirm}
+        title="Xác nhận tạo chỗ nghỉ"
+        message="Bạn có chắc chắn muốn tạo chỗ nghỉ này không? Hành động này sẽ không thể hoàn tác."
+        confirmButtonText="Tạo chỗ nghỉ"
+        type="warning"
+      />
       </Container>
     </div>
   );

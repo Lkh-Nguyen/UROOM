@@ -11,9 +11,10 @@ exports.loginCustomer = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("body: ", req.body);
-
+    const user123=  await User.find();
+    console.log("user123: ", user123);
     const user = await User.findOne({ email }).select("+password");
-
+    console.log("user: ", user);
     // Nếu không tìm thấy user
     if (!user) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });

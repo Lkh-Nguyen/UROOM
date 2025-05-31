@@ -15,6 +15,7 @@ const ApiConstants = {
   FETCH_REPORTS_BY_USERID: "reportFeedback/my-reports",
   DELETE_REPORTED_FEEDBACK: "reportFeedback/delete_report_feedback/:reportId",
   //HOTEL
+  CREATE_HOTEL: "/hotel/create-hotel",
   FETCH_OWNER_HOTEL: "/hotel/owner-hotels",
   UPDATE_HOTEL: "/hotel/update-hotel",
   CREATE_HOTEL_SERVICE: "/hotel/add-service",

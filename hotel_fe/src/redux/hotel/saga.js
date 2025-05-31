@@ -240,6 +240,34 @@ function* createHotelService() {
   });
 }
 
+function* createHotel() {
+  yield takeEvery(HotelActions.CREATE_HOTEL, function* (action) {
+    const { createHotel, onSuccess, onFailed, onError } = action.payload || {};
+    try {
+      console.log("Creating hotel with data:", createHotel);
+      const response = yield call(() => Factories.createHotel(createHotel));
+      console.log("Create hotel response:", response);
+      if (response?.status === 201) {
+        yield put({
+          type: HotelActions.CREATE_HOTEL_SUCCESS,
+          payload: response.data.hotel,
+        });
+        onSuccess?.(response.data.hotel);
+      } else {
+        onFailed?.(response?.data?.message || "Tạo khách sạn thất bại");
+      }
+    } catch (error) {
+      const status = error.response?.status;
+      const msg = error.response?.data?.message || "Có lỗi xảy ra khi tạo khách sạn";
+
+      if (status >= 500) {
+        onError?.(error);
+      } else {
+        onFailed?.(msg);
+      }
+    }
+  });
+}
 
 export default function* userSaga() {
   yield all([
@@ -250,6 +278,6 @@ export default function* userSaga() {
     fork(updateHotel),
     fork(updateHotelServiceStatus),
     fork(createHotelService),
-   
+    fork(createHotel),
   ]);
 }

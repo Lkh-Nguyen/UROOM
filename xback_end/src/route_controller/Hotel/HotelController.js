@@ -6,6 +6,7 @@ require("../../models/hotelFacility");
 const Reservation = require("../../models/reservation");
 const HotelFacility = require("../../models/hotelFacility"); 
 const HotelService = require("../../models/hotelService");
+const hotelFacility = require("../../models/hotelFacility");
 // exports.getAllHotels = asyncHandler(async (req, res) => {
 //     const {page= 1, limit= 5}= req.query;
 
@@ -546,6 +547,65 @@ exports.changeStatusHotelInfo = asyncHandler(async (req, res) => {
     return res.status(500).json({
       error: true,
       message: "Failed to update hotel",
+    });
+  }
+});
+
+exports.createHotel= asyncHandler(async (req, res) => {
+
+  const { hotelName, description, address, phoneNumber, email, services, facilities, rating, star, pricePerNight, images, businessDocuments, checkInStart, checkInEnd, checkOutStart, checkOutEnd } = req.body;
+  const owner = req.user._id;
+
+  const allFacilities = await hotelFacility.find({});
+  const nameToIdMap = {};
+  allFacilities.forEach(facility => {
+    nameToIdMap[facility.name] = facility._id;
+  });
+
+  let facilitiesId= []
+  if (facilities && Array.isArray(facilities)) {
+    facilitiesId = facilities
+      .map(name => nameToIdMap[name])
+      .filter(id => id); 
+  }
+  console.log("facilitiesId: ", facilitiesId)
+
+  const newHotel = new Hotel({
+    hotelName,
+    description,
+    address,
+    phoneNumber: phoneNumber,
+    email: email,
+    services,
+    facilities: facilitiesId,
+    pricePerNight: 0,
+    rating: 0,
+    star,
+    images,
+    businessDocuments,
+    owner,
+    checkInStart,
+    checkInEnd,
+    checkOutStart,
+    checkOutEnd 
+  });
+  console.log("2")
+
+  try {
+    const savedHotel = await newHotel.save();
+      const user = await User.findById(owner);
+      user.ownedHotels.push(savedHotel._id);
+      await user.save(); 
+    return res.status(201).json({
+      error: false,
+      message: "Hotel created successfully",
+      hotel: savedHotel,
+    });
+  } catch (error) {
+    console.error("Error creating hotel:", error);
+    return res.status(500).json({
+      error: true,
+      message: "Failed to create hotel",
     });
   }
 });

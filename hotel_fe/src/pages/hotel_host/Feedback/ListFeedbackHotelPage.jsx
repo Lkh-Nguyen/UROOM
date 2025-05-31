@@ -24,7 +24,7 @@ const ListFeedbackHotelPage = () => {
   console.log("feedbacks: ", feedbacks);
   const auth = useSelector((state) => state.Auth.Auth);
   const hotel = useSelector((state) => state.Hotel.hotel);
-
+  
   const [showModal, setShowModal] = useState(false);
   const [activePage, setActivePage] = useState(1);
   const [selectedStar, setSelectedStar] = useState(0);
