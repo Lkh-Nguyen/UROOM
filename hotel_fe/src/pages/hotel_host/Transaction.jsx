@@ -430,7 +430,7 @@ const Transaction = () => {
                           ? "bg-secondary"
                           : reservation.status === "PENDING"
                             ? "bg-warning"
-                            : reservation.status === "CANCELLED" &&
+                            : reservation.status === "CANCELLED" ||
                               reservation.status === "NOT PAID"
                               ? "bg-danger"
                               : reservation.status === "BOOKED"

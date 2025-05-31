@@ -25,6 +25,12 @@ const persistConfig = {
   whitelist: ['Auth', 'Hotel', 'Hotelservices', 'Reservation', 'MonthlyPayment', 'ReportedFeedback', 'Feedback'], 
   transforms: [
     expireReducer('Search', expireConfig),
+    expireReducer('Hotel', expireConfig),
+    expireReducer('Hotelservices', expireConfig),
+    expireReducer('Reservation', expireConfig),
+    expireReducer('MonthlyPayment', expireConfig),
+    expireReducer('ReportedFeedback', expireConfig),
+    expireReducer('Feedback', expireConfig),
   ],
 };
 
