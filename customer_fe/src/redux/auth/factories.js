@@ -35,5 +35,8 @@ const Factories = {
   google_login: (data) => {
     return api.post(ApiConstants.GOOGLE_LOGIN, data);
   },
+  forgetPassword: (data) => {
+    return api.post(ApiConstants.FORGOT_PASSWORD, data);
+  },
 };
 export default Factories;
