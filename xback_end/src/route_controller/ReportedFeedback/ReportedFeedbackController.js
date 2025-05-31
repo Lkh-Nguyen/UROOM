@@ -115,6 +115,7 @@ exports.getAllReportedFeedbacks = asyncHandler(async (req, res) => {
     data: reports,
   });
 });
+
 exports.deleteReportedFeedback = asyncHandler(async (req, res) => {
   const { reportId } = req.params;
   const userId = Number(req.user._id);
