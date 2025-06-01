@@ -34,6 +34,7 @@ app.use(cors({
     process.env.FRONTEND_CUSTOMER_URL_PRODUCT, 
     process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT, 
     process.env.FRONTEND_OWNER_URL_DEVELOPMENT,
+    process.env.FRONTEND_OWNER_URL_PRODUCT,
   ],
   credentials: true
 }));
@@ -45,6 +46,7 @@ const io = new Server(server, {
       process.env.FRONTEND_CUSTOMER_URL_PRODUCT, 
       process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT, 
       process.env.FRONTEND_OWNER_URL_DEVELOPMENT,
+      process.env.FRONTEND_OWNER_URL_PRODUCT,
     ],
     credentials: true
   }
