@@ -55,6 +55,7 @@ exports.loginCustomer = async (req, res) => {
 exports.loginOwner = async (req, res) => {
   const { email, password } = req.body;
   console.log("body: ", req.body);
+  console.log("email: ", email);
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
