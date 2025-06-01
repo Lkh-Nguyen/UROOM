@@ -30,14 +30,22 @@ const server = http.createServer(app);
 
 //from cors
 app.use(cors({
-  origin: [process.env.FRONTEND_CUSTOMER_URL_PRODUCT, process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT],
+  origin: [
+    process.env.FRONTEND_CUSTOMER_URL_PRODUCT, 
+    process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT, 
+    process.env.FRONTEND_OWNER_URL_DEVELOPMENT,
+  ],
   credentials: true
 }));
 
 //Socket
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_CUSTOMER_URL_PRODUCT, process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT],
+    origin: [
+      process.env.FRONTEND_CUSTOMER_URL_PRODUCT, 
+      process.env.FRONTEND_CUSTOMER_URL_DEVELOPMENT, 
+      process.env.FRONTEND_OWNER_URL_DEVELOPMENT,
+    ],
     credentials: true
   }
 });
