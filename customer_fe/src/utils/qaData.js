@@ -102,7 +102,7 @@ const ListHotel = ({ address }) => {
           {searchHotel.map((hotel, index) => (
             <li key={hotel.hotel.id || index} className="mb-2">
               <a
-                href={`http://localhost:3000/home_detail/${hotel.hotel._id}?sort=0&star=0&page=1`}
+                href={`https://uroom.vercel.app/home_detail/${hotel.hotel._id}?sort=0&star=0&page=1`}
                 className="hotel-link"
               >
                 {hotel.hotel.hotelName}

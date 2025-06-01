@@ -2,7 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 
-const baseUrl = "http://localhost:5000";
+const baseUrl = process.env.REACT_APP_ENVIRONMENT === 'development' ? process.env.REACT_APP_BACKEND_CUSTOMER_URL_DEVELOPMENT : process.env.REACT_APP_BACKEND_CUSTOMER_URL_PRODUCT;
 
 const socketSlice = createSlice({
   name: "socket",
