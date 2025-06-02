@@ -33,7 +33,7 @@ import { initializeSocket } from "@redux/socket/socketSlice";
 
 function App() {
   useEffect(() => {
-    document.title = "My Uroom";
+    document.title = "Uroom Customer";
   }, []);
 
   const dispatch = useAppDispatch();
