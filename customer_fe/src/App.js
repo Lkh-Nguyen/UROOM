@@ -28,7 +28,6 @@ import ReportedFeedback from "./pages/customer/home/ReportedFeedback";
 import ChatPage from "./pages/customer/home/ChatPage";
 
 import { useEffect } from "react";
-import ChatBox from "@pages/ChatMessage";
 import { useAppSelector } from "@redux/store";
 
 function App() {
@@ -116,7 +115,6 @@ function App() {
         <Route path={Routers.BannedPage} element={<BannedPage />} />
         <Route path={Routers.ErrorPage} element={<ErrorPage />} />
         <Route path={Routers.ChatPage} element={<ChatPage />} />
-        <Route path="Message" element={<ChatBox />} />
         {/* <Route path="/test" element={<TestTailwindCss />} /> */}
       </Routes>
     </Router>
