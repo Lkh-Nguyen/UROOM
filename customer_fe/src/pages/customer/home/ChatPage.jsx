@@ -94,6 +94,19 @@ function CustomerChat() {
   };
 
   useEffect(() => {
+    console.log("Socket ABC:", Socket?.id);
+    if (!Socket) return;
+    if (Auth?._id === -1) return;
+    if (!selectedUser?._id) return;
+
+    Socket.emit("join-room", {
+      userId: Auth._id,
+      partnerId: selectedUser._id,
+    });
+  }, [Socket, Auth?._id, selectedUser?._id]);
+
+  // Nhận message và markAsRead
+  useEffect(() => {
     if (!Socket || !Auth?._id) return;
 
     const handleReceiveMessage = (msg) => {

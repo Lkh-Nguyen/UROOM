@@ -24,7 +24,6 @@ function Chat() {
   }, [location, navigate]);
 
   const Auth = useAppSelector((state) => state.Auth.Auth);
-  const Socket = useAppSelector((state) => state.Socket.socket);
   const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState();
@@ -73,9 +72,8 @@ function Chat() {
     }
   };
 
-  useEffect(() => {
-    dispatch(initializeSocket());
-  }, [dispatch]);
+
+  const Socket = useAppSelector((state) => state.Socket.socket);
 
   useEffect(() => {
     fetchAllUser();
@@ -95,8 +93,11 @@ function Chat() {
 
   // Join room khi selectedUser thay đổi
   useEffect(() => {
-    if (!Socket || !Auth?._id || !selectedUser?._id) return;
-
+    console.log("Socket ABC:", Socket?.id);
+    if (!Socket) return;
+    if (Auth?._id === -1) return;
+    if (!selectedUser?._id) return;
+    
     Socket.emit("join-room", {
       userId: Auth._id,
       partnerId: selectedUser._id,
@@ -140,7 +141,6 @@ function Chat() {
     };
   }, [Socket, Auth?._id, selectedUser?._id]);
 
-  console.log("users: ", users);
   // Gửi tin nhắn
   const sendMessage = (e) => {
     e.preventDefault();

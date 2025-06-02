@@ -28,19 +28,28 @@ import ReportedFeedback from "./pages/customer/home/ReportedFeedback";
 import ChatPage from "./pages/customer/home/ChatPage";
 
 import { useEffect } from "react";
-import { useAppSelector } from "@redux/store";
+import { useAppDispatch, useAppSelector } from "@redux/store";
+import { initializeSocket } from "@redux/socket/socketSlice";
 
 function App() {
   useEffect(() => {
     document.title = "My Uroom";
   }, []);
 
+  const dispatch = useAppDispatch();
   const Socket = useAppSelector((state) => state.Socket.socket);
   const Auth = useAppSelector((state) => state.Auth.Auth);
 
   useEffect(() => {
-    if (!Socket || Auth?._id == -1) return;
+    if (Auth?._id === -1) return;
+    dispatch(initializeSocket());
+  }, [Auth?._id]);
 
+  useEffect(() => {
+    if (!Socket) return;
+    if (Auth?._id === -1) return;
+
+    console.log("Socket initialized:", Socket.id);
     Socket.emit("register", Auth._id);
 
     const handleForceJoinRoom = ({ roomId, partnerId }) => {
