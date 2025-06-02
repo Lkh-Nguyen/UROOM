@@ -7,6 +7,7 @@ import { Route, useLocation, useNavigate } from "react-router-dom";
 import Banner from "../../../images/banner.jpg";
 import { showToast, ToastProvider } from "@components/ToastContainer";
 import axios from "axios";
+import Factories from "@redux/auth/factories";
 const ResetPasswordPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,7 +50,7 @@ const ResetPasswordPage = () => {
     }
     try {
 
-      const response = await axios.post("http://localhost:5000/api/auth/reset_password", {
+      const response = await Factories.reset_password({
         email,
         code,
         newPassword: formData.password,

@@ -38,5 +38,12 @@ const Factories = {
   forgetPassword: (data) => {
     return api.post(ApiConstants.FORGOT_PASSWORD, data);
   },
+
+  reset_password: (data) => {
+    return api.post(ApiConstants.RESET_PASSWORD, data);
+  },
+  verify_forgot_password: (data) => {
+    return api.post(ApiConstants.VERIFY_FORGOT_PASSWORD, data);
+  },
 };
 export default Factories;
