@@ -93,21 +93,20 @@ function Chat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Join room khi selectedUser thay đổi
+  useEffect(() => {
+    if (!Socket || !Auth?._id || !selectedUser?._id) return;
+
+    Socket.emit("join-room", {
+      userId: Auth._id,
+      partnerId: selectedUser._id,
+    });
+  }, [Socket, Auth?._id, selectedUser?._id]);
+
+  // Nhận message và markAsRead
   useEffect(() => {
     if (!Socket || !Auth?._id) return;
 
-    // Gửi userId để đăng ký socket
-    Socket.emit("register", Auth._id);
-
-    // Nếu có selectedUser thì join vào room chung
-    if (selectedUser?._id) {
-      Socket.emit("join-room", {
-        userId: Auth._id,
-        partnerId: selectedUser._id,
-      });
-    }
-
-    // Nhận tin nhắn riêng
     const handleReceiveMessage = (msg) => {
       if (Auth._id === msg.receiverId && msg.senderId === selectedUser?._id) {
         setUserMessages((prev) => [...prev, msg]);
@@ -115,7 +114,6 @@ function Chat() {
       fetchAllUser();
     };
 
-    // Nhận cập nhật tin nhắn đã đọc
     const handleMarkAsRead = (msg) => {
       if (selectedUser?._id == msg.senderId) {
         setUserMessages((prevMessages) =>
@@ -425,7 +423,6 @@ function Chat() {
                         </span>
                       </div>
                     </div>
-
                   </div>
 
                   {/* Message status (only for the last message from current user) */}

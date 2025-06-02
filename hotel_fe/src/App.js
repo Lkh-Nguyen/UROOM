@@ -47,7 +47,7 @@ function App() {
   const Auth = useAppSelector((state) => state.Auth.Auth);
 
   useEffect(() => {
-    if (!Socket || !Auth?._id) return;
+    if (!Socket || Auth?._id == -1) return;
 
     Socket.emit("register", Auth._id);
 
@@ -56,9 +56,6 @@ function App() {
         userId: Auth._id,
         partnerId,
       });
-
-      // Optional: tự mở khung chat với partnerId nếu chưa mở
-      // dispatch(setSelectedUser(partnerId)); hoặc setSelectedUser(partnerId)
     };
 
     Socket.on("force-join-room", handleForceJoinRoom);
@@ -67,6 +64,7 @@ function App() {
       Socket.off("force-join-room", handleForceJoinRoom);
     };
   }, [Socket, Auth?._id]);
+  
   return (
     <Router>
       <Routes>
