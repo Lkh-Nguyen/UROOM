@@ -36,5 +36,6 @@ HotelRouter.put("/update-hotel/:hotelId",checkOwner,  HotelController.updateHote
 HotelRouter.put("/updateStatusService/:hotelId/status",  HotelController.updateHotelServiceStatus);
 HotelRouter.post("/add-service", HotelController.createHotelService);
 HotelRouter.put("/changeStatus-hotel/:hotelId",checkOwner,  HotelController.changeStatusHotelInfo);
+HotelRouter.post("/create-hotel",checkOwner, HotelController.createHotel);
 
 module.exports = HotelRouter;

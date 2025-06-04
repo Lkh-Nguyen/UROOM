@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import AuthActions from "../../../redux/auth/actions";
 import axios from "axios";
+import Factories from "@redux/auth/factories";
 const VerifyCodePage = () => {
   const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState([
@@ -23,7 +24,8 @@ const VerifyCodePage = () => {
   const inputRefs = useRef([]);
   const location = useLocation();
   const dispatch = useDispatch()
-  const email = location.state?.email || "";
+  const [email, setEmail] = useState(location.state?.email || "");
+  
   // Initialize refs array
   useEffect(() => {
     inputRefs.current = inputRefs.current.slice(0, 6);
@@ -81,6 +83,8 @@ const VerifyCodePage = () => {
       }
     }
   };
+          console.log("Email: ", email);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const code = verificationCode.join("");
@@ -90,7 +94,7 @@ const VerifyCodePage = () => {
     }
     setIsLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/auth/verify_forgot_password", {
+      const response = await Factories.verify_forgot_password({
         code: code
       });
       setIsLoading(false);

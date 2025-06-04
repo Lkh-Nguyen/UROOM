@@ -2,8 +2,9 @@
 const ChatMessage = require("../../models/chatMessage");
 
 module.exports = function (io, socket, users) {
-  console.log("✅ A user connected:", socket.id);
 
+  console.log("🔌 users:", users);
+  
   // --- 1. Đăng ký user khi kết nối ---
   socket.on("register", (userId) => {
     users.set(userId, socket.id);
@@ -13,12 +14,18 @@ module.exports = function (io, socket, users) {
   // --- 2. Vào room khi chọn user ---
   socket.on("join-room", ({ userId, partnerId }) => {
     const roomId = getRoomId(userId, partnerId);
+    console.log(
+      `🔵 User ${userId} joining room ${roomId} with partner ${partnerId}`
+    );
     socket.join(roomId);
     console.log(`👥 User ${userId} joined room ${roomId}`);
   });
 
   // --- 3. Gửi tin nhắn ---
   socket.on("send-message", async ({ senderId, receiverId, message }) => {
+    console.log(
+      `📩 User ${senderId} sending message to ${receiverId}: ${message}`
+    );
     const roomId = getRoomId(senderId, receiverId);
 
     const newMsg = new ChatMessage({ senderId, receiverId, message });

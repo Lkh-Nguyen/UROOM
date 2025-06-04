@@ -2,7 +2,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { io } from "socket.io-client";
 
-const baseUrl = "http://localhost:5000";
+const baseUrl = process.env.REACT_APP_ENVIRONMENT === 'development' ? process.env.REACT_APP_BACKEND_CUSTOMER_URL_DEVELOPMENT : process.env.REACT_APP_BACKEND_CUSTOMER_URL_PRODUCT;
 
 const socketSlice = createSlice({
   name: "socket",
@@ -23,8 +23,9 @@ const socketSlice = createSlice({
 export const { setSocket, clearSocket } = socketSlice.actions;
 
 export const initializeSocket = () => (dispatch, getState) => {
-  const existingSocket = getState()?.socket?.socket;
-
+  console.log("getState: ", getState());
+  const existingSocket = getState()?.Socket?.socket;
+  console.log("Existing socket: ", existingSocket);
   if (existingSocket) {
     console.log("Already has connection!");
     return;
@@ -42,8 +43,8 @@ export const initializeSocket = () => (dispatch, getState) => {
 };
 
 export const disconnectSocket = () => (dispatch, getState) => {
-  const socket = getState().socket.socket;
-
+  const socket = getState()?.Socket?.socket;
+  console.log("socket: ", socket);
   if (socket) {
     console.log("Disconnecting socket...");
     socket.disconnect();

@@ -22,17 +22,41 @@ function BookingPropertyName() {
   const dispatch = useAppDispatch();
   const createHotel = useAppSelector((state) => state.Hotel.createHotel);
   const [hotelName, setHotelName] = useState(createHotel.hotelName);
+  const [phoneNumber, setPhoneNumber] = useState(createHotel.phoneNumber || "");
+  const [email, setEmail] = useState(createHotel.email || "");
 
+  const validatePhoneNumber = (phone) => {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Replace the existing handleContinueClick function
   const handleContinueClick = () => {
-    if (hotelName !== "") {
-      dispatch({
-        type: HotelActions.SAVE_HOTEL_NAME_CREATE,
-        payload: hotelName,
-      });
-      navigate(Routers.BookingPropertyLocation);
-    } else {
-      showToast.warning("Hãy nhập tên khách sạn !!!");
+    if (hotelName === "" || phoneNumber === "" || email === "") {
+      showToast.warning("Hãy điền đầy đủ thông tin trước khi tiếp tục!");
+      return;
     }
+
+    if (!validatePhoneNumber(phoneNumber)) {
+      showToast.warning("Số điện thoại phải có 10 chữ số!");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      showToast.warning("Email không hợp lệ! Hãy nhập đúng định dạng email.");
+      return;
+    }
+
+    dispatch({
+      type: HotelActions.SAVE_HOTEL_NAME_CREATE,
+      payload: { hotelName, phoneNumber, email },
+    });
+    navigate(Routers.BookingPropertyLocation);
   };
   return (
     <div className="booking-app">
@@ -82,6 +106,28 @@ function BookingPropertyName() {
                     className="form-input"
                     value={hotelName}
                     onChange={(e) => setHotelName(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">
+                    Số điện thoại liên hệ
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập số điện thoại liên hệ"
+                    className="form-input"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                </Form.Group>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Email liên hệ</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Nhập email liên hệ"
+                    className="form-input"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </Form.Group>
               </Form>

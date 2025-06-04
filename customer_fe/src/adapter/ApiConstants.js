@@ -10,7 +10,9 @@ const ApiConstants = {
   UPDATE_PROFILE: "/auth/updateProfile_customer",
   CHANGE_PASSWORD: "/auth/changePassword_customer",
   UPDATE_AVATAR: "/auth/update_avatar",
-
+  FORGOT_PASSWORD: "/auth/forgot_password",
+  RESET_PASSWORD: "/auth/reset_password",
+  VERIFY_FORGOT_PASSWORD: "/auth/verify_forgot_password",
   //SEARCH:
   SEARCH_HOTEL: "/search",
   FETCH_FAVORITE_HOTELS: "/hotel/get-hotel-byId",

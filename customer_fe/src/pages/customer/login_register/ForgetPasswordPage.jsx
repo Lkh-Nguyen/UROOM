@@ -35,7 +35,9 @@ const ForgetPasswordPage = () => {
   e.preventDefault();
   setIsLoading(true);
   try {
-    const response = await axios.post("http://localhost:5000/api/auth/forgot_password", { email: formData.email });
+    const response = await Factories.forgetPassword({
+      email: formData.email,
+    });
     if (response?.status === 200) {
       setIsLoading(false);
       navigate(Routers.VerifyCodePage, {

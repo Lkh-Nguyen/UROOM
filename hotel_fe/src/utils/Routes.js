@@ -39,7 +39,6 @@ export {
   BannedPage,
   ErrorPage,
   WaitPendingPage,
-
   // Hotel Host
   Transaction,
   BookingSchedule,

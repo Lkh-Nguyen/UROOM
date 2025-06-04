@@ -31,6 +31,8 @@ const initialState = {
       "https://i.pinimg.com/736x/f3/3f/eb/f33feb864f7f72b753b48c8a9003d405.jpg",
       "https://i.pinimg.com/736x/1c/31/7c/1c317c4053b0835a3a54944ace8b66f0.jpg",
     ],
+    phoneNumber: "",
+    email: "",
   },
   checkCreateHotel: false,
   createRoom: [
@@ -116,7 +118,9 @@ const favoriteHotelReducer = (state = initialState, action) => {
         ...state,
         createHotel: {
           ...state.createHotel,
-          hotelName: action.payload,
+          hotelName: action.payload.hotelName,
+          phoneNumber: action.payload.phoneNumber,
+          email: action.payload.email,
         },
       };
     case HotelActions.SAVE_HOTEL_ADDRESS_CREATE:
@@ -169,6 +173,14 @@ const favoriteHotelReducer = (state = initialState, action) => {
           checkCreateHotel: action.payload.checkCreateHotel,
         },
       };
+    case HotelActions.CREATE_HOTEL: {
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        hotel: action.payload.hotel,
+      };
+    }
     default:
       return state;
   }

@@ -47,11 +47,13 @@ function ViewAvatar() {
           setLoading(false);
           showToast.success(MsgYes);
         },
-        onFailed: (MsgNo) => {
-          showToast.warning(MsgNo);
+        onFailed: () => {
+          showToast.warning("Failed to update avatar. Please try again.");
+          setLoading(false);
         },
-        onError: (MsgNo) => {
-          showToast.warning(MsgNo);
+        onError: () => {
+          showToast.warning("An error occurred while uploading the file.");
+          setLoading(false);
         },
       },
     });

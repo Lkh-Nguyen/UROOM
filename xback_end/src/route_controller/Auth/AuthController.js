@@ -11,16 +11,18 @@ exports.loginCustomer = async (req, res) => {
   try {
     const { email, password } = req.body;
     console.log("body: ", req.body);
-
     const user = await User.findOne({ email }).select("+password");
-
     // Nếu không tìm thấy user
     if (!user) {
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
 
     // Nếu không có role
-    if (!user.role) {
+    if (!user.role)  {
+      return res.status(401).json({ MsgNo: "Email or password is incorrect" });
+    }
+
+    if (user.role !== "CUSTOMER") { 
       return res.status(401).json({ MsgNo: "Email or password is incorrect" });
     }
 
@@ -53,6 +55,7 @@ exports.loginCustomer = async (req, res) => {
 exports.loginOwner = async (req, res) => {
   const { email, password } = req.body;
   console.log("body: ", req.body);
+  console.log("email: ", email);
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
@@ -86,10 +89,6 @@ exports.updateCustomerProfile = async (req, res) => {
 
     if (!user) {
       return res.status(404).json({ MsgNo: "User not found" });
-    }
-
-    if (user.role !== "CUSTOMER") {
-      return res.status(403).json({ MsgNo: "Access denied" });
     }
 
     if (!user.isVerified) {
@@ -223,6 +222,7 @@ exports.registerCustomer = async (req, res) => {
  * Send email when forgot password
  */
 exports.forgotPassword = async (req, res) => {
+  console.log("Forgot password request body:", req.body);
   try {
     const { email } = req.body;
     console.log("Forgot password request for email:", email);   
@@ -232,7 +232,7 @@ exports.forgotPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ MsgNo: "User not found" });
+      return res.status(404).json({ MsgNo: "Email is not registered with us! Try again with another email" });
     }
 
     // Generate reset token and expiry (6-digit code, valid for 1 hour)
@@ -270,6 +270,7 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { email,code, newPassword, confirmPassword } = req.body;
+    console.log("req.body: ", req.body)
     if (!email ||!code || !newPassword || !confirmPassword) {
       return res.status(400).json({ MsgNo: "All fields are required" });
     }
@@ -352,9 +353,10 @@ exports.verifyEmail = async (req, res) => {
       MsgNo: "Email verified successfully. You can now log in.",
       Data: {
         user: {
-          _id: user._id,
+          _id: user._id,  
           name: user.name,
           email: user.email,
+          phoneNumber: user.phoneNumber,
           role: user.role,
           isVerified: user.isVerified,
         },
@@ -383,13 +385,7 @@ exports.resendVerificationCode = async (req, res) => {
     if (!user) {
       return res.status(404).json({ MsgNo: "User not found" });
     }
-
-    if (user.isVerified) {
-      return res
-        .status(400)
-        .json({ MsgNo: "This account is already verified" });
-    }
-
+    
     // Generate new verification code
     const verificationToken = generateVerificationToken();
     const verificationTokenExpiresAt = new Date(

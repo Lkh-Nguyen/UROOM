@@ -121,7 +121,7 @@ function RoomImageForm() {
               <Button
                 variant="outline-primary"
                 onClick={() => {
-                  navigate("/BookingPropertyCheckInOut");
+                  navigate(Routers.PricingSetupForm);
                 }}
               >
                 <FiArrowLeft className="back-icon" />
