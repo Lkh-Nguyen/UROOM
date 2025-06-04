@@ -782,17 +782,17 @@ function AdminDashboard() {
                 <div className="page-header">
                   <h1>Phê duyệt Khách sạn</h1>
                   <div className="page-actions">
-                    <button className="btn btn-outline-primary">
+                    {/* <button className="btn btn-outline-primary">
                       <i className="bi bi-filter"></i> Lọc
-                    </button>
-                    <div className="btn-group">
+                    </button> */}
+                    {/* <div className="btn-group">
                       <button className="btn btn-success">
                         <i className="bi bi-check-lg"></i> Phê duyệt đã chọn
                       </button>
                       <button className="btn btn-danger">
                         <i className="bi bi-x-lg"></i> Từ chối đã chọn
                       </button>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
 

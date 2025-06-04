@@ -78,11 +78,9 @@ const AccountManagement = () => {
       <div className="page-header">
         <h1>Quản lý Hotel Host</h1>
         <div className="page-actions">
-          <button className="btn btn-outline-primary">
-            <i className="bi bi-filter"></i> Lọc
-          </button>
+          
           <button className="btn btn-primary">
-            <i className="bi bi-plus-lg"></i> Thêm mới
+            <i className="bi bi-download"></i> Xuất dữ liệu
           </button>
         </div>
       </div>
@@ -153,12 +151,12 @@ const AccountManagement = () => {
                       >
                         <i className="bi bi-eye"></i>
                       </button>
-                      <button
+                      {/* <button
                         className="btn btn-sm btn-warning"
                         title="Chỉnh sửa"
                       >
                         <i className="bi bi-pencil"></i>
-                      </button>
+                      </button> */}
                       <button
                         className="btn btn-sm btn-danger"
                         title="Khóa tài khoản"

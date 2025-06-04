@@ -5,7 +5,7 @@ require("dotenv").config();
 
 // Kết nối MongoDB
 mongoose
-  .connect(`${process.env.MONGODB_URI}`, {
+  .connect(`${process.env.MONGODB_URI_PRODUCTION}`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

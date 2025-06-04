@@ -86,14 +86,14 @@ const ListPaymentHotel = () => {
     <div className="payments-content">
       <div className="page-header">
         <h1>Quản lý Thanh toán</h1>
-        <div className="page-actions">
+        {/* <div className="page-actions">
           <button className="btn btn-outline-primary">
             <i className="bi bi-filter"></i> Lọc
           </button>
           <button className="btn btn-primary">
             <i className="bi bi-download"></i> Xuất báo cáo
           </button>
-        </div>
+        </div> */}
       </div>
 
       <div className="content-container">

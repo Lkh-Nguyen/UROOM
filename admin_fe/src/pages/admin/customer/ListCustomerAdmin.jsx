@@ -83,9 +83,9 @@ function ListCustomerAdmin() {
       <div className="page-header">
         <h1>Quản lý Khách hàng</h1>
         <div className="page-actions">
-          <button className="btn btn-outline-primary">
+          {/* <button className="btn btn-outline-primary">
             <i className="bi bi-filter"></i> Lọc
-          </button>
+          </button> */}
           <button className="btn btn-primary">
             <i className="bi bi-download"></i> Xuất dữ liệu
           </button>
