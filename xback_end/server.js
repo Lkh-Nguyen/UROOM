@@ -1,4 +1,5 @@
 const { Server } = require("socket.io");
+const bodyParser = require("body-parser");
 const express = require("express");
 const dotenv = require("dotenv").config();
 const cors = require("cors");
@@ -9,6 +10,7 @@ const authRoute = require("./src/route_controller/Auth/AuthRoute");
 const SearchHotelRoute = require("./src/route_controller/Search_Hotel/SearchHotelRoute");
 const HotelRouter = require("./src/route_controller/Hotel/HotelRoute");
 const FeedbackRouter = require("./src/route_controller/Feedback/FeedbackRoute");
+const promotionRoutes = require('./src/route_controller/Promotion/PromotionRoute');
 const RoomRouter = require("./src/route_controller/Room/RoomRouter");
 const PaymentRouter = require("./src/route_controller/Payment/PaymentRoute");
 const ReportedFeedbackRoute = require("./src/route_controller/ReportedFeedback/ReportedFeedbackRoute");
@@ -21,7 +23,7 @@ const RefundingReservationRouter = require("./src/route_controller/RefundingRese
 const socketHandler = require("./src/route_controller/Socket/socketHandler");
 const MonthlyPaymentRoute = require("./src/route_controller/MonthlyPayment/MonthlyPaymentRoute");
 const morgan = require("morgan");
-
+const PaymentController = require("./src/route_controller/Payment/PaymentController");
 const port = process.env.PORT || 5000;
 
 const app = express();
@@ -58,6 +60,14 @@ const io = new Server(server, {
 // Kết nối DB
 connectToDB();
 
+
+// Webhook Stripe phải dùng raw body
+app.post(
+  "/api/payment/webhook",
+  bodyParser.raw({ type: "application/json" }),
+  PaymentController.stripeWebhookHandler
+)
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -81,9 +91,11 @@ app.use("/api/reportFeedback", ReportedFeedbackRoute);
 
 app.use("/api/refunding_reservation", RefundingReservationRouter);
 app.use("/api/hotelservices", HotelServiceRoute);
+app.use('/api/promotions', promotionRoutes);
 
 app.use("/api/chat", ChatRoutes);
 app.use("/api/monthly-payment", MonthlyPaymentRoute);
+app.use('/api/notifications', require('./src/route_controller/Notification/NotificationRoute'));
 
 const users = new Map(); // lưu trữ userId -> socketId
 

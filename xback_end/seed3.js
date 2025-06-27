@@ -1,16 +1,31 @@
 const mongoose = require("mongoose");
 const Hotel = require("./src/models/hotel"); // sửa đúng đường dẫn
 const User = require("./src/models/user");
+const hotel = require("./src/models/hotel");
 require("dotenv").config();
 
-const uri = process.env.MONGODB_URI_PRODUCTION; // đổi theo DB của bạn
+// Kiểm tra ENVIRONMENT và chọn MongoDB URI phù hợp
+const getMongoURI = () => {
+  const environment = process.env.ENVIRONMENT || 'development';
+  console.log(`🌍 Environment: ${environment}`);
+  
+  if (environment === 'production') {
+    console.log(`📡 Using Production MongoDB: ${process.env.MONGODB_URI_PRODUCTION}`);
+    return process.env.MONGODB_URI_PRODUCTION;
+  } else {
+    console.log(`💻 Using Development MongoDB: ${process.env.MONGODB_URI_DEVELOPMENT}`);
+    return process.env.MONGODB_URI_DEVELOPMENT;
+  }
+};
+
+const uri = getMongoURI();
 
 async function updateUsers() {
   try {
     await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
     // Lấy 10 hotel đầu tiên (theo thứ tự tạo hoặc _id tăng dần)
-    const hotels = await Hotel.find().limit(10).exec();
+    const hotels = await Hotel.find().exec();
 
     for (let i = 0; i < hotels.length; i++) {
       const hotel = hotels[i];

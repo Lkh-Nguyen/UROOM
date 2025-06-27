@@ -28,6 +28,24 @@ const reservationSchema = new Schema(
         },
       },
     ],
+    services: [
+      {
+        _id: false,
+        service: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "HotelService",
+          required: true,
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
+        selectDate: [{
+          type: Date,
+          required: true
+        }]
+      },
+    ],
     checkInDate: {
       type: Date,
       required: true,
@@ -54,11 +72,22 @@ const reservationSchema = new Schema(
       required: true,
       default: 0,
     },
+    finalPrice: {
+      type: Number,
+      default: 0,
+    },
+    promotionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Promotion",
+      default: null,
+    },
+    promotionDiscount: {
+      type: Number,
+      default: 0,
+    },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true, versionKey: false }
 );
-
-
 
 module.exports = mongoose.model("Reservation", reservationSchema);

@@ -5,16 +5,21 @@ const Hotel = require("./src/models/hotel");
 const Room = require("./src/models/room");
 require("dotenv").config();
 
-const uri = process.env.MONGODB_URI_PRODUCTION;
-
-const calculateTotalPrice = (rooms) => {
-  if (!rooms || !Array.isArray(rooms)) return 0;
-  return rooms.reduce((total, roomItem) => {
-    const roomPrice = roomItem.room?.price || 0;
-    const quantity = roomItem.quantity || 1;
-    return total + roomPrice * quantity;
-  }, 0);
+// Kiểm tra ENVIRONMENT và chọn MongoDB URI phù hợp
+const getMongoURI = () => {
+  const environment = process.env.ENVIRONMENT || 'development';
+  console.log(`🌍 Environment: ${environment}`);
+  
+  if (environment === 'production') {
+    console.log(`📡 Using Production MongoDB: ${process.env.MONGODB_URI_PRODUCTION}`);
+    return process.env.MONGODB_URI_PRODUCTION;
+  } else {
+    console.log(`💻 Using Development MongoDB: ${process.env.MONGODB_URI_DEVELOPMENT}`);
+    return process.env.MONGODB_URI_DEVELOPMENT;
+  }
 };
+
+const uri = getMongoURI();
 
 async function seedMonthlyPayments() {
   try {
@@ -25,7 +30,7 @@ async function seedMonthlyPayments() {
 
     // Lấy tất cả reservation COMPLETED
     const completedReservations = await Reservation.find({
-      status: { $in: ["COMPLETED", "CHECKED OUT"] },
+      status: { $in: ["COMPLETED", "CHECKED OUT", "BOOKED", "PENDING", "CHECKED IN"] },
     }).populate("rooms.room");
 
     console.log("completedReservations: ", completedReservations.length);
@@ -47,7 +52,7 @@ async function seedMonthlyPayments() {
           paymentCount: 0,
         };
       }
-      monthlyMap[key].amount += calculateTotalPrice(reservation.rooms) || 0;
+      monthlyMap[key].amount += reservation.totalPrice || 0;
       monthlyMap[key].paymentCount += 1;
     });
 

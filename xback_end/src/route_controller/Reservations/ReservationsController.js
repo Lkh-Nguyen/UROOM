@@ -41,7 +41,8 @@ exports.getReservationById = async (req, res) => {
 
     const reservation = await Reservation.findById(reservationId)
       .populate("hotel")
-      .populate("rooms.room");
+      .populate("rooms.room")
+      .populate("services.service")
 
     if (!reservation) {
       return res.status(404).json({
@@ -129,9 +130,7 @@ const autoUpdateNotPaidReservation = asyncHandler(async () => {
           user: r.user._id,
           reservation: r._id,
           refundAmount: r.totalPrice,
-          accountHolderName: r.user.accountHolderName ?? "Hoang Nguyen",
-          accountNumber: r.user.accountNumber ?? "Le Kim Hoang Nguyen",
-          bankName: r.user.bankName ?? "Techcom Bank",
+          status: "WAITING_FOR_BANK_INFO",
         });
 
         try {
