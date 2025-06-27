@@ -1,6 +1,6 @@
 const ReportedFeedback = require("../../models/reportedFeedback");
 const Feedback = require("../../models/feedback");
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 
 exports.reportFeedback = asyncHandler(async (req, res) => {
   const userId = Number(req.user._id);

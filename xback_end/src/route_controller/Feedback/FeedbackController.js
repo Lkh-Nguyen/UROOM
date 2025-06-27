@@ -1,7 +1,7 @@
 const Feedback = require("../../models/feedback");
-const asyncHandler = require("../../middlewares/asyncHandler");
 const mongoose = require("mongoose");
 require("dotenv").config();
+const asyncHandler = require('express-async-handler');
 
 const User = require("../../models/user");
 exports.calculateAvgRatingHotel = async (hotelId) => {

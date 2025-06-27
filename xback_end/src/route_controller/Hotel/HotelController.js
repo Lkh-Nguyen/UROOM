@@ -1,6 +1,6 @@
 const Hotel = require("../../models/hotel");
 const User = require("../../models/user");
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 const { calculateAvgRatingHotel } = require("../Feedback/FeedbackController");
 require("../../models/hotelFacility");
 const Reservation = require("../../models/reservation");

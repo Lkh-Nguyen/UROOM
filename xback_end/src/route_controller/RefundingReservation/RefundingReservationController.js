@@ -1,5 +1,5 @@
 const RefundingReservation = require("../../models/refundingReservation");
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 
 const createRefundingReservation = asyncHandler(async (req, res) => {
   const { idReservation, refundAmount, accountHolderName, accountNumber, bankName } = req.body;

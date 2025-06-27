@@ -2,7 +2,7 @@ const Reservation = require("../../models/reservation");
 const RefundingReservation = require("../../models/refundingReservation");
 
 const cron = require("node-cron");
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 const roomAvailability = require("../../models/roomAvailability");
 
 exports.getReservationsByUserId = async (req, res) => {

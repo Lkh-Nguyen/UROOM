@@ -1,5 +1,5 @@
 require("dotenv").config();
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 const Reservation = require("../../models/reservation");
 const RoomAvailability = require("../../models/roomAvailability");
 const Room = require("../../models/room");

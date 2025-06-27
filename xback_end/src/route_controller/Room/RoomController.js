@@ -3,7 +3,7 @@ const Hotel = require("../../models/hotel");
 const RoomFacility = require("../../models/roomFacility");
 const Bed = require("../../models/bed");
 const reservation = require("../../models/reservation");
-const asyncHandler = require("../../middlewares/asyncHandler");
+const asyncHandler = require('express-async-handler');
 const cloudinary = require("../../config/cloudinaryConfig");
 
 const getRoomsByHotel = async (req, res) => {
