@@ -2,11 +2,13 @@ import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Utils from "../../../../utils/Utils";
 import { Form, Badge, Row, Col } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import ConfirmationModal from "@components/ConfirmationModal";
 
 // Combined component with inline styles
 function CancelReservationModal({
   selectedReservation,
+  refundAmount,
   show,
   onHide,
   onConfirm,
@@ -16,7 +18,10 @@ function CancelReservationModal({
   setAccountHolderName,
   setAccountNumber,
   setBankName,
+  setRefundAmount,
 }) {
+  const [showModal, setShowModal] = useState(show);
+
   const calculateDaysUntilCheckIn = () => {
     if (!selectedReservation?.checkIn) {
       return null; // hoặc return 0 tùy logic bạn muốn xử lý
@@ -40,11 +45,6 @@ function CancelReservationModal({
 
     return differenceInDays;
   };
-  function parseCurrency(formatted) {
-    if (!formatted) return 0; // hoặc null tùy vào yêu cầu
-    const numericString = formatted.replace(/[^\d]/g, "");
-    return Number(numericString);
-  }
 
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "$0";
@@ -59,7 +59,7 @@ function CancelReservationModal({
   // Calculate refund policy based on days until check-in
   const calculateRefundPolicy = () => {
     const daysUntilCheckIn = calculateDaysUntilCheckIn();
-    const totalPrice = parseCurrency(selectedReservation?.totalPrice);
+    const totalPrice = refundAmount;
     if (selectedReservation?.status === "PENDING") {
       return {
         refundPercentage: 100,
@@ -98,6 +98,11 @@ function CancelReservationModal({
   };
 
   const refundPolicy = calculateRefundPolicy();
+  useEffect(() => {
+    const refundPolicyTest = calculateRefundPolicy();
+    const refundAmountValue = refundPolicyTest.refundAmount;
+    setRefundAmount(refundAmountValue);
+  }, []);
   return (
     <>
       {/* CSS Styles */}
@@ -212,7 +217,7 @@ function CancelReservationModal({
               </div>
               <div className="detail-row">
                 <span>Total:</span>
-                <span>{selectedReservation?.totalPrice}</span>
+                <span>{Utils.formatCurrency(refundAmount)}</span>
               </div>
 
               <div className="detail-row">
@@ -353,12 +358,21 @@ function CancelReservationModal({
           <Button
             variant="danger"
             className="confirm-button"
-            onClick={onConfirm}
+            onClick={() => setShowModal(true)}
           >
             Confirm Cancellation
           </Button>
         </Modal.Footer>
       </Modal>
+      <ConfirmationModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        onConfirm={onConfirm}
+        title="Cancel Reservation Confirmation"
+        message="Are you sure you want to cancel this reservation?"
+        confirmButtonText="Confirm"
+        type="danger"
+      />
     </>
   );
 }

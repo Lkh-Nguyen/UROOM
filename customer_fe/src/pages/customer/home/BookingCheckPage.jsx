@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   Row,
@@ -16,21 +17,100 @@ import Footer from "../Footer";
 import * as Routers from "../../../utils/Routes";
 import { useNavigate } from "react-router-dom";
 import ConfirmationModal from "@components/ConfirmationModal";
-import { useAppSelector } from "../../../redux/store";
+import { useAppSelector, useAppDispatch } from "../../../redux/store";
 import Utils from "../../../utils/Utils";
 import Factories from "../../../redux/search/factories";
 import { ChatBox } from "./HomePage";
+import SearchActions from "../../../redux/search/actions";
+import HotelActions from "@redux/hotel/actions";
+import HotelClosedModal from "./components/HotelClosedModal";
 
 const BookingCheckPage = () => {
+  const [showModalStatusBooking, setShowModalStatusBooking] = useState(false);
+
   const Auth = useAppSelector((state) => state.Auth.Auth);
   const SearchInformation = useAppSelector(
     (state) => state.Search.SearchInformation
   );
-  const selectedRooms = useAppSelector((state) => state.Search.selectedRooms);
-  const hotelDetail = useAppSelector((state) => state.Search.hotelDetail);
+  const selectedRoomsTemps = useAppSelector(
+    (state) => state.Search.selectedRooms
+  );
+  const selectedServicesFromRedux = useAppSelector(
+    (state) => state.Search.selectedServices
+  );
+  const hotelDetailFromRedux = useAppSelector(
+    (state) => state.Search.hotelDetail
+  );
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [bookingFor, setBookingFor] = useState("mainGuest");
-  
+
+  // Promotion code state
+  const [promotionCode, setPromotionCode] = useState("");
+  const [promotionDiscount, setPromotionDiscount] = useState(0);
+  const [promotionMessage, setPromotionMessage] = useState("");
+  const [promotionId, setPromotionId] = useState(null);
+  const [checkingPromotion, setCheckingPromotion] = useState(false);
+
+  // Add state for booking data
+  const [bookingData, setBookingData] = useState({
+    selectedRooms: selectedRoomsTemps || [],
+    selectedServices: selectedServicesFromRedux || [],
+    hotelDetail: hotelDetailFromRedux || null,
+    searchInfo: SearchInformation,
+  });
+
+  // Restore data from sessionStorage stack when component mounts
+  useEffect(() => {
+    const bookingStack = JSON.parse(
+      sessionStorage.getItem("bookingStack") || "[]"
+    );
+    if (bookingStack.length > 0) {
+      const currentBooking = bookingStack[bookingStack.length - 1];
+      setBookingData(currentBooking);
+
+      // Update Redux store with current data
+      dispatch({
+        type: SearchActions.SAVE_SELECTED_ROOMS,
+        payload: {
+          selectedRooms: currentBooking.selectedRooms,
+          selectedServices: currentBooking.selectedServices,
+          hotelDetail: currentBooking.hotelDetail,
+        },
+      });
+    }
+  }, [dispatch]);
+
+  // Handle navigation back to HomeDetailPage
+  const handleBackToHomeDetail = () => {
+    const bookingStack = JSON.parse(
+      sessionStorage.getItem("bookingStack") || "[]"
+    );
+    if (bookingStack.length > 0) {
+      // Remove the current booking from stack
+      bookingStack.pop();
+      sessionStorage.setItem("bookingStack", JSON.stringify(bookingStack));
+    }
+    navigate(-1);
+  };
+
+  // Use bookingData instead of Redux state
+  const selectedRooms = bookingData.selectedRooms;
+  const selectedServices = bookingData.selectedServices;
+  const hotelDetail = bookingData.hotelDetail;
+  const searchInfo = bookingData.searchInfo;
+
+  // Calculate number of days between check-in and check-out
+  const calculateNumberOfDays = () => {
+    const checkIn = new Date(searchInfo.checkinDate);
+    const checkOut = new Date(searchInfo.checkoutDate);
+    const diffTime = Math.abs(checkOut - checkIn);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  const numberOfDays = calculateNumberOfDays();
+
   // Star rating component
   const StarRating = ({ rating }) => {
     return (
@@ -49,58 +129,158 @@ const BookingCheckPage = () => {
   const [showAcceptModal, setShowAcceptModal] = useState(false);
 
   const createBooking = async () => {
+    dispatch({
+      type: HotelActions.FETCH_DETAIL_HOTEL,
+      payload: {
+        hotelId: hotelDetail._id,
+        userId: Auth._id,
+        onSuccess: async (hotel) => {
+          console.log("Hotel detail fetched successfully:", hotel);
+          if (hotel.ownerStatus === "ACTIVE") {
+            const totalRoomPrice = selectedRooms.reduce(
+              (total, { room, amount }) =>
+                total + room.price * amount * numberOfDays,
+              0
+            );
 
-    const totalPrice= selectedRooms.reduce(
-      (total, { room, amount }) =>
-        total + room.price * amount,
-      0
-    );
+            const totalServicePrice = selectedServices.reduce(
+              (total, service) => {
+                const selectedDates = service.selectedDates || [];
+                const serviceQuantity = service.quantity * selectedDates.length;
+                return total + service.price * serviceQuantity;
+              },
+              0
+            );
 
-    const params= {
-      hotelId: hotelDetail._id,
-      checkOutDate: SearchInformation.checkoutDate,
-      checkInDate: SearchInformation.checkinDate,
-      totalPrice: totalPrice,
-      roomDetails: selectedRooms
-    }
+            const totalPrice = totalRoomPrice + totalServicePrice;
 
-    try {
-      const response = await Factories.create_booking(params);
-      if (response?.status === 201) {
-        const reservation= response?.data.reservation
-        console.log("reservation: ", reservation)
-        navigate(Routers.PaymentPage,
-          {
-            state: {
-              createdAt: reservation.createdAt,
-              totalPrice: totalPrice,
-              idReservation: reservation._id,
-              messageSuccess: response?.data.message
+            const params = {
+              hotelId: hotelDetail._id,
+              checkOutDate: searchInfo.checkoutDate,
+              checkInDate: searchInfo.checkinDate,
+              totalPrice: totalPrice, // giá gốc
+              finalPrice: finalPrice, // giá sau giảm giá
+              roomDetails: selectedRooms.map(({ room, amount }) => ({
+                room: {
+                  _id: room._id,
+                },
+                amount: amount,
+              })),
+              serviceDetails: selectedServices.map((service) => ({
+                _id: service._id,
+                quantity:
+                  service.quantity * (service.selectedDates?.length || 0),
+                selectDate: service.selectedDates || [],
+              })),
+              // Thêm promotionId và promotionDiscount nếu có
+              ...(promotionId && { promotionId }),
+              ...(promotionDiscount > 0 && { promotionDiscount }),
+            };
+
+            console.log("params >> ", params);
+
+            try {
+              const response = await Factories.create_booking(params);
+              console.log("response >> ", response);
+              if (response?.status === 200) {
+                console.log("response >> ", response);
+                const unpaidReservationId =
+                  response?.data?.unpaidReservation?._id;
+                const responseCheckout = await Factories.checkout_booking(
+                  unpaidReservationId
+                );
+                console.log("responseCheckout >> ", responseCheckout);
+                const paymentUrl = responseCheckout?.data?.sessionUrl;
+                if (paymentUrl) {
+                  window.location.href = paymentUrl;
+                }
+              }
+              if (response?.status === 201) {
+                console.log("response >> ", response);
+                const reservationId = response?.data?.reservation?._id;
+                const responseCheckout = await Factories.checkout_booking(
+                  reservationId
+                );
+                const paymentUrl = responseCheckout?.data?.sessionUrl;
+                if (paymentUrl) {
+                  window.location.href = paymentUrl;
+                }
+              } else {
+                console.log("error create booking");
+              }
+            } catch (error) {
+              console.error("Error create payment: ", error);
+              navigate(Routers.ErrorPage);
             }
+          } else {
+            setShowModalStatusBooking(true);
           }
-        )
-      }else{
-        console.log("unpaidReservation: ", response?.data.unpaidReservation)
-        navigate(Routers.PaymentPage,
-          {
-            state: {
-              createdAt: response?.data.unpaidReservation.createdAt,
-              totalPrice: response?.data.unpaidReservation.totalPrice,
-              idReservation: response?.data.unpaidReservation._id,
-              messageError: response?.data.message
-            }
-          }
-        )
-      }
-    } catch (error) {
-      console.error("Error create payment: ", error);
-      navigate(Routers.ErrorPage,)
-    } finally {
-    }
+        },
+      },
+    });
   };
 
   const handleAccept = () => {
-    createBooking();
+    const totalRoomPrice = selectedRooms.reduce(
+      (total, { room, amount }) => total + room.price * amount * numberOfDays,
+      0
+    );
+
+    if (totalRoomPrice > 0) {
+      createBooking();
+      dispatch({
+        type: SearchActions.SAVE_SELECTED_ROOMS,
+        payload: {
+          selectedRooms: [],
+          selectedServices: [],
+          hotelDetail: hotelDetail,
+        },
+      });
+    }
+  };
+  // Promotion code handling
+  // Tổng tiền chưa giảm giá
+  const totalRoomPrice = selectedRooms.reduce(
+    (total, { room, amount }) => total + room.price * amount * numberOfDays,
+    0
+  );
+  const totalServicePrice = selectedServices.reduce((total, service) => {
+    const selectedDates = service.selectedDates || [];
+    const serviceQuantity = service.quantity * selectedDates.length;
+    return total + service.price * serviceQuantity;
+  }, 0);
+  const totalPrice = totalRoomPrice + totalServicePrice;
+
+  // Tổng tiền sau giảm giá
+  const finalPrice = Math.max(totalPrice - promotionDiscount, 0);
+
+  // Hàm kiểm tra promotion code
+  const handleCheckPromotion = async () => {
+    setCheckingPromotion(true);
+    setPromotionMessage("");
+    setPromotionDiscount(0);
+    setPromotionId(null);
+    try {
+      const backendUrl = process.env.REACT_APP_ENVIRONMENT === 'development' 
+        ? process.env.REACT_APP_BACKEND_CUSTOMER_URL_DEVELOPMENT 
+        : process.env.REACT_APP_BACKEND_CUSTOMER_URL_PRODUCT;
+      const res = await axios.post(`${backendUrl}/api/promotions/apply`, {
+        code: promotionCode,
+        orderAmount: totalPrice,
+      });
+      if (res.data.valid) {
+        setPromotionDiscount(res.data.discount);
+        setPromotionId(res.data.promotionId);
+        setPromotionMessage("Promotion applied: -" + Utils.formatCurrency(res.data.discount));
+      } else {
+        setPromotionMessage(res.data.message || "Invalid promotion code");
+      }
+    } catch (err) {
+      setPromotionMessage(
+        err?.response?.data?.message || "Invalid promotion code"
+      );
+    }
+    setCheckingPromotion(false);
   };
 
   const handleConfirmBooking = () => {
@@ -110,12 +290,26 @@ const BookingCheckPage = () => {
   const formatCurrency = (amount) => {
     if (amount === undefined || amount === null) return "$0";
     return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Add null check for hotelDetail
+  if (!hotelDetail) {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100vh" }}
+      >
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -183,7 +377,7 @@ const BookingCheckPage = () => {
                         Checkin
                       </div>
                       <div className="time">
-                        {Utils.getDate(SearchInformation.checkinDate, 1)}
+                        {Utils.getDate(searchInfo.checkinDate, 1)}
                       </div>
                     </div>
                   </Col>
@@ -196,7 +390,7 @@ const BookingCheckPage = () => {
                         Checkout
                       </div>
                       <div className="time">
-                        {Utils.getDate(SearchInformation.checkoutDate, 1)}
+                        {Utils.getDate(searchInfo.checkoutDate, 1)}
                       </div>
                     </div>
                   </Col>
@@ -205,18 +399,13 @@ const BookingCheckPage = () => {
                 <div className="stay-info mb-2">
                   <div className="d-flex justify-content-between mb-2">
                     <span>Total length of stay:</span>
-                    <span className="fw-bold">
-                      {(new Date(SearchInformation.checkoutDate) -
-                        new Date(SearchInformation.checkinDate)) /
-                        (1000 * 60 * 60 * 24)}{" "}
-                      night
-                    </span>{" "}
+                    <span className="fw-bold">{numberOfDays} night</span>{" "}
                   </div>
                   <div className="d-flex justify-content-between mb-3">
                     <span>Total number of people:</span>
                     <span className="fw-bold">
-                      {SearchInformation.adults} Adults -{" "}
-                      {SearchInformation.childrens} Childrens
+                      {searchInfo.adults} Adults - {searchInfo.childrens}{" "}
+                      Childrens
                     </span>
                   </div>
                 </div>
@@ -239,24 +428,75 @@ const BookingCheckPage = () => {
                       className="d-flex justify-content-between align-items-center mb-1"
                     >
                       <span>
-                        {amount} x {room.name}:
+                        {amount} x {room.name} ({numberOfDays} days):
                       </span>
-                      <span className="fw-bold">{Utils.formatCurrency(room.price * amount)}</span>
+                      <span className="fw-bold">
+                        {Utils.formatCurrency(
+                          room.price * amount * numberOfDays
+                        )}
+                      </span>
                     </div>
                   ))}
 
                   <div className="small mb-3">
                     <a
                       className="text-blue text-decoration-none"
-                      style={{cursor: 'pointer'}}
-                      onClick={() => {
-                        navigate(-1);
-                      }}
+                      style={{ cursor: "pointer" }}
+                      onClick={handleBackToHomeDetail}
                     >
                       Change your selection
                     </a>
                   </div>
                 </div>
+
+                {/* Selected Services Section */}
+                {selectedServices.length > 0 && (
+                  <div className="selected-services mb-2">
+                    <h5 className="mb-3">Selected Services</h5>
+
+                    {selectedServices.map((service) => {
+                      const selectedDates = service.selectedDates || [];
+                      const serviceQuantity =
+                        service.quantity * selectedDates.length;
+                      const serviceTotal = service.price * serviceQuantity;
+
+                      return (
+                        <div
+                          key={service._id}
+                          className="d-flex justify-content-between align-items-center mb-1"
+                        >
+                          <span>
+                            {service.quantity} x {service.name} (
+                            {selectedDates.length} days):
+                          </span>
+                          <span className="fw-bold">
+                            {Utils.formatCurrency(serviceTotal)}
+                          </span>
+                        </div>
+                      );
+                    })}
+
+                    <div className="small mb-3">
+                      <a
+                        className="text-blue text-decoration-none"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          dispatch({
+                            type: SearchActions.SAVE_SELECTED_ROOMS,
+                            payload: {
+                              selectedRooms: selectedRooms,
+                              selectedServices: selectedServices,
+                              hotelDetail: hotelDetail,
+                            },
+                          });
+                          navigate(-1);
+                        }}
+                      >
+                        Change your selection
+                      </a>
+                    </div>
+                  </div>
+                )}
 
                 <div
                   className="booking-divider mb-3"
@@ -267,11 +507,40 @@ const BookingCheckPage = () => {
                   }}
                 ></div>
 
+                {/* Promotion code input */}
+                <h5 className="mb-4">Promotion</h5>
+                <div className="promotion-section mb-3">
+                  <InputGroup>
+                    <Form.Control
+                      type="text"
+                      placeholder="Enter promotion code"
+                      value={promotionCode}
+                      onChange={(e) => setPromotionCode(e.target.value)}
+                      disabled={checkingPromotion}
+                    />
+                    <Button
+                      variant="outline-light"
+                      onClick={handleCheckPromotion}
+                      disabled={checkingPromotion || !promotionCode}
+                    >
+                      {checkingPromotion ? "Checking..." : "Apply"}
+                    </Button>
+                  </InputGroup>
+                  {promotionMessage && (
+                    <div
+                      className={`mt-2 small ${promotionDiscount > 0 ? "text-success" : "text-danger"
+                        }`}
+                    >
+                      {promotionMessage}
+                    </div>
+                  )}
+                </div>
+
                 <div className="total-price">
                   <div className="d-flex justify-content-between align-items-center">
                     <h5 className="text-danger mb-0">
-                      Total: {Utils.formatCurrency(selectedRooms.reduce((total, { room, amount }) => total + room.price * amount,0))}
-                    </h5>{" "}
+                      Total: {Utils.formatCurrency(finalPrice)}
+                    </h5>
                   </div>
                   <div className="small">Includes taxes and fees</div>
                 </div>
@@ -387,10 +656,16 @@ const BookingCheckPage = () => {
           </Row>
         </Container>
         <div>
-          <ChatBox/>
+          <ChatBox />
         </div>
       </div>
       <Footer />
+      <HotelClosedModal
+        show={showModalStatusBooking}
+        onClose={() => {
+          setShowModalStatusBooking(false);
+        }}
+      />
     </div>
   );
 };

@@ -108,9 +108,12 @@ export default function HotelDetailPage() {
   const selectedRoomsTemps = useAppSelector(
     (state) => state.Search.selectedRooms
   );
-  const [showModalStatusBooking, setShowModalStatusBooking] = useState(false);
+  const selectedServicesFromRedux = useAppSelector(
+    (state) => state.Search.selectedServices
+  );
 
   // State variables
+  const [showModalStatusBooking, setShowModalStatusBooking] = useState(false);
   const [hotelDetail, setHotelDetail] = useState(null);
   const [mainImage, setMainImage] = useState("");
   const [isFavorite, setIsFavorite] = useState(false);
@@ -132,7 +135,6 @@ export default function HotelDetailPage() {
   const [currentPage, setCurrentPage] = useState(Number(pageTemp) ?? 1);
   const [sort, setSort] = useState(Number(sortTemp) ?? 0);
   const [star, setStar] = useState(Number(starTemp) ?? 0);
-
   const [filterParams, setFilterParams] = useState({
     page: currentPage,
     sort: sort,
@@ -140,24 +142,10 @@ export default function HotelDetailPage() {
   });
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  // Search state
   const [checkinDate, setCheckinDate] = useState(SearchInformation.checkinDate);
   const [checkoutDate, setCheckoutDate] = useState(
     SearchInformation.checkoutDate
   );
-
-  useEffect(() => {
-    const checkin = new Date(checkinDate);
-    const checkout = new Date(checkoutDate);
-
-    if (checkin.getTime() === checkout.getTime()) {
-      const nextDay = new Date(checkin);
-      nextDay.setDate(checkin.getDate() + 1);
-      setCheckoutDate(nextDay.toISOString().split("T")[0]); // format as yyyy-mm-dd
-    }
-  }, [checkoutDate, checkinDate]);
-
   const [selectedAdults, setSelectedAdults] = useState(
     adultsOptions.find((option) => option.value === SearchInformation.adults) ||
       adultsOptions[0]
@@ -168,16 +156,57 @@ export default function HotelDetailPage() {
     ) || childrenOptions[0]
   );
   const [isSearching, setIsSearching] = useState(false);
+  const [searchRoom, setSearchRoom] = useState(false);
+  const [showModalService, setShowModalService] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [serviceQuantities, setServiceQuantities] = useState({});
+  const [serviceSelectedDates, setServiceSelectedDates] = useState({});
+  const [showDateSelector, setShowDateSelector] = useState(false);
+  const [currentService, setCurrentService] = useState(null);
+  const [selectedServices, setSelectedServices] = useState([]);
+  const [selectedRooms, setSelectedRooms] = useState(selectedRoomsTemps ?? []);
 
+  // Add event listener for popstate at the top level
   useEffect(() => {
-    setSelectedRooms([]);
-    dispatch({
-      type: SearchActions.SAVE_SELECTED_ROOMS,
-      payload: {
-        selectedRooms: [],
-      },
-    });
-  }, [hotelId]);
+    const handlePopState = () => {
+      handleBackToBooking();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
+  // Add function to handle back navigation
+  const handleBackToBooking = () => {
+    // Get the stack
+    const bookingStack = JSON.parse(
+      sessionStorage.getItem("bookingStack") || "[]"
+    );
+
+    // If stack is not empty, pop the last item
+    if (bookingStack.length > 0) {
+      const lastBooking = bookingStack.pop();
+      sessionStorage.setItem("bookingStack", JSON.stringify(bookingStack));
+
+      // Update Redux store
+      dispatch({
+        type: SearchActions.SAVE_SELECTED_ROOMS,
+        payload: {
+          selectedRooms: lastBooking.selectedRooms,
+          selectedServices: lastBooking.selectedServices,
+          hotelDetail: {
+            ...lastBooking.hotelDetail,
+            star: lastBooking.hotelDetail.star || 0, // Ensure star property exists
+          },
+        },
+      });
+    }
+
+    navigate(Routers.BookingCheckPage);
+  };
+
   // Update URL when filters change
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -284,11 +313,11 @@ export default function HotelDetailPage() {
     };
   }, [hotelId, dispatch]);
 
-  const [searchRoom, setSearchRoom] = useState(false);
-
   const handleSearchRoom = () => {
     const adults = selectedAdults ? selectedAdults.value : 1;
     const childrens = selectedChildren ? selectedChildren.value : 0;
+
+    // Update search information with new dates
     const SearchInformationTemp = {
       address: SearchInformation.address,
       checkinDate,
@@ -297,17 +326,36 @@ export default function HotelDetailPage() {
       childrens,
     };
 
-    console.log("SearchInformationTemp: ", SearchInformationTemp);
+    // Save new search information
     dispatch({
       type: SearchActions.SAVE_SEARCH,
       payload: { SearchInformation: SearchInformationTemp },
     });
+
+    // Reset selected rooms and services
     dispatch({
       type: SearchActions.SAVE_SELECTED_ROOMS,
-      payload: { selectedRooms: [] },
+      payload: {
+        selectedRooms: [],
+        selectedServices: [],
+        hotelDetail: hotelDetail,
+      },
     });
+
+    // Reset local state
     setSelectedRooms([]);
+    setSelectedServices([]); // Reset selected services in local state
     setSearchRoom(true);
+
+    // Reset service selection UI
+    setShowModalService(false);
+    setSelectedService(null);
+    setServiceQuantities({});
+    setServiceSelectedDates({});
+    setShowDateSelector(false);
+    setCurrentService(null);
+
+    // Fetch rooms with new search parameters
     dispatch({
       type: RoomActions.FETCH_ROOM,
       payload: {
@@ -328,7 +376,6 @@ export default function HotelDetailPage() {
       },
     });
   };
-  // Fetch other hotels
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -489,9 +536,6 @@ export default function HotelDetailPage() {
     }
   };
 
-  const [showModalService, setShowModalService] = useState(false);
-  const [selectedService, setSelectedService] = useState(null);
-
   const handleServiceClickService = (service) => {
     setSelectedService(service);
     setShowModalService(true);
@@ -518,8 +562,6 @@ export default function HotelDetailPage() {
   };
 
   //booking room
-  const [selectedRooms, setSelectedRooms] = useState(selectedRoomsTemps ?? []);
-  console.log("selectedRooms: ", selectedRooms);
   const handleAmountChange = (room, amount) => {
     setSelectedRooms((prevSelected) => {
       if (amount === 0) {
@@ -574,12 +616,109 @@ export default function HotelDetailPage() {
     return foundRoom ? foundRoom.amount : 0;
   };
 
-  // Initialize selectedRooms with data from Redux when component mounts
+  // Initialize selectedRooms and selectedServices with data from Redux when component mounts
   useEffect(() => {
     if (selectedRoomsTemps && selectedRoomsTemps.length > 0) {
       setSelectedRooms(selectedRoomsTemps);
     }
-  }, [selectedRoomsTemps]);
+
+    // Restore selected services from Redux
+    if (selectedServicesFromRedux && selectedServicesFromRedux.length > 0) {
+      setSelectedServices(selectedServicesFromRedux);
+
+      // Restore service quantities and dates
+      const quantities = {};
+      const dates = {};
+      selectedServicesFromRedux.forEach((service) => {
+        quantities[service._id] = service.quantity;
+        dates[service._id] = service.selectedDates;
+      });
+      setServiceQuantities(quantities);
+      setServiceSelectedDates(dates);
+    }
+  }, [selectedRoomsTemps, selectedServicesFromRedux]);
+
+  // Add this function to handle service selection
+  const handleServiceSelection = (service) => {
+    setSelectedServices((prev) => {
+      const isSelected = prev.some((s) => s._id === service._id);
+      if (isSelected) {
+        // Remove service from selected services
+        const newSelected = prev.filter((s) => s._id !== service._id);
+        // Also remove its quantity and dates
+        setServiceQuantities((prev) => {
+          const newQuantities = { ...prev };
+          delete newQuantities[service._id];
+          return newQuantities;
+        });
+        setServiceSelectedDates((prev) => {
+          const newDates = { ...prev };
+          delete newDates[service._id];
+          return newDates;
+        });
+        return newSelected;
+      } else {
+        // Add service to selected services with default quantity 1
+        setServiceQuantities((prev) => ({
+          ...prev,
+          [service._id]: 1,
+        }));
+        return [...prev, service];
+      }
+    });
+  };
+
+  // Add this function to handle service quantity changes
+  const handleServiceQuantityChange = (service, amount) => {
+    if (amount < 1) return;
+
+    setServiceQuantities((prev) => ({
+      ...prev,
+      [service._id]: amount,
+    }));
+  };
+
+  const getDatesBetween = (startDate, endDate) => {
+    const dates = [];
+    let currentDate = new Date(startDate);
+    const lastDate = new Date(endDate);
+
+    while (currentDate < lastDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dates;
+  };
+
+  const handleDateSelection = (service, date) => {
+    setServiceSelectedDates((prev) => {
+      const currentDates = prev[service._id] || [];
+      const dateStr = date.toISOString();
+
+      if (currentDates.includes(dateStr)) {
+        return {
+          ...prev,
+          [service._id]: currentDates.filter((d) => d !== dateStr),
+        };
+      } else {
+        return {
+          ...prev,
+          [service._id]: [...currentDates, dateStr],
+        };
+      }
+    });
+  };
+
+  const handleShowDateSelector = (service) => {
+    setCurrentService(service);
+    setShowDateSelector(true);
+  };
+
+  const handleCloseDateSelector = () => {
+    setShowDateSelector(false);
+    setCurrentService(null);
+  };
 
   if (!hotelDetail) {
     return (
@@ -700,6 +839,95 @@ export default function HotelDetailPage() {
     return room ? room.amount : 0;
   };
 
+  const handleBookingClick = () => {
+    if (selectedRooms.length === 0) {
+      setErrorMessage("Please select a room to proceed with your booking");
+      setShowModal(true);
+      return;
+    }
+
+    // Validate service dates
+    const invalidServices = selectedServices.filter((service) => {
+      const selectedDates = serviceSelectedDates[service._id] || [];
+      return selectedDates.length === 0;
+    });
+
+    if (invalidServices.length > 0) {
+      setErrorMessage(
+        `Please select dates for the following services: ${invalidServices
+          .map((s) => s.name)
+          .join(", ")}`
+      );
+      setShowModal(true);
+      return;
+    }
+    let status = "";
+    dispatch({
+      type: HotelActions.FETCH_DETAIL_HOTEL,
+      payload: {
+        hotelId,
+        userId: Auth._id,
+        onSuccess: (hotel) => {
+          console.log("Hotel detail fetched successfully:", hotel);
+          if (hotel.ownerStatus === "ACTIVE") {
+            // Prepare services data with quantities and dates
+            const servicesWithDetails = selectedServices.map((service) => ({
+              ...service,
+              quantity: serviceQuantities[service._id] || 1,
+              selectedDates: serviceSelectedDates[service._id] || [],
+            }));
+
+            // Save booking data to sessionStorage stack
+            const bookingData = {
+              selectedRooms: selectedRooms,
+              selectedServices: servicesWithDetails,
+              hotelDetail: {
+                ...hotelDetail,
+                star: hotelDetail.star || 0, // Ensure star property exists
+              },
+              searchInfo: {
+                checkinDate,
+                checkoutDate,
+                adults: selectedAdults.value,
+                childrens: selectedChildren.value,
+              },
+            };
+
+            // Get existing stack or initialize new one
+            const bookingStack = JSON.parse(
+              sessionStorage.getItem("bookingStack") || "[]"
+            );
+            bookingStack.push(bookingData);
+            sessionStorage.setItem(
+              "bookingStack",
+              JSON.stringify(bookingStack)
+            );
+
+            dispatch({
+              type: SearchActions.SAVE_SELECTED_ROOMS,
+              payload: {
+                selectedRooms: selectedRooms,
+                selectedServices: servicesWithDetails,
+                hotelDetail: {
+                  ...hotelDetail,
+                  star: hotelDetail.star || 0, // Ensure star property exists
+                },
+              },
+            });
+
+            if (Auth._id !== -1) {
+              navigate(Routers.BookingCheckPage);
+            } else {
+              navigate(Routers.LoginPage);
+            }
+          }else{
+            setShowModalStatusBooking(true);
+          }
+        },
+      },
+    });
+  };
+
   return (
     <div className="app-container">
       <NavigationBar />
@@ -726,14 +954,18 @@ export default function HotelDetailPage() {
             }}
             variant="outline-light"
             onClick={() => {
-              navigate(Routers.ChatPage, {
-                state: {
-                  receiver: {
-                    ...hotelDetail.owner,
-                    ownedHotels: [{ hotelName: hotelDetail.hotelName }],
+              if (Auth._id != -1) {
+                navigate(Routers.ChatPage, {
+                  state: {
+                    receiver: {
+                      ...hotelDetail.owner,
+                      ownedHotels: [{ hotelName: hotelDetail.hotelName }],
+                    },
                   },
-                },
-              });
+                });
+              } else {
+                navigate(Routers.LoginPage);
+              }
             }}
           >
             Contact with hotel
@@ -772,7 +1004,7 @@ export default function HotelDetailPage() {
             <Col lg={6}>
               <div className="main-image-container">
                 <img
-                  src={mainImage || "https://via.placeholder.com/600x400"}
+                  src={mainImage.url || "https://via.placeholder.com/600x400"}
                   alt="Main Room"
                   className="main-image"
                   style={{
@@ -796,7 +1028,7 @@ export default function HotelDetailPage() {
                       return (
                         <img
                           key={actualIndex}
-                          src={image || "/placeholder.svg"}
+                          src={image.url || "/placeholder.svg"}
                           alt={`Room ${actualIndex + 1}`}
                           className={`thumbnail ${
                             mainImage === image ? "active" : ""
@@ -805,7 +1037,7 @@ export default function HotelDetailPage() {
                             handleThumbnailClick(image, actualIndex)
                           }
                           style={{
-                            width: "300px",
+                            width: "195px",
                             objectFit: "cover",
                             cursor: "pointer",
                             border:
@@ -840,7 +1072,11 @@ export default function HotelDetailPage() {
                       setShowModalMap(true);
                     }}
                     className="text-primary"
-                    style={{ cursor: "pointer", fontSize: "14px", fontWeight: '500'}}
+                    style={{
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: "500",
+                    }}
                   >
                     Show on map
                   </a>
@@ -870,7 +1106,11 @@ export default function HotelDetailPage() {
                 <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
                   Contact Hotel:
                 </h3>
-                <p>Phone Number: {hotelDetail.phoneNumber}</p>
+                <p>
+                  Phone Number: {hotelDetail.phoneNumber}
+                  <br></br>
+                  Email: {hotelDetail.email}
+                </p>
                 <h3 style={{ fontWeight: "bold", marginTop: "-10px" }}>
                   Highlights of the services
                 </h3>
@@ -1077,324 +1317,481 @@ export default function HotelDetailPage() {
         </Row>
       </Container>
       <Container className="rooms-section py-5">
-        <h3
-          className="text-center text-uppercase fw-bold mb-5"
-          style={{ color: "#1a2b49", fontSize: "2.5rem" }}
-        >
-          Hotel Rooms
-        </h3>
-
-        {searchRoom ? (
-          <div className="text-center py-5">
-            <Spinner
-              animation="border"
-              role="status"
-              variant="primary"
-              style={{ width: "3rem", height: "3rem" }}
-            >
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-            <p className="mt-3" style={{ color: "#666", fontSize: "1.1rem" }}>
-              Loading available rooms...
-            </p>
-          </div>
-        ) : (
+        {/* Only show Hotel Rooms section if there are rooms available */}
+        {rooms && rooms.length > 0 && (
           <>
-            <div style={{ position: "relative" }}>
-              {/* Nút trái */}
-              <Button
-                variant="light"
-                onClick={() => {
-                  scrollRefRoom.current.scrollBy({
-                    left: -400,
-                    behavior: "smooth",
-                  });
-                }}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "-20px",
-                  transform: "translateY(-50%)",
-                  zIndex: 10,
-                  borderRadius: "50%",
-                  padding: "10px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                }}
-              >
-                <FaChevronLeft />
-              </Button>
+            <h3
+              className="text-center text-uppercase fw-bold mb-5"
+              style={{ color: "#1a2b49", fontSize: "2.5rem" }}
+            >
+              Hotel Rooms
+            </h3>
 
-              {/* Nút phải */}
-              <Button
-                variant="light"
-                onClick={() => {
-                  scrollRefRoom.current.scrollBy({
-                    left: 400,
-                    behavior: "smooth",
-                  });
-                }}
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "-20px",
-                  transform: "translateY(-50%)",
-                  zIndex: 10,
-                  borderRadius: "50%",
-                  padding: "10px",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                }}
-              >
-                <FaChevronRight />
-              </Button>
-
-              {/* Danh sách khách sạn */}
-              <div
-                ref={scrollRefRoom}
-                className="horizontal-scroll mt-5"
-                style={{
-                  display: "flex",
-                  overflowX: "hidden", // ❌ ẩn scroll
-                  scrollSnapType: "x mandatory",
-                  gap: "20px",
-                  paddingBottom: "20px",
-                }}
-              >
-                {rooms.map((room) => (
-                  <div
-                    key={room.id || room._id}
+            {searchRoom ? (
+              <div className="text-center py-5">
+                <Spinner
+                  animation="border"
+                  role="status"
+                  variant="primary"
+                  style={{ width: "3rem", height: "3rem" }}
+                >
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+                <p
+                  className="mt-3"
+                  style={{ color: "#666", fontSize: "1.1rem" }}
+                >
+                  Loading available rooms...
+                </p>
+              </div>
+            ) : (
+              <>
+                <div style={{ position: "relative" }}>
+                  {/* Nút trái */}
+                  <Button
+                    variant="light"
+                    onClick={() => {
+                      scrollRefRoom.current.scrollBy({
+                        left: -400,
+                        behavior: "smooth",
+                      });
+                    }}
                     style={{
-                      minWidth: "400px",
-                      maxWidth: "400px",
-                      scrollSnapAlign: "start",
+                      position: "absolute",
+                      top: "50%",
+                      left: "-20px",
+                      transform: "translateY(-50%)",
+                      zIndex: 10,
+                      borderRadius: "50%",
+                      padding: "10px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
                     }}
                   >
-                    <Card
-                      className="shadow-sm border-0 h-100 room-card"
-                      style={{
-                        borderRadius: "15px",
-                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-5px)";
-                        e.currentTarget.style.boxShadow =
-                          "0 8px 16px rgba(0,0,0,0.1)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
-                    >
+                    <FaChevronLeft />
+                  </Button>
+
+                  {/* Nút phải */}
+                  <Button
+                    variant="light"
+                    onClick={() => {
+                      scrollRefRoom.current.scrollBy({
+                        left: 400,
+                        behavior: "smooth",
+                      });
+                    }}
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      right: "-20px",
+                      transform: "translateY(-50%)",
+                      zIndex: 10,
+                      borderRadius: "50%",
+                      padding: "10px",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                    }}
+                  >
+                    <FaChevronRight />
+                  </Button>
+
+                  {/* Danh sách phòng */}
+                  <div
+                    ref={scrollRefRoom}
+                    className="horizontal-scroll mt-5"
+                    style={{
+                      display: "flex",
+                      overflowX: "hidden",
+                      scrollSnapType: "x mandatory",
+                      gap: "20px",
+                      paddingBottom: "20px",
+                    }}
+                  >
+                    {rooms.map((room) => (
                       <div
-                        className="overflow-hidden"
+                        key={room.id || room._id}
                         style={{
-                          borderTopLeftRadius: "15px",
-                          borderTopRightRadius: "15px",
+                          minWidth: "400px",
+                          maxWidth: "400px",
+                          scrollSnapAlign: "start",
                         }}
                       >
-                        <Card.Img
-                          variant="top"
-                          src={room.images?.[0] || "/default-room.jpg"}
-                          alt={room.type}
-                          onClick={() =>
-                            handleRoomClick(
-                              room.id || room._id,
-                              room.availableQuantity
-                            )
-                          }
+                        <Card
+                          className="shadow-sm border-0 h-100 room-card"
                           style={{
-                            height: "220px",
-                            objectFit: "cover",
-                            cursor: "pointer",
-                            width: "100%",
-                            transition: "transform 0.3s ease",
+                            borderRadius: "15px",
+                            transition:
+                              "transform 0.3s ease, box-shadow 0.3s ease",
                           }}
-                          onMouseOver={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.02)")
-                          }
-                          onMouseOut={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                          }
-                        />
-                      </div>
-
-                      <Card.Body className="d-flex flex-column justify-content-between p-3">
-                        <div>
-                          <Card.Title
-                            onClick={() => handleRoomClick(room.id || room._id)}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform =
+                              "translateY(-5px)";
+                            e.currentTarget.style.boxShadow =
+                              "0 8px 16px rgba(0,0,0,0.1)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = "none";
+                          }}
+                        >
+                          <div
+                            className="overflow-hidden"
                             style={{
-                              fontSize: "1.25rem",
-                              fontWeight: 700,
-                              color: "#1a2b49",
-                              cursor: "pointer",
+                              borderTopLeftRadius: "15px",
+                              borderTopRightRadius: "15px",
                             }}
                           >
-                            {room?.name}
-                            {getRoomAmount(room._id || room.id) > 0 && (
-                              <span
-                                className="ms-2 badge"
+                            <Card.Img
+                              variant="top"
+                              src={room.images?.[0] || "/default-room.jpg"}
+                              alt={room.type}
+                              onClick={() =>
+                                handleRoomClick(
+                                  room.id || room._id,
+                                  room.availableQuantity
+                                )
+                              }
+                              style={{
+                                height: "220px",
+                                objectFit: "cover",
+                                cursor: "pointer",
+                                width: "100%",
+                                transition: "transform 0.3s ease",
+                              }}
+                              onMouseOver={(e) =>
+                                (e.currentTarget.style.transform =
+                                  "scale(1.02)")
+                              }
+                              onMouseOut={(e) =>
+                                (e.currentTarget.style.transform = "scale(1)")
+                              }
+                            />
+                          </div>
+
+                          <Card.Body className="d-flex flex-column justify-content-between p-3">
+                            <div>
+                              <Card.Title
+                                onClick={() =>
+                                  handleRoomClick(room.id || room._id)
+                                }
                                 style={{
-                                  backgroundColor: "#1a2b49",
-                                  color: "white",
-                                  fontSize: "0.75rem",
-                                  padding: "0.25rem 0.5rem",
-                                  borderRadius: "20px",
+                                  fontSize: "1.25rem",
+                                  fontWeight: 700,
+                                  color: "#1a2b49",
+                                  cursor: "pointer",
                                 }}
                               >
-                                {getRoomAmount(room._id || room.id)} selected
-                              </span>
-                            )}
-                          </Card.Title>
+                                {room?.name}
+                                {getRoomAmount(room._id || room.id) > 0 && (
+                                  <span
+                                    className="ms-2 badge"
+                                    style={{
+                                      backgroundColor: "#1a2b49",
+                                      color: "white",
+                                      fontSize: "0.75rem",
+                                      padding: "0.25rem 0.5rem",
+                                      borderRadius: "20px",
+                                    }}
+                                  >
+                                    {getRoomAmount(room._id || room.id)}{" "}
+                                    selected
+                                  </span>
+                                )}
+                              </Card.Title>
 
-                          <div className="d-flex align-items-center text-muted mb-2">
-                            <FaUser className="me-2" />
-                            <span style={{ fontSize: "0.95rem" }}>
-                              {room.capacity} Guests
-                            </span>
-                          </div>
+                              <div className="d-flex align-items-center text-muted mb-2">
+                                <FaUser className="me-2" />
+                                <span style={{ fontSize: "0.95rem" }}>
+                                  {room.capacity} Guests
+                                </span>
+                              </div>
 
-                          <div
-                            className="text-primary fw-bold"
-                            style={{ fontSize: "1.4rem", marginBottom: "8px" }}
-                          >
-                            {Utils.formatCurrency(room.price)}
-                            <span
-                              className="text-muted"
-                              style={{ fontSize: "0.85rem", marginLeft: "4px" }}
-                            >
-                              / Day
-                            </span>
-                          </div>
-                        </div>
-
-                        <div>
-                          {room.availableQuantity <= 3 ? (
-                            <div
-                              className="text-danger fw-semibold"
-                              style={{
-                                fontSize: "0.95rem",
-                                marginBottom: "10px",
-                              }}
-                            >
-                              Only {room.availableQuantity} rooms left for this
-                              room type!
+                              <div
+                                className="text-primary fw-bold"
+                                style={{
+                                  fontSize: "1.4rem",
+                                  marginBottom: "8px",
+                                }}
+                              >
+                                {Utils.formatCurrency(room.price)}
+                                <span
+                                  className="text-muted"
+                                  style={{
+                                    fontSize: "0.85rem",
+                                    marginLeft: "4px",
+                                  }}
+                                >
+                                  / Day
+                                </span>
+                              </div>
                             </div>
-                          ) : (
-                            <div
-                              className="fw-semibold"
-                              style={{
-                                fontSize: "0.95rem",
-                                marginBottom: "10px",
-                              }}
-                            >
-                              Have {room.availableQuantity} rooms left for this
-                              room type!
+
+                            <div>
+                              {room.availableQuantity <= 3 ? (
+                                <div
+                                  className="text-danger fw-semibold"
+                                  style={{
+                                    fontSize: "0.95rem",
+                                    marginBottom: "10px",
+                                  }}
+                                >
+                                  Only {room.availableQuantity} rooms left for
+                                  this room type!
+                                </div>
+                              ) : (
+                                <div
+                                  className="fw-semibold"
+                                  style={{
+                                    fontSize: "0.95rem",
+                                    marginBottom: "10px",
+                                  }}
+                                >
+                                  Have {room.availableQuantity} rooms left for
+                                  this room type!
+                                </div>
+                              )}
+                              <div className="mt-2 d-flex justify-content-between align-items-center">
+                                <span
+                                  className="text-muted"
+                                  style={{
+                                    fontSize: "0.9rem",
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  Amount
+                                </span>
+                                <select
+                                  className="form-select w-auto"
+                                  style={{ fontSize: "0.9rem" }}
+                                  value={getRoomAmountFromRedux(
+                                    room._id || room.id
+                                  )}
+                                  onChange={(e) =>
+                                    handleAmountChange(
+                                      room,
+                                      Number(e.target.value)
+                                    )
+                                  }
+                                >
+                                  {Array.from(
+                                    { length: room.availableQuantity + 1 },
+                                    (_, n) => (
+                                      <option key={n} value={n}>
+                                        {n}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                              </div>
                             </div>
-                          )}
-                          <div className="mt-2 d-flex justify-content-between align-items-center">
-                            <span
-                              className="text-muted"
-                              style={{ fontSize: "0.9rem", fontWeight: 600 }}
-                            >
-                              Amount
-                            </span>
-                            <select
-                              className="form-select w-auto"
-                              style={{ fontSize: "0.9rem" }}
-                              value={getRoomAmountFromRedux(
-                                room._id || room.id
-                              )}
-                              onChange={(e) =>
-                                handleAmountChange(room, Number(e.target.value))
-                              }
-                            >
-                              {Array.from(
-                                { length: room.availableQuantity + 1 },
-                                (_, n) => (
-                                  <option key={n} value={n}>
-                                    {n}
-                                  </option>
-                                )
-                              )}
-                            </select>
-                          </div>
-                        </div>
-                      </Card.Body>
-                    </Card>
+                          </Card.Body>
+                        </Card>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="text-center mt-5">
-              <Button
-                variant="primary"
-                onClick={() => {
-                  if (selectedRooms.length == 0) {
-                    setErrorMessage(
-                      "Please select a room to proceed with your booking"
-                    );
-                    setShowModal(true);
-                  } else {
-                    console.log("hotelDetail: ", hotelDetail);
-                    if (hotelDetail.ownerStatus != "ACTIVE") {
-                      setShowModalStatusBooking(true);
-                    } else {
-                      if (Auth._id != -1) {
-                        dispatch({
-                          type: SearchActions.SAVE_SELECTED_ROOMS,
-                          payload: {
-                            selectedRooms: selectedRooms,
-                            hotelDetail: hotelDetail,
-                          },
-                        });
-                        navigate(Routers.BookingCheckPage);
-                      } else {
-                        dispatch({
-                          type: SearchActions.SAVE_SELECTED_ROOMS,
-                          payload: {
-                            selectedRooms: selectedRooms,
-                            hotelDetail: hotelDetail,
-                          },
-                        });
-                        navigate(Routers.LoginPage);
-                      }
-                    }
-                  }
-                }}
-                style={{
-                  padding: "0.8rem 4rem",
-                  borderRadius: "30px",
-                  backgroundColor: "#1a2b49",
-                  border: "none",
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  transition: "all 0.3s ease",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#2c4373")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#1a2b49")
-                }
-              >
-                Book Now
-              </Button>
-            </div>
-            <ErrorModal
-              show={showModal}
-              onClose={() => {
-                setShowModal(false);
-              }}
-              message={errorMessage}
-            />
-            <HotelClosedModal
-              show={showModalStatusBooking}
-              onClose={() => {
-                setShowModalStatusBooking(false);
-              }}
-            />
+                </div>
+              </>
+            )}
           </>
         )}
+
+        {/* Only show Services section if there are services available */}
+        {hotelDetail?.services &&
+          hotelDetail.services.filter(
+            (service) => service.statusActive === "ACTIVE"
+          ).length > 0 && (
+            <Row className="mt-4 mb-4">
+              <h3
+                className="text-center text-uppercase fw-bold mb-5"
+                style={{ color: "#1a2b49", fontSize: "2.5rem" }}
+              >
+                Services
+              </h3>
+              <Col>
+                <Card className="p-4">
+                  <div className="services-container mt-4">
+                    <div className="row">
+                      {hotelDetail?.services?.map((service) => {
+                        // Only show active services
+                        if (service.statusActive !== "ACTIVE") return null;
+
+                        const isSelected = selectedServices.some(
+                          (s) => s._id === service._id
+                        );
+                        const quantity = serviceQuantities[service._id] || 1;
+                        const selectedDates =
+                          serviceSelectedDates[service._id] || [];
+
+                        return (
+                          <div key={service._id} className="col-md-4 mb-3">
+                            <div
+                              className={`service-card p-3 ${
+                                isSelected ? "selected" : ""
+                              }`}
+                              style={{
+                                border: "1px solid #ddd",
+                                borderRadius: "8px",
+                                cursor: "pointer",
+                                transition: "all 0.3s ease",
+                                backgroundColor: isSelected
+                                  ? "#f8f9fa"
+                                  : "white",
+                                boxShadow: isSelected
+                                  ? "0 2px 4px rgba(0,0,0,0.1)"
+                                  : "none",
+                              }}
+                              onClick={() => handleServiceSelection(service)}
+                            >
+                              <h5>{service.name}</h5>
+                              <p>{service.description}</p>
+                              <p className="text-primary fw-bold">
+                                {Utils.formatCurrency(service.price)}/
+                                {service.type}
+                              </p>
+                              {isSelected && (
+                                <div className="d-flex align-items-center justify-content-between mt-2">
+                                  <div className="d-flex align-items-center">
+                                    <button
+                                      className="btn btn-sm btn-outline-primary"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleServiceQuantityChange(
+                                          service,
+                                          quantity - 1
+                                        );
+                                      }}
+                                      disabled={quantity <= 1}
+                                    >
+                                      -
+                                    </button>
+                                    <span className="mx-2">{quantity}</span>
+                                    <button
+                                      className="btn btn-sm btn-outline-primary"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleServiceQuantityChange(
+                                          service,
+                                          quantity + 1
+                                        );
+                                      }}
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                  <button
+                                    className="btn btn-sm btn-outline-secondary"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleShowDateSelector(service);
+                                    }}
+                                  >
+                                    Select Date
+                                  </button>
+                                </div>
+                              )}
+                              {isSelected && selectedDates.length > 0 && (
+                                <div className="mt-2 small text-muted">
+                                  Selected dates:{" "}
+                                  {selectedDates
+                                    .map((date) =>
+                                      new Date(date).toLocaleDateString()
+                                    )
+                                    .join(", ")}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          )}
+
+        {/* Show Book Now button only if there are rooms or services available */}
+        {((rooms && rooms.length > 0) ||
+          (hotelDetail?.services &&
+            hotelDetail.services.filter(
+              (service) => service.statusActive === "ACTIVE"
+            ).length > 0)) && (
+          <div className="text-center mt-5">
+            <Button
+              variant="primary"
+              onClick={handleBookingClick}
+              style={{
+                padding: "0.8rem 4rem",
+                borderRadius: "30px",
+                backgroundColor: "#1a2b49",
+                border: "none",
+                fontSize: "1.1rem",
+                fontWeight: 600,
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#2c4373")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#1a2b49")
+              }
+            >
+              Book Now
+            </Button>
+          </div>
+        )}
+
+        {/* Show message when no rooms and no services available */}
+        {(!rooms || rooms.length === 0) &&
+          (!hotelDetail?.services ||
+            hotelDetail.services.filter(
+              (service) => service.statusActive === "ACTIVE"
+            ).length === 0) &&
+          !searchRoom && (
+            <div className="text-center py-5">
+              <div className="mb-4">
+                <h4 className="text-muted">No Rooms or Services Available</h4>
+                <p className="text-muted">
+                  This hotel currently has no available rooms or services for
+                  your selected dates.
+                  <br />
+                  Please try different dates or contact the hotel directly.
+                </p>
+              </div>
+              <Button
+                variant="outline-primary"
+                onClick={() => {
+                  if (Auth._id != -1) {
+                    navigate(Routers.ChatPage, {
+                      state: {
+                        receiver: {
+                          ...hotelDetail.owner,
+                          ownedHotels: [{ hotelName: hotelDetail.hotelName }],
+                        },
+                      },
+                    });
+                  } else {
+                    navigate(Routers.LoginPage);
+                  }
+                }}
+              >
+                Contact with hotel
+              </Button>
+            </div>
+          )}
+
+        {/* Existing error modals */}
+        <ErrorModal
+          show={showModal}
+          onClose={() => {
+            setShowModal(false);
+          }}
+          message={errorMessage}
+        />
+        <HotelClosedModal
+          show={showModalStatusBooking}
+          onClose={() => {
+            setShowModalStatusBooking(false);
+          }}
+        />
       </Container>
       {/* Other Hotels */}
       {/* Map Modal */}
@@ -1508,7 +1905,7 @@ export default function HotelDetailPage() {
                         variant="top"
                         src={
                           hotel.hotel.images && hotel.hotel.images.length > 0
-                            ? hotel.hotel.images[0]
+                            ? hotel.hotel.images[0].url
                             : "/images/default-hotel.jpg"
                         }
                         className="hotel-image"
@@ -1819,7 +2216,7 @@ export default function HotelDetailPage() {
               </div>
               <h5 className="text-muted fw-semibold">No Reviews Yet</h5>
               <p className="text-secondary mb-0" style={{ maxWidth: 300 }}>
-                This hotel hasn’t received any reviews yet. Be the first to
+                This hotel hasn't received any reviews yet. Be the first to
                 share your experience!
               </p>
             </div>
@@ -1998,6 +2395,48 @@ export default function HotelDetailPage() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModalService}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* Date Selection Modal */}
+      <Modal show={showDateSelector} onHide={handleCloseDateSelector}>
+        <Modal.Header closeButton>
+          <Modal.Title>Select Service Dates</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {currentService && (
+            <div>
+              <h5>{currentService.name}</h5>
+              <p>Select dates for this service:</p>
+              <div className="d-flex flex-wrap gap-2">
+                {getDatesBetween(
+                  new Date(SearchInformation.checkinDate),
+                  new Date(SearchInformation.checkoutDate)
+                ).map((date) => {
+                  const dateStr = date.toISOString();
+                  const isSelected = (
+                    serviceSelectedDates[currentService._id] || []
+                  ).includes(dateStr);
+                  return (
+                    <div
+                      key={dateStr}
+                      className={`date-option p-2 border rounded ${
+                        isSelected ? "bg-primary text-white" : ""
+                      }`}
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleDateSelection(currentService, date)}
+                    >
+                      {date.toLocaleDateString()}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseDateSelector}>
             Close
           </Button>
         </Modal.Footer>
