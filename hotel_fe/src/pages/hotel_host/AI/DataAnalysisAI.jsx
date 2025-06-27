@@ -15,7 +15,7 @@ import {
 import RoomAvailabilityCalendar from "@pages/hotel_host/RoomAvailabilityCalendar";
 import Transaction from "@pages/hotel_host/Transaction";
 import AdditionalServicesPage from "../service/AdditionalServicesPage";
-import RoomListingPage from "../create_hotel/RoomListingPage";
+import RoomListingPage from "../../room/RoomListingPage";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
@@ -148,7 +148,7 @@ function App() {
                 }}
               >
                 <i className="bi bi-door-closed nav-icon"></i>
-                <span>Quản lý phòng</span>
+                <span>Quản lý loại phòng</span>
               </a>
             </li>
             <li className="nav-item">
