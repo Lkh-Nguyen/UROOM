@@ -261,7 +261,7 @@ const BookingCheckPage = () => {
     setPromotionDiscount(0);
     setPromotionId(null);
     try {
-      const backendUrl = process.env.REACT_APP_ENVIRONMENT === 'development' 
+       const backendUrl = process.env.REACT_APP_ENVIRONMENT === 'development' 
         ? process.env.REACT_APP_BACKEND_CUSTOMER_URL_DEVELOPMENT 
         : process.env.REACT_APP_BACKEND_CUSTOMER_URL_PRODUCT;
       const res = await axios.post(`${backendUrl}/api/promotions/apply`, {
