@@ -25,6 +25,12 @@ const initialState = {
 
 const roomReducer = (state = initialState, action) => {
   switch (action.type) {
+    case RoomActions.FETCH_ROOM_SUCCESS:
+      return {
+        ...state,
+        rooms: action.payload,
+        error: null, 
+      };  
     case RoomActions.FETCH_ROOMS_SUCCESS:
       return {
         ...state,

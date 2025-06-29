@@ -27,6 +27,9 @@ const RoomActions = {
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
   CLEAR_ERROR: 'CLEAR_ERROR',
+
+  FETCH_ROOM:"FETCH_ROOM",
+  FETCH_ROOM_SUCCESS:"FETCH_ROOM_SUCCESS",
 };
 
 export default RoomActions;

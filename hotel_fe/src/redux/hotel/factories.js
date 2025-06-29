@@ -65,6 +65,9 @@ const Factories = {
       data: { imageIds },
     });
   },
+  create_booking_offline: (params) => {
+    return api.post(ApiConstants.CREATE_BOOKING_OFFLINE, {params});
+  },
 };
 
 export default Factories;
