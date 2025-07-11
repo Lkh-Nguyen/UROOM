@@ -224,7 +224,7 @@ function Room({ show, handleClose, onSave, editingRoom }) {
     const totalImages = formData.images.length + previewImages.length;
     
     if (totalImages <= 5) {
-      toast.error("Phòng phải có ít nhất 5 ảnh!");
+      showToast.error("Phòng phải có ít nhất 5 ảnh!");
       return;
     }
 
@@ -243,7 +243,7 @@ function Room({ show, handleClose, onSave, editingRoom }) {
     const totalImages = formData.images.length + previewImages.length;
     
     if (totalImages <= 5) {
-      toast.error("Phòng phải có ít nhất 5 ảnh!");
+      showToast.error("Phòng phải có ít nhất 5 ảnh!");
       return;
     }
 
@@ -333,10 +333,7 @@ function Room({ show, handleClose, onSave, editingRoom }) {
     setErrors(newErrors);
     
     if (!isValid) {
-      toast.error("Vui lòng điền đầy đủ thông tin bắt buộc!", {
-        autoClose: 3000,
-        position: toast.POSITION.TOP_RIGHT
-      });
+      showToast.error("Vui lòng điền đầy đủ thông tin bắt buộc!");
     }
 
     return isValid;
